@@ -10,7 +10,7 @@ const DESTROY_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_NAME}/image/de
 export const uploadFile = async (file) => {
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("upload_preset", "skinlele");
+  formData.append("upload_preset", "skinlele-upload");
   try {
     const response = await fetch(UPLOAD_URL, {
       method: "POST",

@@ -16,7 +16,7 @@ const initialState = {
   isLoading: false,
   error: {},
   paginateAdmin: {
-    page: 1,
+    currentPage: 1,
     pageSize: 10,
     totalPage: 0,
     totalItems: 0,
@@ -49,6 +49,7 @@ export const productSlice = createSlice({
         state.error = action.payload;
         state.isLoading = false;
       })
+
       //Get Product By Category
       .addCase(getProductByCategory.pending, (state, action) => {
         state.isLoading = true;
@@ -64,6 +65,7 @@ export const productSlice = createSlice({
         state.error = action.payload;
         state.isLoading = false;
       })
+
       //Get Product Home
       .addCase(getProductHome.pending, (state, action) => {
         state.isLoading = true;
@@ -93,6 +95,7 @@ export const productSlice = createSlice({
         state.error = action.payload;
         state.isLoading = false;
       })
+
       //Get Product Admin
       .addCase(getProductAdmin.pending, (state, action) => {
         state.isLoading = true;
@@ -101,7 +104,7 @@ export const productSlice = createSlice({
         if (action.payload.success) {
           state.isLoading = false;
           state.products = action.payload.data;
-          state.pagination = action.payload.pagination;
+          state.paginateAdmin = action.payload.pagination;
         }
       })
       .addCase(getProductAdmin.rejected, (state, action) => {

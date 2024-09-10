@@ -1,122 +1,163 @@
-import React from "react";
-import { Image, Pagination, Table, Tooltip } from "antd";
+import React, { useMemo } from "react";
+import { Image, Pagination, Table, Tooltip, Tag } from "antd";
 import { FaEye } from "react-icons/fa";
 import { GrEdit } from "react-icons/gr";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import ModalConfirm from "../../pages/ManageProduct/ModalConfirm";
 import { PiSpinnerBall } from "react-icons/pi";
+import { formatPrice } from "../../helpers/formatPrice";
 
 const TableProduct = ({
   products = [],
   isLoading = false,
   page,
   pageSize,
-  totalPage,
+  totalItems,
   setPaginate,
 }) => {
-  const columns = [
-    {
-      title: "STT",
-      key: "stt",
-      width: 60,
-      render: (_, __, index) => (page - 1) * pageSize + index + 1,
-    },
-    {
-      title: "Tên",
-      dataIndex: "name",
-      key: "name",
-      width: 200,
-      render: (text) => (
-        <Tooltip title={text}>
-          <div className="max-w-56 truncate">{text}</div>
-        </Tooltip>
-      ),
-    },
-    {
-      title: "Slug",
-      dataIndex: "slug",
-      key: "slug",
-      width: 150,
-      render: (text) => (
-        <Tooltip title={text}>
-          <div className="max-w-56 truncate">{text}</div>
-        </Tooltip>
-      ),
-    },
-    {
-      title: "Ảnh",
-      dataIndex: "mainImage",
-      key: "mainImage",
-      width: 100,
-      render: (text) => (
-        <Image
-          src={text.url}
-          alt="Product"
-          width={80}
-          height={80}
-          style={{ objectFit: "cover" }}
-          placeholder={<PiSpinnerBall className="animate-spin" />}
-        />
-      ),
-    },
-    {
-      title: "Phân loại",
-      dataIndex: "variants",
-      key: "variants",
-      render: (variants) => (
-        <div className="flex flex-wrap gap-2 max-w-[200px]">KHÔNG CÓ</div>
-      ),
-    },
-    {
-      title: "Giá",
-      dataIndex: "price",
-      key: "price",
-      width: 120,
-      render: (text) => (
-        <p className="font-medium text-[#820813]">
-          {new Intl.NumberFormat("vi-VN", {
-            currency: "VND",
-          }).format(text)}{" "}
-          đ
-        </p>
-      ),
-    },
-    {
-      title: "Danh Mục",
-      dataIndex: ["categories"],
-      key: "categories",
-      width: 150,
-      render: (text) => <div className="font-medium">CHƯA CÓ</div>,
-    },
-    {
-      title: "Thao Tác",
-      key: "action",
-      width: 120,
-      fixed: "right",
-      render: (_, record) => (
-        <div className="flex gap-2 items-center text-[#00246a]">
-          <Tooltip title="Xem">
-            <button className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
-              <FaEye />
-            </button>
+  const columns = useMemo(
+    () => [
+      {
+        title: "STT",
+        key: "stt",
+        width: 60,
+        render: (_, __, index) => (page - 1) * pageSize + index + 1,
+      },
+      {
+        title: "Ảnh",
+        dataIndex: "mainImage",
+        key: "mainImage",
+        width: 100,
+        render: (mainImage) => (
+          <Image
+            src={mainImage.url}
+            alt="Product"
+            width={80}
+            height={80}
+            style={{ objectFit: "cover" }}
+            placeholder={<PiSpinnerBall className="animate-spin" />}
+          />
+        ),
+      },
+      {
+        title: "Tên",
+        dataIndex: "name",
+        key: "name",
+        width: 200,
+        render: (text) => (
+          <Tooltip title={text}>
+            <div className="max-w-64 break-words font-medium truncate-2-lines">
+              {text}
+            </div>
           </Tooltip>
-          <Tooltip title="Sửa">
-            <button className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
-              <GrEdit />
-            </button>
-          </Tooltip>
-
-          <ModalConfirm>
-            <Tooltip title="Xóa">
+        ),
+      },
+      {
+        title: "Thương hiệu",
+        dataIndex: ["brand", "name"],
+        key: "brand",
+        width: 140,
+        render: (text) => <span className="font-medium">{text}</span>,
+      },
+      {
+        title: "Phân loại",
+        dataIndex: "variants",
+        key: "variants",
+        width: 150,
+        render: (variants) => (
+          <div className="flex flex-wrap gap-1">
+            {variants && variants.length > 0 ? (
+              variants.map((variant, index) => (
+                <Tooltip key={index} title={variant.color.name}>
+                  <div
+                    className="w-6 h-6 rounded-full border border-gray-300"
+                    style={{ backgroundColor: variant.color.code }}
+                  />
+                </Tooltip>
+              ))
+            ) : (
+              <Tag color="#99a7bc">Không có</Tag>
+            )}
+          </div>
+        ),
+      },
+      {
+        title: "Giá",
+        dataIndex: "price",
+        key: "price",
+        width: 120,
+        render: (price) => (
+          <p className="font-medium text-[#820813]">{formatPrice(price)} đ</p>
+        ),
+      },
+      {
+        title: "Danh Mục",
+        dataIndex: "categories",
+        key: "categories",
+        width: 200,
+        render: (categories) => (
+          <div className="font-medium flex items-center flex-wrap gap-1">
+            {categories && categories.length > 0 ? (
+              categories.map((item) => (
+                <span key={item._id}>
+                  <Tag color="#deb887">{item.name}</Tag>
+                </span>
+              ))
+            ) : (
+              <Tag color="#99a7bc">Không có</Tag>
+            )}
+          </div>
+        ),
+      },
+      {
+        title: "Tags",
+        dataIndex: "tags",
+        key: "tags",
+        width: 150,
+        render: (tags) => (
+          <div className="flex flex-wrap gap-1">
+            {tags && tags.length > 0 ? (
+              tags.map((tag) => (
+                <Tag key={tag} color="blue">
+                  {tag}
+                </Tag>
+              ))
+            ) : (
+              <Tag color="#99a7bc">Không có</Tag>
+            )}
+          </div>
+        ),
+      },
+      {
+        title: "Thao Tác",
+        key: "action",
+        width: 120,
+        fixed: "right",
+        render: (_, record) => (
+          <div className="flex gap-2 items-center text-[#00246a]">
+            <Tooltip title="Xem">
               <button className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
-                <MdOutlineDeleteOutline />
+                <FaEye />
               </button>
             </Tooltip>
-          </ModalConfirm>
-        </div>
-      ),
-    },
-  ];
+            <Tooltip title="Sửa">
+              <button className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
+                <GrEdit />
+              </button>
+            </Tooltip>
+            <ModalConfirm>
+              <Tooltip title="Xóa">
+                <button className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
+                  <MdOutlineDeleteOutline />
+                </button>
+              </Tooltip>
+            </ModalConfirm>
+          </div>
+        ),
+      },
+    ],
+    [page, pageSize]
+  );
 
   return (
     <>
@@ -126,29 +167,20 @@ const TableProduct = ({
         rowKey={(record) => record._id}
         pagination={false}
         loading={isLoading}
+        scroll={{ x: true }}
       />
       {products?.length > 0 && (
         <div className="mt-4 flex justify-end">
           <Pagination
-            current={data.page}
-            pageSize={data.pageSize}
-            total={data.totalItems}
-            onChange={(page) =>
-              setPaginate((prev) => ({
-                ...prev,
-                page: page,
-              }))
-            }
+            current={page}
+            pageSize={pageSize}
+            total={totalItems}
+            onChange={(page) => setPaginate((prev) => ({ ...prev, page }))}
             onShowSizeChange={(_, size) =>
-              setPaginate((prev) => ({
-                ...prev,
-                pageSize: size,
-              }))
+              setPaginate((prev) => ({ ...prev, pageSize: size }))
             }
             showSizeChanger
-            showTotal={(total, range) =>
-              `${range[0]}-${range[1]} of ${total} items`
-            }
+            showQuickJumper
           />
         </div>
       )}
@@ -156,4 +188,4 @@ const TableProduct = ({
   );
 };
 
-export default TableProduct;
+export default React.memo(TableProduct);

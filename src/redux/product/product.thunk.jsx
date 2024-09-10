@@ -7,7 +7,11 @@ export const getProductAdmin = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       const res = await axios.get(
-        `/admin/products?page=${payload.page}&pageSize=${payload.pageSize}&search=${payload.search}`
+        `/admin/products?page=${payload.page}&pageSize=${
+          payload.pageSize
+        }&name=${payload.name || ""}&category=${payload.category || ""}&brand=${
+          payload.brand || ""
+        }&tag=${payload.tag || ""}&sort=${payload.sort || "asc"}`
       );
       return res;
     } catch (error) {

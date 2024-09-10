@@ -63,3 +63,14 @@ export const getCategoryByCreatePro = createAsyncThunk(
     }
   }
 );
+
+export const getAllCategoryFilter = createAsyncThunk(
+  "category/getAllCategoryFilter",
+  async (_, { rejectWithValue }) => {
+    try {
+      return await axios.get("/admin/categories/filter");
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);

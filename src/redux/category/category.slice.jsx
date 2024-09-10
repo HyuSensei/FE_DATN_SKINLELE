@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
   getAllCategory,
+  getAllCategoryFilter,
   getCategoryAdmin,
   getCategoryByCreatePro,
 } from "./category.thunk";
@@ -64,6 +65,21 @@ export const categorySlice = createSlice({
         }
       })
       .addCase(getCategoryAdmin.rejected, (state, action) => {
+        state.error = action.payload;
+        state.isLoading = false;
+      })
+
+      //Get category by admin filter product
+      .addCase(getAllCategoryFilter.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(getAllCategoryFilter.fulfilled, (state, action) => {
+        if (action.payload.success) {
+          state.isLoading = false;
+          state.categories = action.payload.data;
+        }
+      })
+      .addCase(getAllCategoryFilter.rejected, (state, action) => {
         state.error = action.payload;
         state.isLoading = false;
       });
