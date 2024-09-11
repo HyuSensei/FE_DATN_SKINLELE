@@ -81,7 +81,7 @@ const HeaderAdmin = ({ collapsed, setCollapsed }) => {
             onClick={(e) => e.preventDefault()}
           >
             <Avatar icon={<UserOutlined />} className="mr-2" />
-            <span className="text-gray-700 hidden sm:inline uppercase font-bold">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-rose-700 font-extrabold text-sm text-center uppercase">
               Admin
             </span>
           </a>

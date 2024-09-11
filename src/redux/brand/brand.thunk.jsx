@@ -11,3 +11,16 @@ export const getBrandByCreatePro = createAsyncThunk(
     }
   }
 );
+
+export const getBrandList = createAsyncThunk(
+  "brand/getBrandList",
+  async (payload, { rejectWithValue }) => {
+    try {
+      return await axios.get(
+        `/admin/brands?page=${payload.page}&pageSize=${payload.pageSize}&name=${payload.name}`
+      );
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);

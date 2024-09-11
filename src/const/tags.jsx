@@ -17,6 +17,6 @@ export const tags = [
   {
     key: "selling",
     value: "SELLING",
-    color: "#ff8a4d",
+    color: "#fab40a",
   },
 ];

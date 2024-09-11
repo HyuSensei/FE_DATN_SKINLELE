@@ -43,6 +43,7 @@ const CreateProduct = () => {
   const { brands } = useSelector((state) => state.brand);
   const { categories } = useSelector((state) => state.category);
   const { isLoading } = useSelector((state) => state.product);
+  const [loadingUpload, setLoadingUpload] = useState(false);
 
   useEffect(() => {
     dispatch(getBrandByCreatePro());
@@ -146,7 +147,7 @@ const CreateProduct = () => {
         return null;
       })
     );
-
+    setLoadingUpload(true);
     const uploadedMainImage =
       mainImage && mainImage.originFileObj
         ? await uploadFile(mainImage.originFileObj)
@@ -172,7 +173,7 @@ const CreateProduct = () => {
         };
       })
     );
-
+    setLoadingUpload(false);
     const payload = {
       ...input,
       mainImage: uploadedMainImage
@@ -650,10 +651,10 @@ const CreateProduct = () => {
       <div>
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={isLoading || loadingUpload}
           className="w-full flex justify-center py-4 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-          {isLoading ? "Đang xử lý..." : "Tạo sản phẩm"}
+          {isLoading || loadingUpload ? "Đang xử lý..." : "Tạo sản phẩm"}
         </button>
       </div>
     </form>

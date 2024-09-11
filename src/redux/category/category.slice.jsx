@@ -4,6 +4,7 @@ import {
   getAllCategoryFilter,
   getCategoryAdmin,
   getCategoryByCreatePro,
+  getCategoryList,
 } from "./category.thunk";
 
 const initialState = {
@@ -80,6 +81,22 @@ export const categorySlice = createSlice({
         }
       })
       .addCase(getAllCategoryFilter.rejected, (state, action) => {
+        state.error = action.payload;
+        state.isLoading = false;
+      })
+
+      //Get category by admin list
+      .addCase(getCategoryList.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(getCategoryList.fulfilled, (state, action) => {
+        if (action.payload.success) {
+          state.isLoading = false;
+          state.categories = action.payload.data;
+          state.pagination = action.payload.pagination;
+        }
+      })
+      .addCase(getCategoryList.rejected, (state, action) => {
         state.error = action.payload;
         state.isLoading = false;
       });

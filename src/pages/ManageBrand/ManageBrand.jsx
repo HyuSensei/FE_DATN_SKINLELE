@@ -1,22 +1,22 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Input, Button } from "antd";
+import { Input, Row, Col, Button } from "antd";
 import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
-import TableCategory from "../../components/Table/TableCategory";
-import { getCategoryList } from "../../redux/category/category.thunk";
+import TableBrand from "../../components/Table/TableBrand";
+import { getBrandList } from "../../redux/brand/brand.thunk";
 import { useNavigate } from "react-router-dom";
 import debounce from "lodash/debounce";
 
-const ManageCategory = () => {
+const ManageBrand = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { categories, pagination, isLoading } = useSelector(
-    (state) => state.category
-  );
+  const { brands, pagination, isLoading } = useSelector((state) => state.brand);
 
   const [paginate, setPaginate] = useState({
     page: 1,
     pageSize: 10,
+    totalPage: 0,
+    totalItems: 0,
   });
 
   const [filter, setFilter] = useState({
@@ -24,7 +24,7 @@ const ManageCategory = () => {
   });
 
   useEffect(() => {
-    dispatch(getCategoryList({ ...paginate, ...filter }));
+    dispatch(getBrandList({ ...paginate, ...filter }));
   }, [dispatch, paginate.page, paginate.pageSize, filter]);
 
   useEffect(() => {
@@ -33,6 +33,8 @@ const ManageCategory = () => {
         ...prev,
         page: pagination.currentPage,
         pageSize: pagination.pageSize,
+        totalPage: pagination.totalPages,
+        totalItems: pagination.totalItems,
       }));
     }
   }, [pagination]);
@@ -49,40 +51,36 @@ const ManageCategory = () => {
     debouncedFilter(e.target.value);
   };
 
-  const handlePageChange = (newPage, newPageSize) => {
-    setPaginate({ page: newPage, pageSize: newPageSize });
-  };
-
   return (
     <div className="p-4">
       <div className="mb-4 bg-white p-4 rounded-md shadow-md flex gap-4 items-center">
         <Input
           size="large"
-          placeholder="Tìm kiếm danh mục..."
+          placeholder="Tìm kiếm thương hiệu..."
           prefix={<SearchOutlined />}
           onChange={handleFilterChange}
         />
         <Button
           size="large"
-          onClick={() => navigate("/admin/categories/create")}
+          onClick={() => navigate("/admin/brands/create")}
           type="primary"
           icon={<PlusOutlined />}
           className="bg-indigo-600 hover:bg-indigo-700"
         >
-          Thêm danh mục
+          Thêm thương hiệu
         </Button>
       </div>
 
-      <TableCategory
-        categories={categories}
+      <TableBrand
+        brands={brands}
         isLoading={isLoading}
         page={paginate.page}
         pageSize={paginate.pageSize}
-        totalItems={pagination?.totalItems || 0}
-        setPaginate={handlePageChange}
+        totalItems={paginate.totalItems}
+        setPaginate={setPaginate}
       />
     </div>
   );
 };
 
-export default ManageCategory;
+export default ManageBrand;

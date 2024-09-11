@@ -3,9 +3,24 @@ import { Image, Pagination, Table, Tooltip, Tag } from "antd";
 import { FaEye } from "react-icons/fa";
 import { GrEdit } from "react-icons/gr";
 import { MdOutlineDeleteOutline } from "react-icons/md";
-import ModalConfirm from "../../pages/ManageProduct/ModalConfirm";
 import { PiSpinnerBall } from "react-icons/pi";
 import { formatPrice } from "../../helpers/formatPrice";
+import ModalConfirm from "../Modal/ModalConfirm";
+
+const getColorTag = (tag) => {
+  switch (tag) {
+    case "HOT":
+      return "#eb1c26";
+    case "NEW":
+      return "#5bc0de";
+    case "SALE":
+      return "#28a745";
+    case "SELLING":
+      return "#fab40a";
+    default:
+      return "#eb1c26";
+  }
+};
 
 const TableProduct = ({
   products = [],
@@ -103,9 +118,9 @@ const TableProduct = ({
           <div className="font-medium flex items-center flex-wrap gap-1">
             {categories && categories.length > 0 ? (
               categories.map((item) => (
-                <span key={item._id}>
-                  <Tag color="#deb887">{item.name}</Tag>
-                </span>
+                <Tag key={item._id} color="#deb887">
+                  {item.name}
+                </Tag>
               ))
             ) : (
               <Tag color="#99a7bc">Không có</Tag>
@@ -121,8 +136,8 @@ const TableProduct = ({
         render: (tags) => (
           <div className="flex flex-wrap gap-1">
             {tags && tags.length > 0 ? (
-              tags.map((tag) => (
-                <Tag key={tag} color={tag.color}>
+              tags.map((tag, index) => (
+                <Tag key={index} color={getColorTag(tag)}>
                   {tag}
                 </Tag>
               ))
@@ -179,12 +194,12 @@ const TableProduct = ({
             current={page}
             pageSize={pageSize}
             total={totalItems}
-            onChange={(page) => setPaginate((prev) => ({ ...prev, page }))}
-            onShowSizeChange={(_, size) =>
-              setPaginate((prev) => ({ ...prev, pageSize: size }))
+            onChange={(newPage, newPageSize) =>
+              setPaginate(newPage, newPageSize)
             }
             showSizeChanger
             showQuickJumper
+            pageSizeOptions={["10", "20", "50", "100"]}
           />
         </div>
       )}
