@@ -80,7 +80,7 @@ const ManageProduct = () => {
   };
 
   return (
-    <div className="p-2 lg:p-6 bg-[#d4edda] mt-2 rounded-md">
+    <div className="p-2 lg:p-6 bg-gradient-to-r from-[#d4edda] to-sky-100 mt-2 rounded-md">
       <Card className="mb-6 shadow-md">
         <Row gutter={[16, 16]} align="middle">
           <Col xs={24} md={8} lg={6}>
@@ -89,7 +89,7 @@ const ManageProduct = () => {
               placeholder="Tìm kiếm sản phẩm..."
               prefix={<SearchOutlined className="text-gray-400" />}
               onChange={(e) => handleFilterChange(e.target.value, "name")}
-              className="w-full"
+              className="w-full shadow-lg"
             />
           </Col>
           <Col xs={24} md={16} lg={18}>
@@ -97,10 +97,10 @@ const ManageProduct = () => {
               <Col xs={24} sm={12} md={8} lg={6}>
                 <Select
                   size="large"
-                  style={{ width: "100%" }}
                   placeholder="Danh mục"
                   onChange={(value) => handleFilterChange(value, "category")}
                   allowClear
+                  className="shadow-lg w-full"
                 >
                   {categories.map((category) => (
                     <Option key={category._id} value={category._id}>
@@ -112,7 +112,7 @@ const ManageProduct = () => {
               <Col xs={24} sm={12} md={8} lg={6}>
                 <Select
                   size="large"
-                  style={{ width: "100%" }}
+                  className="shadow-lg w-full"
                   placeholder="Thương hiệu"
                   onChange={(value) => handleFilterChange(value, "brand")}
                   allowClear
@@ -127,7 +127,7 @@ const ManageProduct = () => {
               <Col xs={24} sm={12} md={8} lg={6}>
                 <Select
                   size="large"
-                  style={{ width: "100%" }}
+                  className="shadow-lg w-full"
                   placeholder="Tags"
                   onChange={(value) => handleFilterChange(value, "tag")}
                   allowClear
@@ -142,7 +142,7 @@ const ManageProduct = () => {
               <Col xs={24} sm={12} md={8} lg={6}>
                 <Select
                   size="large"
-                  style={{ width: "100%" }}
+                  className="shadow-lg w-full"
                   placeholder="Sắp xếp"
                   onChange={(value) => handleFilterChange(value, "sort")}
                   allowClear

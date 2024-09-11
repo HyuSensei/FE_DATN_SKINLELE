@@ -46,7 +46,7 @@ const TableProduct = ({
         width: 200,
         render: (text) => (
           <Tooltip title={text}>
-            <div className="max-w-64 break-words font-medium truncate-2-lines">
+            <div className="max-w-64 break-words font-medium truncate-2-lines text-sm">
               {text}
             </div>
           </Tooltip>
@@ -57,7 +57,11 @@ const TableProduct = ({
         dataIndex: ["brand", "name"],
         key: "brand",
         width: 140,
-        render: (text) => <span className="font-medium">{text}</span>,
+        render: (text) => (
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 font-extrabold text-sm text-center uppercase">
+            {text}
+          </span>
+        ),
       },
       {
         title: "Phân loại",
@@ -118,7 +122,7 @@ const TableProduct = ({
           <div className="flex flex-wrap gap-1">
             {tags && tags.length > 0 ? (
               tags.map((tag) => (
-                <Tag key={tag} color="blue">
+                <Tag key={tag} color={tag.color}>
                   {tag}
                 </Tag>
               ))

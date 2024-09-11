@@ -9,6 +9,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { getBrandByCreatePro } from "../../redux/brand/brand.thunk";
 import { getCategoryByCreatePro } from "../../redux/category/category.thunk";
 import { createProduct } from "../../redux/product/product.thunk";
+import {
+  validateCreateProductSchema,
+  validateForm,
+} from "../../validate/validate";
+import ErrorMessage from "../../components/Error/ErrorMessage";
 
 const CreateProduct = () => {
   const [input, setInput] = useState({
@@ -17,7 +22,10 @@ const CreateProduct = () => {
     brand: "",
     price: "",
     description: "",
-    mainImage: "",
+    mainImage: {
+      url: "",
+      publicId: "",
+    },
     images: [],
     variants: [],
     enable: true,
@@ -29,6 +37,7 @@ const CreateProduct = () => {
   const [selectedLevel1, setSelectedLevel1] = useState(null);
   const [mainImage, setMainImage] = useState(null);
   const [images, setImages] = useState([]);
+  const [validates, setValidates] = useState({});
 
   const dispatch = useDispatch();
   const { brands } = useSelector((state) => state.brand);
@@ -43,6 +52,10 @@ const CreateProduct = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setInput({ ...input, [name]: value });
+    setValidates((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
   };
 
   const handleSelectChange = (name, value) => {
@@ -175,6 +188,26 @@ const CreateProduct = () => {
       variants: uploadedVariants || [],
     };
 
+    const validationErrors = await validateForm({
+      input: {
+        ...input,
+        mainImage: mainImage,
+        images: images,
+      },
+      validateSchema: validateCreateProductSchema,
+    });
+
+    if (Object.keys(validationErrors).length > 0) {
+      if (validationErrors.mainImage) {
+        message.warning(validationErrors.mainImage);
+      }
+      if (validationErrors.images) {
+        message.warning(validationErrors.images);
+      }
+      setValidates(validationErrors);
+      return;
+    }
+
     dispatch(createProduct(payload)).then((res) => {
       if (res.payload.success) {
         message.success(res.payload.message);
@@ -189,6 +222,7 @@ const CreateProduct = () => {
       ...prev,
       description: value,
     }));
+    setValidates((prev) => ({ ...prev, description: "" }));
   };
 
   return (
@@ -208,9 +242,9 @@ const CreateProduct = () => {
             name="name"
             value={input.name}
             onChange={handleInputChange}
-            required
             className="mt-1 shadow-lg"
           />
+          {validates.name && <ErrorMessage message={validates.name} />}
         </div>
 
         <div>
@@ -221,10 +255,17 @@ const CreateProduct = () => {
             Thương hiệu
           </label>
           <Select
+            name="brand"
             placeholder="Chọn thương hiệu"
             size="large"
             value={input.brand}
-            onChange={(value) => handleSelectChange("brand", value)}
+            onChange={(value) => {
+              handleSelectChange("brand", value);
+              setValidates((prev) => ({
+                ...prev,
+                brand: "",
+              }));
+            }}
             className="w-full mt-1 shadow-lg"
           >
             <Select.Option value="" disabled>
@@ -237,6 +278,7 @@ const CreateProduct = () => {
                 </Select.Option>
               ))}
           </Select>
+          {validates.brand && <ErrorMessage message={validates.brand} />}
         </div>
       </div>
       <div>
@@ -250,7 +292,13 @@ const CreateProduct = () => {
           placeholder="Chọn danh mục"
           size="large"
           value={selectedLevel0}
-          onChange={handleLevel0Change}
+          onChange={(value) => {
+            handleLevel0Change(value);
+            setValidates((prev) => ({
+              ...prev,
+              categories: "",
+            }));
+          }}
           className="w-full mt-1 shadow-lg"
         >
           {categories.length > 0 &&
@@ -260,6 +308,9 @@ const CreateProduct = () => {
               </Select.Option>
             ))}
         </Select>
+        {validates.categories && (
+          <ErrorMessage message={validates.categories} />
+        )}
         <div className="flex gap-4 items-center flex-wrap mt-4">
           {selectedLevel0 && (
             <div className="flex-1 ">
@@ -337,9 +388,9 @@ const CreateProduct = () => {
             name="price"
             value={input.price}
             onChange={handleInputChange}
-            required
-            className="mt-1 shadow-lg"
+            className="w-full mt-1 shadow-lg"
           />
+          {validates.price && <ErrorMessage message={validates.price} />}
         </div>
 
         <div>
@@ -414,11 +465,23 @@ const CreateProduct = () => {
             <Input
               size="large"
               value={variant.color.name}
-              onChange={(e) =>
-                handleVariantChange(index, "name", e.target.value)
-              }
+              onChange={(e) => {
+                handleVariantChange(index, "name", e.target.value);
+                setValidates((prev) => ({
+                  ...prev,
+                  variants: {
+                    ...prev.variants,
+                    [`variants[${index}].color.name`]: "",
+                  },
+                }));
+              }}
               className="shadow-lg"
             />
+            {validates?.variants && (
+              <ErrorMessage
+                message={validates?.variants[`variants[${index}].color.name`]}
+              />
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium text-[#14134f] py-1">
@@ -429,9 +492,16 @@ const CreateProduct = () => {
                 className="flex-1 shadow-lg"
                 size="large"
                 value={variant.color.code}
-                onChange={(e) =>
-                  handleVariantChange(index, "code", e.target.value)
-                }
+                onChange={(e) => {
+                  handleVariantChange(index, "code", e.target.value);
+                  setValidates((prev) => ({
+                    ...prev,
+                    variants: {
+                      ...prev.variants,
+                      [`variants[${index}].color.code`]: "",
+                    },
+                  }));
+                }}
               />
               {variant.color.code && (
                 <div
@@ -454,11 +524,23 @@ const CreateProduct = () => {
                   onChangeComplete={(color) => {
                     handleVariantChange(index, "code", color.hex);
                     setShowColorPicker(false);
+                    setValidates((prev) => ({
+                      ...prev,
+                      variants: {
+                        ...prev.variants,
+                        [`variants[${index}].color.code`]: "",
+                      },
+                    }));
                   }}
                 />
               </div>
             )}
           </div>
+          {validates.variants && (
+            <ErrorMessage
+              message={validates.variants[`variants[${index}].color.code`]}
+            />
+          )}
           <div>
             <Upload
               accept="image/*"
@@ -466,15 +548,29 @@ const CreateProduct = () => {
               maxCount={1}
               beforeUpload={() => false}
               fileList={variant.color.image ? [variant.color.image] : []}
-              onChange={({ fileList }) =>
-                handleVariantChange(index, "image", fileList[0])
-              }
+              onChange={({ fileList }) => {
+                handleVariantChange(index, "image", fileList[0]);
+                setValidates((prev) => ({
+                  ...prev,
+                  variants: {
+                    ...prev.variants,
+                    [`variants[${index}].color.image.url`]: "",
+                  },
+                }));
+              }}
             >
               <div>
                 <PlusOutlined />
                 <div className="mt-2">Tải ảnh màu</div>
               </div>
             </Upload>
+            {validates?.variants && (
+              <ErrorMessage
+                message={
+                  validates?.variants[`variants[${index}].color.image.url`]
+                }
+              />
+            )}
           </div>
           <div className="flex justify-end">
             <button
@@ -547,6 +643,9 @@ const CreateProduct = () => {
         <QuillEditor
           {...{ value: input.description, onChange: handleChangeQill }}
         />
+        {validates.description && (
+          <ErrorMessage message={validates.description} />
+        )}
       </div>
       <div>
         <button
