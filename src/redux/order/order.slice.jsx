@@ -7,6 +7,7 @@ import {
   orderStripe,
   orderStripeReturn,
   updateStatuByCustomer,
+  getOrderListAdmin,
 } from "./order.thunk";
 
 const initialState = {
@@ -128,6 +129,22 @@ export const orderSlice = createSlice({
         }
       })
       .addCase(updateStatuByCustomer.rejected, (state, action) => {
+        state.error = action.payload;
+        state.isLoading = false;
+      })
+
+      //Update status order by admin
+      .addCase(getOrderListAdmin.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(getOrderListAdmin.fulfilled, (state, action) => {
+        if (action.payload.success) {
+          state.isLoading = false;
+          state.orders = action.payload.data;
+          state.pagination = action.payload.pagination;
+        }
+      })
+      .addCase(getOrderListAdmin.rejected, (state, action) => {
         state.error = action.payload;
         state.isLoading = false;
       });

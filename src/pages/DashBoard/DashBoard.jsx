@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Tooltip, Progress } from "antd";
 import { motion } from "framer-motion";
 import { PiShoppingBagOpenFill } from "react-icons/pi";
@@ -66,6 +66,23 @@ const DashboardCard = ({
 );
 
 const DashBoard = () => {
+  const [chartWidth, setChartWidth] = useState("100%");
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setChartWidth("100%");
+      } else {
+        setChartWidth("90%");
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <div className="p-6 mt-2 bg-gray-100">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -105,21 +122,29 @@ const DashBoard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         <Card className="shadow-lg" bordered={false}>
-          <h2 className="text-xl font-semibold mb-4">Thống kê doanh thu</h2>
-          <StatisicalRevenue />
+          <h2 className="uppercase text-sm font-semibold text-[#14134f]">
+            Thống kê doanh thu
+          </h2>
+          <div style={{ width: chartWidth }}>
+            <StatisicalRevenue />
+          </div>
         </Card>
 
         <Card className="shadow-lg" bordered={false}>
-          <h2 className="text-xl font-semibold mb-4">
+          <h2 className="uppercase text-sm font-semibold text-[#14134f]">
             Thống kê sản phẩm bán chạy
           </h2>
-          <StatisticalProductSelling />
+          <div style={{ width: chartWidth }}>
+            <StatisticalProductSelling />
+          </div>
         </Card>
       </div>
 
       <Card className="mt-6 shadow-lg" bordered={false}>
-        <h2 className="text-xl font-semibold mb-4">Mục tiêu kinh doanh</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <h2 className="uppercase text-sm font-semibold text-[#14134f]">
+          Mục tiêu kinh doanh
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-2">
           <div>
             <h3 className="font-medium mb-2">Doanh thu</h3>
             <Progress percent={75} status="active" strokeColor="#32bffc" />

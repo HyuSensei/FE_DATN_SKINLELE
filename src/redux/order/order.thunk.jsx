@@ -97,3 +97,21 @@ export const updateStatuByCustomer = createAsyncThunk(
     }
   }
 );
+
+export const getOrderListAdmin = createAsyncThunk(
+  "order/getOrderListAdmin",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const res = await axios.get(
+        `/admin/orders?page=${payload.page || 1}&pageSize=${
+          payload.pageSize || 10
+        }&status=${payload.status || ""}&name=${payload.name}&fromDate=${
+          payload.fromDate || ""
+        }&fromDate=${payload.toDate || ""}`
+      );
+      return res;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);

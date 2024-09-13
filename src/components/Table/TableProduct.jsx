@@ -1,11 +1,24 @@
-import React, { useMemo } from "react";
-import { Image, Pagination, Table, Tooltip, Tag } from "antd";
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  Image,
+  Pagination,
+  Table,
+  Tooltip,
+  Tag,
+  Popconfirm,
+  message,
+} from "antd";
 import { FaEye } from "react-icons/fa";
 import { GrEdit } from "react-icons/gr";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { PiSpinnerBall } from "react-icons/pi";
 import { formatPrice } from "../../helpers/formatPrice";
-import ModalConfirm from "../Modal/ModalConfirm";
+import ModalEditProduct from "../Modal/ModalEditProduct";
+import { useDispatch } from "react-redux";
+import {
+  deleteProduct,
+  getProductAdmin,
+} from "../../redux/product/product.thunk";
 
 const getColorTag = (tag) => {
   switch (tag) {
@@ -30,6 +43,29 @@ const TableProduct = ({
   totalItems,
   setPaginate,
 }) => {
+  const [productItem, setProductItem] = useState(null);
+  const [openEdit, setOpenEdit] = useState(false);
+  const dispatch = useDispatch();
+
+  const removeProduct = (id) => {
+    dispatch(deleteProduct(id)).then((res) => {
+      if (res.payload.success) {
+        message.success(res.payload.message);
+        dispatch(
+          getProductAdmin({
+            page: 1,
+            pageSize: 10,
+            name: "",
+            category: "",
+            brand: "",
+            tag: "",
+            sort: "asc",
+          })
+        );
+      }
+    });
+  };
+
   const columns = useMemo(
     () => [
       {
@@ -160,17 +196,41 @@ const TableProduct = ({
               </button>
             </Tooltip>
             <Tooltip title="Sửa">
-              <button className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
+              <button
+                onClick={() => {
+                  setProductItem(record);
+                  setOpenEdit(true);
+                }}
+                className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors"
+              >
                 <GrEdit />
               </button>
             </Tooltip>
-            <ModalConfirm>
+
+            <Popconfirm
+              className="max-w-40"
+              placement="topLeft"
+              title={"Xác nhận xóa thông tin sản phẩm"}
+              description={record?.name}
+              onConfirm={() => removeProduct(record._id)}
+              okText="Xóa"
+              cancelText="Hủy"
+              okButtonProps={{
+                loading: isLoading,
+              }}
+              destroyTooltipOnHide={true}
+            >
               <Tooltip title="Xóa">
-                <button className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
+                <button
+                  onClick={() => {
+                    setProductItem(record);
+                  }}
+                  className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors"
+                >
                   <MdOutlineDeleteOutline />
                 </button>
               </Tooltip>
-            </ModalConfirm>
+            </Popconfirm>
           </div>
         ),
       },
@@ -180,6 +240,14 @@ const TableProduct = ({
 
   return (
     <>
+      <ModalEditProduct
+        {...{
+          data: productItem,
+          open: openEdit,
+          setOpen: setOpenEdit,
+          setData: setProductItem,
+        }}
+      />
       <Table
         columns={columns}
         dataSource={products}

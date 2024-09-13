@@ -24,20 +24,12 @@ const HeaderAdmin = ({ collapsed, setCollapsed }) => {
       key: "1",
       label: (
         <div className="flex items-center gap-4">
-          <UserOutlined /> <span>Hồ sơ</span>
-        </div>
-      ),
-    },
-    {
-      key: "2",
-      label: (
-        <div className="flex items-center gap-4">
           <SettingOutlined /> <span>Cài đặt</span>
         </div>
       ),
     },
     {
-      key: "3",
+      key: "2",
       label: (
         <div className="flex items-center gap-4">
           <LogoutOutlined /> <span>Đăng xuất</span>
@@ -71,7 +63,7 @@ const HeaderAdmin = ({ collapsed, setCollapsed }) => {
       </div>
       <div className="flex items-center">
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-          <Badge color={"#3b71ca"} count={5} className="mr-4">
+          <Badge color={"#65bebc"} count={5} className="mr-4">
             <Button icon={<BellOutlined />} shape="circle" />
           </Badge>
         </motion.div>

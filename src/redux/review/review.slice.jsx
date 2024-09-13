@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { createReview, getReviewProduct } from "./review.thunk";
+import { createReview, getReviewList, getReviewProduct } from "./review.thunk";
 
 const initialState = {
   isLoading: false,
@@ -8,8 +8,8 @@ const initialState = {
   averageRating: "",
   rateDistribution: {},
   pagination: {
-    currentPage: 1,
-    totalPages: 0,
+    page: 1,
+    totalPage: 0,
     totalItems: 0,
     pageSize: 10,
   },
@@ -53,6 +53,22 @@ export const reviewSlice = createSlice({
         }
       })
       .addCase(getReviewProduct.rejected, (state, action) => {
+        state.error = action.payload;
+        state.isLoading = false;
+      })
+
+      //Get review list admin
+      .addCase(getReviewList.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(getReviewList.fulfilled, (state, action) => {
+        if (action.payload.success) {
+          state.isLoading = false;
+          state.reviews = action.payload.data;
+          state.pagination = action.payload.pagination;
+        }
+      })
+      .addCase(getReviewList.rejected, (state, action) => {
         state.error = action.payload;
         state.isLoading = false;
       });

@@ -93,7 +93,7 @@ const StatisticalProductSelling = () => {
           options={options}
           series={series}
           type="bar"
-          height={380}
+          height={500}
         />
       </div>
       <div id="html-dist"></div>

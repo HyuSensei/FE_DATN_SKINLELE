@@ -28,3 +28,17 @@ export const getReviewProduct = createAsyncThunk(
     }
   }
 );
+
+export const getReviewList = createAsyncThunk(
+  "review/getReviewList",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const res = await axios.get(
+        `/admin/reviews/customerName=${payload.name}?page=${payload.page}&pageSize=${payload.pageSize}&rate=${payload.rate}&fromDate=${payload.fromDate}&rate=${payload.toDate}&productName=${payload.productName}`
+      );
+      return res;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);

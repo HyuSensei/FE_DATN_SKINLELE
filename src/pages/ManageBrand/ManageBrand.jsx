@@ -53,7 +53,7 @@ const ManageBrand = () => {
 
   return (
     <div className="p-4">
-      <div className="mb-4 bg-white p-4 rounded-md shadow-md flex gap-4 items-center">
+      <div className="mb-4 bg-white p-4 rounded-md shadow-lg flex gap-4 items-center">
         <Input
           size="large"
           placeholder="Tìm kiếm thương hiệu..."

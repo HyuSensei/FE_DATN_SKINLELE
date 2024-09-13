@@ -36,15 +36,13 @@ const LayoutAdmin = ({ children, title }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="bg-clip-text bg-gradient-to-r from-slate-800 to-stone-800 font-bold text-xl">
-              {title}
-            </div>
+            <div className="font-bold text-xl">{title}</div>
             {children}
           </motion.div>
         </Content>
         <Footer className="text-center bg-gray-100">
-          <strong>SkinLeLe Admin</strong> ©{new Date().getFullYear()} Created
-          with ❤️
+          <strong>Admin</strong> ©{new Date().getFullYear()} Created with
+          SkinLeLe ❤️
         </Footer>
       </Layout>
     </Layout>

@@ -36,7 +36,7 @@ const AdminRoutes = [
     element: (
       <Suspense fallback={<Loading />}>
         <PageTitle title={"SkinLeLe | Dashboard"}>
-          <LayoutAdmin title={"Hi 👋, Wellcome admin"}>
+          <LayoutAdmin title={"Hi 👋, Wellcome Admin !"}>
             <Dashboard />
           </LayoutAdmin>
         </PageTitle>

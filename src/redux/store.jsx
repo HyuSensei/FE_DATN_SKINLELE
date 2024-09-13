@@ -7,6 +7,7 @@ import shipReducer from "./ship/ship.slice";
 import orderReducer from "./order/order.slice";
 import reviewReducer from "./review/review.slice";
 import brandReducer from "./brand/brand.slice";
+import userReducer from "./user/user.slice";
 
 const rootReducer = {
   product: productReducer,
@@ -17,6 +18,7 @@ const rootReducer = {
   order: orderReducer,
   review: reviewReducer,
   brand: brandReducer,
+  user: userReducer,
 };
 
 export const store = configureStore({

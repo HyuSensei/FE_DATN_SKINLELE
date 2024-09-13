@@ -68,21 +68,17 @@ const ManageProduct = () => {
 
   return (
     <div className="p-4">
-      <Card className="mb-4 bg-white p-4 rounded-md shadow-md">
+      <Card className="mb-4 bg-white rounded-md shadow-lg">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           <Input
-            size="large"
             placeholder="Tìm kiếm sản phẩm..."
             prefix={<SearchOutlined className="text-gray-400" />}
             onChange={(e) => handleFilterChange(e.target.value, "name")}
-            className="w-full shadow-lg"
           />
           <Select
-            size="large"
             placeholder="Danh mục"
             onChange={(value) => handleFilterChange(value, "category")}
             allowClear
-            className="w-full shadow-lg"
           >
             {categories.map((category) => (
               <Option key={category._id} value={category._id}>
@@ -91,11 +87,9 @@ const ManageProduct = () => {
             ))}
           </Select>
           <Select
-            size="large"
             placeholder="Thương hiệu"
             onChange={(value) => handleFilterChange(value, "brand")}
             allowClear
-            className="w-full shadow-lg"
           >
             {brands.map((brand) => (
               <Option key={brand._id} value={brand._id}>
@@ -104,11 +98,9 @@ const ManageProduct = () => {
             ))}
           </Select>
           <Select
-            size="large"
             placeholder="Tags"
             onChange={(value) => handleFilterChange(value, "tag")}
             allowClear
-            className="w-full shadow-lg"
           >
             {tags.map((item) => (
               <Option key={item.key} value={item.value}>
@@ -117,11 +109,9 @@ const ManageProduct = () => {
             ))}
           </Select>
           <Select
-            size="large"
             placeholder="Sắp xếp"
             onChange={(value) => handleFilterChange(value, "sort")}
             allowClear
-            className="w-full shadow-lg"
           >
             <Option value="asc">Giá tăng dần</Option>
             <Option value="desc">Giá giảm dần</Option>

@@ -29,8 +29,8 @@ const StatisicalRevenue = () => {
       },
       offsetY: -20,
       style: {
-        fontSize: "12px",
-        colors: ["#304758"],
+        fontSize: "14px",
+        colors: ["#3b71ca"],
       },
     },
     xaxis: {
@@ -93,7 +93,7 @@ const StatisicalRevenue = () => {
           options={options}
           series={series}
           type="bar"
-          height={350}
+          height={450}
         />
       </div>
       <div id="html-dist"></div>
