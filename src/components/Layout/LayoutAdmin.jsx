@@ -6,10 +6,9 @@ import HeaderAdmin from "../Header/HeaderAdmin";
 import { useNavigate } from "react-router-dom";
 import SiderAdmin from "../Sider/SiderAdmin";
 
-const { Sider, Content, Footer } = Layout;
+const { Content, Footer } = Layout;
 
 const LayoutAdmin = ({ children, title }) => {
-  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const { isMobile } = useScreen();
 
@@ -20,10 +19,6 @@ const LayoutAdmin = ({ children, title }) => {
       setCollapsed(false);
     }
   }, [isMobile]);
-
-  const changePage = (path) => {
-    navigate();
-  };
 
   return (
     <Layout className="min-h-screen">

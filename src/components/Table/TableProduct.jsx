@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Image,
   Pagination,
@@ -19,6 +19,7 @@ import {
   deleteProduct,
   getProductAdmin,
 } from "../../redux/product/product.thunk";
+import { deleteFile } from "../../helpers/uploadCloudinary";
 
 const getColorTag = (tag) => {
   switch (tag) {
@@ -48,8 +49,34 @@ const TableProduct = ({
   const dispatch = useDispatch();
 
   const removeProduct = (id) => {
-    dispatch(deleteProduct(id)).then((res) => {
+    dispatch(deleteProduct(id)).then(async (res) => {
       if (res.payload.success) {
+        const deletedProduct = res.payload.data;
+
+        if (deletedProduct.mainImage && deletedProduct.mainImage.publicId) {
+          await deleteFile(deletedProduct.mainImage.publicId);
+        }
+        y;
+        if (deletedProduct.images && deletedProduct.images.length > 0) {
+          await Promise.all(
+            deletedProduct.images.map(async (image) => {
+              if (image.publicId) {
+                await deleteFile(image.publicId);
+              }
+            })
+          );
+        }
+
+        if (deletedProduct.variants && deletedProduct.variants.length > 0) {
+          await Promise.all(
+            deletedProduct.variants.map(async (variant) => {
+              if (variant.color.image && variant.color.image.publicId) {
+                await deleteFile(variant.color.image.publicId);
+              }
+            })
+          );
+        }
+
         message.success(res.payload.message);
         dispatch(
           getProductAdmin({
@@ -94,7 +121,7 @@ const TableProduct = ({
         title: "Tên",
         dataIndex: "name",
         key: "name",
-        width: 200,
+        width: 250,
         render: (text) => (
           <Tooltip title={text}>
             <div className="max-w-64 break-words font-medium truncate-2-lines text-sm">
@@ -149,7 +176,7 @@ const TableProduct = ({
         title: "Danh Mục",
         dataIndex: "categories",
         key: "categories",
-        width: 200,
+        width: 120,
         render: (categories) => (
           <div className="font-medium flex items-center flex-wrap gap-1">
             {categories && categories.length > 0 ? (
@@ -168,7 +195,7 @@ const TableProduct = ({
         title: "Tags",
         dataIndex: "tags",
         key: "tags",
-        width: 150,
+        width: 100,
         render: (tags) => (
           <div className="flex flex-wrap gap-1">
             {tags && tags.length > 0 ? (
