@@ -6,7 +6,7 @@ export const getUserList = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       return await axios.get(
-        `/admin/users?page=${payload.name}&pageSize=${payload.email}`
+        `/admin/users?page=${payload.page}&pageSize=${payload.pageSize}&search=${payload.search}`
       );
     } catch (error) {
       return rejectWithValue(error.response.data);

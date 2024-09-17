@@ -3,8 +3,10 @@ export const createIcon = ({
   rate = 5,
   width = "24px",
   height = "24px",
+  activeColor = "#001529",
+  nonActiveColor = "#989898",
 }) => {
-  const fillColor = rate >= index ? "#001529" : "#989898";
+  const fillColor = rate >= index ? activeColor : nonActiveColor;
 
   return (
     <svg
