@@ -1,126 +1,72 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Checkbox,
   InputNumber,
-  Button,
   Typography,
-  Divider,
-  message,
   Breadcrumb,
   Card,
+  message,
+  Image,
+  Empty,
 } from "antd";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import ProductList from "../../components/Product/ProductList";
 import ModalCheckout from "../../components/Modal/ModalCheckout";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  incrementQuantity,
+  decrementQuantity,
+  removeFromCart,
+} from "../../redux/cart/cart.slice";
+import { formatPrice } from "../../helpers/formatPrice";
+import isEmpty from "lodash/isEmpty";
 
 const { Text } = Typography;
 
-// Sample data
-const sampleCartItems = [
-  {
-    productId: "1",
-    name: "Luxury Face Cream",
-    brand: "GlamGlow",
-    price: 450000,
-    variants: [
-      { id: "1a", color: { name: "Classic", code: "#F5E6D3" }, quantity: 1 },
-      { id: "1b", color: { name: "Sensitive", code: "#E6F5D3" }, quantity: 2 },
-    ],
-    mainImage: {
-      url: "https://image.hsv-tech.io/600x600/bbx/common/7886f677-3e78-47d9-a484-1bd84079e384.webp",
-    },
-  },
-  {
-    productId: "2",
-    name: "Hydrating Serum",
-    brand: "The Ordinary",
-    price: 280000,
-    variants: [
-      { id: "2a", color: { name: "Original", code: "#D3E6F5" }, quantity: 1 },
-    ],
-    mainImage: {
-      url: "https://image.hsv-tech.io/600x600/bbx/common/7886f677-3e78-47d9-a484-1bd84079e384.webp",
-    },
-  },
-];
-
-const formatPrice = (price) => {
-  return new Intl.NumberFormat("vi-VN").format(price);
-};
-
 const Cart = () => {
-  const [cartItems, setCartItems] = useState(sampleCartItems);
+  const dispatch = useDispatch();
+  const { products } = useSelector((state) => state.cart.cart);
   const [selectedItems, setSelectedItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [open, setOpen] = useState(false);
 
+  const selectedProducts = useMemo(() => {
+    return products.filter((product) =>
+      selectedItems.includes(product.productId)
+    );
+  }, [products, selectedItems]);
+
   useEffect(() => {
     const newTotalPrice = selectedItems.reduce((total, itemId) => {
-      const item = cartItems
-        .flatMap((product) => product.variants)
-        .find((variant) => variant.id === itemId);
-      const product = cartItems.find((product) =>
-        product.variants.some((variant) => variant.id === itemId)
-      );
-      return total + (item && product ? product.price * item.quantity : 0);
+      const item = products.find((product) => product.productId === itemId);
+      return total + (item ? item.price * item.quantity : 0);
     }, 0);
     setTotalPrice(newTotalPrice);
-  }, [selectedItems, cartItems]);
+  }, [selectedItems, products]);
 
-  const handleQuantityChange = (productId, variantId, quantity) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) => {
-        if (item.productId === productId) {
-          return {
-            ...item,
-            variants: item.variants.map((variant) =>
-              variant.id === variantId ? { ...variant, quantity } : variant
-            ),
-          };
-        }
-        return item;
-      })
-    );
+  const handleQuantityChange = (productId, newQuantity) => {
+    const currentItem = products.find((p) => p.productId === productId);
+    if (!currentItem) return;
+    if (newQuantity > currentItem.quantity) {
+      dispatch(incrementQuantity({ productId }));
+    } else if (newQuantity < currentItem.quantity) {
+      dispatch(decrementQuantity({ productId }));
+    }
   };
 
-  const handleRemoveVariant = (productId, variantId) => {
-    setCartItems((prevItems) =>
-      prevItems
-        .map((item) => {
-          if (item.productId === productId) {
-            return {
-              ...item,
-              variants: item.variants.filter(
-                (variant) => variant.id !== variantId
-              ),
-            };
-          }
-          return item;
-        })
-        .filter((item) => item.variants.length > 0)
-    );
-    setSelectedItems(selectedItems.filter((id) => id !== variantId));
+  const handleRemoveVariant = (productId) => {
+    dispatch(removeFromCart({ productId }));
+    setSelectedItems(selectedItems.filter((id) => id !== productId));
   };
 
-  const handleSelectItem = (variantId, checked) => {
+  const handleSelectItem = (productId, checked) => {
     setSelectedItems((prev) =>
-      checked ? [...prev, variantId] : prev.filter((id) => id !== variantId)
+      checked ? [...prev, productId] : prev.filter((id) => id !== productId)
     );
   };
 
-  const handleSelectAllForProduct = (productId, checked) => {
-    const productVariantIds =
-      cartItems
-        .find((item) => item.productId === productId)
-        ?.variants.map((variant) => variant.id) || [];
-
-    setSelectedItems((prev) => {
-      if (checked) {
-        return [...new Set([...prev, ...productVariantIds])];
-      } else {
-        return prev.filter((id) => !productVariantIds.includes(id));
-      }
-    });
+  const handleSelectAll = (checked) => {
+    setSelectedItems(checked ? products.map((p) => p.productId) : []);
   };
 
   const handleCheckout = () => {
@@ -128,127 +74,130 @@ const Cart = () => {
       message.warning("Vui lòng chọn sản phẩm để thanh toán");
       return;
     }
-    message.success("Đang chuyển đến trang thanh toán");
+    setOpen(true);
   };
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <ModalCheckout open={open} setOpen={setOpen} />
-      <Breadcrumb
-        className="pb-4"
-        items={[
-          {
-            title: "Trang chủ",
-          },
-          {
-            title: "Giỏ hàng",
-          },
-        ]}
-      />
+    <div className="container mx-auto py-4 sm:py-8 px-4">
+      {products.length === 0 ? (
+        <Empty className="mt-24" />
+      ) : (
+        <>
+          <ModalCheckout
+            {...{
+              open,
+              setOpen,
+              products: selectedProducts,
+              totalAmount: totalPrice,
+            }}
+          />
+          <Breadcrumb
+            className="pb-4"
+            items={[{ title: "Trang chủ" }, { title: "Giỏ hàng" }]}
+          />
 
-      {cartItems.map((product) => (
-        <Card
-          key={product.productId}
-          className="mb-6 shadow-md hover:shadow-lg transition-shadow duration-300"
-        >
-          <div className="flex items-center justify-between mb-4">
+          <Card className="mb-4 sm:mb-6 shadow-md hover:shadow-lg transition-shadow duration-300">
             <Checkbox
-              checked={product.variants.every((variant) =>
-                selectedItems.includes(variant.id)
-              )}
+              checked={
+                selectedItems.length === products.length && products.length > 0
+              }
               indeterminate={
-                product.variants.some((variant) =>
-                  selectedItems.includes(variant.id)
-                ) &&
-                !product.variants.every((variant) =>
-                  selectedItems.includes(variant.id)
-                )
+                selectedItems.length > 0 &&
+                selectedItems.length < products.length
               }
-              onChange={(e) =>
-                handleSelectAllForProduct(product.productId, e.target.checked)
-              }
+              onChange={(e) => handleSelectAll(e.target.checked)}
             >
-              <Text strong>{product.name}</Text>
+              <Text strong>Chọn tất cả ({products.length} sản phẩm)</Text>
             </Checkbox>
-            <Text type="secondary">{product.brand}</Text>
-          </div>
+          </Card>
 
-          {product.variants.map((variant) => (
-            <div
-              key={variant.id}
-              className="flex items-center justify-between py-4 border-b last:border-b-0"
+          {products.map((product) => (
+            <Card
+              key={product.productId}
+              className="mb-4 sm:mb-6 shadow-md hover:shadow-lg transition-shadow duration-300"
             >
-              <div className="flex items-center space-x-4">
-                <Checkbox
-                  checked={selectedItems.includes(variant.id)}
-                  onChange={(e) =>
-                    handleSelectItem(variant.id, e.target.checked)
-                  }
-                />
-                <img
-                  src={product.mainImage.url}
-                  alt={product.name}
-                  className="w-16 h-16 object-cover rounded"
-                />
-                <div className="space-y-1">
-                  <Text>{product.name}</Text>
-                  <div className="text-sm text-gray-500 flex items-center gap-2">
-                    Phân loại:
-                    <div
-                      className="ml-2 inline-block w-6 h-6 rounded-full bg-${variant.color.code}"
-                      style={{ backgroundColor: variant.color.code }}
-                    ></div>
-                    <div>{variant.color.name}</div>
-                  </div>
-                  <div className="text-sm text-gray-500 flex items-center gap-2">
-                    Số lượng: x2
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center mb-2 sm:mb-0">
+                  <Checkbox
+                    checked={selectedItems.includes(product.productId)}
+                    onChange={(e) =>
+                      handleSelectItem(product.productId, e.target.checked)
+                    }
+                    className="mr-2"
+                  />
+                  <Text strong className="text-sm">
+                    {product.name}
+                  </Text>
+                </div>
+                <Text type="secondary" className="text-sm">
+                  {product.brand}
+                </Text>
+              </div>
+
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 sm:py-4">
+                <div className="flex flex-1 gap-2 items-center space-x-2 sm:space-x-4 mb-2 sm:mb-0">
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    width={70}
+                    className="object-cover rounded"
+                  />
+                  <div className="space-y-1">
+                    <Text className="text-sm">{product.name}</Text>{" "}
+                    {!isEmpty(product.color) && (
+                      <div className="text-xs sm:text-sm text-gray-500 flex items-center gap-1 sm:gap-2">
+                        Phân loại:
+                        <div
+                          className="ml-1 sm:ml-2 inline-block w-4 h-4 sm:w-6 sm:h-6 rounded-full"
+                          style={{ backgroundColor: product.color.code }}
+                        ></div>
+                        <div>{product.color.name}</div>
+                      </div>
+                    )}
                   </div>
                 </div>
+                <div className="flex items-center justify-between sm:justify-end sm:space-x-4">
+                  <Text strong className="font-bold text-sm sm:text-base">
+                    {formatPrice(product.price)} đ
+                  </Text>
+                  <InputNumber
+                    min={1}
+                    max={99}
+                    value={product.quantity}
+                    onChange={(value) =>
+                      handleQuantityChange(product.productId, value)
+                    }
+                    className="w-24 h-8 text-sm lg:h-10 lg:text-base"
+                  />
+                  <button
+                    onClick={() => handleRemoveVariant(product.productId)}
+                    className="p-1 sm:p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors"
+                  >
+                    <MdOutlineDeleteOutline className="text-lg sm:text-xl" />
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center space-x-4">
-                <Text strong className="font-bold">
-                  {formatPrice(product.price)} đ
-                </Text>
-                <InputNumber
-                  min={1}
-                  max={99}
-                  value={variant.quantity}
-                  onChange={(value) =>
-                    handleQuantityChange(product.productId, variant.id, value)
-                  }
-                />
-                <button
-                  onClick={() =>
-                    handleRemoveVariant(product.productId, variant.id)
-                  }
-                  className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors"
-                >
-                  <MdOutlineDeleteOutline />
-                </button>
-              </div>
-            </div>
+            </Card>
           ))}
-        </Card>
-      ))}
-      <Card className="mb-6 shadow-md hover:shadow-lg transition-shadow duration-300">
-        <div className="flex justify-between items-center mb-4">
-          <Text strong>
-            Đã chọn: {selectedItems.length} /{" "}
-            {cartItems.reduce((total, item) => total + item.variants.length, 0)}
-          </Text>
-          <Text strong className="text-lg">
-            {formatPrice(totalPrice)} đ
-          </Text>
-        </div>
-        <button
-          onClick={() => {
-            setOpen(true);
-          }}
-          className="w-full hover:opacity-80 bg-gradient-to-r from-yellow-300 via-orange-600 to-purple-800 text-white py-3 rounded-md text-lg font-bold flex items-center justify-center gap-2"
-        >
-          Tiến hành thanh toán
-        </button>
-      </Card>
+
+          <Card className="mb-4 sm:mb-6 shadow-md hover:shadow-lg transition-shadow duration-300">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
+              <Text strong className="mb-2 sm:mb-0 text-sm sm:text-base">
+                Đã chọn: {selectedItems.length} / {products.length}
+              </Text>
+              <Text strong className="text-base sm:text-lg">
+                {formatPrice(totalPrice)} đ
+              </Text>
+            </div>
+            <button
+              onClick={handleCheckout}
+              className="w-full hover:opacity-80 bg-gradient-to-r from-yellow-300 via-orange-600 to-purple-800 text-white py-2 sm:py-3 rounded-md text-sm sm:text-lg font-bold flex items-center justify-center gap-2"
+            >
+              Tiến hành thanh toán
+            </button>
+          </Card>
+        </>
+      )}
 
       <ProductList title={"Sản phẩm khác"} />
     </div>

@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
-  getAccountCustomer,
-  loginCustomer,
-  registerCustomer,
+  getAccountUser,
+  loginUser,
+  registerUser,
   resetPassword,
   sendOtp,
   updateAccount,
@@ -11,7 +11,7 @@ import {
 import { remove } from "../../storage/storage";
 
 const initialState = {
-  userInfor: {},
+  userInfo: {},
   isLoading: false,
   error: {},
   isAuthenticated: false,
@@ -25,59 +25,59 @@ export const authSlice = createSlice({
     setEmailVerify(state, action) {
       state.emailVerify = action.payload;
     },
-    logoutCustomer(state, action) {
+    logoutUser(state, action) {
       remove("ACCESS_TOKEN");
       state.isAuthenticated = false;
-      state.userInfor = {};
+      state.userInfo = {};
     },
   },
   extraReducers: (builder) => {
     builder
       //Login Customer
-      .addCase(loginCustomer.pending, (state, action) => {
+      .addCase(loginUser.pending, (state, action) => {
         state.isLoading = true;
       })
-      .addCase(loginCustomer.fulfilled, (state, action) => {
+      .addCase(loginUser.fulfilled, (state, action) => {
         if (action.payload.success) {
           state.isLoading = false;
-          state.userInfor = action.payload.user;
+          state.userInfo = action.payload.user;
           state.isAuthenticated = true;
           state.error = {};
         }
       })
-      .addCase(loginCustomer.rejected, (state, action) => {
+      .addCase(loginUser.rejected, (state, action) => {
         state.error = action.payload;
         state.isLoading = false;
       })
 
       //Register Customer
-      .addCase(registerCustomer.pending, (state, action) => {
+      .addCase(registerUser.pending, (state, action) => {
         state.isLoading = true;
       })
-      .addCase(registerCustomer.fulfilled, (state, action) => {
+      .addCase(registerUser.fulfilled, (state, action) => {
         if (action.payload.success) {
           state.isLoading = false;
           state.error = {};
         }
       })
-      .addCase(registerCustomer.rejected, (state, action) => {
+      .addCase(registerUser.rejected, (state, action) => {
         state.error = action.payload;
         state.isLoading = false;
       })
 
       //Get Account Customer
-      .addCase(getAccountCustomer.pending, (state, action) => {
+      .addCase(getAccountUser.pending, (state, action) => {
         state.isLoading = true;
       })
-      .addCase(getAccountCustomer.fulfilled, (state, action) => {
+      .addCase(getAccountUser.fulfilled, (state, action) => {
         if (action.payload.success) {
           state.isLoading = false;
-          state.userInfor = action.payload.data;
+          state.userInfo = action.payload.data;
           state.isAuthenticated = true;
           state.error = {};
         }
       })
-      .addCase(getAccountCustomer.rejected, (state, action) => {
+      .addCase(getAccountUser.rejected, (state, action) => {
         state.error = action.payload;
         state.isLoading = false;
       })
@@ -141,5 +141,5 @@ export const authSlice = createSlice({
       });
   },
 });
-export const { setEmailVerify, logoutCustomer } = authSlice.actions;
+export const { setEmailVerify, logoutUser } = authSlice.actions;
 export default authSlice.reducer;

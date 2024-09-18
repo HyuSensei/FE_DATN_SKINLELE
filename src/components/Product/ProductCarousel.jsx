@@ -7,31 +7,16 @@ import { createIcon } from "../../ultis/createIcon";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { motion } from "framer-motion";
 import ImageCarousel from "../ImageCarousel";
+import { useNavigate } from "react-router-dom";
 
-const ProductCarousel = ({
-  products = defaultProduct,
-  isLoading,
-  title,
-  isBg = false,
-}) => {
+const ProductCarousel = ({ products = defaultProduct, isLoading, title }) => {
+  const navigate = useNavigate();
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
       },
     },
   };
@@ -84,12 +69,14 @@ const ProductCarousel = ({
   };
 
   const Loading = () => (
-    <div className="flex items-center justify-center">
+    <div className="flex items-center justify-center m-4">
       <Spin size="large" />
     </div>
   );
 
   if (isLoading) return Loading();
+
+  if (products.length === 0) return null;
 
   return (
     <div className="relative px-6">
@@ -113,10 +100,8 @@ const ProductCarousel = ({
       <Slider {...settings}>
         {products.map((item, index) => (
           <div key={index} className="px-2">
-            <motion.div
-              variants={itemVariants}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <div
+              onClick={() => navigate(`/detail/${item.slug}`)}
               className="cursor-pointer flex flex-col h-full bg-white pt-2 hover:py-6 pb-4 px-2 rounded-md"
             >
               <ImageCarousel
@@ -155,7 +140,7 @@ const ProductCarousel = ({
                   <span className="font-medium">(0)</span>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         ))}
       </Slider>

@@ -20,15 +20,17 @@ import { validateForm, validateOrderSchema } from "../../validate/validate";
 import ErrorMessage from "../../components/Error/ErrorMessage";
 import { setDistrict, setWard } from "../../redux/ship/ship.slice";
 import { IoMdCloseCircle } from "react-icons/io";
+import isEmpty from "lodash/isEmpty";
 
 const STRIPE_PUBLIC_KEY = import.meta.env.VITE_APP_STRIPE_PUBLIC_KEY;
 
 const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
   const navigate = useNavigate();
-  const { isMobile } = useScreen();
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
   const { provinces, districts, wards } = useSelector((state) => state.ship);
+  console.log(products);
+
   const [order, setOrder] = useState({
     name: "",
     products:
@@ -36,8 +38,7 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
         productId: item.productId,
         name: item.name,
         image: item.image,
-        size: item.size,
-        color: item.color,
+        color: !isEmpty(item.color) ? item.color : {},
         price: item.price,
         quantity: item.quantity,
       })) || [],
@@ -81,7 +82,6 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
           productId: item.productId,
           name: item.name,
           image: item.image,
-          size: item.size,
           color: item.color,
           price: item.price,
           quantity: item.quantity,
@@ -163,22 +163,25 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-sm md:text-base font-semibold text-gray-800 truncate">
+              <h3 className="text-sm font-medium text-gray-800 truncate-2-lines">
                 {item.name}
               </h3>
-              <div className="mt-1 flex items-center text-xs md:text-sm text-gray-600">
-                <span className="bg-pink-100 text-pink-800 px-2 py-1 rounded-full mr-2">
-                  {item.size}
-                </span>
-                <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full">
-                  {item.color}
-                </span>
-              </div>
+              {!isEmpty(item.color) && (
+                <div className="mt-1 flex items-center text-xs md:text-sm text-gray-600">
+                  <span className="bg-purple-50 text-purple-800 px-2 py-1 rounded-full flex items-center">
+                    <div
+                      className="w-6 h-6 rounded-full mr-1"
+                      style={{ backgroundColor: item.color.code }}
+                    ></div>
+                    {item.color.name}
+                  </span>
+                </div>
+              )}
               <div className="mt-2 flex justify-between items-center">
                 <span className="text-xs md:text-sm text-gray-500">
                   Đơn giá: {formatPrice(item.price)}đ
                 </span>
-                <span className="text-sm md:text-base font-bold text-pink-600">
+                <span className="text-sm md:text-base">
                   {formatPrice(item.quantity * item.price)}đ
                 </span>
               </div>

@@ -11,7 +11,7 @@ import {
 
 const initialState = {
   products: [],
-  productHome: {},
+  collections: [],
   productDetail: {},
   isLoading: false,
   error: {},
@@ -73,7 +73,7 @@ export const productSlice = createSlice({
       .addCase(getProductHome.fulfilled, (state, action) => {
         if (action.payload.success) {
           state.isLoading = false;
-          state.productHome = action.payload.data;
+          state.collections = action.payload.data;
         }
       })
       .addCase(getProductHome.rejected, (state, action) => {

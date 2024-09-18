@@ -14,17 +14,27 @@ const calculateTotalAmount = (products) => {
   }, 0);
 };
 
+const findExistingItemIndex = (products, newItem) => {
+  return products.findIndex((item) => {
+    const idMatch = item.productId === newItem.productId;
+    const colorMatch =
+      item.color && newItem.color
+        ? item.color.name === newItem.color.name &&
+          item.color.code === newItem.color.code
+        : !item.color && !newItem.color;
+    return idMatch && colorMatch;
+  });
+};
+
 export const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
     addToCart: (state, action) => {
       const newItem = action.payload;
-      const existingItemIndex = state.cart.products.findIndex(
-        (item) =>
-          item.productId === newItem.productId &&
-          item.size === newItem.size &&
-          item.color === newItem.color
+      const existingItemIndex = findExistingItemIndex(
+        state.cart.products,
+        newItem
       );
 
       if (existingItemIndex !== -1) {
@@ -34,7 +44,6 @@ export const cartSlice = createSlice({
           productId: newItem.productId,
           name: newItem.name,
           image: newItem.image,
-          size: newItem.size,
           color: newItem.color,
           price: newItem.price,
           quantity: 1,
@@ -44,12 +53,9 @@ export const cartSlice = createSlice({
       set("cart", state.cart);
     },
     incrementQuantity: (state, action) => {
-      const { productId, size, color } = action.payload;
+      const { productId } = action.payload;
       const item = state.cart.products.find(
-        (item) =>
-          item.productId === productId &&
-          item.size === size &&
-          item.color === color
+        (item) => item.productId === productId
       );
       if (item) {
         item.quantity += 1;
@@ -58,32 +64,26 @@ export const cartSlice = createSlice({
       }
     },
     decrementQuantity: (state, action) => {
-      const { productId, size, color } = action.payload;
-      const itemIndex = state.cart.products.findIndex(
-        (item) =>
-          item.productId === productId &&
-          item.size === size &&
-          item.color === color
+      const { productId } = action.payload;
+      const item = state.cart.products.find(
+        (item) => item.productId === productId
       );
-      if (itemIndex !== -1) {
-        if (state.cart.products[itemIndex].quantity > 1) {
-          state.cart.products[itemIndex].quantity -= 1;
+      if (item) {
+        if (item.quantity > 1) {
+          item.quantity -= 1;
         } else {
-          state.cart.products.splice(itemIndex, 1);
+          state.cart.products = state.cart.products.filter(
+            (item) => item.productId !== productId
+          );
         }
         state.cart.totalAmount = calculateTotalAmount(state.cart.products);
         set("cart", state.cart);
       }
     },
     removeFromCart: (state, action) => {
-      const { productId, size, color } = action.payload;
+      const { productId } = action.payload;
       state.cart.products = state.cart.products.filter(
-        (item) =>
-          !(
-            item.productId === productId &&
-            item.size === size &&
-            item.color === color
-          )
+        (item) => item.productId !== productId
       );
       state.cart.totalAmount = calculateTotalAmount(state.cart.products);
       set("cart", state.cart);
@@ -95,6 +95,7 @@ export const cartSlice = createSlice({
     },
   },
 });
+
 export const {
   addToCart,
   clearCart,
@@ -102,4 +103,5 @@ export const {
   decrementQuantity,
   removeFromCart,
 } = cartSlice.actions;
+
 export default cartSlice.reducer;

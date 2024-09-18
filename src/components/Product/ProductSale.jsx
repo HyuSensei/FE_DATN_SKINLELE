@@ -1,7 +1,8 @@
 import React from "react";
 import ProductCarousel from "./ProductCarousel";
 
-const ProductSale = () => {
+const ProductSale = ({ products = defaultProduct, isLoading, title }) => {
+  if (products.length === 0) return null;
   return (
     <div className="p-2 lg:p-12 bg bg-gradient-to-r from-pink-500 to-[#fc9cc7] rounded-lg">
       <div className="flex gap-8 items-center justify-center">
@@ -11,7 +12,7 @@ const ProductSale = () => {
           className="w-48 lg:w-80"
         />
       </div>
-      <ProductCarousel />
+      <ProductCarousel {...{ products, isLoading, title }} />
     </div>
   );
 };

@@ -2,8 +2,8 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "../../axios/axios";
 import { message } from "antd";
 
-export const loginCustomer = createAsyncThunk(
-  "auth/loginCustomer",
+export const loginUser = createAsyncThunk(
+  "auth/loginUser",
   async (data, { rejectWithValue }) => {
     try {
       return await axios.post("/auth/login", data);
@@ -14,8 +14,8 @@ export const loginCustomer = createAsyncThunk(
   }
 );
 
-export const registerCustomer = createAsyncThunk(
-  "auth/registerCustomer",
+export const registerUser = createAsyncThunk(
+  "auth/registerUser",
   async (data, { rejectWithValue }) => {
     try {
       return await axios.post("/auth/register", data);
@@ -26,8 +26,8 @@ export const registerCustomer = createAsyncThunk(
   }
 );
 
-export const getAccountCustomer = createAsyncThunk(
-  "auth/getAccountCustomer",
+export const getAccountUser = createAsyncThunk(
+  "auth/getAccountUser",
   async (_, { rejectWithValue }) => {
     try {
       return await axios.get("/auth/account");

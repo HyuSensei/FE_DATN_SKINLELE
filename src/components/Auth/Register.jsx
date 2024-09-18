@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { validateForm, validateRegisterSchema } from "../../validate/validate";
 import ErrorValidate from "../../components/Error/ErrorMessage";
 import { message } from "antd";
-import { registerCustomer } from "../../redux/auth/auth.thunk";
+import { registerUser } from "../../redux/auth/auth.thunk";
 import { setEmailVerify } from "../../redux/auth/auth.slice";
 
 const STYLE_LABEL = "block text-sm font-medium text-gray-700";
@@ -43,7 +43,7 @@ const Register = ({ setStep }) => {
       message.error("Mật khẩu nhập lại không trùng khớp");
       return;
     }
-    dispatch(registerCustomer(input)).then((res) => {
+    dispatch(registerUser(input)).then((res) => {
       if (res.payload.success) {
         message.success(res.payload.message);
         dispatch(setEmailVerify(input.email));

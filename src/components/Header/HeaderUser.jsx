@@ -5,7 +5,6 @@ import {
   MenuOutlined,
   CloseOutlined,
   LogoutOutlined,
-  AccountBookFilled,
   UserOutlined,
 } from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,12 +14,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { isArray, isEmpty } from "lodash";
 import { getAllBrand } from "../../redux/brand/brand.thunk";
 import { getAllCategory } from "../../redux/category/category.thunk";
+import { logoutUser } from "../../redux/auth/auth.slice";
+import { FaRegUserCircle } from "react-icons/fa";
 
 const HeaderUser = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const { brands } = useSelector((state) => state.brand);
   const { categories } = useSelector((state) => state.category);
+  const { isAuthenticated, userInfo } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const [current, setCurrent] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -123,11 +125,19 @@ const HeaderUser = () => {
     setCurrent(currentItem ? currentItem.key : "");
   }, [location.pathname, menuItems]);
 
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    navigate("/");
+  };
+
   const accoutItems = [
     {
       key: "1",
       label: (
-        <div className="flex items-center gap-4">
+        <div
+          className="flex items-center gap-4"
+          onClick={() => navigate("/account")}
+        >
           <UserOutlined /> <span>Tài khoản</span>
         </div>
       ),
@@ -135,7 +145,7 @@ const HeaderUser = () => {
     {
       key: "2",
       label: (
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4" onClick={handleLogout}>
           <LogoutOutlined /> <span>Đăng xuất</span>
         </div>
       ),
@@ -181,25 +191,32 @@ const HeaderUser = () => {
           </div>
 
           <div className="flex items-center space-x-4">
-            {/* <Button
-              onClick={() => navigate("/auth")}
-              type="text"
-              icon={<PiUserCircleThin className="text-3xl" />}
-              className="hidden md:flex text-base font-medium"
-            >
-              Đăng nhập
-            </Button> */}
-            <Dropdown menu={{ items: accoutItems }}>
-              <a
-                className="ant-dropdown-link flex items-center"
-                onClick={(e) => e.preventDefault()}
+            {isAuthenticated ? (
+              <Dropdown menu={{ items: accoutItems }}>
+                <a
+                  className="ant-dropdown-link flex items-center"
+                  onClick={(e) => e.preventDefault()}
+                >
+                  <Avatar
+                    src={userInfo.avatar.url}
+                    size={"large"}
+                    className="mr-2"
+                  />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-rose-700 font-extrabold text-sm text-center uppercase">
+                    {!isEmpty(userInfo) ? userInfo.name : ""}
+                  </span>
+                </a>
+              </Dropdown>
+            ) : (
+              <Button
+                onClick={() => navigate("/auth")}
+                type="text"
+                icon={<FaRegUserCircle className="text-3xl" />}
+                className="hidden md:flex text-base font-medium"
               >
-                <Avatar icon={<UserOutlined />} className="mr-2" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-rose-700 font-extrabold text-sm text-center uppercase">
-                  Phan Tiến Huy
-                </span>
-              </a>
-            </Dropdown>
+                Đăng nhập
+              </Button>
+            )}
             <Badge onClick={() => navigate("/cart")} color="#e28585" count={2}>
               <LiaShoppingBasketSolid className="text-3xl cursor-pointer" />
             </Badge>

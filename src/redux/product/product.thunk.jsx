@@ -57,9 +57,9 @@ export const deleteProduct = createAsyncThunk(
 
 export const getDetailProduct = createAsyncThunk(
   "product/getDetailProduct",
-  async (slug) => {
+  async (slug, { rejectWithValue }) => {
     try {
-      return await axios.get(`/product-detail/${slug}`);
+      return await axios.get(`/products/detail/${slug}`);
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -68,9 +68,9 @@ export const getDetailProduct = createAsyncThunk(
 
 export const getProductHome = createAsyncThunk(
   "product/getProductHome",
-  async (slugs) => {
+  async (_, { rejectWithValue }) => {
     try {
-      return await axios.get(`/products-home?categories=${slugs}`);
+      return await axios.get(`/products/home?tags=HOT,NEW,SALE`);
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -79,7 +79,7 @@ export const getProductHome = createAsyncThunk(
 
 export const getProductSearch = createAsyncThunk(
   "product/getProductSearch",
-  async (search) => {
+  async (search, { rejectWithValue }) => {
     try {
       return await axios.get(`/products-search?search=${search}`);
     } catch (error) {
@@ -90,7 +90,7 @@ export const getProductSearch = createAsyncThunk(
 
 export const getProductByCategory = createAsyncThunk(
   "product/getProductByCategory",
-  async (payload) => {
+  async (payload, { rejectWithValue }) => {
     try {
       return await axios.get(
         `/products-by-category/${payload.slug}?page=${payload.page}&pageSize=${payload.pageSize}`

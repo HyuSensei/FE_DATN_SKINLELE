@@ -4,7 +4,7 @@ import { validateForm, validateLoginSchema } from "../../validate/validate";
 import ErrorValidate from "../../components/Error/ErrorMessage";
 import { useDispatch } from "react-redux";
 import { message } from "antd";
-import { loginCustomer, sendOtp } from "../../redux/auth/auth.thunk";
+import { loginUser, sendOtp } from "../../redux/auth/auth.thunk";
 import { set } from "../../storage/storage";
 import { setEmailVerify } from "../../redux/auth/auth.slice";
 import Cookies from "js-cookie";
@@ -45,7 +45,7 @@ const Login = ({ setStep }) => {
       setValidates(validationErrors);
       return;
     }
-    dispatch(loginCustomer(input)).then((res) => {
+    dispatch(loginUser(input)).then((res) => {
       const data = res.payload;
       if (res.payload.success) {
         if (isRemember) {

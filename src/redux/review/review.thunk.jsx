@@ -6,7 +6,7 @@ export const createReview = createAsyncThunk(
   "review/createReview",
   async (payload, { rejectWithValue }) => {
     try {
-      const res = await axios.post("/review", payload);
+      const res = await axios.post("/reviews", payload);
       return res;
     } catch (error) {
       message.error(error.response.data.message);
@@ -20,7 +20,7 @@ export const getReviewProduct = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       const res = await axios.get(
-        `/reviews/${payload.slug}?page=${payload.page}&pageSize=${payload.pageSize}&rate=${payload.rate}&hasComment=${payload.hasComment}&hasImage=${payload.hasImage}`
+      `/reviews/${payload.productId}?page=${payload.page}&pageSize=${payload.pageSize}&rate=${payload.rate}&hasComment=${payload.hasComment}&hasImage=${payload.hasImage}`
       );
       return res;
     } catch (error) {
