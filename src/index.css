@@ -3,7 +3,9 @@
 @tailwind utilities;
 
 body {
-  font-family: "SVNMont", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+      'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+      'Noto Color Emoji';
   color: #001529;
 }
 
@@ -108,4 +110,59 @@ body {
   .custom-menu::-webkit-scrollbar {
     display: none;
   }
+}
+/* Tùy chỉnh thanh cuộn cho Webkit browsers (Chrome, Safari) */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cc784e;
+  border-radius: 5px;
+  background-image: -webkit-linear-gradient(45deg,
+      #cc784e 25%,
+      #f9ca3e 25%,
+      #f9ca3e 50%,
+      #fc9cc7 50%,
+      #fc9cc7 75%,
+      #cc784e 75%,
+      #cc784e 100%);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #cc784e;
+  background-image: -webkit-linear-gradient(45deg,
+      #cc784e 25%,
+      #f9ca3e 25%,
+      #f9ca3e 50%,
+      #fc9cc7 50%,
+      #fc9cc7 75%,
+      #cc784e 75%,
+      #cc784e 100%);
+}
+
+/* Tùy chỉnh thanh cuộn cho Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cc784e #f1f1f1;
+}
+
+/* Tạo hiệu ứng gradient bằng cách sử dụng một pseudo-element */
+* {
+  scrollbar-color: #cc784e #f1f1f1;
+}
+
+*::-moz-scrollbar-thumb {
+  background-image: linear-gradient(45deg,
+      #cc784e 25%,
+      #f9ca3e 25%,
+      #f9ca3e 50%,
+      #fc9cc7 50%,
+      #fc9cc7 75%,
+      #cc784e 75%,
+      #cc784e 100%);
 }

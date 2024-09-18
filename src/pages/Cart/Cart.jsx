@@ -10,6 +10,8 @@ import {
   Card,
 } from "antd";
 import { MdOutlineDeleteOutline } from "react-icons/md";
+import ProductList from "../../components/Product/ProductList";
+import ModalCheckout from "../../components/Modal/ModalCheckout";
 
 const { Text } = Typography;
 
@@ -50,6 +52,7 @@ const Cart = () => {
   const [cartItems, setCartItems] = useState(sampleCartItems);
   const [selectedItems, setSelectedItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const newTotalPrice = selectedItems.reduce((total, itemId) => {
@@ -130,6 +133,7 @@ const Cart = () => {
 
   return (
     <div className="container mx-auto py-8 px-4">
+      <ModalCheckout open={open} setOpen={setOpen} />
       <Breadcrumb
         className="pb-4"
         items={[
@@ -213,13 +217,14 @@ const Cart = () => {
                     handleQuantityChange(product.productId, variant.id, value)
                   }
                 />
-                <Button
-                  type="text"
-                  icon={<MdOutlineDeleteOutline className="text-3xl" />}
+                <button
                   onClick={() =>
                     handleRemoveVariant(product.productId, variant.id)
                   }
-                />
+                  className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors"
+                >
+                  <MdOutlineDeleteOutline />
+                </button>
               </div>
             </div>
           ))}
@@ -235,10 +240,17 @@ const Cart = () => {
             {formatPrice(totalPrice)} đ
           </Text>
         </div>
-        <button className="w-full bg-[#313438] text-white py-3 rounded-md text-lg font-bold flex items-center justify-center gap-2">
+        <button
+          onClick={() => {
+            setOpen(true);
+          }}
+          className="w-full hover:opacity-80 bg-gradient-to-r from-yellow-300 via-orange-600 to-purple-800 text-white py-3 rounded-md text-lg font-bold flex items-center justify-center gap-2"
+        >
           Tiến hành thanh toán
         </button>
       </Card>
+
+      <ProductList title={"Sản phẩm khác"} />
     </div>
   );
 };

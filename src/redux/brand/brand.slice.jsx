@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getBrandByCreatePro, getBrandList } from "./brand.thunk";
+import { getAllBrand, getBrandByCreatePro, getBrandList } from "./brand.thunk";
 
 const initialState = {
   brands: [],
@@ -46,6 +46,21 @@ export const brandSlice = createSlice({
         }
       })
       .addCase(getBrandList.rejected, (state, action) => {
+        state.error = action.payload;
+        state.isLoading = false;
+      })
+
+      //Get brand by user
+      .addCase(getAllBrand.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(getAllBrand.fulfilled, (state, action) => {
+        if (action.payload.success) {
+          state.isLoading = false;
+          state.brands = action.payload.data;
+        }
+      })
+      .addCase(getAllBrand.rejected, (state, action) => {
         state.error = action.payload;
         state.isLoading = false;
       });

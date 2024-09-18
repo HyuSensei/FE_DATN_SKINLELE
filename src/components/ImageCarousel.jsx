@@ -44,7 +44,7 @@ const ImageCarousel = ({ images, name }) => {
 
   return (
     <div
-      className="relative pb-[100%] overflow-hidden rounded-t-md"
+      className="relative pb-[100%] overflow-hidden rounded-t-lg"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >

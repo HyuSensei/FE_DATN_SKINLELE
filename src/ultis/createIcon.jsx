@@ -1,12 +1,16 @@
 export const createIcon = ({
   index,
   rate = 5,
+  hoverValue = 5,
   width = "24px",
   height = "24px",
   activeColor = "#001529",
   nonActiveColor = "#989898",
 }) => {
-  const fillColor = rate >= index ? activeColor : nonActiveColor;
+  const fillColor =
+    (hoverValue && hoverValue >= index) || (!hoverValue && rate >= index)
+      ? activeColor
+      : nonActiveColor;
 
   return (
     <svg

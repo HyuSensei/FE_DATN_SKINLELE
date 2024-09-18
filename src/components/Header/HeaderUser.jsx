@@ -1,30 +1,149 @@
-import React, { useState } from "react";
-import { Input, Button, Badge, Menu, Drawer } from "antd";
-import { SearchOutlined, MenuOutlined, CloseOutlined } from "@ant-design/icons";
+import React, { useEffect, useState } from "react";
+import { Input, Button, Badge, Menu, Drawer, Dropdown, Avatar } from "antd";
+import {
+  SearchOutlined,
+  MenuOutlined,
+  CloseOutlined,
+  LogoutOutlined,
+  AccountBookFilled,
+  UserOutlined,
+} from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
 import { LiaShoppingBasketSolid } from "react-icons/lia";
-import { PiUserCircleThin } from "react-icons/pi";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { isArray, isEmpty } from "lodash";
+import { getAllBrand } from "../../redux/brand/brand.thunk";
+import { getAllCategory } from "../../redux/category/category.thunk";
 
 const HeaderUser = () => {
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const { brands } = useSelector((state) => state.brand);
+  const { categories } = useSelector((state) => state.category);
+  const navigate = useNavigate();
   const [current, setCurrent] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
+  useEffect(() => {
+    dispatch(getAllBrand());
+    dispatch(getAllCategory());
+  }, []);
+
+  const createMenuCategoryItems = (items) => {
+    const menu = items.map((item) => {
+      const menuItem = {
+        key: item._id,
+        label: item.name,
+        path: `/categories/${item.slug}`,
+      };
+
+      if (item.children && item.children.length > 0) {
+        menuItem.children = item.children.map((child) => ({
+          type: "group",
+          label: child.name,
+          children:
+            child.children && child.children.length > 0
+              ? child.children.map((grandChild) => ({
+                  key: grandChild._id,
+                  label: grandChild.name,
+                  path: `/categories/${grandChild.slug}`,
+                }))
+              : null,
+        }));
+      }
+      return menuItem;
+    });
+    return menu;
+  };
+
   const handleClick = (e) => {
     setCurrent(e.key);
+    const flattenMenu = (items) => {
+      return items.flatMap((item) => {
+        if (item.children) {
+          return [item, ...flattenMenu(item.children)];
+        }
+        return item;
+      });
+    };
+    const flattenedMenu = flattenMenu(menuItems);
+    const selectedItem = flattenedMenu.find((item) => item.key === e.key);
+    if (selectedItem && selectedItem.path) {
+      navigate(selectedItem.path);
+    }
   };
 
   const menuItems = [
-    { key: "thuonghieu", label: "Thương hiệu" },
-    { key: "khuyenmai", label: "Khuyến mãi hot" },
-    { key: "caocap", label: "Sản phẩm cao cấp" },
-    { key: "trangdiem", label: "Trang điểm" },
-    { key: "chamsocda", label: "Chăm Sóc Da" },
-    { key: "chamsoccanhan", label: "Chăm sóc cá nhân" },
-    { key: "chamsoccothe", label: "Chăm sóc cơ thể" },
-    { key: "magiam", label: "Mã giảm" },
-    { key: "sanphammoi", label: "Sản phẩm mới" },
+    {
+      key: "brands",
+      label: "Thương hiệu",
+      path: "/brands",
+      children:
+        isArray(brands) && brands.length > 0
+          ? brands.map((item) => ({
+              key: item._id,
+              label: item.name,
+              path: `/brands/${item.slug}`,
+            }))
+          : [],
+    },
+    ...createMenuCategoryItems(categories),
+    {
+      key: "promotions",
+      label: "Khuyến mãi hot",
+    },
+    {
+      key: "vips",
+      label: "Sản phẩm cao cấp",
+    },
+    { key: "discount", label: "Mã giảm" },
+    {
+      key: "news",
+      label: "Sản phẩm mới",
+    },
   ];
+
+  useEffect(() => {
+    const path = location.pathname;
+    const currentItem = menuItems.find((item) => {
+      const isParentMatch = item.path === path;
+      const isChildMatch =
+        item.children &&
+        item.children.some((child) => {
+          const isChildPathMatch = child.path === path;
+          const isGrandChildMatch =
+            child.children &&
+            child.children.some((grandChild) => grandChild.path === path);
+          return isChildPathMatch || isGrandChildMatch;
+        });
+      return isParentMatch || isChildMatch;
+    });
+    setCurrent(currentItem ? currentItem.key : "");
+  }, [location.pathname, menuItems]);
+
+  const accoutItems = [
+    {
+      key: "1",
+      label: (
+        <div className="flex items-center gap-4">
+          <UserOutlined /> <span>Tài khoản</span>
+        </div>
+      ),
+    },
+    {
+      key: "2",
+      label: (
+        <div className="flex items-center gap-4">
+          <LogoutOutlined /> <span>Đăng xuất</span>
+        </div>
+      ),
+    },
+  ];
+
+  const handleSearch = (value) => {};
+
   return (
     <>
       <header className="bg-white shadow-md">
@@ -46,7 +165,7 @@ const HeaderUser = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="logo-text">
+            <div onClick={() => navigate("/")} className="logo-text">
               Skin<span>LeLe</span>
             </div>
           </motion.div>
@@ -57,18 +176,31 @@ const HeaderUser = () => {
               prefix={<SearchOutlined />}
               size="large"
               className="rounded-full"
+              onPressEnter={(e) => handleSearch(e.target.value)}
             />
           </div>
 
           <div className="flex items-center space-x-4">
-            <Button
+            {/* <Button
+              onClick={() => navigate("/auth")}
               type="text"
               icon={<PiUserCircleThin className="text-3xl" />}
               className="hidden md:flex text-base font-medium"
             >
               Đăng nhập
-            </Button>
-            <Badge color="#e28585" count={2}>
+            </Button> */}
+            <Dropdown menu={{ items: accoutItems }}>
+              <a
+                className="ant-dropdown-link flex items-center"
+                onClick={(e) => e.preventDefault()}
+              >
+                <Avatar icon={<UserOutlined />} className="mr-2" />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-rose-700 font-extrabold text-sm text-center uppercase">
+                  Phan Tiến Huy
+                </span>
+              </a>
+            </Dropdown>
+            <Badge onClick={() => navigate("/cart")} color="#e28585" count={2}>
               <LiaShoppingBasketSolid className="text-3xl cursor-pointer" />
             </Badge>
             <Button
@@ -82,14 +214,10 @@ const HeaderUser = () => {
         <nav className="bg-white border-t border-b border-gray-200 hidden md:block">
           <Menu
             mode="horizontal"
-            className="container mx-auto px-4 flex justify-between custom-menu"
+            className="container mx-auto px-4 flex justify-between custom-menu custom-menu-item overflow-hidden"
             selectedKeys={[current]}
             onClick={handleClick}
-            items={menuItems.map((item) => ({
-              key: item.key,
-              label: item.label,
-              className: "custom-menu-item",
-            }))}
+            items={menuItems}
           />
         </nav>
       </header>
@@ -97,16 +225,15 @@ const HeaderUser = () => {
       <Drawer
         title="Menu"
         placement="right"
-        onClose={() => setIsMenuOpen(false)}
         open={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
         width={300}
       >
         <Menu
-          mode="vertical"
-          items={menuItems.map((item) => ({
-            key: item.key,
-            label: item.label,
-          }))}
+          mode="inline"
+          items={menuItems}
+          onClick={handleClick}
+          selectedKeys={[current]}
         />
       </Drawer>
 
@@ -123,6 +250,7 @@ const HeaderUser = () => {
               prefix={<SearchOutlined />}
               size="large"
               className="rounded-full"
+              onPressEnter={(e) => handleSearch(e.target.value)}
             />
             <Button
               type="text"

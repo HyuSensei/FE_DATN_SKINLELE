@@ -24,3 +24,14 @@ export const getBrandList = createAsyncThunk(
     }
   }
 );
+
+export const getAllBrand = createAsyncThunk(
+  "brand/getAllBrand",
+  async (_, { rejectWithValue }) => {
+    try {
+      return await axios.get(`/brands`);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
