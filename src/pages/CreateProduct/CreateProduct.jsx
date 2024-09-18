@@ -136,6 +136,26 @@ const CreateProduct = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const validationErrors = await validateForm({
+      input: {
+        ...input,
+        mainImage: mainImage,
+        images: images,
+      },
+      validateSchema: validateCreateProductSchema,
+    });
+
+    if (Object.keys(validationErrors).length > 0) {
+      if (validationErrors.mainImage) {
+        message.warning(validationErrors.mainImage);
+      }
+      if (validationErrors.images) {
+        message.warning(validationErrors.images);
+      }
+      setValidates(validationErrors);
+      return;
+    }
+    
     const uploadedImages = await Promise.all(
       images.map(async (file) => {
         if (file.originFileObj) {
@@ -188,26 +208,6 @@ const CreateProduct = () => {
       })),
       variants: uploadedVariants || [],
     };
-
-    const validationErrors = await validateForm({
-      input: {
-        ...input,
-        mainImage: mainImage,
-        images: images,
-      },
-      validateSchema: validateCreateProductSchema,
-    });
-
-    if (Object.keys(validationErrors).length > 0) {
-      if (validationErrors.mainImage) {
-        message.warning(validationErrors.mainImage);
-      }
-      if (validationErrors.images) {
-        message.warning(validationErrors.images);
-      }
-      setValidates(validationErrors);
-      return;
-    }
 
     dispatch(createProduct(payload)).then((res) => {
       if (res.payload.success) {

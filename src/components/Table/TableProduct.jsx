@@ -293,7 +293,6 @@ const TableProduct = ({
               setPaginate(newPage, newPageSize)
             }
             showSizeChanger
-            showQuickJumper
             pageSizeOptions={["10", "20", "50", "100"]}
           />
         </div>
