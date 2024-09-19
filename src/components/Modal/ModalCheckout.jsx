@@ -9,18 +9,21 @@ import {
   orderStripe,
   orderVnpay,
 } from "../../redux/order/order.thunk";
-import { FaCreditCard } from "react-icons/fa";
-import { SiStripe } from "react-icons/si";
-import { GiTakeMyMoney } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
 import { setOrderReturn } from "../../redux/order/order.slice";
 import { loadStripe } from "@stripe/stripe-js";
-import { clearCart } from "../../redux/cart/cart.slice";
+import {
+  clearCart,
+  removeProductAfterOrderSuccess,
+} from "../../redux/cart/cart.slice";
 import { validateForm, validateOrderSchema } from "../../validate/validate";
 import ErrorMessage from "../../components/Error/ErrorMessage";
 import { setDistrict, setWard } from "../../redux/ship/ship.slice";
 import { IoMdCloseCircle } from "react-icons/io";
 import isEmpty from "lodash/isEmpty";
+import { MdVerifiedUser } from "react-icons/md";
+import { FaCcStripe } from "react-icons/fa6";
+import { IoCard } from "react-icons/io5";
 
 const STRIPE_PUBLIC_KEY = import.meta.env.VITE_APP_STRIPE_PUBLIC_KEY;
 
@@ -29,19 +32,10 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
   const { provinces, districts, wards } = useSelector((state) => state.ship);
-  console.log(products);
 
   const [order, setOrder] = useState({
     name: "",
-    products:
-      products?.map((item) => ({
-        productId: item.productId,
-        name: item.name,
-        image: item.image,
-        color: !isEmpty(item.color) ? item.color : {},
-        price: item.price,
-        quantity: item.quantity,
-      })) || [],
+    products: [],
     phone: "",
     address: "",
     province: { id: "", name: "" },
@@ -52,6 +46,16 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
     totalAmount,
   });
   const [validates, setValidates] = useState({});
+
+  useEffect(() => {
+    if (products.length > 0 && totalAmount > 0) {
+      setOrder((prev) => ({
+        ...prev,
+        products,
+        totalAmount,
+      }));
+    }
+  }, [products, totalAmount]);
 
   useEffect(() => {
     dispatch(getProvince());
@@ -77,15 +81,7 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
     setOrder((prev) => ({
       ...prev,
       name: "",
-      products:
-        products?.map((item) => ({
-          productId: item.productId,
-          name: item.name,
-          image: item.image,
-          color: item.color,
-          price: item.price,
-          quantity: item.quantity,
-        })) || [],
+      products: products.length > 0 ? products : [],
       phone: "",
       address: "",
       province: { id: "", name: "" },
@@ -118,9 +114,16 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
       case "COD":
         return dispatch(orderCod(order)).then((res) => {
           if (res.payload.success) {
-            dispatch(clearCart());
-            navigate(`/order-return`);
+            products.forEach((item) => {
+              dispatch(
+                removeProductAfterOrderSuccess({
+                  productId: item.productId,
+                  color: item.color,
+                })
+              );
+            });
             dispatch(setOrderReturn(res.payload.data));
+            navigate(`/order-return`);
           }
         });
       case "VNPAY":
@@ -414,19 +417,19 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
               {[
                 {
                   method: "COD",
-                  icon: GiTakeMyMoney,
+                  icon: MdVerifiedUser,
                   color: "text-green-500",
                   label: "Thanh toán COD",
                 },
                 {
                   method: "VNPAY",
-                  icon: FaCreditCard,
+                  icon: IoCard,
                   color: "text-blue-500",
                   label: "Thanh toán qua VNPay",
                 },
                 {
                   method: "STRIPE",
-                  icon: SiStripe,
+                  icon: FaCcStripe,
                   color: "text-purple-500",
                   label: "Thanh toán qua Stripe",
                 },
@@ -465,10 +468,10 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
 
           <div className="mt-8 p-4 bg-gradient-to-r from-pink-100 to-purple-100 rounded-lg shadow-md">
             <div className="flex justify-between items-center">
-              <span className="text-lg font-semibold text-gray-800">
+              <span className="text-base font-semibold text-gray-800">
                 Tổng tiền:
               </span>
-              <span className="text-2xl font-bold">
+              <span className="text-base font-bold">
                 {formatPrice(totalAmount)}đ
               </span>
             </div>

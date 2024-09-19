@@ -28,10 +28,12 @@ import {
 import { formatDateOrder } from "../../helpers/formatDate";
 import { formatPrice } from "../../helpers/formatPrice";
 import Loading from "../../components/Loading";
-import { clearCart } from "../../redux/cart/cart.slice";
+import {
+  clearCart,
+  removeProductAfterOrderSuccess,
+} from "../../redux/cart/cart.slice";
 
 const { Title, Text } = Typography;
-const { Step } = Steps;
 
 const OrderReturn = () => {
   const location = useLocation();
@@ -47,10 +49,33 @@ const OrderReturn = () => {
   const orderSessionId = queryParams.get("order_session") || "";
 
   useEffect(() => {
+    if (
+      !orderId &&
+      !code &&
+      !orderReturn._id &&
+      !error.message &&
+      !stripeSessionId &&
+      !orderSessionId
+    ) {
+      navigate("/");
+    }
+  }, [orderReturn._id, orderId, code, error, stripeSessionId, orderSessionId]);
+
+  useEffect(() => {
     if (orderId && code) {
       dispatch(orderVnpayReturn({ orderId, code })).then((res) => {
         if (res.payload.success) {
-          dispatch(clearCart());
+          const products = res.payload.data.products;
+          if (products.length > 0) {
+            products.forEach((item) => {
+              dispatch(
+                removeProductAfterOrderSuccess({
+                  productId: item.productId,
+                  color: item.color,
+                })
+              );
+            });
+          }
           setIsSuccess(true);
           navigate("/order-return");
         } else {
@@ -66,7 +91,17 @@ const OrderReturn = () => {
       dispatch(orderStripeReturn({ stripeSessionId, orderSessionId })).then(
         (res) => {
           if (res.payload.success) {
-            dispatch(clearCart());
+            const products = res.payload.data.products;
+            if (products.length > 0) {
+              products.forEach((item) => {
+                dispatch(
+                  removeProductAfterOrderSuccess({
+                    productId: item.productId,
+                    color: item.color,
+                  })
+                );
+              });
+            }
             setIsSuccess(true);
             navigate("/order-return");
           } else {
@@ -83,7 +118,7 @@ const OrderReturn = () => {
   };
 
   const handleContinueShopping = () => {
-    navigate("/products");
+    navigate("/cart");
   };
 
   const OrderStatus = () => (
@@ -122,10 +157,10 @@ const OrderReturn = () => {
         <List.Item>
           <List.Item.Meta
             avatar={<Avatar src={item.image} shape="square" size={64} />}
-            title={<span className="text-pink-700">{item.name}</span>}
+            title={<span>{item.name}</span>}
             description={`${item.quantity} x ${formatPrice(item.price)} đ`}
           />
-          <div className="text-pink-600 font-semibold">
+          <div className="font-semibold">
             {formatPrice(item.price * item.quantity)} đ
           </div>
         </List.Item>
@@ -180,7 +215,7 @@ const OrderReturn = () => {
                 </p>
                 <p className="mb-2">
                   <strong>Tổng tiền:</strong>{" "}
-                  <span className="text-pink-600 font-semibold">
+                  <span className="font-semibold">
                     {formatPrice(orderReturn.totalAmount)} đ
                   </span>
                 </p>
@@ -224,11 +259,10 @@ const OrderReturn = () => {
         <Divider className="my-8" />
         <div className="flex justify-center space-x-4">
           <Button
-            type="primary"
             icon={<HomeOutlined />}
             size="large"
             onClick={handleHomePage}
-            className="bg-pink-600 hover:bg-pink-700 border-pink-600 hover:border-pink-700"
+            className="bg-pink-600 hover:bg-pink-700 border-pink-600 hover:border-pink-700 text-white"
           >
             Trang chủ
           </Button>

@@ -27,6 +27,7 @@ const HeaderUser = () => {
   const [current, setCurrent] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { products } = useSelector((state) => state.cart.cart);
 
   useEffect(() => {
     dispatch(getAllBrand());
@@ -217,7 +218,11 @@ const HeaderUser = () => {
                 Đăng nhập
               </Button>
             )}
-            <Badge onClick={() => navigate("/cart")} color="#e28585" count={2}>
+            <Badge
+              onClick={() => navigate("/cart")}
+              color="#e28585"
+              count={products.length}
+            >
               <LiaShoppingBasketSolid className="text-3xl cursor-pointer" />
             </Badge>
             <Button

@@ -7,7 +7,7 @@ export const orderVnpay = createAsyncThunk(
   "order/orderVnpay",
   async (payload, { rejectWithValue }) => {
     try {
-      const res = await axios.post("/order-vnpay", payload);
+      const res = await axios.post("/orders/vnpay", payload);
       return res;
     } catch (error) {
       message.error(error.response.data.message);
@@ -20,7 +20,7 @@ export const orderCod = createAsyncThunk(
   "order/orderCod",
   async (payload, { rejectWithValue }) => {
     try {
-      const res = await axios.post("/order-cod", payload);
+      const res = await axios.post("/orders/cod", payload);
       return res;
     } catch (error) {
       message.error(error.response.data.message);
@@ -33,7 +33,7 @@ export const orderStripe = createAsyncThunk(
   "order/orderStripe",
   async (payload, { rejectWithValue }) => {
     try {
-      const res = await axios.post("/order-stripe", payload);
+      const res = await axios.post("/orders/stripe", payload);
       return res;
     } catch (error) {
       message.error(error.response.data.message);
@@ -60,7 +60,7 @@ export const orderVnpayReturn = createAsyncThunk(
   "order/orderVnpayReturn",
   async (payload, { rejectWithValue }) => {
     try {
-      const res = await axios.post("/order-vnpay-return", payload);
+      const res = await axios.post("/orders/vnpay-return", payload);
       return res;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -74,7 +74,7 @@ export const orderStripeReturn = createAsyncThunk(
     try {
       // await delay(5000);
       const res = await axios.get(
-        `/order-stripe-return?stripeSessionId=${payload.stripeSessionId}&orderSessionId=${payload.orderSessionId}`
+        `/orders/stripe-return?stripeSessionId=${payload.stripeSessionId}&orderSessionId=${payload.orderSessionId}`
       );
       return res;
     } catch (error) {
@@ -87,7 +87,7 @@ export const updateStatuByCustomer = createAsyncThunk(
   "order/updateStatuByCustomer",
   async (payload, { rejectWithValue }) => {
     try {
-      const res = await axios.put(`/order-status/${payload.id}`, {
+      const res = await axios.put(`/orders/status/${payload.id}`, {
         status: payload.status,
       });
       return res;

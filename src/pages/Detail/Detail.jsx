@@ -97,8 +97,8 @@ const Detail = () => {
         </div>
       ),
       description: (
-        <Card className="mb-6 shadow-md hover:shadow-lg transition-shadow duration-300">
-          <div className="flex items-center space-x-4">
+        <>
+          <div className="flex items-center space-x-4 mt-4">
             <div className="relative flex-shrink-0">
               <img
                 src={product.image}
@@ -144,7 +144,7 @@ const Detail = () => {
           >
             <LiaShoppingBasketSolid className="mr-2 text-xl" /> Xem giỏ hàng
           </button>
-        </Card>
+        </>
       ),
       icon: <IoNotifications className="animate-pulse text-[#f59c23]" />,
       placement: "topRight",

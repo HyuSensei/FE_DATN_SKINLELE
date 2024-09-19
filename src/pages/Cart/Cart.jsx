@@ -80,7 +80,24 @@ const Cart = () => {
   return (
     <div className="container mx-auto py-4 sm:py-8 px-4">
       {products.length === 0 ? (
-        <Empty className="mt-24" />
+        <>
+          <Breadcrumb
+            className="pb-4"
+            items={[{ title: "Trang chủ" }, { title: "Giỏ hàng" }]}
+          />
+          <div className="flex items-center justify-center">
+            <div>
+              <img
+                className="w-64 m-auto flex items-center justify-center"
+                src="https://jrdsolar.com/templates/default-new/images/empty-cart.png"
+                alt="Empty-Cart"
+              />
+              <Typography.Text className="text-base">
+                Vui lòng thêm sản phẩm vào giỏ hàng
+              </Typography.Text>
+            </div>
+          </div>
+        </>
       ) : (
         <>
           <ModalCheckout

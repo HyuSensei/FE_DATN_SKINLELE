@@ -46,12 +46,14 @@ export const cartSlice = createSlice({
           image: newItem.image,
           color: newItem.color,
           price: newItem.price,
+          brand: newItem.brand,
           quantity: 1,
         });
       }
       state.cart.totalAmount = calculateTotalAmount(state.cart.products);
       set("cart", state.cart);
     },
+
     incrementQuantity: (state, action) => {
       const { productId } = action.payload;
       const item = state.cart.products.find(
@@ -63,6 +65,7 @@ export const cartSlice = createSlice({
         set("cart", state.cart);
       }
     },
+
     decrementQuantity: (state, action) => {
       const { productId } = action.payload;
       const item = state.cart.products.find(
@@ -80,6 +83,7 @@ export const cartSlice = createSlice({
         set("cart", state.cart);
       }
     },
+
     removeFromCart: (state, action) => {
       const { productId } = action.payload;
       state.cart.products = state.cart.products.filter(
@@ -88,9 +92,24 @@ export const cartSlice = createSlice({
       state.cart.totalAmount = calculateTotalAmount(state.cart.products);
       set("cart", state.cart);
     },
+
     clearCart: (state) => {
       state.cart.products = [];
       state.cart.totalAmount = 0;
+      set("cart", state.cart);
+    },
+
+    removeProductAfterOrderSuccess: (state, action) => {
+      const { productId, color } = action.payload;
+      state.cart.products = state.cart.products.filter((item) => {
+        const idMatch = item.productId !== productId;
+        const colorMatch = color
+          ? item.color &&
+            (item.color.name !== color.name || item.color.code !== color.code)
+          : !item.color;
+        return idMatch || colorMatch;
+      });
+      state.cart.totalAmount = calculateTotalAmount(state.cart.products);
       set("cart", state.cart);
     },
   },
@@ -102,6 +121,7 @@ export const {
   incrementQuantity,
   decrementQuantity,
   removeFromCart,
+  removeProductAfterOrderSuccess,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;
