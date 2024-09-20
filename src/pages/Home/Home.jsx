@@ -42,7 +42,7 @@ const Home = () => {
             {...{ title: "Sản phẩm mới", products: NEW, isLoading }}
           />
         )}
-        {SALE && SALE.length > 0 && (
+        {SALE && SALE.length >= 5 && (
           <ProductSale
             {...{ title: "Sản phẩm khuyến mãi", products: SALE, isLoading }}
           />
