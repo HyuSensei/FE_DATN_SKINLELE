@@ -11,8 +11,8 @@ const ProductList = ({
   isLoading,
   products = defaultProduct,
   title = "",
-  setPagination,
-  pagination = { page: 1, pageSize: 12, totalPage: 0, totalItems: 0 },
+  setPaginate,
+  paginate = { page: 1, pageSize: 10, totalPage: 0, totalItems: 0 },
   isPagination = true,
 }) => {
   const navigate = useNavigate();
@@ -89,10 +89,28 @@ const ProductList = ({
   );
 
   const Loading = () => (
-    <div className="flex items-center justify-center">
+    <div className="flex items-center justify-center py-4">
       <Spin size="large" />
     </div>
   );
+
+  if (products.length === 0) {
+    return (
+      <div className="flex items-center justify-center">
+        <div className="space-y-4">
+          <img
+            className="w-80 m-auto"
+            src="https://i.gifer.com/embedded/download/VjWO.gif"
+            alt=""
+          />
+          <div className="text-sm md:text-base italic text-center">
+            Quý khách có thể tham khảo các sản phẩm khác. SkinLeLe cảm ơn quý
+            khách ❤️
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -126,14 +144,16 @@ const ProductList = ({
       />
       {!isLoading &&
         products?.length > 0 &&
-        pagination.totalPage > 1 &&
+        paginate.totalPage > 1 &&
         isPagination && (
           <div className="mt-8 flex justify-end">
             <Pagination
-              {...pagination}
-              onChange={(page) => setPagination((prev) => ({ ...prev, page }))}
+              current={paginate.page}
+              pageSize={paginate.pageSize}
+              total={paginate.totalItems}
+              onChange={(page) => setPaginate((prev) => ({ ...prev, page }))}
               onShowSizeChange={(_, pageSize) =>
-                setPagination((prev) => ({ ...prev, pageSize }))
+                setPaginate((prev) => ({ ...prev, pageSize }))
               }
               defaultCurrent={1}
             />

@@ -16,13 +16,26 @@ const initialState = {
   isLoading: false,
   error: {},
   paginateAdmin: {
-    currentPage: 1,
+    page: 1,
+    pageSize: 10,
+    totalPage: 0,
+    totalItems: 0,
+  },
+  pagination: {
+    page: 1,
     pageSize: 10,
     totalPage: 0,
     totalItems: 0,
   },
   data: {},
   productSearchs: [],
+  filters: {
+    priceRanges: [],
+    brands: [],
+    subcategories: [],
+    tags: [],
+  },
+  category: "",
 };
 
 export const productSlice = createSlice({
@@ -59,6 +72,8 @@ export const productSlice = createSlice({
           state.isLoading = false;
           state.products = action.payload.data;
           state.pagination = action.payload.pagination;
+          state.filters = action.payload.filters;
+          state.category = action.payload.category;
         }
       })
       .addCase(getProductByCategory.rejected, (state, action) => {

@@ -1,104 +1,87 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Breadcrumb, Checkbox, Select, Collapse } from "antd";
 import useScreen from "../../hook/useScreen";
 import ProductList from "../../components/Product/ProductList";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { getProductByCategory } from "../../redux/product/product.thunk";
+import { debounce } from "lodash";
 
 const { Option } = Select;
-const { Panel } = Collapse;
 
 const Category = () => {
-  const [priceRange, setPriceRange] = useState([]);
-  const [brands, setBrands] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [sortOrder, setSortOrder] = useState("asc");
   const { isMobile } = useScreen();
+  const dispatch = useDispatch();
+  const [filters, setFilters] = useState({
+    priceRange: "",
+    brands: "",
+    sortOrder: "asc",
+    tags: "",
+    subcategoriesList: "",
+  });
+  const [paginate, setPaginate] = useState({
+    page: 1,
+    pageSize: 10,
+    totalPage: 0,
+    totalItems: 0,
+  });
+  const { slug } = useParams();
+  const { products, pagination, isLoading, category } = useSelector(
+    (state) => state.product
+  );
+  const { priceRanges, brands, subcategories, tags } = useSelector(
+    (state) => state.product.filters
+  );
 
-  // Giả lập dữ liệu danh mục 3 cấp
-  const categoryData = [
-    {
-      id: 1,
-      name: "Category 1",
-      children: [
-        {
-          id: 11,
-          name: "Subcategory 1.1",
-          children: [
-            { id: 111, name: "Sub-subcategory 1.1.1" },
-            { id: 112, name: "Sub-subcategory 1.1.2" },
-          ],
-        },
-        {
-          id: 12,
-          name: "Subcategory 1.2",
-          children: [
-            { id: 121, name: "Sub-subcategory 1.2.1" },
-            { id: 122, name: "Sub-subcategory 1.2.2" },
-          ],
-        },
-      ],
-    },
-    // Thêm các danh mục khác ở đây
-  ];
+  const fetchProducts = useCallback(
+    debounce(() => {
+      dispatch(
+        getProductByCategory({
+          slug,
+          ...paginate,
+          ...filters,
+        })
+      );
+    }, 300),
+    [slug, filters, paginate.page, paginate.pageSize]
+  );
 
-  // Giả lập dữ liệu sản phẩm
-  const products = [
-    {
-      id: 1,
-      name: "Sản phẩm 1",
-      price: 100000,
-      brand: "Brand A",
-      category: "Category 1",
-    },
-    {
-      id: 2,
-      name: "Sản phẩm 2",
-      price: 200000,
-      brand: "Brand B",
-      category: "Category 2",
-    },
-    // Thêm các sản phẩm khác ở đây
-  ];
+  useEffect(() => {
+    if (slug) {
+      fetchProducts();
+    }
+  }, [slug, fetchProducts]);
 
-  const handlePriceChange = (checkedValues) => {
-    setPriceRange(checkedValues);
+  useEffect(() => {
+    if (pagination) {
+      setPaginate((prev) => ({
+        ...prev,
+        page: pagination.page,
+        pageSize: pagination.pageSize,
+        totalPage: pagination.totalPage,
+        totalItems: pagination.totalItems,
+      }));
+    }
+  }, [pagination]);
+
+  const handlePriceChange = (value) => {
+    setFilters((prev) => ({ ...prev, priceRange: value }));
   };
 
   const handleBrandChange = (checkedValues) => {
-    setBrands(checkedValues);
+    setFilters((prev) => ({ ...prev, brands: checkedValues }));
   };
 
-  const handleCategoryChange = (checkedValues) => {
-    setCategories(checkedValues);
+  const handleTagChange = (checkedValues) => {
+    setFilters((prev) => ({ ...prev, tags: checkedValues }));
   };
 
   const handleSortChange = (value) => {
-    setSortOrder(value);
+    setFilters((prev) => ({ ...prev, sortOrder: value }));
   };
 
-  // Lọc và sắp xếp sản phẩm
-  const filteredProducts = products
-    .filter((product) => {
-      // Thêm logic lọc theo giá, thương hiệu và danh mục ở đây
-      return true;
-    })
-    .sort((a, b) => {
-      if (sortOrder === "asc") {
-        return a.price - b.price;
-      } else {
-        return b.price - a.price;
-      }
-    });
-
-  const renderCategoryCheckboxes = (categories, level = 0) => {
-    return categories.map((category) => (
-      <div key={category.id} className={`ml-${level * 4}`}>
-        <Checkbox value={category.id} className="py-2">
-          {category.name}
-        </Checkbox>
-        {category.children &&
-          renderCategoryCheckboxes(category.children, level + 1)}
-      </div>
-    ));
+  const handleSubcategorisChange = (value) => {
+    setFilters((prev) => ({ ...prev, subcategoriesList: value }));
   };
 
   const FilterSection = () => (
@@ -106,44 +89,65 @@ const Category = () => {
       <div>
         <h3 className="font-bold mb-2">Giá</h3>
         <Checkbox.Group
+          value={filters.priceRange}
           onChange={handlePriceChange}
           className="flex flex-col space-y-2"
         >
-          <Checkbox value="0-100000">0 - 100.000đ</Checkbox>
-          <Checkbox value="100000-200000">100.000đ - 200.000đ</Checkbox>
-          <Checkbox value="200000-300000">200.000đ - 300.000đ</Checkbox>
-          <Checkbox value="300000+">Trên 300.000đ</Checkbox>
+          {priceRanges &&
+            priceRanges.map((range, index) => (
+              <Checkbox key={index} value={`${range.min}-${range.max}`}>
+                {`${range.min.toLocaleString(
+                  "vi-VN"
+                )}đ - ${range.max.toLocaleString("vi-VN")}đ`}
+              </Checkbox>
+            ))}
         </Checkbox.Group>
       </div>
       <div>
         <h3 className="font-bold mb-2">Thương hiệu</h3>
         <Checkbox.Group
+          value={filters.brands}
           onChange={handleBrandChange}
           className="flex flex-col space-y-2"
         >
-          <Checkbox value="Brand A">Brand A</Checkbox>
-          <Checkbox value="Brand B">Brand B</Checkbox>
-          <Checkbox value="Brand C">Brand C</Checkbox>
+          {brands &&
+            brands.map((brand) => (
+              <Checkbox key={brand._id} value={brand.slug}>
+                {brand.name}
+              </Checkbox>
+            ))}
         </Checkbox.Group>
       </div>
+      {subcategories.length > 0 && (
+        <div>
+          <h3 className="font-bold mb-2">Danh mục con</h3>
+          <Checkbox.Group
+            value={filters.subcategoriesList}
+            onChange={handleSubcategorisChange}
+            className="flex flex-col space-y-2"
+          >
+            {subcategories &&
+              subcategories.map((subcategory) => (
+                <Checkbox key={subcategory._id} value={subcategory._id}>
+                  {subcategory.name}
+                </Checkbox>
+              ))}
+          </Checkbox.Group>
+        </div>
+      )}
       <div>
-        <h3 className="font-bold mb-2">Danh mục sản phẩm</h3>
+        <h3 className="font-bold mb-2">Tags</h3>
         <Checkbox.Group
-          onChange={handleCategoryChange}
-          className="flex flex-col"
-        >
-          {renderCategoryCheckboxes(categoryData)}
-        </Checkbox.Group>
-      </div>
-      <div>
-        <h3 className="font-bold mb-2">Màu</h3>
-        <Checkbox.Group
-          onChange={handleBrandChange}
+          value={filters.tags}
+          onChange={handleTagChange}
           className="flex flex-col space-y-2"
         >
-          <Checkbox value="Màu 1">Màu 1</Checkbox>
-          <Checkbox value="Màu 2">Màu 2</Checkbox>
-          <Checkbox value="Màu 3">Màu 3</Checkbox>
+          {tags &&
+            tags.map((tag) => (
+              <Checkbox key={tag} value={tag}>
+                {tag}
+              </Checkbox>
+            ))}
         </Checkbox.Group>
       </div>
     </div>
@@ -164,12 +168,11 @@ const Category = () => {
           items={[
             { title: "Trang chủ" },
             { title: "Danh mục sản phẩm" },
-            { title: "Trang điểm" },
+            { title: category },
           ]}
         />
       </div>
       <div className="flex flex-col md:flex-row">
-        {/* Bộ lọc */}
         {isMobile ? (
           <Collapse
             className="md:hidden mb-4"
@@ -186,11 +189,10 @@ const Category = () => {
             <FilterSection />
           </div>
         )}
-        {/* Danh sách sản phẩm */}
         <div className="w-full md:w-3/4">
           <div className="flex flex-col md:flex-row justify-between items-center mb-4">
             <h2 className="text-xl font-bold mb-2 md:mb-0">
-              Sản phẩm ({filteredProducts.length})
+              Sản phẩm ({pagination?.totalItems || 0})
             </h2>
             <Select
               defaultValue="asc"
@@ -201,7 +203,7 @@ const Category = () => {
               <Option value="desc">Giá: Cao đến thấp</Option>
             </Select>
           </div>
-          <ProductList />
+          <ProductList {...{ products, isLoading, paginate, setPaginate }} />
         </div>
       </div>
     </div>

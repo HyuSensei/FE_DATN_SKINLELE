@@ -37,9 +37,9 @@ const ManageOrder = () => {
     if (pagination) {
       setPaginate((prev) => ({
         ...prev,
-        page: pagination?.currentPage,
+        page: pagination?.page,
         pageSize: pagination?.pageSize,
-        totalPage: pagination?.totalPages,
+        totalPage: pagination?.totalPage,
         totalItems: pagination?.totalItems,
       }));
     }

@@ -281,11 +281,10 @@ const Detail = () => {
                         }`}
                         style={{ backgroundColor: item.color.code }}
                         onClick={() =>
-                          handleProduct((prev) => ({
+                          setProduct((prev) => ({
                             ...prev,
                             color: {
-                              name: item.color.name,
-                              code: item.color.code,
+                              ...item.color,
                               image: item.color.image.url,
                             },
                           }))

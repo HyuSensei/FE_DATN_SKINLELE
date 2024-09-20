@@ -61,7 +61,15 @@ const HeaderUser = () => {
     return menu;
   };
 
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    navigate("/");
+  };
+
   const handleClick = (e) => {
+    if (e.key === "login") return navigate("/auth");
+    if (e.key === "account") return navigate("/account");
+    if (e.key === "logout") return handleLogout();
     setCurrent(e.key);
     const flattenMenu = (items) => {
       return items.flatMap((item) => {
@@ -108,6 +116,33 @@ const HeaderUser = () => {
     },
   ];
 
+  const authMenu = () => {
+    if (isAuthenticated) {
+      return {
+        label: userInfo.name,
+        key: "user",
+        children: [
+          {
+            label: "Tài khoản",
+            key: "account",
+            path: "/account",
+          },
+          {
+            label: "Đăng xuất",
+            key: "logout",
+            path: "/logout",
+          },
+        ],
+      };
+    } else {
+      return {
+        label: "Đăng nhập",
+        key: "login",
+        path: "/auth",
+      };
+    }
+  };
+
   useEffect(() => {
     const path = location.pathname;
     const currentItem = menuItems.find((item) => {
@@ -125,11 +160,6 @@ const HeaderUser = () => {
     });
     setCurrent(currentItem ? currentItem.key : "");
   }, [location.pathname, menuItems]);
-
-  const handleLogout = () => {
-    dispatch(logoutUser());
-    navigate("/");
-  };
 
   const accoutItems = [
     {
@@ -193,7 +223,10 @@ const HeaderUser = () => {
 
           <div className="flex items-center space-x-4">
             {isAuthenticated ? (
-              <Dropdown menu={{ items: accoutItems }}>
+              <Dropdown
+                className="hidden md:flex"
+                menu={{ items: accoutItems }}
+              >
                 <a
                   className="ant-dropdown-link flex items-center"
                   onClick={(e) => e.preventDefault()}
@@ -253,7 +286,7 @@ const HeaderUser = () => {
       >
         <Menu
           mode="inline"
-          items={menuItems}
+          items={[...menuItems, authMenu()]}
           onClick={handleClick}
           selectedKeys={[current]}
         />

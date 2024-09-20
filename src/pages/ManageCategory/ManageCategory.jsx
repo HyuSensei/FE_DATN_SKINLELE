@@ -31,7 +31,7 @@ const ManageCategory = () => {
     if (pagination) {
       setPaginate((prev) => ({
         ...prev,
-        page: pagination.currentPage,
+        page: pagination.page,
         pageSize: pagination.pageSize,
       }));
     }

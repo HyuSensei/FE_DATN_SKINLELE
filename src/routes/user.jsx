@@ -11,6 +11,7 @@ const Cart = lazy(() => import("../pages/Cart/Cart"));
 const Account = lazy(() => import("../pages/Account/Account"));
 const OrderReturn = lazy(() => import("../pages/OrderReturn/OrderReturn"));
 const Category = lazy(() => import("../pages/Category/Category"));
+const Brand = lazy(() => import("../pages/Brand/Brand"));
 
 const UserRoutes = [
   {
@@ -105,6 +106,20 @@ const UserRoutes = [
           <LayoutUser>
             <PageTitle title={"Danh mục sản phẩm"}>
               <Category />
+            </PageTitle>
+          </LayoutUser>
+        </AuthUserWapper>
+      </Suspense>
+    ),
+  },
+  {
+    path: "/brands/:slug",
+    element: (
+      <Suspense fallback={<Loading />}>
+        <AuthUserWapper>
+          <LayoutUser>
+            <PageTitle title={"Thương hiệu"}>
+              <Brand />
             </PageTitle>
           </LayoutUser>
         </AuthUserWapper>

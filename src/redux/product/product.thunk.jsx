@@ -93,7 +93,7 @@ export const getProductByCategory = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       return await axios.get(
-        `/products-by-category/${payload.slug}?page=${payload.page}&pageSize=${payload.pageSize}`
+        `/products/categories/${payload.slug}?page=${payload.page}&pageSize=${payload.pageSize}&priceRange=${payload.priceRange}&brands=${payload.brands}&sortOrder=${payload.sortOrder}&tags=${payload.tags}&subcategoriesList=${payload.subcategoriesList}`
       );
     } catch (error) {
       return rejectWithValue(error.response.data);

@@ -80,9 +80,9 @@ const RateList = ({ product }) => {
     if (pagination) {
       setPaginate((prev) => ({
         ...prev,
-        page: pagination?.currentPage,
+        page: pagination?.page,
         pageSize: pagination?.pageSize,
-        totalPage: pagination?.totalPages,
+        totalPage: pagination?.totalPage,
         totalItems: pagination?.totalItems,
       }));
     }
@@ -213,36 +213,53 @@ const RateList = ({ product }) => {
               </Button>
             </Space>
           </div>
-          <List
-            itemLayout="horizontal"
-            dataSource={reviews}
-            renderItem={(review) => (
-              <List.Item>
-                <List.Item.Meta
-                  avatar={<Avatar src={review.user.avatar.url} />}
-                  title={review.user.name}
-                  description={
-                    <>
-                      <div className="flex items-center space-x-1 mb-1">
-                        <Rate
-                          disabled
-                          character={({ index }) =>
-                            createIcon({
-                              index: index + 1,
-                              rate: review.rate,
-                              width: "16px",
-                              height: "16px",
-                            })
-                          }
-                        />
-                      </div>
-                      <p>{review.comment}</p>
-                    </>
-                  }
-                />
-              </List.Item>
-            )}
-          />
+          {reviews.length === 0 ? (
+            <>
+              <div className="flex items-center justify-center">
+                <div className="space-y-2">
+                  <img
+                    className="w-40 lg:w-60 m-auto"
+                    src="https://cdni.iconscout.com/illustration/premium/thumb/empty-review-illustration-download-in-svg-png-gif-file-formats--blank-feedback-no-comments-rating-unfilled-marketplace-states-pack-windows-interface-illustrations-9824449.png"
+                    alt=""
+                  />
+                  <div className="text-sm md:text-base italic text-center">
+                    Sản phẩm chưa có đánh giá !
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <List
+              itemLayout="horizontal"
+              dataSource={reviews}
+              renderItem={(review) => (
+                <List.Item>
+                  <List.Item.Meta
+                    avatar={<Avatar src={review.user.avatar.url} />}
+                    title={review.user.name}
+                    description={
+                      <>
+                        <div className="flex items-center space-x-1 mb-1">
+                          <Rate
+                            disabled
+                            character={({ index }) =>
+                              createIcon({
+                                index: index + 1,
+                                rate: review.rate,
+                                width: "16px",
+                                height: "16px",
+                              })
+                            }
+                          />
+                        </div>
+                        <p>{review.comment}</p>
+                      </>
+                    }
+                  />
+                </List.Item>
+              )}
+            />
+          )}
         </div>
       </div>
     </Card>

@@ -224,7 +224,7 @@ const OrderReturn = () => {
                   {orderReturn.paymentMethod}
                 </p>
                 <Tag color="pink" className="mt-2">
-                  {orderReturn.status}
+                  {orderReturn.status === "pendding" ? "Đang chờ" : ""}
                 </Tag>
               </div>
               <div className="bg-purple-50 p-6 rounded-lg shadow-md">
