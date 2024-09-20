@@ -35,3 +35,16 @@ export const getAllBrand = createAsyncThunk(
     }
   }
 );
+
+export const getProductByBrand = createAsyncThunk(
+  "brand/getProductByBrand",
+  async (payload, { rejectWithValue }) => {
+    try {
+      return await axios.get(
+        `/products/brands/${payload.slug}?page=${payload.page}&pageSize=${payload.pageSize}&priceRange=${payload.priceRange}&sortOrder=${payload.sortOrder}&tags=${payload.tags}&categoriesList=${payload.categoriesList}`
+      );
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);

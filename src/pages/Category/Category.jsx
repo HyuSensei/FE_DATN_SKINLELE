@@ -80,7 +80,7 @@ const Category = () => {
     setFilters((prev) => ({ ...prev, sortOrder: value }));
   };
 
-  const handleSubcategorisChange = (value) => {
+  const handleSubcategoriesChange = (value) => {
     setFilters((prev) => ({ ...prev, subcategoriesList: value }));
   };
 
@@ -123,7 +123,7 @@ const Category = () => {
           <h3 className="font-bold mb-2">Danh mục con</h3>
           <Checkbox.Group
             value={filters.subcategoriesList}
-            onChange={handleSubcategorisChange}
+            onChange={handleSubcategoriesChange}
             className="flex flex-col space-y-2"
           >
             {subcategories &&

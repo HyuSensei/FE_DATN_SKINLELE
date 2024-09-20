@@ -94,7 +94,7 @@ const ProductList = ({
     </div>
   );
 
-  if (products.length === 0) {
+  if (products.length === 0 && !isLoading) {
     return (
       <div className="flex items-center justify-center">
         <div className="space-y-4">

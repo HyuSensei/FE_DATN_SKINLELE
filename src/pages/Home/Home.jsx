@@ -30,14 +30,14 @@ const Home = () => {
       <Banner />
       <div className="space-y-8">
         <div className="mt-8">
-          {HOT && HOT.length > 0 && (
+          {HOT && HOT.length >= 5 && (
             <ProductCarousel
               {...{ title: "Sản phẩm nổi bật", products: HOT, isLoading }}
             />
           )}
         </div>
         <SilderHome {...{ slides: sliderPromotion }} />
-        {NEW && NEW.length > 0 && (
+        {NEW && NEW.length >= 5 && (
           <ProductCarousel
             {...{ title: "Sản phẩm mới", products: NEW, isLoading }}
           />

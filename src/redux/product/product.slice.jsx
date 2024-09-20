@@ -126,6 +126,7 @@ export const productSlice = createSlice({
         state.error = action.payload;
         state.isLoading = false;
       })
+
       // Create Product
       .addCase(createProduct.pending, (state, action) => {
         state.isLoading = true;
@@ -140,6 +141,7 @@ export const productSlice = createSlice({
         state.error = action.payload;
         state.isLoading = false;
       })
+
       // Update Product
       .addCase(updateProduct.pending, (state, action) => {
         state.isLoading = true;
