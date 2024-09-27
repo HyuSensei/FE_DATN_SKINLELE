@@ -1,166 +1,63 @@
-import {
-  Breadcrumb,
-  Avatar,
-  Tabs,
-  Card,
-  Button,
-  Typography,
-  Badge,
-} from "antd";
-import React from "react";
-import {
-  ShoppingCartOutlined,
-  UnorderedListOutlined,
-  UserOutlined,
-  HeartOutlined,
-  GiftOutlined,
-  CarOutlined,
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  ClockCircleOutlined,
-  SyncOutlined,
-} from "@ant-design/icons";
+import React, { useState } from "react";
+import { Breadcrumb, Card } from "antd";
+import { useDispatch, useSelector } from "react-redux";
+import AccountForm from "../../components/Account/AccountForm";
+import OrderTabs from "../../components/Account/OrderTabs";
+import UserInfo from "../../components/Account/UserInfo";
+import AccountMenu from "../../components/Account/AccountMenu";
+import { useNavigate } from "react-router-dom";
+import { logoutUser } from "../../redux/auth/auth.slice";
 
-const { TabPane } = Tabs;
-const { Title } = Typography;
+const CONTENT_TYPES = {
+  ACCOUNT: "account",
+  ORDER: "order",
+};
 
 const Account = () => {
-  return (
-    <div className="container mx-auto mt-8">
-      <Breadcrumb items={[{ title: "Trang chủ" }, { title: "Tài khoản" }]} />
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [contentType, setContentType] = useState(CONTENT_TYPES.ACCOUNT);
+  const { userInfo } = useSelector((state) => state.auth);
+  const { products } = useSelector((state) => state.cart.cart);
 
-      <div className="flex mt-8">
-        {/* Menu */}
-        <div className="w-1/4">
-          <Card className="shadow-lg rounded-lg">
-            <div className="flex flex-col items-center space-y-4">
-              <Avatar size={120} icon={<UserOutlined />} className="mb-4" />
-              <Title level={4}>John Doe</Title>
-              <p className="text-gray-500">johndoe@example.com</p>
-              <Button type="primary" shape="round" icon={<GiftOutlined />}>
-                Điểm thưởng: 1500
-              </Button>
-            </div>
-          </Card>
-          <Card className="shadow-lg rounded-lg mt-8">
-            <ul className="space-y-6">
-              <li>
-                <a
-                  href="#"
-                  className="flex items-center text-gray-600 hover:text-blue-600 text-lg font-semibold"
-                >
-                  <Badge count={5} className="mr-2">
-                    <ShoppingCartOutlined className="text-2xl" />
-                  </Badge>
-                  Giỏ hàng
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="flex items-center text-gray-600 hover:text-blue-600 text-lg font-semibold"
-                >
-                  <UnorderedListOutlined className="text-2xl mr-2" />
-                  Đơn hàng
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="flex items-center text-gray-600 hover:text-blue-600 text-lg font-semibold"
-                >
-                  <UserOutlined className="text-2xl mr-2" />
-                  Tài khoản
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="flex items-center text-gray-600 hover:text-blue-600 text-lg font-semibold"
-                >
-                  <HeartOutlined className="text-2xl mr-2" />
-                  Yêu thích
-                </a>
-              </li>
-            </ul>
-          </Card>
+  const logout = () => {
+    dispatch(logoutUser());
+    navigate("/");
+  };
+
+  const renderContent = () => {
+    switch (contentType) {
+      case CONTENT_TYPES.ACCOUNT:
+        return <AccountForm />;
+      case CONTENT_TYPES.ORDER:
+        return <OrderTabs />;
+      default:
+        return <></>;
+    }
+  };
+
+  return (
+    <div className="container mx-auto mt-6 px-4 max-w-7xl">
+      <Breadcrumb
+        items={[{ title: "Trang chủ" }, { title: "Tài khoản" }]}
+        className="text-sm mb-6"
+      />
+
+      <div className="flex flex-col md:flex-row gap-6">
+        {/* Left Column: User Info and Menu */}
+        <div className="w-full md:w-1/4">
+          <UserInfo user={userInfo} />
+          <AccountMenu
+            cartItemCount={products.length}
+            setContentType={setContentType}
+            navigate={navigate}
+            logout={logout}
+          />
         </div>
 
-        {/* Nội dung */}
-        <div className="w-3/4 ml-8">
-          <Card className="shadow-lg rounded-lg">
-            <Tabs defaultActiveKey="1">
-              <TabPane
-                key="1"
-                tab={
-                  <div className="flex items-center space-x-2">
-                    <UnorderedListOutlined className="text-xl" />
-                    <span className="text-lg font-semibold">Tất cả</span>
-                  </div>
-                }
-              >
-                {/* Nội dung tab Tất cả */}
-              </TabPane>
-              <TabPane
-                key="2"
-                tab={
-                  <div className="flex items-center space-x-2">
-                    <ClockCircleOutlined className="text-xl" />
-                    <span className="text-lg font-semibold">Chờ xác nhận</span>
-                    <Badge count={2} className="ml-2" />
-                  </div>
-                }
-              >
-                {/* Nội dung tab Chờ xác nhận */}
-              </TabPane>
-              <TabPane
-                key="3"
-                tab={
-                  <div className="flex items-center space-x-2">
-                    <SyncOutlined className="text-xl" />
-                    <span className="text-lg font-semibold">Đang xử lý</span>
-                    <Badge count={1} className="ml-2" />
-                  </div>
-                }
-              >
-                {/* Nội dung tab Đang xử lý */}
-              </TabPane>
-              <TabPane
-                key="4"
-                tab={
-                  <div className="flex items-center space-x-2">
-                    <CarOutlined className="text-xl" />
-                    <span className="text-lg font-semibold">Đang giao</span>
-                    <Badge count={3} className="ml-2" />
-                  </div>
-                }
-              >
-                {/* Nội dung tab Đang giao */}
-              </TabPane>
-              <TabPane
-                key="5"
-                tab={
-                  <div className="flex items-center space-x-2">
-                    <CheckCircleOutlined className="text-xl" />
-                    <span className="text-lg font-semibold">Đã giao</span>
-                  </div>
-                }
-              >
-                {/* Nội dung tab Đã giao */}
-              </TabPane>
-              <TabPane
-                key="6"
-                tab={
-                  <div className="flex items-center space-x-2">
-                    <CloseCircleOutlined className="text-xl" />
-                    <span className="text-lg font-semibold">Đã hủy</span>
-                  </div>
-                }
-              >
-                {/* Nội dung tab Đã hủy */}
-              </TabPane>
-            </Tabs>
-          </Card>
+        {/* Right Column: Dynamic Content */}
+        <div className="w-full md:w-3/4">
+          <Card className="shadow-md rounded-lg">{renderContent()}</Card>
         </div>
       </div>
     </div>

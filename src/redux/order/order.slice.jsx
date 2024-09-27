@@ -22,6 +22,13 @@ const initialState = {
     totalPage: 0,
     totalItems: 0,
   },
+  statusCounts: {
+    pending: 0,
+    processing: 0,
+    shipping: 0,
+    delivered: 0,
+    cancelled: 0,
+  },
 };
 
 export const orderSlice = createSlice({
@@ -111,6 +118,7 @@ export const orderSlice = createSlice({
         if (action.payload.success) {
           state.orderHistories = action.payload.data;
           state.pagination = action.payload.pagination;
+          state.statusCounts = action.payload.statusCounts;
           state.isLoading = false;
         }
       })

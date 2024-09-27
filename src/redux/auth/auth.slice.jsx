@@ -30,6 +30,9 @@ export const authSlice = createSlice({
       state.isAuthenticated = false;
       state.userInfo = {};
     },
+    setUserInfo(state, action) {
+      state.userInfo = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -126,6 +129,7 @@ export const authSlice = createSlice({
         state.error = action.payload;
         state.isLoading = false;
       })
+
       //Update Account
       .addCase(updateAccount.pending, (state, action) => {
         state.isLoading = true;
@@ -141,5 +145,5 @@ export const authSlice = createSlice({
       });
   },
 });
-export const { setEmailVerify, logoutUser } = authSlice.actions;
+export const { setEmailVerify, logoutUser, setUserInfo } = authSlice.actions;
 export default authSlice.reducer;

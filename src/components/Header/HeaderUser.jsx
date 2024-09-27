@@ -194,7 +194,9 @@ const HeaderUser = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            Chào mừng bạn đến với SkinLeLe ❤️
+            <div className="animate-bounce">
+              Chào mừng bạn đến với SkinLeLe ❤️
+            </div>
           </motion.div>
         </div>
         <div className="container mx-auto px-12 py-4 flex items-center justify-between">

@@ -112,21 +112,20 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
     }
     switch (order.paymentMethod) {
       case "COD":
-        // return dispatch(orderCod(order)).then((res) => {
-        //   if (res.payload.success) {
-        //     products.forEach((item) => {
-        //       dispatch(
-        //         removeProductAfterOrderSuccess({
-        //           productId: item.productId,
-        //           color: item.color,
-        //         })
-        //       );
-        //     });
-        //     dispatch(setOrderReturn(res.payload.data));
-        //     navigate(`/order-return`);
-        //   }
-        // });
-        console.log(order);
+        return dispatch(orderCod(order)).then((res) => {
+          if (res.payload.success) {
+            products.forEach((item) => {
+              dispatch(
+                removeProductAfterOrderSuccess({
+                  productId: item.productId,
+                  color: item.color,
+                })
+              );
+            });
+            dispatch(setOrderReturn(res.payload.data));
+            navigate(`/order-return`);
+          }
+        });
         return;
 
       case "VNPAY":

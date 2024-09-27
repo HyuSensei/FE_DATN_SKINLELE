@@ -1,6 +1,8 @@
 import React, { lazy, Suspense } from "react";
 import PageTitle from "../components/Layout/PageTitle";
 import Loading from "../components/Loading";
+import { useSelector } from "react-redux";
+import { Navigate } from "react-router-dom";
 
 const LayoutUser = lazy(() => import("../components/Layout/LayoutUser"));
 const AuthUserWapper = lazy(() => import("../components/Auth/AuthUserWapper"));
@@ -12,6 +14,22 @@ const Account = lazy(() => import("../pages/Account/Account"));
 const OrderReturn = lazy(() => import("../pages/OrderReturn/OrderReturn"));
 const Category = lazy(() => import("../pages/Category/Category"));
 const Brand = lazy(() => import("../pages/Brand/Brand"));
+
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated, isLoading } = useSelector((state) => state.auth);
+  if (!isAuthenticated && !isLoading) {
+    return <Navigate to="/auth" replace />;
+  }
+  return children;
+};
+
+const AuthRoute = ({ children }) => {
+  const { isAuthenticated, isLoading } = useSelector((state) => state.auth);
+  if (isAuthenticated && !isLoading) {
+    return <Navigate to="/" replace />;
+  }
+  return children;
+};
 
 const UserRoutes = [
   {
@@ -35,7 +53,9 @@ const UserRoutes = [
         <AuthUserWapper>
           <LayoutUser>
             <PageTitle title={"Đăng nhập - Đăng ký"}>
-              <Auth />
+              <AuthRoute>
+                <Auth />
+              </AuthRoute>
             </PageTitle>
           </LayoutUser>
         </AuthUserWapper>
@@ -77,7 +97,9 @@ const UserRoutes = [
         <AuthUserWapper>
           <LayoutUser>
             <PageTitle title={"Thông tin kết quả đặt hàng"}>
-              <OrderReturn />
+              <ProtectedRoute>
+                <OrderReturn />
+              </ProtectedRoute>
             </PageTitle>
           </LayoutUser>
         </AuthUserWapper>
@@ -91,7 +113,9 @@ const UserRoutes = [
         <AuthUserWapper>
           <LayoutUser>
             <PageTitle title={"Tài khoản"}>
-              <Account />
+              <ProtectedRoute>
+                <Account />
+              </ProtectedRoute>
             </PageTitle>
           </LayoutUser>
         </AuthUserWapper>

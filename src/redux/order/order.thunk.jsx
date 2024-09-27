@@ -46,10 +46,9 @@ export const getOrderHistory = createAsyncThunk(
   "order/getOrderHistory",
   async (payload, { rejectWithValue }) => {
     try {
-      const res = await axios.get(
+      return await axios.get(
         `/orders?status=${payload.status}&page=${payload.page}&pageSize=${payload.pageSize}`
       );
-      return res;
     } catch (error) {
       return rejectWithValue(error.response.data);
     }

@@ -6,8 +6,8 @@ import { HiMiniUserGroup } from "react-icons/hi2";
 import { GiLipstick } from "react-icons/gi";
 import { FaMoneyCheck } from "react-icons/fa6";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
-import StatisticalProductSelling from "../../components/StatisticalProductSelling";
-import StatisicalRevenue from "../../components/StatisicalRevenue";
+import StatisticalProductSelling from "../../components/Statistical/StatisticalProductSelling";
+import StatisicalRevenue from "../../components/Statistical/StatisicalRevenue";
 
 const DashboardCard = ({
   title,

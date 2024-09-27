@@ -298,9 +298,9 @@ const Cart = () => {
               </div>
 
               <div className="py-2 sm:py-4 space-y-4">
-                {group.variants.map((variant) => (
+                {group.variants.map((variant, index) => (
                   <div
-                    key={variant.color.code}
+                    key={index}
                     className="flex flex-col sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div className="flex flex-1 gap-2 items-center space-x-2 sm:space-x-4 mb-2 sm:mb-0">

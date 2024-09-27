@@ -18,8 +18,11 @@ const AuthUserWrapper = ({ children }) => {
       set("ACCESS_TOKEN", token);
       window.location.href = "/";
     }
-    dispatch(getAccountUser());
-    setIsInitialized(true);
+    dispatch(getAccountUser()).then((res) => {
+      if (res.payload.success) {
+        setIsInitialized(true);
+      }
+    });
   };
 
   useEffect(() => {
