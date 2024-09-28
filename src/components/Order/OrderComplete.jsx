@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   List,
   Card,
@@ -8,11 +8,11 @@ import {
   Typography,
   Space,
   Tag,
-  Rate,
 } from "antd";
 import { StarOutlined } from "@ant-design/icons";
 import { formatPrice } from "../../helpers/formatPrice";
 import { formatDateReview } from "../../helpers/formatDate";
+import ModalRate from "../Modal/ModalRate";
 
 const { Title, Text } = Typography;
 
@@ -25,8 +25,26 @@ const OrderComplete = ({
   totalItems,
   setPaginate,
 }) => {
+  const [open, setOpen] = useState(false);
+  const [hoverValue, setHoverValue] = useState(0);
+  const [rate, setRate] = useState(0);
+  const [orderId, setOrderId] = useState("");
+  const [productDetail, setProductDetail] = useState({});
+
   return (
     <Spin spinning={isLoading}>
+      <ModalRate
+        {...{
+          product: productDetail,
+          open,
+          setOpen,
+          rate,
+          setRate,
+          hoverValue,
+          setHoverValue,
+          order: orderId,
+        }}
+      />
       <List
         grid={{ gutter: 16, column: 1 }}
         dataSource={orders}
@@ -37,7 +55,6 @@ const OrderComplete = ({
               title={
                 <Space className="flex items-center justify-between flex-wrap py-2">
                   <Title level={5}>Đơn hàng: OD{order._id}</Title>
-                  <Button icon={<StarOutlined />}>Đánh giá</Button>
                 </Space>
               }
             >
@@ -60,9 +77,21 @@ const OrderComplete = ({
                           <Text>{`${formatPrice(product.price)} đ x ${
                             product.quantity
                           }`}</Text>
-                          {product.isReviewed && (
-                            <Rate disabled defaultValue={product.rating} />
-                          )}
+                          <Button
+                            onClick={() => {
+                              setOrderId(order._id);
+                              setProductDetail((prev) => ({
+                                ...prev,
+                                _id: product.productId,
+                                name: product.name,
+                                image: product.image,
+                              }));
+                              setOpen(true);
+                            }}
+                            icon={<StarOutlined />}
+                          >
+                            Đánh giá
+                          </Button>
                         </Space>
                       }
                     />
@@ -85,7 +114,7 @@ const OrderComplete = ({
           </List.Item>
         )}
       />
-      <div style={{ textAlign: "right", marginTop: 16 }}>
+      <div className="text-right mt-4">
         <Pagination
           current={page}
           pageSize={pageSize}

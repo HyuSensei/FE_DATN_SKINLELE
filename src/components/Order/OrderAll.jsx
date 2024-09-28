@@ -68,8 +68,6 @@ const OrderAll = ({
         return <Button danger>Hủy đơn hàng</Button>;
       case "shipping":
         return <Button type="primary">Đã nhận hàng</Button>;
-      case "delivered":
-        return <Button icon={<StarOutlined />}>Đánh giá</Button>;
       case "cancelled":
         return <Button icon={<ShoppingCartOutlined />}>Mua lại</Button>;
       default:
@@ -92,13 +90,15 @@ const OrderAll = ({
         renderItem={(order) => (
           <List.Item>
             <Card
-              onClick={() => {
-                setOpen(true);
-                setOrder(order);
-              }}
               className="mb-4 sm:mb-6 shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
               title={
-                <Space className="flex items-center justify-between flex-wrap py-2">
+                <Space
+                  onClick={() => {
+                    setOpen(true);
+                    setOrder(order);
+                  }}
+                  className="flex items-center justify-between flex-wrap py-2"
+                >
                   <Title level={5}>Đơn hàng: OD{order._id}</Title>
                   {renderOrderActions(order)}
                 </Space>
@@ -122,7 +122,11 @@ const OrderAll = ({
                         product.quantity
                       }`}
                     />
-                    <div>{formatPrice(product.price * product.quantity)} đ</div>
+                    <div className="flex flex-col items-center justify-end gap-1">
+                      {order.status === "delivered" && (
+                        <Button icon={<StarOutlined />}>Đánh giá</Button>
+                      )}
+                    </div>
                   </List.Item>
                 )}
               />
@@ -138,15 +142,17 @@ const OrderAll = ({
           </List.Item>
         )}
       />
-      <div className="mt-4 text-right">
+      <div className="text-right mt-4">
         <Pagination
           current={page}
           pageSize={pageSize}
           total={totalItems}
-          onChange={(page) => setPaginate((prev) => ({ ...prev, page }))}
-          onShowSizeChange={(_, pageSize) =>
-            setPaginate((prev) => ({ ...prev, pageSize }))
-          }
+          onChange={(page) => {
+            setPaginate((prev) => ({ ...prev, page }));
+          }}
+          onShowSizeChange={(_, pageSize) => {
+            setPaginate((prev) => ({ ...prev, pageSize }));
+          }}
           showTotal={(total) => `Tổng ${total} đơn hàng`}
         />
       </div>

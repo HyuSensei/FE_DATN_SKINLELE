@@ -229,7 +229,7 @@ const HeaderUser = () => {
                 className="hidden md:flex"
                 menu={{ items: accoutItems }}
               >
-                <a
+                <div
                   className="ant-dropdown-link flex items-center"
                   onClick={(e) => e.preventDefault()}
                 >
@@ -241,7 +241,7 @@ const HeaderUser = () => {
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-rose-700 font-extrabold text-sm text-center uppercase">
                     {!isEmpty(userInfo) ? userInfo.name : ""}
                   </span>
-                </a>
+                </div>
               </Dropdown>
             ) : (
               <Button

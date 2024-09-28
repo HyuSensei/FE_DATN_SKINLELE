@@ -7,11 +7,16 @@ import {
   Button,
   Select,
   Card,
+  Spin,
+  Pagination,
+  Image,
+  Typography,
 } from "antd";
 import { createAverageRate, createIcon } from "../ultis/createIcon";
 import {
   CameraOutlined,
   CommentOutlined,
+  EyeOutlined,
   HighlightOutlined,
 } from "@ant-design/icons";
 import { useCallback, useRef, useState, useEffect } from "react";
@@ -19,6 +24,11 @@ import ModalRate from "./Modal/ModalRate";
 import { useDispatch, useSelector } from "react-redux";
 import isEmpty from "lodash/isEmpty";
 import { getReviewProduct } from "../redux/review/review.thunk";
+import { formatDateReview } from "../helpers/formatDate";
+import { FaQuoteLeft, FaQuoteRight } from "react-icons/fa6";
+import { MdVerified, MdDateRange } from "react-icons/md";
+
+const { Text } = Typography;
 
 const RateList = ({ product }) => {
   const dispatch = useDispatch();
@@ -119,6 +129,7 @@ const RateList = ({ product }) => {
             setRate,
             setHoverValue,
             hoverValue,
+            product,
           }}
         />
         <div className="md:w-1/3">
@@ -229,36 +240,105 @@ const RateList = ({ product }) => {
               </div>
             </>
           ) : (
-            <List
-              itemLayout="horizontal"
-              dataSource={reviews}
-              renderItem={(review) => (
-                <List.Item>
-                  <List.Item.Meta
-                    avatar={<Avatar src={review.user.avatar.url} />}
-                    title={review.user.name}
-                    description={
-                      <>
-                        <div className="flex items-center space-x-1 mb-1">
+            <Spin spinning={isLoading}>
+              <List
+                itemLayout="vertical"
+                dataSource={reviews}
+                renderItem={(review) => (
+                  <Card className="mb-4 shadow-lg hover:shadow-xl transition-all duration-300 w-full">
+                    <div className="flex flex-col space-y-2">
+                      <div className="flex items-start space-x-4">
+                        <Avatar
+                          className="w-12 h-12"
+                          src={review.user.avatar.url}
+                        />
+                        <div className="flex-grow">
+                          <div className="flex items-center justify-between w-full flex-wrap">
+                            <div className="text-base">
+                              <div className="flex items-center gap-4">
+                                <div className="text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-rose-700 font-extrabold text-sm text-center uppercase">
+                                  {review.user.name}
+                                </div>
+                                {review.order && (
+                                  <div className="flex items-center gap-1">
+                                    <MdVerified className="text-[#3fbaf6] text-lg" />{" "}
+                                    <span className="text-sm text-[#3fbaf6] italic">
+                                      Đã mua
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="text-sm text-gray-500 flex items-center gap-2">
+                              <MdDateRange />
+                              {formatDateReview(review.createdAt)}
+                            </div>
+                          </div>
                           <Rate
                             disabled
+                            value={review.rate}
                             character={({ index }) =>
                               createIcon({
                                 index: index + 1,
                                 rate: review.rate,
+                                hoverValue: review.rate,
                                 width: "16px",
                                 height: "16px",
                               })
                             }
+                            className="mt-1"
                           />
                         </div>
-                        <p>{review.comment}</p>
-                      </>
-                    }
-                  />
-                </List.Item>
-              )}
-            />
+                      </div>
+
+                      <div className="flex items-center gap-1 text-gray-600 text-base italic">
+                        <FaQuoteLeft className="text-gray-400" />
+                        <span>{review.comment}</span>
+                        <FaQuoteRight className="text-gray-400" />
+                      </div>
+
+                      {review.images && review.images.length > 0 && (
+                        <Image.PreviewGroup>
+                          <div className="flex flex-wrap gap-2">
+                            {review.images.map((image, index) => (
+                              <Image
+                                key={index}
+                                src={image.url}
+                                alt={`Review image ${index + 1}`}
+                                width={60}
+                                height={60}
+                                preview={{
+                                  maskClassName: "rounded-lg",
+                                  mask: (
+                                    <div className="flex items-center justify-center w-full h-full bg-black bg-opacity-50 rounded-lg">
+                                      <EyeOutlined className="text-white text-2xl" />
+                                    </div>
+                                  ),
+                                }}
+                              />
+                            ))}
+                          </div>
+                        </Image.PreviewGroup>
+                      )}
+                    </div>
+                  </Card>
+                )}
+              />
+              <div className="text-right mt-4">
+                <Pagination
+                  current={paginate.page}
+                  pageSize={paginate.pageSize}
+                  total={paginate.totalItems}
+                  onChange={(page) =>
+                    setPaginate((prev) => ({ ...prev, page }))
+                  }
+                  onShowSizeChange={(_, pageSize) =>
+                    setPaginate((prev) => ({ ...prev, pageSize }))
+                  }
+                  showTotal={(total) => `Tổng ${total} đánh giá`}
+                />
+              </div>
+            </Spin>
           )}
         </div>
       </div>

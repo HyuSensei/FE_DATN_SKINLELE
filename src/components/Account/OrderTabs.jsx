@@ -29,7 +29,7 @@ const OrderTabs = () => {
   const [status, setStatus] = useState("all");
   const [paginate, setPaginate] = useState({
     page: 1,
-    pageSize: 1,
+    pageSize: 5,
     totalPage: 0,
     totalItems: 0,
   });
@@ -214,7 +214,14 @@ const OrderTabs = () => {
       defaultActiveKey="all"
       items={items}
       className="custom-tabs"
-      onChange={(key) => setStatus(key)}
+      onChange={(key) => {
+        setStatus(key);
+        setPaginate((prev) => ({
+          ...prev,
+          page: 1,
+          pageSize: 5,
+        }));
+      }}
     />
   );
 };

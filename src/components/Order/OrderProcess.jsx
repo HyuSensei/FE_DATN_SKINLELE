@@ -2,7 +2,6 @@ import React from "react";
 import {
   List,
   Card,
-  Button,
   Spin,
   Pagination,
   Typography,
@@ -111,7 +110,7 @@ const OrderProcess = ({
           );
         }}
       />
-      <div style={{ textAlign: "right", marginTop: 16 }}>
+      <div className="text-right mt-4">
         <Pagination
           current={page}
           pageSize={pageSize}

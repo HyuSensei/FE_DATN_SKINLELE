@@ -119,7 +119,7 @@ const OrderShip = ({
           </List.Item>
         )}
       />
-      <div style={{ textAlign: "right", marginTop: 16 }}>
+      <div className="text-right mt-4">
         <Pagination
           current={page}
           pageSize={pageSize}

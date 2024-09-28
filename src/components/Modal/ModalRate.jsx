@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Rate, Upload, message, notification } from "antd";
+import { Modal, Rate, Spin, Upload, message, notification } from "antd";
 import {
   UploadOutlined,
   LoadingOutlined,
@@ -40,6 +40,7 @@ const ModalRate = ({
   const [validates, setValidates] = useState({});
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
+  const { isLoading } = useSelector((state) => state.review);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -108,29 +109,30 @@ const ModalRate = ({
   const openNotification = () => {
     notification.success({
       message: (
-        <span className="text-lg font-semibold">
+        <span className="text-lg text-white font-semibold">
           Đánh giá sản phẩm thành công
         </span>
       ),
       description: (
         <div>
-          <p className="text-base font-medium">
+          <p className="text-base text-white font-medium">
             Cảm ơn bạn đã dành thời gian chia sẻ trải nghiệm!
           </p>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-white mt-1">
             Đánh giá của bạn sẽ giúp ích cho cộng đồng người mua hàng.
           </p>
         </div>
       ),
       placement: "top",
       duration: 5,
-      icon: <HeartFilled style={{ color: "#e28585" }} />,
+      icon: <HeartFilled style={{ color: "#d1402c" }} />,
       style: {
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
         width: "600px",
         borderRadius: 10,
       },
-      className: "bg-gradient-to-t from-slate-100 to-red-200",
+      className:
+        "bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 animate-bounce",
     });
   };
 
@@ -154,7 +156,6 @@ const ModalRate = ({
       }
       return;
     }
-
     dispatch(createReview(review)).then((res) => {
       if (res.payload.success) {
         setReview((prev) => ({
@@ -167,10 +168,10 @@ const ModalRate = ({
         setRate(0);
         setHoverValue(0);
         openNotification();
-        if (product?.slug) {
+        if (product?._id) {
           dispatch(
             getReviewProduct({
-              slug: product?.slug,
+              productId: product?._id,
               page: 1,
               pageSize: 9,
               rate: "",
@@ -239,10 +240,12 @@ const ModalRate = ({
         <div className="flex items-center space-x-4 mb-8 bg-white p-4 rounded-lg shadow-md">
           <img
             className="rounded-lg w-24 h-24 object-cover shadow-lg"
-            src={product?.image}
-            alt="product"
+            src={order ? product?.image : product?.mainImage?.url}
+            alt="image-product"
           />
-          <div className="text-lg font-medium">{product?.name}</div>
+          <div className="text-sm lg:text-base font-medium">
+            {product?.name}
+          </div>
         </div>
 
         <div className="flex justify-center mb-8">
@@ -255,7 +258,7 @@ const ModalRate = ({
                 hoverValue: hoverValue,
                 width: "34px",
                 height: "34px",
-                activeColor: "#c4908f",
+                activeColor: "#a43a62",
               })
             }
             onChange={(value) => {
@@ -268,7 +271,7 @@ const ModalRate = ({
           />
         </div>
 
-        <div className="mb-6">
+        <div className="mb-6 flex items-center justify-center">
           <Upload
             accept="image/*"
             listType="picture-card"
@@ -278,11 +281,11 @@ const ModalRate = ({
             beforeUpload={(file) => {
               const isImage = file.type.startsWith("image/");
               if (!isImage) {
-                message.error("Chỉ được phép tải lên file ảnh!");
+                message.warning("Chỉ được phép tải lên file ảnh!");
               }
               const isLt2M = file.size / 1024 / 1024 < 2;
               if (!isLt2M) {
-                message.error("Kích thước ảnh phải nhỏ hơn 2MB!");
+                message.warning("Kích thước ảnh phải nhỏ hơn 2MB!");
               }
               return isImage && isLt2M;
             }}
@@ -319,16 +322,16 @@ const ModalRate = ({
           <button
             onClick={handleCancelRate}
             className="px-6 py-3 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition duration-300 ease-in-out"
-            disabled={uploading}
+            disabled={uploading || isLoading}
           >
             Hủy
           </button>
           <button
             onClick={handleRate}
             className="px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full hover:from-pink-600 hover:to-purple-600 transition duration-300 ease-in-out"
-            disabled={uploading}
+            disabled={uploading || isLoading}
           >
-            Gửi đánh giá
+            {isLoading ? <Spin /> : "Gửi đánh giá"}
           </button>
         </div>
       </div>
