@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from "react";
 import Banner from "../../components/Banner/Banner";
 import ProductCarousel from "../../components/Product/ProductCarousel";
 import ProductSale from "../../components/Product/ProductSale";
-import SilderHome from "../../components/Slider/SilderHome";
+import SilderList from "../../components/Slider/SilderList";
 import { sliderBrand, sliderPromotion } from "../../const/dataDefault";
 import { useDispatch, useSelector } from "react-redux";
 import { getProductHome } from "../../redux/product/product.thunk";
@@ -36,7 +36,7 @@ const Home = () => {
             />
           )}
         </div>
-        <SilderHome {...{ slides: sliderPromotion }} />
+        <SilderList {...{ slides: sliderPromotion }} />
         {NEW && NEW.length >= 5 && (
           <ProductCarousel
             {...{ title: "Sản phẩm mới", products: NEW, isLoading }}
@@ -47,7 +47,7 @@ const Home = () => {
             {...{ title: "Sản phẩm khuyến mãi", products: SALE, isLoading }}
           />
         )}
-        <SilderHome {...{ slides: sliderBrand }} />
+        <SilderList {...{ slides: sliderBrand }} />
       </div>
     </>
   );

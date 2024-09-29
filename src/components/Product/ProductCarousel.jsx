@@ -9,7 +9,14 @@ import { motion } from "framer-motion";
 import ImageCarousel from "../ImageCarousel";
 import { useNavigate } from "react-router-dom";
 
-const ProductCarousel = ({ products = defaultProduct, isLoading, title }) => {
+const ProductCarousel = ({
+  products = defaultProduct,
+  isLoading,
+  title,
+  show = 5,
+  auto = true,
+  scroll = 1,
+}) => {
   const navigate = useNavigate();
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -47,9 +54,9 @@ const ProductCarousel = ({ products = defaultProduct, isLoading, title }) => {
     dots: false,
     infinite: true,
     speed: 500,
-    slidesToShow: 5,
-    slidesToScroll: 1,
-    autoplay: true,
+    slidesToShow: show,
+    slidesToScroll: scroll,
+    autoplay: auto,
     prevArrow: <CustomArrow direction="prev" />,
     nextArrow: <CustomArrow direction="next" />,
     responsive: [

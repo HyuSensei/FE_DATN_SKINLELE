@@ -1,13 +1,39 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { FiMail, FiLock, FiArrowRight } from "react-icons/fi";
+import { useDispatch } from "react-redux";
+import { getAccountAdmin, loginAdmin } from "../../redux/auth/auth.thunk";
+import { set } from "../../storage/storage";
+import { message } from "antd";
+import { useNavigate } from "react-router-dom";
 
 const LoginAdmin = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [input, setInput] = useState({
+    username: "",
+    password: "",
+  });
+
+  const handleChangeInput = (key, value) => {
+    setInput((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    dispatch(loginAdmin(input)).then((res) => {
+      if (res.payload.success) {
+        set("ACCESS_TOKEN_ADMIN", res.payload.accessToken);
+        dispatch(getAccountAdmin()).then(() => {
+          message.success("Đăng nhập thành công");
+          navigate("/admin/dashboard");
+        });
+      }
+    });
   };
 
   return (
@@ -27,9 +53,9 @@ const LoginAdmin = () => {
               <FiMail className="absolute top-3 left-3 text-gray-400" />
               <input
                 type="text"
-                placeholder="UserName"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Tên đăng nhập..."
+                value={input.username}
+                onChange={(e) => handleChangeInput("username", e.target.value)}
                 className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
@@ -38,9 +64,9 @@ const LoginAdmin = () => {
               <FiLock className="absolute top-3 left-3 text-gray-400" />
               <input
                 type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Mật khẩu..."
+                value={input.password}
+                onChange={(e) => handleChangeInput("password", e.target.value)}
                 className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />

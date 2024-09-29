@@ -13,10 +13,8 @@ const UserInfo = ({ user }) => (
         className="mb-2 border-4 border-white shadow-lg"
         src={user?.avatar?.url}
       />
-      <Title level={4} className="m-0">
-        {user?.name}
-      </Title>
-      <p className="text-gray-500 text-sm">{user?.email}</p>
+      <div className="m-0 text-lg font-bold">{user?.name}</div>
+      <div className="text-gray-500 text-sm">{user?.email}</div>
     </div>
   </Card>
 );

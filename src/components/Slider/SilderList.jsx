@@ -3,7 +3,7 @@ import Slider from "react-slick";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { motion } from "framer-motion";
 
-const SilderHome = ({ slides }) => {
+const SilderList = ({ slides, show = 3, auto = true, scroll = 1 }) => {
   const CustomArrow = ({ direction, onClick }) => {
     return (
       <motion.div
@@ -30,9 +30,9 @@ const SilderHome = ({ slides }) => {
     dots: false,
     infinite: false,
     speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    autoplay: true,
+    slidesToShow: show,
+    slidesToScroll: scroll,
+    autoplay: auto,
     autoplaySpeed: 3000,
     prevArrow: <CustomArrow direction="prev" />,
     nextArrow: <CustomArrow direction="next" />,
@@ -60,14 +60,14 @@ const SilderHome = ({ slides }) => {
     >
       <Slider {...settings}>
         {slides.map((slide) => (
-          <div key={slide.key} className="px-2 focus:outline-none">
+          <div key={slide.id} className="px-2 focus:outline-none">
             <motion.div
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.3 }}
             >
               <img
                 src={slide.image}
-                alt={slide.alt}
+                alt={"Slide-Image"}
                 className="w-full h-auto rounded-lg shadow-md"
               />
             </motion.div>
@@ -78,4 +78,4 @@ const SilderHome = ({ slides }) => {
   );
 };
 
-export default SilderHome;
+export default SilderList;

@@ -10,20 +10,35 @@ import {
   LogoutOutlined,
 } from "@ant-design/icons";
 import { motion } from "framer-motion";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { logoutAdmin } from "../../redux/auth/auth.slice";
 
 const { Header } = Layout;
 
 const HeaderAdmin = ({ collapsed, setCollapsed }) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const { adminInfo } = useSelector((state) => state.auth);
+
   const toggle = () => {
     setCollapsed(!collapsed);
+  };
+
+  const handleLogout = () => {
+    dispatch(logoutAdmin());
+    navigate("/admin");
   };
 
   const items = [
     {
       key: "1",
       label: (
-        <div className="flex items-center gap-4">
+        <div
+          onClick={() => navigate("/admin/settings")}
+          className="flex items-center gap-4"
+        >
           <SettingOutlined /> <span>Cài đặt</span>
         </div>
       ),
@@ -31,7 +46,7 @@ const HeaderAdmin = ({ collapsed, setCollapsed }) => {
     {
       key: "2",
       label: (
-        <div className="flex items-center gap-4">
+        <div onClick={handleLogout} className="flex items-center gap-4">
           <LogoutOutlined /> <span>Đăng xuất</span>
         </div>
       ),
@@ -72,9 +87,9 @@ const HeaderAdmin = ({ collapsed, setCollapsed }) => {
             className="ant-dropdown-link flex items-center"
             onClick={(e) => e.preventDefault()}
           >
-            <Avatar icon={<UserOutlined />} className="mr-2" />
+            <Avatar src={adminInfo.avatar.url} className="mr-2" />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-rose-700 font-extrabold text-sm text-center uppercase">
-              Admin
+              {adminInfo.name}
             </span>
           </a>
         </Dropdown>

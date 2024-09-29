@@ -8,6 +8,7 @@ import orderReducer from "./order/order.slice";
 import reviewReducer from "./review/review.slice";
 import brandReducer from "./brand/brand.slice";
 import userReducer from "./user/user.slice";
+import statisticalReducer from "./statistical/statistical.slice";
 
 const rootReducer = {
   product: productReducer,
@@ -19,6 +20,7 @@ const rootReducer = {
   review: reviewReducer,
   brand: brandReducer,
   user: userReducer,
+  statistical: statisticalReducer,
 };
 
 export const store = configureStore({

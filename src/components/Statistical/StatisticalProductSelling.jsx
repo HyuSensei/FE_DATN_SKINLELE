@@ -1,102 +1,100 @@
+import { Empty, Spin } from "antd";
 import React from "react";
 import ReactApexChart from "react-apexcharts";
 
-const StatisticalProductSelling = () => {
-  const series = [
-    {
-      data: [400, 430, 448, 470, 540, 580, 690, 1100, 1200, 1380],
-    },
-  ];
+const StatisticalProductSelling = ({ isLoading, topSellingProducts }) => {
+  const processedData = React.useMemo(() => {
+    if (!Array.isArray(topSellingProducts) || topSellingProducts.length === 0) {
+      return {
+        names: [],
+        quantities: [],
+      };
+    }
 
-  const options = {
-    chart: {
-      type: "bar",
-      height: 380,
-    },
-    plotOptions: {
-      bar: {
-        barHeight: "100%",
-        distributed: true,
-        horizontal: true,
-        dataLabels: {
-          position: "bottom",
-        },
+    const sortedProducts = [...topSellingProducts].sort(
+      (a, b) => a.totalSold - b.totalSold
+    );
+
+    return {
+      names: sortedProducts.map((product) => product.name),
+      quantities: sortedProducts.map((product) => product.totalSold),
+    };
+  }, [topSellingProducts]);
+
+  const chartData = {
+    series: [
+      {
+        name: "Số lượng bán",
+        data: processedData.quantities,
       },
-    },
-    colors: [
-      "#33b2df",
-      "#546E7A",
-      "#d4526e",
-      "#13d8aa",
-      "#A5978B",
-      "#2b908f",
-      "#f9a3a4",
-      "#90ee7e",
-      "#f48024",
-      "#69d2e7",
     ],
-    dataLabels: {
-      enabled: true,
-      textAnchor: "start",
-      style: {
-        colors: ["#fff"],
+    options: {
+      chart: {
+        type: "bar",
+        height: 350,
       },
-      formatter: function (val, opt) {
-        return opt.w.globals.labels[opt.dataPointIndex] + ": " + val;
-      },
-      offsetX: 0,
-      dropShadow: {
-        enabled: true,
-      },
-    },
-    stroke: {
-      width: 1,
-      colors: ["#fff"],
-    },
-    xaxis: {
-      categories: [
-        "South Korea",
-        "Canada",
-        "United Kingdom",
-        "Netherlands",
-        "Italy",
-        "France",
-        "Japan",
-        "United States",
-        "China",
-        "India",
-      ],
-    },
-    yaxis: {
-      labels: {
-        show: false,
-      },
-    },
-    tooltip: {
-      theme: "dark",
-      x: {
-        show: false,
-      },
-      y: {
-        title: {
-          formatter: function () {
-            return "";
-          },
+      plotOptions: {
+        bar: {
+          borderRadius: 0,
+          horizontal: true,
+          distributed: true,
+          barHeight: "80%",
+          isFunnel: true,
         },
+      },
+      colors: [
+        "#F44F5E",
+        "#E55A89",
+        "#D863B1",
+        "#CA6CD8",
+        "#B57BED",
+        "#8D95EB",
+        "#62ACEA",
+        "#4BC3E6",
+      ],
+      dataLabels: {
+        enabled: true,
+        formatter: function (val, opt) {
+          return `${val} - ${opt.w.globals.labels[opt.dataPointIndex]}`;
+        },
+        dropShadow: {
+          enabled: true,
+        },
+      },
+      xaxis: {
+        categories: processedData.names,
+      },
+      yaxis: {
+        labels: {
+          show: false,
+        },
+      },
+      legend: {
+        show: false,
       },
     },
   };
-  return (
-    <div>
-      <div id="chart">
-        <ReactApexChart
-          options={options}
-          series={series}
-          type="bar"
-          height={500}
-        />
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Spin />
       </div>
-      <div id="html-dist"></div>
+    );
+  }
+
+  if (processedData.names.length === 0) {
+    return <Empty />;
+  }
+
+  return (
+    <div className="w-full" id="chart">
+      <ReactApexChart
+        options={chartData.options}
+        series={chartData.series}
+        type="bar"
+        height={450}
+      />
     </div>
   );
 };

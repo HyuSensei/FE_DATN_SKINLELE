@@ -1,102 +1,102 @@
 import React from "react";
 import ReactApexChart from "react-apexcharts";
+import moment from "moment";
+import { Empty, Spin } from "antd";
+import { formatPrice } from "../../helpers/formatPrice";
 
-const StatisicalRevenue = () => {
+const StatisicalRevenue = ({ isLoading, monthlyRevenue }) => {
+  const currentYear = moment().year();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Spin />
+      </div>
+    );
+  }
+
+  if (monthlyRevenue.length === 0) {
+    return <Empty />;
+  }
+
   const series = [
     {
-      name: "Inflation",
-      data: [2.3, 3.1, 4.0, 10.1, 4.0, 3.6, 3.2, 2.3, 1.4, 0.8, 0.5, 0.2],
+      name: "Doanh thu",
+      data: monthlyRevenue.map((item) => [
+        moment(`${currentYear}-${item.month}`, "YYYY-MMM").valueOf(),
+        item.revenue,
+      ]),
     },
   ];
 
   const options = {
     chart: {
+      id: "area-statistica-revenue",
+      type: "area",
       height: 350,
-      type: "bar",
-    },
-    plotOptions: {
-      bar: {
-        borderRadius: 10,
-        dataLabels: {
-          position: "top", // top, center, bottom
-        },
+      zoom: {
+        autoScaleYaxis: true,
       },
     },
     dataLabels: {
-      enabled: true,
-      formatter: function (val) {
-        return val + "%";
-      },
-      offsetY: -20,
-      style: {
-        fontSize: "14px",
-        colors: ["#3b71ca"],
-      },
+      enabled: false,
+    },
+    markers: {
+      size: 5,
     },
     xaxis: {
-      categories: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
-      position: "top",
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
-      },
-      crosshairs: {
-        fill: {
-          type: "gradient",
-          gradient: {
-            colorFrom: "#D8E3F0",
-            colorTo: "#BED1E6",
-            stops: [0, 100],
-            opacityFrom: 0.4,
-            opacityTo: 0.5,
-          },
+      type: "datetime",
+      labels: {
+        format: "MMM yyyy",
+        formatter: (val) => {
+          return moment(val).format("MMM");
         },
       },
-      tooltip: {
-        enabled: true,
-      },
+      tickAmount: 12,
     },
     yaxis: {
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
-      },
       labels: {
-        show: false,
-        formatter: function (val) {
-          return val + "%";
+        formatter: (value) => {
+          return formatPrice(value) + " VND";
         },
+      },
+    },
+    tooltip: {
+      x: {
+        formatter: (val) => {
+          return moment(val).format("MMM YYYY");
+        },
+      },
+      y: {
+        formatter: (value) => {
+          return formatPrice(value) + " VND";
+        },
+        title: {
+          formatter: () => "Doanh thu",
+        },
+      },
+    },
+    fill: {
+      type: "gradient",
+      gradient: {
+        shadeIntensity: 1,
+        opacityFrom: 0.7,
+        opacityTo: 0.9,
+        stops: [0, 100],
       },
     },
   };
+
   return (
-    <div>
-      <div id="chart">
+    <div className="m-auto" id="chart">
+      <div id="chart-timeline">
         <ReactApexChart
           options={options}
           series={series}
-          type="bar"
+          type="area"
           height={450}
         />
       </div>
-      <div id="html-dist"></div>
     </div>
   );
 };

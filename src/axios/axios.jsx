@@ -5,8 +5,6 @@ const API_URL = import.meta.env.VITE_APP_API_URl;
 const TIMEOUT = 10000;
 
 const createAxiosInstance = () => {
-  const accessTokenAdmin = get("ACCESS_TOKEN_ADMIN");
-  const accessToken = get("ACCESS_TOKEN");
   const instance = axios.create({
     baseURL: API_URL,
     timeout: TIMEOUT,
@@ -16,11 +14,14 @@ const createAxiosInstance = () => {
   });
 
   instance.interceptors.request.use((config) => {
+    const accessTokenAdmin = get("ACCESS_TOKEN_ADMIN");
+    const accessToken = get("ACCESS_TOKEN");
+
     if (accessToken) {
-      config.headers["X-User-Header"] = `Bearer ${accessToken}`;
+      config.headers["X-User-Header"] = accessToken;
     }
     if (accessTokenAdmin) {
-      config.headers["X-Admin-Header"] = `Bearer ${accessTokenAdmin}`;
+      config.headers["X-Admin-Header"] = accessTokenAdmin;
     }
     return config;
   });

@@ -63,15 +63,12 @@ const TableOrder = ({
             {products.map((product, index) => (
               <div key={index} className="flex gap-2 items-center">
                 <img
-                  src={product.color.image}
+                  src={product.image}
                   alt={product.name}
                   className="w-10 h-10 object-cover rounded-md"
                 />
                 <div className="flex flex-col">
                   <span className="font-medium text-sm">{product.name}</span>
-                  <span className="text-xs text-gray-500">
-                    {product.color.name} - {product.quantity}
-                  </span>
                 </div>
               </div>
             ))}

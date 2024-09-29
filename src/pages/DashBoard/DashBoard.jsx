@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Card, Tooltip, Progress } from "antd";
+import React, { useEffect } from "react";
+import { Card, Tooltip } from "antd";
 import { motion } from "framer-motion";
 import { PiShoppingBagOpenFill } from "react-icons/pi";
 import { HiMiniUserGroup } from "react-icons/hi2";
@@ -8,6 +8,10 @@ import { FaMoneyCheck } from "react-icons/fa6";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 import StatisticalProductSelling from "../../components/Statistical/StatisticalProductSelling";
 import StatisicalRevenue from "../../components/Statistical/StatisicalRevenue";
+import StatisticalTopReview from "../../components/Statistical/StatisticalTopReview";
+import { useDispatch, useSelector } from "react-redux";
+import { formatPrice } from "../../helpers/formatPrice";
+import { getStatisticalAdmin } from "../../redux/statistical/statistical.thunk";
 
 const DashboardCard = ({
   title,
@@ -66,21 +70,20 @@ const DashboardCard = ({
 );
 
 const DashBoard = () => {
-  const [chartWidth, setChartWidth] = useState("100%");
+  const dispatch = useDispatch();
+  const {
+    isLoading,
+    totalOrders,
+    totalProducts,
+    totalCustomers,
+    totalOrderAmount,
+    monthlyRevenue,
+    topSellingProducts,
+    topReviewedProducts,
+  } = useSelector((state) => state.statistical);
 
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setChartWidth("100%");
-      } else {
-        setChartWidth("90%");
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    handleResize();
-
-    return () => window.removeEventListener("resize", handleResize);
+    dispatch(getStatisticalAdmin());
   }, []);
 
   return (
@@ -88,7 +91,7 @@ const DashBoard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <DashboardCard
           title="Tổng đơn hàng"
-          value="100"
+          value={totalOrders}
           icon={PiShoppingBagOpenFill}
           color="#19c37d"
           trend="up"
@@ -96,7 +99,7 @@ const DashBoard = () => {
         />
         <DashboardCard
           title="Tổng tiền đơn hàng"
-          value="1.000.000 VND"
+          value={`${formatPrice(totalOrderAmount)} VND`}
           icon={FaMoneyCheck}
           color="#32bffc"
           trend="up"
@@ -104,7 +107,7 @@ const DashBoard = () => {
         />
         <DashboardCard
           title="Tổng khách hàng"
-          value="1000"
+          value={totalCustomers}
           icon={HiMiniUserGroup}
           color="#ff8a4d"
           trend="up"
@@ -112,7 +115,7 @@ const DashBoard = () => {
         />
         <DashboardCard
           title="Tổng sản phẩm"
-          value="1000"
+          value={totalProducts}
           icon={GiLipstick}
           color="#ef5051"
           trend="down"
@@ -125,38 +128,42 @@ const DashBoard = () => {
           <h2 className="uppercase text-sm font-semibold text-[#14134f]">
             Thống kê doanh thu
           </h2>
-          <div style={{ width: chartWidth }}>
-            <StatisicalRevenue />
+          <div className={`max-w-[550px] m-auto overflow-hidden`}>
+            <StatisicalRevenue
+              {...{
+                isLoading,
+                monthlyRevenue,
+              }}
+            />
           </div>
         </Card>
 
         <Card className="shadow-lg" bordered={false}>
           <h2 className="uppercase text-sm font-semibold text-[#14134f]">
-            Thống kê sản phẩm bán chạy
+            Top đánh giá sản phẩm
           </h2>
-          <div style={{ width: chartWidth }}>
-            <StatisticalProductSelling />
+          <div className={`max-w-[1100px] m-auto overflow-hidden`}>
+            <StatisticalTopReview
+              {...{
+                isLoading,
+                topReviewedProducts,
+              }}
+            />
           </div>
         </Card>
       </div>
 
       <Card className="mt-6 shadow-lg" bordered={false}>
         <h2 className="uppercase text-sm font-semibold text-[#14134f]">
-          Mục tiêu kinh doanh
+          Thống kê sản phẩm bán chạy
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-2">
-          <div>
-            <h3 className="font-medium mb-2">Doanh thu</h3>
-            <Progress percent={75} status="active" strokeColor="#32bffc" />
-          </div>
-          <div>
-            <h3 className="font-medium mb-2">Khách hàng mới</h3>
-            <Progress percent={88} status="active" strokeColor="#ff8a4d" />
-          </div>
-          <div>
-            <h3 className="font-medium mb-2">Tỷ lệ hài lòng</h3>
-            <Progress percent={92} status="active" strokeColor="#19c37d" />
-          </div>
+        <div className={`max-w-[1100px] m-auto`}>
+          <StatisticalProductSelling
+            {...{
+              isLoading,
+              topSellingProducts,
+            }}
+          />
         </div>
       </Card>
     </div>

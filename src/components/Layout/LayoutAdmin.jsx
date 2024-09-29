@@ -3,7 +3,6 @@ import { Layout } from "antd";
 import { motion } from "framer-motion";
 import useScreen from "../../hook/useScreen";
 import HeaderAdmin from "../Header/HeaderAdmin";
-import { useNavigate } from "react-router-dom";
 import SiderAdmin from "../Sider/SiderAdmin";
 
 const { Content, Footer } = Layout;
@@ -27,6 +26,7 @@ const LayoutAdmin = ({ children, title }) => {
         <HeaderAdmin {...{ collapsed, setCollapsed }} />
         <Content className="m-2 p-2 md:m-4 md:p-4 bg-white rounded-lg shadow-md">
           <motion.div
+            className="w-full"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
