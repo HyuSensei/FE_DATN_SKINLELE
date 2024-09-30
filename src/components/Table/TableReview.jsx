@@ -1,6 +1,10 @@
 import React, { useMemo } from "react";
-import { Table, Rate, Image, Tooltip, Tag, Pagination } from "antd";
-import { FaCheck, FaTimes } from "react-icons/fa";
+import { Table, Rate, Image, Tooltip, Pagination, Popconfirm, Switch, message } from "antd";
+import { createIcon } from "../../ultis/createIcon";
+import { MdOutlineDeleteOutline } from "react-icons/md";
+import { useDispatch } from 'react-redux'
+import { deleteReview, getReviewList, updateReview } from "../../redux/review/review.thunk";
+import { deleteFile } from "../../helpers/uploadCloudinary";
 
 const TableReview = ({
   reviews = [],
@@ -10,6 +14,7 @@ const TableReview = ({
   totalItems,
   setPaginate,
 }) => {
+  const dispatch = useDispatch()
   const columns = useMemo(
     () => [
       {
@@ -23,16 +28,16 @@ const TableReview = ({
         dataIndex: "product",
         key: "product",
         render: (product) => (
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
             <Image
-              src={product.image}
+              src={product.mainImage.url}
               alt={product.name}
               width={50}
               height={50}
-              className="object-cover mr-2"
+              className="object-cover mr-2 rounded-md"
             />
             <Tooltip title={product.name}>
-              <span className="truncate max-w-[150px]">{product.name}</span>
+              <span className="truncate-2-lines max-w-[150px] text-sm">{product.name}</span>
             </Tooltip>
           </div>
         ),
@@ -47,16 +52,47 @@ const TableReview = ({
         title: "Đánh giá",
         dataIndex: "rate",
         key: "rate",
-        render: (rate) => <Rate disabled defaultValue={rate} />,
+        render: (rate) => <Rate
+          disabled
+          value={rate}
+          character={({ index }) =>
+            createIcon({
+              index: index + 1,
+              rate: rate,
+              hoverValue: rate,
+              width: "12px",
+              height: "12px",
+            })
+          }
+          className="mt-1"
+        />,
       },
       {
         title: "Bình luận",
         dataIndex: "comment",
         key: "comment",
-        render: (comment) => (
-          <Tooltip title={comment}>
-            <span className="truncate max-w-[200px]">{comment}</span>
-          </Tooltip>
+        render: (_, record) => (
+          <div>
+            <Tooltip title={record.comment}>
+              <span className="truncate max-w-[200px] block">{record.comment}</span>
+            </Tooltip>
+            {record.images && record.images.length > 0 && (
+              <div className="mt-2">
+                <Image.PreviewGroup>
+                  {record.images.map((image, index) => (
+                    <Image
+                      key={index}
+                      src={image.url}
+                      alt={`Review image ${index + 1}`}
+                      width={50}
+                      height={50}
+                      className="mr-2 object-cover rounded"
+                    />
+                  ))}
+                </Image.PreviewGroup>
+              </div>
+            )}
+          </div>
         ),
       },
       {
@@ -66,32 +102,36 @@ const TableReview = ({
         render: (date) => new Date(date).toLocaleDateString(),
       },
       {
-        title: "Trạng thái",
-        dataIndex: "display",
-        key: "display",
-        render: (display) => (
-          <Tag color={display ? "green" : "red"}>
-            {display ? "Hiển thị" : "Ẩn"}
-          </Tag>
-        ),
-      },
-      {
         title: "Thao tác",
         key: "action",
         render: (_, record) => (
-          <div className="flex space-x-2">
-            <Tooltip
-              title={record.display ? "Ẩn đánh giá" : "Hiển thị đánh giá"}
-            >
-              <button
-                className={`p-2 rounded ${
-                  record.display ? "bg-red-500" : "bg-green-500"
-                } text-white`}
-                onClick={() => handleToggleDisplay(record._id)}
-              >
-                {record.display ? <FaTimes /> : <FaCheck />}
-              </button>
+          <div className="flex space-x-4 items-center">
+            <Tooltip title={record.display ? "Ẩn đánh giá" : "Hiển thị"}>
+              <Switch
+                checked={record.display}
+                onChange={(checked) => handleToggleStatus(record._id, checked)}
+              />
             </Tooltip>
+            <Popconfirm
+              className="max-w-40"
+              placement="topLeft"
+              title={"Xác nhận xóa đánh giá"}
+              onConfirm={() => removeReview(record._id, record)}
+              okText="Xóa"
+              cancelText="Hủy"
+              okButtonProps={{
+                loading: isLoading,
+              }}
+              destroyTooltipOnHide={true}
+            >
+              <Tooltip title="Xóa">
+                <button
+                  className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors"
+                >
+                  <MdOutlineDeleteOutline />
+                </button>
+              </Tooltip>
+            </Popconfirm>
           </div>
         ),
       },
@@ -99,10 +139,30 @@ const TableReview = ({
     [page, pageSize]
   );
 
-  const handleToggleDisplay = (reviewId) => {
-    // Implement the logic to toggle the display status of the review
-    console.log("Toggle display for review:", reviewId);
+  const handleToggleStatus = async (id, display) => {
+    const res = await dispatch(updateReview({
+      id, payload: {
+        display
+      }
+    })).unwrap()
+    if (res.success) {
+      dispatch(getReviewList({ page, pageSize }))
+      message.success(res.message)
+      return
+    }
   };
+
+  const removeReview = async (id, review) => {
+    const res = await dispatch(deleteReview(id)).unwrap()
+    if (res.success) {
+      if (review.images && review.images.length > 0) {
+        await Promise.all(review.images.map(async (image) => await deleteFile(image.publicId)));
+      }
+      dispatch(getReviewList({ page, pageSize }))
+      message.success(res.message)
+      return
+    }
+  }
 
   return (
     <>

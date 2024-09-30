@@ -1,8 +1,10 @@
-import React, { useMemo } from "react";
-import { Table, Tooltip, Pagination } from "antd";
-import { FaEye } from "react-icons/fa";
+import React, { useMemo, useState } from "react";
+import { Table, Tooltip, Pagination, Popconfirm, message } from "antd";
 import { GrEdit } from "react-icons/gr";
 import { MdOutlineDeleteOutline } from "react-icons/md";
+import ModalBrandAction from "../Modal/ModalBrandAction";
+import { useDispatch } from "react-redux";
+import { deleteBrand, getBrandList } from "../../redux/brand/brand.thunk";
 
 const TableBrand = ({
   brands = [],
@@ -12,6 +14,22 @@ const TableBrand = ({
   totalItems,
   setPaginate,
 }) => {
+  const dispatch = useDispatch();
+  const [brand, setBrand] = useState({})
+  const [open, setOpen] = useState(false)
+
+  const removeBrand = async (id) => {
+    const res = await dispatch(deleteBrand(id)).unwrap()
+    if (res.success) {
+      dispatch(getBrandList({
+        page,
+        pageSize
+      }))
+      message.success(res.message)
+      return
+    }
+  }
+
   const columns = useMemo(
     () => [
       {
@@ -43,21 +61,35 @@ const TableBrand = ({
         width: 120,
         render: (_, record) => (
           <div className="flex gap-2 items-center text-[#00246a]">
-            <Tooltip title="Xem">
-              <button className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
-                <FaEye />
-              </button>
-            </Tooltip>
             <Tooltip title="Sửa">
-              <button className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
+              <button onClick={() => {
+                setBrand(record)
+                setOpen(true)
+              }} className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
                 <GrEdit />
               </button>
             </Tooltip>
-            <Tooltip title="Xóa">
-              <button className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
-                <MdOutlineDeleteOutline />
-              </button>
-            </Tooltip>
+            <Popconfirm
+              className="max-w-40"
+              placement="topLeft"
+              title={"Xác nhận xóa thương hiệu"}
+              description={record?.name}
+              onConfirm={() => removeBrand(record._id)}
+              okText="Xóa"
+              cancelText="Hủy"
+              okButtonProps={{
+                loading: isLoading,
+              }}
+              destroyTooltipOnHide={true}
+            >
+              <Tooltip title="Xóa">
+                <button
+                  className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors"
+                >
+                  <MdOutlineDeleteOutline />
+                </button>
+              </Tooltip>
+            </Popconfirm>
           </div>
         ),
       },
@@ -67,6 +99,11 @@ const TableBrand = ({
 
   return (
     <>
+      <ModalBrandAction {...{
+        open,
+        setOpen,
+        brand
+      }} />
       <Table
         columns={columns}
         dataSource={brands}

@@ -49,10 +49,10 @@ const HeaderUser = () => {
           children:
             child.children && child.children.length > 0
               ? child.children.map((grandChild) => ({
-                  key: grandChild._id,
-                  label: grandChild.name,
-                  path: `/categories/${grandChild.slug}`,
-                }))
+                key: grandChild._id,
+                label: grandChild.name,
+                path: `/categories/${grandChild.slug}`,
+              }))
               : null,
         }));
       }
@@ -94,10 +94,10 @@ const HeaderUser = () => {
       children:
         isArray(brands) && brands.length > 0
           ? brands.map((item) => ({
-              key: item._id,
-              label: item.name,
-              path: `/brands/${item.slug}`,
-            }))
+            key: item._id,
+            label: <div className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 font-extrabold text-sm text-center uppercase">{item.name}</div>,
+            path: `/brands/${item.slug}`,
+          }))
           : [],
     },
     ...createMenuCategoryItems(categories),
@@ -183,7 +183,7 @@ const HeaderUser = () => {
     },
   ];
 
-  const handleSearch = (value) => {};
+  const handleSearch = (value) => { };
 
   return (
     <>

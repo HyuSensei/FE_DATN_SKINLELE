@@ -25,7 +25,7 @@ const ManageReview = () => {
 
   const [filters, setFilters] = useState({
     customerName: "",
-    rate: "",
+    rate: 0,
     productName: "",
     fromDate: "",
     toDate: "",
@@ -39,7 +39,7 @@ const ManageReview = () => {
     debounce((name, value) => {
       setFilters((prev) => ({ ...prev, [name]: value }));
       setPaginate((prev) => ({ ...prev, page: 1 }));
-    }, 300),
+    }, 1000),
     []
   );
 
@@ -58,6 +58,7 @@ const ManageReview = () => {
               onChange={(e) =>
                 handleFilterChange("customerName", e.target.value)
               }
+              allowClear
             />
           </Col>
           <Col xs={24} sm={12} md={6}>
@@ -67,6 +68,7 @@ const ManageReview = () => {
               onChange={(e) =>
                 handleFilterChange("productName", e.target.value)
               }
+              allowClear
             />
           </Col>
           <Col xs={24} sm={12} md={6}>
@@ -74,13 +76,14 @@ const ManageReview = () => {
               placeholder="Đánh giá"
               style={{ width: "100%" }}
               onChange={(value) => handleFilterChange("rate", value)}
+              allowClear
             >
               <Select.Option value="">Tất cả</Select.Option>
-              <Option value="1">
+              <Select.Option value="1">
                 <div className="flex gap-2 items-center">
                   <span>1</span> <FaStar className="text-[#feb705]" />
                 </div>
-              </Option>
+              </Select.Option>
               <Select.Option value="2">
                 <div className="flex gap-2 items-center">
                   <span>2</span> <FaStar className="text-[#feb705]" />
@@ -114,7 +117,7 @@ const ManageReview = () => {
                   toDate: dateStrings[1],
                 }));
                 dispatch(
-                  getOrderListAdmin({
+                  getReviewList({
                     ...paginate,
                     ...filters,
                     fromDate: dateStrings[0],

@@ -28,7 +28,11 @@ const initialState = {
 export const brandSlice = createSlice({
   name: "brand",
   initialState,
-  reducers: {},
+  reducers: {
+    setBrands(state, action) {
+      state.brands = action.payload
+    }
+  },
   extraReducers: (builder) => {
     builder
       //Get brand add product
@@ -97,4 +101,5 @@ export const brandSlice = createSlice({
   },
 });
 
+export const { setBrands } = brandSlice.actions;
 export default brandSlice.reducer;

@@ -1,6 +1,11 @@
 import React, { useMemo } from "react";
-import { Table, Avatar, Tag, Tooltip, Pagination, Switch } from "antd";
+import { Table, Avatar, Tag, Tooltip, Pagination, Switch, message, Popconfirm } from "antd";
 import { UserOutlined } from "@ant-design/icons";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteUser, getUserList, updateUser } from "../../redux/user/user.thunk";
+import { setUsers } from "../../redux/user/user.slice";
+import { MdOutlineDeleteOutline } from "react-icons/md";
+import { deleteFile } from "../../helpers/uploadCloudinary";
 
 const TableUser = ({
   users = [],
@@ -10,6 +15,8 @@ const TableUser = ({
   totalItems,
   setPaginate,
 }) => {
+
+  const dispatch = useDispatch()
   const columns = useMemo(
     () => [
       {
@@ -65,13 +72,34 @@ const TableUser = ({
         title: "Thao tác",
         key: "action",
         render: (_, record) => (
-          <div className="flex space-x-2">
+          <div className="flex space-x-4 items-center">
             <Tooltip title={record.isActive ? "Vô hiệu hóa" : "Kích hoạt"}>
               <Switch
                 checked={record.isActive}
                 onChange={(checked) => handleToggleStatus(record._id, checked)}
               />
             </Tooltip>
+            <Popconfirm
+              className="max-w-40"
+              placement="topLeft"
+              title={"Xác nhận xóa người dùng"}
+              description={record?.name}
+              onConfirm={() => removeUser(record._id, record)}
+              okText="Xóa"
+              cancelText="Hủy"
+              okButtonProps={{
+                loading: isLoading,
+              }}
+              destroyTooltipOnHide={true}
+            >
+              <Tooltip title="Xóa">
+                <button
+                  className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors"
+                >
+                  <MdOutlineDeleteOutline />
+                </button>
+              </Tooltip>
+            </Popconfirm>
           </div>
         ),
       },
@@ -79,9 +107,33 @@ const TableUser = ({
     [page, pageSize]
   );
 
-  const handleToggleStatus = (userId, status) => {
-    // Implement the logic to toggle the user's status
-    console.log("Toggle status for user:", userId, "New status:", status);
+  const handleToggleStatus = async (id, isActive) => {
+    const res = await dispatch(updateUser({
+      id,
+      payload: {
+        isActive
+      }
+    })).unwrap()
+    if (res.success) {
+      dispatch(getUserList({
+        page, pageSize
+      }))
+      message.success(res.message)
+      return
+    }
+  };
+
+  const removeUser = async (id, user) => {
+    const res = await dispatch(deleteUser(id)).unwrap();
+
+    if (res.success) {
+      if (user.avatar.publicId) await deleteFile(user.avatar.publicId)
+      dispatch(getUserList({
+        page, pageSize
+      }))
+      message.success(res.message)
+      return
+    }
   };
 
   return (

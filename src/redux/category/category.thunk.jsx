@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "../../axios/axios";
+import { message } from "antd";
 
 export const getCategoryAdmin = createAsyncThunk(
   "category/getCategoryAdmin",
@@ -25,30 +26,36 @@ export const getAllCategory = createAsyncThunk(
 
 export const createCategory = createAsyncThunk(
   "category/createCategory",
-  async () => {
+  async (payload, { rejectWithValue }) => {
     try {
+      return await axios.post("/admin/categories", payload);
     } catch (error) {
-      console.log(error);
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
     }
   }
 );
 
 export const updateCategory = createAsyncThunk(
   "category/updateCategory",
-  async () => {
+  async (payload, { rejectWithValue }) => {
     try {
+      return await axios.put(`/admin/categories/${payload.id}`, payload);
     } catch (error) {
-      console.log(error);
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
     }
   }
 );
 
 export const deleteCategory = createAsyncThunk(
   "category/deleteCategory",
-  async () => {
+  async (id, { rejectWithValue }) => {
     try {
+      return await axios.delete(`/admin/categories/${id}`);
     } catch (error) {
-      console.log(error);
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
     }
   }
 );
@@ -80,7 +87,7 @@ export const getCategoryList = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       return await axios.get(
-        `/admin/categories?page=${payload.page}&pageSize=${payload.pageSize}&name=${payload.name}`
+        `/admin/categories?page=${payload.page}&pageSize=${payload.pageSize}&name=${payload.name || ""}`
       );
     } catch (error) {
       return rejectWithValue(error.response.data);

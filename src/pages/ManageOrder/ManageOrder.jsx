@@ -74,6 +74,7 @@ const ManageOrder = () => {
               placeholder="Tìm kiếm khách hàng..."
               prefix={<SearchOutlined className="text-gray-400" />}
               onChange={(e) => handleFilterChange(e.target.value, "search")}
+              allowClear
             />
           </Col>
           <Col xs={24} md={16} lg={18}>
@@ -88,13 +89,7 @@ const ManageOrder = () => {
                   {orderStatus.length > 0 &&
                     orderStatus.map((item) => (
                       <Select.Option key={item.index} value={item.value}>
-                        <div
-                          className="font-medium text-base"
-                          style={{ color: item.color }}
-                        >
-                          {" "}
-                          {item.name}
-                        </div>
+                        {item.name}
                       </Select.Option>
                     ))}
                 </Select>

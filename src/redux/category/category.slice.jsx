@@ -17,12 +17,17 @@ const initialState = {
     totalItems: 0,
     totalPage: 0,
   },
+  categoriesAll: [],
 };
 
 export const categorySlice = createSlice({
   name: "category",
   initialState,
-  reducers: {},
+  reducers: {
+    setCategories(state, action) {
+      state.categories = action.payload
+    }
+  },
   extraReducers: (builder) => {
     builder
       //Get category by create product
@@ -62,7 +67,7 @@ export const categorySlice = createSlice({
       .addCase(getCategoryAdmin.fulfilled, (state, action) => {
         if (action.payload.success) {
           state.isLoading = false;
-          state.categories = action.payload.data;
+          state.categoriesAll = action.payload.data;
         }
       })
       .addCase(getCategoryAdmin.rejected, (state, action) => {
@@ -103,4 +108,5 @@ export const categorySlice = createSlice({
   },
 });
 
+export const { setCategories } = categorySlice.actions;
 export default categorySlice.reducer;

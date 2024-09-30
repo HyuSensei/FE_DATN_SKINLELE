@@ -2,7 +2,6 @@ import React from "react";
 import { Card, Empty, Rate, Spin } from "antd";
 import { MessageOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
-import SilderList from "../Slider/SilderList";
 
 const StatisticalTopReview = ({ isLoading, topReviewedProducts }) => {
   if (isLoading) {

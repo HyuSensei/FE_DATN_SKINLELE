@@ -6,8 +6,6 @@ import debounce from "lodash/debounce";
 import TableUser from "../../components/Table/TableUser";
 import { getUserList } from "../../redux/user/user.thunk";
 
-const { Option } = Select;
-
 const ManageUser = () => {
   const dispatch = useDispatch();
   const { users, pagination, isLoading } = useSelector((state) => state.user);
@@ -44,7 +42,7 @@ const ManageUser = () => {
     debounce((name, value) => {
       setFilters((prev) => ({ ...prev, [name]: value }));
       setPaginate((prev) => ({ ...prev, page: 1 }));
-    }, 300),
+    }, 1000),
     []
   );
 
@@ -61,10 +59,12 @@ const ManageUser = () => {
               placeholder="Tìm kiếm theo tên hoặc email"
               prefix={<SearchOutlined />}
               onChange={(e) => handleFilterChange("search", e.target.value)}
+              allowClear
             />
           </Col>
           <Col xs={24} sm={12} md={12}>
             <Select
+              allowClear
               placeholder="Trạng thái"
               style={{ width: "100%" }}
               onChange={(value) => handleFilterChange("status", value)}

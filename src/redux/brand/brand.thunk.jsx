@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "../../axios/axios";
+import { message } from "antd";
 
 export const getBrandByCreatePro = createAsyncThunk(
   "brand/getBrandByCreatePro",
@@ -17,7 +18,7 @@ export const getBrandList = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       return await axios.get(
-        `/admin/brands?page=${payload.page}&pageSize=${payload.pageSize}&name=${payload.name}`
+        `/admin/brands?page=${payload.page}&pageSize=${payload.pageSize}&name=${payload.name || ""}`
       );
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -48,3 +49,40 @@ export const getProductByBrand = createAsyncThunk(
     }
   }
 );
+
+export const createBrand = createAsyncThunk(
+  "brand/createBrand",
+  async (payload, { rejectWithValue }) => {
+    try {
+      return await axios.post("/admin/brands", payload);
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const updateBrand = createAsyncThunk(
+  "brand/updateBrand",
+  async ({ id, payload }, { rejectWithValue }) => {
+    try {
+      return await axios.put(`/admin/brands/${id}`, payload);
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const deleteBrand = createAsyncThunk(
+  "brand/deleteBrand",
+  async (id, { rejectWithValue }) => {
+    try {
+      return await axios.delete(`/admin/brands/${id}`);
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+

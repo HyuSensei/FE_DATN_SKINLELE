@@ -4,12 +4,11 @@ import { Input, Button } from "antd";
 import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
 import TableCategory from "../../components/Table/TableCategory";
 import { getCategoryList } from "../../redux/category/category.thunk";
-import { useNavigate } from "react-router-dom";
 import debounce from "lodash/debounce";
+import ModalCategoryAction from "../../components/Modal/ModalCategoryAction";
 
 const ManageCategory = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const { categories, pagination, isLoading } = useSelector(
     (state) => state.category
   );
@@ -17,11 +16,13 @@ const ManageCategory = () => {
   const [paginate, setPaginate] = useState({
     page: 1,
     pageSize: 10,
+    totalPage: 0,
+    totalItems: 0,
   });
-
   const [filter, setFilter] = useState({
     name: "",
   });
+  const [open, setOpen] = useState(false)
 
   useEffect(() => {
     dispatch(getCategoryList({ ...paginate, ...filter }));
@@ -33,6 +34,8 @@ const ManageCategory = () => {
         ...prev,
         page: pagination.page,
         pageSize: pagination.pageSize,
+        totalPage: pagination.totalPage,
+        totalItems: pagination.totalItems,
       }));
     }
   }, [pagination]);
@@ -55,16 +58,23 @@ const ManageCategory = () => {
 
   return (
     <div className="p-4">
+      <ModalCategoryAction {...{
+        page: paginate.page,
+        pageSize: paginate.pageSize,
+        open,
+        setOpen
+      }} />
       <div className="mb-4 bg-white p-4 rounded-md shadow-lg flex gap-4 items-center">
         <Input
           size="large"
           placeholder="Tìm kiếm danh mục..."
           prefix={<SearchOutlined />}
           onChange={handleFilterChange}
+          allowClear
         />
         <Button
           size="large"
-          onClick={() => navigate("/admin/categories/create")}
+          onClick={() => setOpen(true)}
           type="primary"
           icon={<PlusOutlined />}
           className="bg-indigo-600 hover:bg-indigo-700"

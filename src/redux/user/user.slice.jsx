@@ -16,7 +16,11 @@ const initialState = {
 export const userSlice = createSlice({
   name: "user",
   initialState,
-  reducers: {},
+  reducers: {
+    setUsers(state, action) {
+      state.users = action.payload
+    }
+  },
   extraReducers: (builder) => {
     builder
       //Get user list admin
@@ -37,4 +41,5 @@ export const userSlice = createSlice({
   },
 });
 
+export const { setUsers } = userSlice.actions;
 export default userSlice.reducer;

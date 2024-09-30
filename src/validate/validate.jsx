@@ -123,3 +123,20 @@ export const validateOrderSchema = Yup.object({
     name: Yup.string().required("Tên phường/xã không được để trống"),
   }),
 });
+
+export const validateCategoryActionSchema = Yup.object().shape({
+  name: Yup.string()
+    .trim()
+    .required("Vui lòng nhập tên danh mục")
+    .min(2, "Tên danh mục phải có ít nhất 2 ký tự")
+    .max(100, "Tên danh mục không được vượt quá 100 ký tự"),
+
+  level: Yup.number()
+    .required("Vui lòng chọn cấp danh mục"),
+});
+
+export const validateBrandActionSchema = Yup.object().shape({
+  name: Yup.string()
+    .trim()
+    .required("Vui lòng nhập tên thương hiệu")
+});

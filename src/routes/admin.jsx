@@ -260,7 +260,7 @@ const adminRoutes = [
     path: "/admin/dashboard",
     element: Dashboard,
     title: "Dashboard",
-    layoutTitle: "Hi 👋, Wellcome Admin !",
+    layoutTitle: "Hi 👋, Wellcome Admin SkinLeLe!",
     isProtected: true,
   },
   {

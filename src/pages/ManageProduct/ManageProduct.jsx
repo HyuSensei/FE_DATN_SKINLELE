@@ -74,6 +74,7 @@ const ManageProduct = () => {
             placeholder="Tìm kiếm sản phẩm..."
             prefix={<SearchOutlined className="text-gray-400" />}
             onChange={(e) => handleFilterChange(e.target.value, "name")}
+            allowClear
           />
           <Select
             placeholder="Danh mục"

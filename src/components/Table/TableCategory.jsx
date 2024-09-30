@@ -1,8 +1,11 @@
-import React, { useMemo } from "react";
-import { Table, Tooltip, Pagination, Tag } from "antd";
-import { FaEye } from "react-icons/fa";
+import React, { useMemo, useState } from "react";
+import { Table, Tooltip, Pagination, Tag, Popconfirm, message } from "antd";
 import { GrEdit } from "react-icons/gr";
 import { MdOutlineDeleteOutline } from "react-icons/md";
+import ModalCategoryAction from "../Modal/ModalCategoryAction";
+import { useDispatch } from "react-redux";
+import { deleteCategory } from "../../redux/category/category.thunk";
+import { setCategories } from "../../redux/category/category.slice";
 
 const TableCategory = ({
   categories = [],
@@ -12,6 +15,22 @@ const TableCategory = ({
   totalItems,
   setPaginate,
 }) => {
+  const dispatch = useDispatch()
+  const [open, setOpen] = useState(false)
+  const [category, setCategory] = useState({})
+
+  const removeCategory = async (id) => {
+    const res = await dispatch(deleteCategory(id)).unwrap();
+    if (res.success) {
+      const newCategories = categories.filter((item) => (
+        item._id !== id
+      ))
+      message.success(res.message)
+      dispatch(setCategories(newCategories))
+      return
+    }
+  }
+
   const columns = useMemo(
     () => [
       {
@@ -68,21 +87,35 @@ const TableCategory = ({
         width: 120,
         render: (_, record) => (
           <div className="flex gap-2 items-center text-[#00246a]">
-            <Tooltip title="Xem">
-              <button className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
-                <FaEye />
-              </button>
-            </Tooltip>
             <Tooltip title="Sửa">
-              <button className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
+              <button onClick={() => {
+                setCategory(record)
+                setOpen(true)
+              }} className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
                 <GrEdit />
               </button>
             </Tooltip>
-            <Tooltip title="Xóa">
-              <button className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
-                <MdOutlineDeleteOutline />
-              </button>
-            </Tooltip>
+            <Popconfirm
+              className="max-w-40"
+              placement="topLeft"
+              title={"Xác nhận xóa thông tin danh mục"}
+              description={record?.name}
+              onConfirm={() => removeCategory(record._id)}
+              okText="Xóa"
+              cancelText="Hủy"
+              okButtonProps={{
+                loading: isLoading,
+              }}
+              destroyTooltipOnHide={true}
+            >
+              <Tooltip title="Xóa">
+                <button
+                  className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors"
+                >
+                  <MdOutlineDeleteOutline />
+                </button>
+              </Tooltip>
+            </Popconfirm>
           </div>
         ),
       },
@@ -92,6 +125,14 @@ const TableCategory = ({
 
   return (
     <>
+      <ModalCategoryAction {...{
+        page,
+        pageSize,
+        category,
+        setCategory,
+        open,
+        setOpen
+      }} />
       <Table
         columns={columns}
         dataSource={categories}

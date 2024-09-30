@@ -62,7 +62,7 @@ const ModalEditProduct = ({ open = false, setOpen, data = {}, setData }) => {
   }, [open, dispatch]);
 
   useEffect(() => {
-    if (data && categories.length > 0) {
+    if (data && categories.length > 0, open) {
       setInput((prev) => ({
         ...prev,
         name: data.name,

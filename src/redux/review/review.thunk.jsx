@@ -20,7 +20,7 @@ export const getReviewProduct = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       const res = await axios.get(
-      `/reviews/${payload.productId}?page=${payload.page}&pageSize=${payload.pageSize}&rate=${payload.rate}&hasComment=${payload.hasComment}&hasImage=${payload.hasImage}`
+        `/reviews/${payload.productId}?page=${payload.page}&pageSize=${payload.pageSize}&rate=${payload.rate}&hasComment=${payload.hasComment}&hasImage=${payload.hasImage}`
       );
       return res;
     } catch (error) {
@@ -34,10 +34,40 @@ export const getReviewList = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       const res = await axios.get(
-        `/admin/reviews/customerName=${payload.name}?page=${payload.page}&pageSize=${payload.pageSize}&rate=${payload.rate}&fromDate=${payload.fromDate}&rate=${payload.toDate}&productName=${payload.productName}`
+        `/admin/reviews?customerName=${payload.customerName || ""}&page=${payload.page}&pageSize=${payload.pageSize}&rate=${payload.rate || 0}&fromDate=${payload.fromDate || ""}&toDate=${payload.toDate || ""}&productName=${payload.productName || ""}`
       );
       return res;
     } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const updateReview = createAsyncThunk(
+  "review/updateReview",
+  async ({ id, payload }, { rejectWithValue }) => {
+    try {
+      const res = await axios.put(
+        `/admin/reviews/${id}`, payload
+      );
+      return res;
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const deleteReview = createAsyncThunk(
+  "review/deleteReview",
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await axios.delete(
+        `/admin/reviews/${id}`
+      );
+      return res;
+    } catch (error) {
+      message.error(error.response.data.message);
       return rejectWithValue(error.response.data);
     }
   }
