@@ -22,7 +22,7 @@ const ManageOrder = () => {
   });
 
   const [filter, setFilter] = useState({
-    name: "",
+    search: "",
     status: "",
     paymentMethod: "",
     fromDate: "",
@@ -31,7 +31,7 @@ const ManageOrder = () => {
 
   useEffect(() => {
     dispatch(getOrderListAdmin({ ...paginate, ...filter }));
-  }, [paginate.page, paginate.pageSize]);
+  }, [paginate.page, paginate.pageSize, filter]);
 
   useEffect(() => {
     if (pagination) {
@@ -46,23 +46,19 @@ const ManageOrder = () => {
   }, [pagination]);
 
   const debouncedSearch = useCallback(
-    debounce((value) => {
-      dispatch(
-        getOrderListAdmin({ ...paginate, ...filter, search: value, page: 1 })
-      );
-    }, 2000),
-    [filter, paginate]
+    debounce((key, value) => {
+      setFilter(prev => (
+        {
+          ...prev,
+          [key]: value
+        }
+      ));
+    }, 1000),
+    []
   );
 
-  const handleFilterChange = (value, type) => {
-    setFilter((prev) => ({ ...prev, [type]: value }));
-    if (type === "search") {
-      debouncedSearch(value);
-    } else {
-      dispatch(
-        getOrderByAdmin({ ...paginate, ...filter, [type]: value, page: 1 })
-      );
-    }
+  const handleFilterChange = (value, key) => {
+    debouncedSearch(key, value);
   };
 
   return (
@@ -87,8 +83,8 @@ const ManageOrder = () => {
                   className="w-full"
                 >
                   {orderStatus.length > 0 &&
-                    orderStatus.map((item) => (
-                      <Select.Option key={item.index} value={item.value}>
+                    orderStatus.map((item, index) => (
+                      <Select.Option key={index} value={item.value}>
                         {item.name}
                       </Select.Option>
                     ))}
@@ -113,20 +109,18 @@ const ManageOrder = () => {
                   locale={locale}
                   className="w-full"
                   onChange={(_, dateStrings) => {
-                    setFilter((prev) => ({
-                      ...prev,
-                      fromDate: dateStrings[0],
-                      toDate: dateStrings[1],
-                    }));
-                    dispatch(
-                      getOrderListAdmin({
-                        ...paginate,
-                        ...filter,
+                    setFilter((prev) => (
+                      {
+                        ...prev,
                         fromDate: dateStrings[0],
-                        toDate: dateStrings[1],
-                        page: 1,
-                      })
-                    );
+                        toDate: dateStrings[1]
+                      }
+                    ))
+                    setPaginate(prev => ({
+                      ...prev,
+                      page: 1,
+                      pageSize: 10
+                    }))
                   }}
                 />
               </Col>

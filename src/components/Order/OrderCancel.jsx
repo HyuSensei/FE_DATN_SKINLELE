@@ -34,7 +34,7 @@ const OrderCancel = ({
             <Card
               title={
                 <Space className="flex items-center justify-between flex-wrap">
-                  <Title level={5}>Đơn hàng: OD{order._id}</Title>
+                  <Title level={5}>Đơn hàng: <span className="uppercase">OD{order._id}</span></Title>
                   <Button icon={<ShoppingCartOutlined />}>Mua lại</Button>
                 </Space>
               }
@@ -53,9 +53,8 @@ const OrderCancel = ({
                         />
                       }
                       title={product.name}
-                      description={`${formatPrice(product.price)} đ x ${
-                        product.quantity
-                      }`}
+                      description={`${formatPrice(product.price)} đ x ${product.quantity
+                        }`}
                     />
                     <div>{formatPrice(product.price * product.quantity)} đ</div>
                   </List.Item>
@@ -75,18 +74,22 @@ const OrderCancel = ({
           </List.Item>
         )}
       />
-      <div className="text-right mt-4">
-        <Pagination
-          current={page}
-          pageSize={pageSize}
-          total={totalItems}
-          onChange={(page) => setPaginate((prev) => ({ ...prev, page }))}
-          onShowSizeChange={(_, pageSize) =>
-            setPaginate((prev) => ({ ...prev, pageSize }))
-          }
-          showTotal={(total) => `Tổng ${total} đơn hàng đã hủy`}
-        />
-      </div>
+      {
+        orders.length > 0 &&
+        <div className="text-right mt-4">
+          <Pagination
+            current={page}
+            pageSize={pageSize}
+            total={totalItems}
+            onChange={(page) => setPaginate((prev) => ({ ...prev, page }))}
+            onShowSizeChange={(_, pageSize) =>
+              setPaginate((prev) => ({ ...prev, pageSize }))
+            }
+            showTotal={(total) => `Tổng ${total} đơn hàng đã hủy`}
+          />
+        </div>
+      }
+
     </Spin>
   );
 };

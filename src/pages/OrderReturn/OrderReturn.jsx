@@ -207,7 +207,7 @@ const OrderReturn = () => {
                   Thông tin đơn hàng
                 </Title>
                 <p className="mb-2">
-                  <strong>Mã đơn hàng:</strong> {orderReturn._id}
+                  <strong>Mã đơn hàng:</strong> <span className="uppercase">OD{orderReturn._id}</span>
                 </p>
                 <p className="mb-2">
                   <strong>Ngày đặt:</strong>{" "}

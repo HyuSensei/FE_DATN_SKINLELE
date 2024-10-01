@@ -1,10 +1,13 @@
 import React, { useMemo } from "react";
-import { Pagination, Table, Tooltip, Tag, Select } from "antd";
+import { Pagination, Table, Tooltip, Tag, Select, Popconfirm, message } from "antd";
 import { FaEye } from "react-icons/fa";
 import { formatDateOrder } from "../../helpers/formatDate";
 import { formatPrice } from "../../helpers/formatPrice";
-
-const { Option } = Select;
+import { orderStatus } from "../../const/status";
+import { MdOutlineDeleteOutline } from "react-icons/md";
+import { useDispatch } from "react-redux";
+import { deleteOrder, getOrderListAdmin, updateOrder } from "../../redux/order/order.thunk";
+import { useNavigate } from "react-router-dom";
 
 const TableOrder = ({
   orders = [],
@@ -13,25 +16,9 @@ const TableOrder = ({
   pageSize,
   totalItems,
   setPaginate,
-  setFilter,
 }) => {
-  const getColorStatus = (status) => {
-    switch (status) {
-      case "pending":
-        return "#ff9800";
-      case "processing":
-        return "#2196f3";
-      case "shipping":
-        return "#4caf50";
-      case "delivered":
-        return "#8bc34a";
-      case "cancelled":
-        return "#f44336";
-      default:
-        return "#2196f3";
-    }
-  };
-
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
   const columns = useMemo(
     () => [
       {
@@ -41,10 +28,23 @@ const TableOrder = ({
         render: (_, __, index) => (page - 1) * pageSize + index + 1,
       },
       {
+        title: "Mã đơn hàng",
+        dataIndex: "_id",
+        key: "_id",
+        width: 100,
+        render: (text) => (
+          <Tooltip title={text}>
+            <div className="uppercase max-w-64 break-words font-medium truncate-2-lines text-sm">
+              OD{text}
+            </div>
+          </Tooltip>
+        ),
+      },
+      {
         title: "Khách hàng",
         dataIndex: "name",
         key: "name",
-        width: 100,
+        width: 120,
         render: (text) => (
           <Tooltip title={text}>
             <div className="max-w-64 break-words font-medium truncate-2-lines text-sm">
@@ -54,25 +54,44 @@ const TableOrder = ({
         ),
       },
       {
-        title: "Sản phẩm",
-        dataIndex: "products",
-        key: "products",
-        width: 250,
-        render: (products) => (
-          <div className="flex flex-col gap-2">
-            {products.map((product, index) => (
-              <div key={index} className="flex gap-2 items-center">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-10 h-10 object-cover rounded-md"
-                />
-                <div className="flex flex-col">
-                  <span className="font-medium text-sm">{product.name}</span>
-                </div>
-              </div>
-            ))}
-          </div>
+        title: "Thanh toán",
+        dataIndex: "paymentMethod",
+        key: "paymentMethod",
+        width: 100,
+        render: (paymentMethod) => (
+          <Tag
+            color={
+              paymentMethod === "COD"
+                ? "#f50"
+                : paymentMethod === "STRIPE"
+                  ? "#ad53ef"
+                  : "#87d068"
+            }
+          >
+            {paymentMethod}
+          </Tag>
+        ),
+      },
+      {
+        title: "Trạng thái",
+        dataIndex: "status",
+        key: "status",
+        width: 150,
+        render: (status, record) => (
+          <Select
+            className="w-full"
+            disabled={status === 'cancelled' || status === 'delivered' ? true : false}
+            value={status}
+            onChange={(value) =>
+              handleUpdateStatus(record._id, value)
+            }
+          >
+            {
+              orderStatus.map((item, index) => (
+                <Select.Option key={index} value={item.value}>{item.name}</Select.Option>
+              ))
+            }
+          </Select>
         ),
       },
       {
@@ -87,55 +106,12 @@ const TableOrder = ({
         ),
       },
       {
-        title: "Thanh toán",
-        dataIndex: "paymentMethod",
-        key: "paymentMethod",
-        width: 100,
-        render: (paymentMethod) => (
-          <Tag
-            color={
-              paymentMethod === "COD"
-                ? "#f50"
-                : paymentMethod === "STRIPE"
-                ? "#2db7f5"
-                : "#87d068"
-            }
-          >
-            {paymentMethod}
-          </Tag>
-        ),
-      },
-      {
         title: "Ngày đặt",
         dataIndex: "createdAt",
         key: "createdAt",
         width: 150,
         render: (createdAt) => (
           <span className="text-sm">{formatDateOrder(createdAt)}</span>
-        ),
-      },
-      {
-        title: "Trạng thái",
-        dataIndex: "status",
-        key: "status",
-        width: 150,
-        render: (status, record) => (
-          <Select
-            value={status}
-            style={{
-              backgroundColor: getColorStatus(status),
-              color: "white",
-            }}
-            onChange={(value) =>
-              handleUpdateStatus(record._id, value, record.products)
-            }
-          >
-            <Option value="pending">Đang chờ xử lý</Option>
-            <Option value="processing">Đang xử lý</Option>
-            <Option value="shipping">Đang giao hàng</Option>
-            <Option value="delivered">Đã giao hàng</Option>
-            <Option value="cancelled">Đã hủy</Option>
-          </Select>
         ),
       },
       {
@@ -147,12 +123,33 @@ const TableOrder = ({
           <div className="flex gap-2 items-center text-[#00246a]">
             <Tooltip title="Xem">
               <button
-                onClick={() => handleOpenDetailOrder(record)}
+                onClick={() => navigate(`/admin/orders/${record._id}`)}
                 className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors"
               >
                 <FaEye />
               </button>
             </Tooltip>
+            <Popconfirm
+              className="max-w-40"
+              placement="topLeft"
+              title={"Xác nhận xóa thông tin đơn hàng"}
+              description={<div className="font-medium uppercase">OD{record._id}</div>}
+              onConfirm={() => removeOrder(record._id)}
+              okText="Xóa"
+              cancelText="Hủy"
+              okButtonProps={{
+                loading: isLoading,
+              }}
+              destroyTooltipOnHide={true}
+            >
+              <Tooltip title="Xóa">
+                <button
+                  className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors"
+                >
+                  <MdOutlineDeleteOutline />
+                </button>
+              </Tooltip>
+            </Popconfirm>
           </div>
         ),
       },
@@ -160,13 +157,29 @@ const TableOrder = ({
     [page, pageSize]
   );
 
-  const handleUpdateStatus = (orderId, status, products) => {
-    //implement api update status order
+  const handleUpdateStatus = async (id, status) => {
+    const res = await dispatch(updateOrder({ id, data: { status } })).unwrap()
+    if (res.success) {
+      message.success(res.message)
+      dispatch(getOrderListAdmin({
+        page,
+        pageSize
+      }))
+      return
+    }
   };
 
-  const handleOpenDetailOrder = (order) => {
-    //open modal detail order
-  };
+  const removeOrder = async (id) => {
+    const res = await dispatch(deleteOrder(id)).unwrap()
+    if (res.success) {
+      message.success(res.message)
+      dispatch(getOrderListAdmin({
+        page,
+        pageSize
+      }))
+      return
+    }
+  }
 
   return (
     <>

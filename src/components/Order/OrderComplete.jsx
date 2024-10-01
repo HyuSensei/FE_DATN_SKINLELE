@@ -54,7 +54,7 @@ const OrderComplete = ({
               className="mb-4 sm:mb-6 shadow-md hover:shadow-lg transition-shadow duration-300"
               title={
                 <Space className="flex items-center justify-between flex-wrap py-2">
-                  <Title level={5}>Đơn hàng: OD{order._id}</Title>
+                  <Title level={5}>Đơn hàng: <span className="uppercase">OD{order._id}</span></Title>
                 </Space>
               }
             >
@@ -74,9 +74,8 @@ const OrderComplete = ({
                       title={product.name}
                       description={
                         <Space direction="vertical">
-                          <Text>{`${formatPrice(product.price)} đ x ${
-                            product.quantity
-                          }`}</Text>
+                          <Text>{`${formatPrice(product.price)} đ x ${product.quantity
+                            }`}</Text>
                           <Button
                             onClick={() => {
                               setOrderId(order._id);
@@ -114,18 +113,22 @@ const OrderComplete = ({
           </List.Item>
         )}
       />
-      <div className="text-right mt-4">
-        <Pagination
-          current={page}
-          pageSize={pageSize}
-          total={totalItems}
-          onChange={(page) => setPaginate((prev) => ({ ...prev, page }))}
-          onShowSizeChange={(_, pageSize) =>
-            setPaginate((prev) => ({ ...prev, pageSize }))
-          }
-          showTotal={(total) => `Tổng ${total} đơn hàng đã hoàn thành`}
-        />
-      </div>
+      {
+        orders.length > 0 &&
+        <div className="text-right mt-4">
+          <Pagination
+            current={page}
+            pageSize={pageSize}
+            total={totalItems}
+            onChange={(page) => setPaginate((prev) => ({ ...prev, page }))}
+            onShowSizeChange={(_, pageSize) =>
+              setPaginate((prev) => ({ ...prev, pageSize }))
+            }
+            showTotal={(total) => `Tổng ${total} đơn hàng đã hoàn thành`}
+          />
+        </div>
+      }
+
     </Spin>
   );
 };

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   List,
   Card,
@@ -8,15 +8,13 @@ import {
   Typography,
   Space,
   Tag,
-  Tooltip,
 } from "antd";
 import {
-  ClockCircleOutlined,
-  DeleteOutlined,
-  InfoCircleOutlined,
+  HighlightOutlined,
 } from "@ant-design/icons";
 import { formatPrice } from "../../helpers/formatPrice";
 import { formatDateReview } from "../../helpers/formatDate";
+import ModalEditShip from "../Modal/ModalEditShip";
 
 const { Title, Text } = Typography;
 
@@ -29,6 +27,9 @@ const OrderWait = ({
   totalItems,
   setPaginate,
 }) => {
+  const [open, setOpen] = useState(false)
+  const [orderItem, setOderItem] = useState({})
+
   const renderPaymentMethod = (method) => {
     switch (method) {
       case "COD":
@@ -44,6 +45,13 @@ const OrderWait = ({
 
   return (
     <Spin spinning={isLoading}>
+      <ModalEditShip
+        {...{
+          open,
+          setOpen,
+          order: orderItem
+        }}
+      />
       <List
         grid={{ gutter: 16, column: 1 }}
         dataSource={orders}
@@ -53,10 +61,14 @@ const OrderWait = ({
               className="mb-4 sm:mb-6 shadow-md hover:shadow-lg transition-shadow duration-300"
               title={
                 <Space className="flex items-center justify-between flex-wrap py-2">
-                  <Title level={5}>Đơn hàng: OD{order._id}</Title>
-                  <Space>
+                  <Title level={5}>Đơn hàng: <span className="uppercase">OD{order._id}</span></Title>
+                  <div className="flex items-center gap-2">
                     <Button danger>Hủy đơn hàng</Button>
-                  </Space>
+                    <Button onClick={() => {
+                      setOderItem(order)
+                      setOpen(true)
+                    }} disabled={order.status === 'pending' || order.status === 'processing' ? false : true}><HighlightOutlined /></Button>
+                  </div>
                 </Space>
               }
             >
@@ -76,9 +88,8 @@ const OrderWait = ({
                       title={product.name}
                       description={
                         <Space direction="vertical">
-                          <Text>{`${formatPrice(product.price)} đ x ${
-                            product.quantity
-                          }`}</Text>
+                          <Text>{`${formatPrice(product.price)} đ x ${product.quantity
+                            }`}</Text>
                         </Space>
                       }
                     />
@@ -109,18 +120,21 @@ const OrderWait = ({
           </List.Item>
         )}
       />
-      <div className="text-right mt-4">
-        <Pagination
-          current={page}
-          pageSize={pageSize}
-          total={totalItems}
-          onChange={(page) => setPaginate((prev) => ({ ...prev, page }))}
-          onShowSizeChange={(_, pageSize) =>
-            setPaginate((prev) => ({ ...prev, pageSize }))
-          }
-          showTotal={(total) => `Tổng ${total} đơn hàng chờ xác nhận`}
-        />
-      </div>
+      {
+        orders.length > 0 &&
+        <div className="text-right mt-4">
+          <Pagination
+            current={page}
+            pageSize={pageSize}
+            total={totalItems}
+            onChange={(page) => setPaginate((prev) => ({ ...prev, page }))}
+            onShowSizeChange={(_, pageSize) =>
+              setPaginate((prev) => ({ ...prev, pageSize }))
+            }
+            showTotal={(total) => `Tổng ${total} đơn hàng chờ xác nhận`}
+          />
+        </div>
+      }
     </Spin>
   );
 };

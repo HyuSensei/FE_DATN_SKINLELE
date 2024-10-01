@@ -99,7 +99,7 @@ const OrderAll = ({
                   }}
                   className="flex items-center justify-between flex-wrap py-2"
                 >
-                  <Title level={5}>Đơn hàng: OD{order._id}</Title>
+                  <Title level={5}>Đơn hàng: <span className="uppercase">OD{order._id}</span></Title>
                   {renderOrderActions(order)}
                 </Space>
               }
@@ -118,9 +118,8 @@ const OrderAll = ({
                         />
                       }
                       title={product.name}
-                      description={`${formatPrice(product.price)} đ x ${
-                        product.quantity
-                      }`}
+                      description={`${formatPrice(product.price)} đ x ${product.quantity
+                        }`}
                     />
                     <div className="flex flex-col items-center justify-end gap-1">
                       {order.status === "delivered" && (
@@ -142,20 +141,24 @@ const OrderAll = ({
           </List.Item>
         )}
       />
-      <div className="text-right mt-4">
-        <Pagination
-          current={page}
-          pageSize={pageSize}
-          total={totalItems}
-          onChange={(page) => {
-            setPaginate((prev) => ({ ...prev, page }));
-          }}
-          onShowSizeChange={(_, pageSize) => {
-            setPaginate((prev) => ({ ...prev, pageSize }));
-          }}
-          showTotal={(total) => `Tổng ${total} đơn hàng`}
-        />
-      </div>
+      {
+        orders.length > 0 &&
+        <div className="text-right mt-4">
+          <Pagination
+            current={page}
+            pageSize={pageSize}
+            total={totalItems}
+            onChange={(page) => {
+              setPaginate((prev) => ({ ...prev, page }));
+            }}
+            onShowSizeChange={(_, pageSize) => {
+              setPaginate((prev) => ({ ...prev, pageSize }));
+            }}
+            showTotal={(total) => `Tổng ${total} đơn hàng`}
+          />
+        </div>
+      }
+
     </Spin>
   );
 };

@@ -33,6 +33,10 @@ const initialState = {
     name: "",
     username: "",
     role: "",
+    avatar: {
+      url: "",
+      publicId: "",
+    },
   },
 };
 

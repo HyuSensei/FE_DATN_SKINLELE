@@ -101,11 +101,8 @@ export const getOrderListAdmin = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       const res = await axios.get(
-        `/admin/orders?page=${payload.page || 1}&pageSize=${
-          payload.pageSize || 10
-        }&status=${payload.status || ""}&name=${payload.name}&fromDate=${
-          payload.fromDate || ""
-        }&fromDate=${payload.toDate || ""}`
+        `/admin/orders?page=${payload.page}&pageSize=${payload.pageSize
+        }&status=${payload.status || ""}&search=${payload.search || ""}&paymentMethod=${payload.paymentMethod || ""}&fromDate=${payload.fromDate || ""}&toDate=${payload.toDate || ""}`
       );
       return res;
     } catch (error) {
@@ -113,3 +110,45 @@ export const getOrderListAdmin = createAsyncThunk(
     }
   }
 );
+
+export const updateOrder = createAsyncThunk(
+  "order/updateOrder",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      return await axios.put(
+        `/admin/orders/${id}`, data
+      );
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const deleteOrder = createAsyncThunk(
+  "order/updateOrder",
+  async (id, { rejectWithValue }) => {
+    try {
+      return await axios.delete(
+        `/admin/orders/${id}`
+      );
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const getOrderDetail = createAsyncThunk(
+  "order/getOrderDetail",
+  async (id, { rejectWithValue }) => {
+    try {
+      return await axios.get(
+        `/admin/orders/${id}`
+      );
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+

@@ -128,7 +128,7 @@ const Detail = () => {
               )}
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium">
-                  {formatPrice(product.price)}đ
+                  {formatPrice(product.price)} đ
                 </span>
                 <span className="text-sm text-gray-500">
                   Số lượng: {product.quantity}

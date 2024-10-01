@@ -8,12 +8,14 @@ import {
   Space,
   Tag,
   Steps,
+  Button,
 } from "antd";
 import {
   ClockCircleOutlined,
   SyncOutlined,
   CarOutlined,
   CheckCircleOutlined,
+  HighlightOutlined,
 } from "@ant-design/icons";
 import { formatPrice } from "../../helpers/formatPrice";
 import { formatDateReview } from "../../helpers/formatDate";
@@ -56,7 +58,10 @@ const OrderProcess = ({
                 className="mb-4 sm:mb-6 shadow-md hover:shadow-lg transition-shadow duration-300"
                 title={
                   <Space className="flex items-center justify-between flex-wrap py-2">
-                    <Title level={5}>Đơn hàng: OD{order._id}</Title>
+                    <Title level={5}>Đơn hàng: <span className="uppercase">OD{order._id}</span></Title>
+                    <div className="flex items-center gap-2">
+                      <Button disabled={order.status === 'pending' || order.status === 'processing' ? false : true}><HighlightOutlined /></Button>
+                    </div>
                   </Space>
                 }
               >
@@ -84,9 +89,8 @@ const OrderProcess = ({
                           />
                         }
                         title={product.name}
-                        description={`${formatPrice(product.price)} đ x ${
-                          product.quantity
-                        }`}
+                        description={`${formatPrice(product.price)} đ x ${product.quantity
+                          }`}
                       />
                       <div>
                         {formatPrice(product.price * product.quantity)} đ
@@ -110,18 +114,22 @@ const OrderProcess = ({
           );
         }}
       />
-      <div className="text-right mt-4">
-        <Pagination
-          current={page}
-          pageSize={pageSize}
-          total={totalItems}
-          onChange={(page) => setPaginate((prev) => ({ ...prev, page }))}
-          onShowSizeChange={(_, pageSize) =>
-            setPaginate((prev) => ({ ...prev, pageSize }))
-          }
-          showTotal={(total) => `Tổng ${total} đơn hàng đang xử lý`}
-        />
-      </div>
+      {
+        orders.length > 0 &&
+        <div className="text-right mt-4">
+          <Pagination
+            current={page}
+            pageSize={pageSize}
+            total={totalItems}
+            onChange={(page) => setPaginate((prev) => ({ ...prev, page }))}
+            onShowSizeChange={(_, pageSize) =>
+              setPaginate((prev) => ({ ...prev, pageSize }))
+            }
+            showTotal={(total) => `Tổng ${total} đơn hàng đang xử lý`}
+          />
+        </div>
+      }
+
     </Spin>
   );
 };

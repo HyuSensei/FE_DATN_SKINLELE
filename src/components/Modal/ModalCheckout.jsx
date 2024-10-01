@@ -126,7 +126,6 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
             navigate(`/order-return`);
           }
         });
-        return;
 
       case "VNPAY":
         return dispatch(orderVnpay(order)).then((res) => {
