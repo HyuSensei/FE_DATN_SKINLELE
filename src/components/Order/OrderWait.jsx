@@ -8,13 +8,17 @@ import {
   Typography,
   Space,
   Tag,
+  Tooltip,
 } from "antd";
 import {
+  EyeOutlined,
   HighlightOutlined,
 } from "@ant-design/icons";
 import { formatPrice } from "../../helpers/formatPrice";
 import { formatDateReview } from "../../helpers/formatDate";
 import ModalEditShip from "../Modal/ModalEditShip";
+import ModalOrderDetail from "../Modal/ModalOrderDetail";
+import isEmpty from "lodash/isEmpty";
 
 const { Title, Text } = Typography;
 
@@ -28,7 +32,8 @@ const OrderWait = ({
   setPaginate,
 }) => {
   const [open, setOpen] = useState(false)
-  const [orderItem, setOderItem] = useState({})
+  const [orderItem, setOrderItem] = useState({})
+  const [openOrder, setOpenOrder] = useState(false);
 
   const renderPaymentMethod = (method) => {
     switch (method) {
@@ -45,6 +50,13 @@ const OrderWait = ({
 
   return (
     <Spin spinning={isLoading}>
+      <ModalOrderDetail
+        {...{
+          open: openOrder,
+          setOpen: setOrderItem,
+          order: orderItem,
+        }}
+      />
       <ModalEditShip
         {...{
           open,
@@ -65,9 +77,15 @@ const OrderWait = ({
                   <div className="flex items-center gap-2">
                     <Button danger>Hủy đơn hàng</Button>
                     <Button onClick={() => {
-                      setOderItem(order)
+                      setOrderItem(order)
+                      setOpen(false)
+                      setOpenOrder(true)
+                    }}><EyeOutlined /></Button>
+                    <Button onClick={() => {
+                      setOrderItem(order)
                       setOpen(true)
-                    }} disabled={order.status === 'pending' || order.status === 'processing' ? false : true}><HighlightOutlined /></Button>
+                      setOpenOrder(false)
+                    }}><HighlightOutlined /></Button>
                   </div>
                 </Space>
               }
@@ -82,18 +100,27 @@ const OrderWait = ({
                         <img
                           src={product.image}
                           alt={product.name}
-                          style={{ width: 50, height: 50, objectFit: "cover" }}
+                          className="w-16 h-16 object-cover rounded-md"
                         />
                       }
                       title={product.name}
                       description={
-                        <Space direction="vertical">
-                          <Text>{`${formatPrice(product.price)} đ x ${product.quantity
-                            }`}</Text>
-                        </Space>
+                        <>
+                          <Text>
+                            {formatPrice(product.price)} đ x {product.quantity}
+                          </Text>
+                          {
+                            !isEmpty(product.color) &&
+                            <Tooltip title={product.color.name}>
+                              <div
+                                style={{ backgroundColor: product.color.code }}
+                                className={`w-6 h-6 rounded-full border border-gray-300`}
+                              />
+                            </Tooltip>
+                          }
+                        </>
                       }
                     />
-                    <div>{formatPrice(product.price * product.quantity)} đ</div>
                   </List.Item>
                 )}
               />

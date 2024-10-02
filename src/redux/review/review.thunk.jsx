@@ -20,7 +20,7 @@ export const getReviewProduct = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       const res = await axios.get(
-        `/reviews/${payload.productId}?page=${payload.page}&pageSize=${payload.pageSize}&rate=${payload.rate}&hasComment=${payload.hasComment}&hasImage=${payload.hasImage}`
+        `/reviews/${payload.productId}?page=${payload.page}&pageSize=${payload.pageSize}&rate=${payload.rate || ""}&hasComment=${payload.hasComment}&hasImage=${payload.hasImage}`
       );
       return res;
     } catch (error) {

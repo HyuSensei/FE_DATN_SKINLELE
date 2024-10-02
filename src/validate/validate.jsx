@@ -140,3 +140,24 @@ export const validateBrandActionSchema = Yup.object().shape({
     .trim()
     .required("Vui lòng nhập tên thương hiệu")
 });
+
+
+export const validateEditShipSchema = Yup.object({
+  name: Yup.string().required("Vui lòng nhập họ tên người nhận hàng"),
+  phone: Yup.string()
+    .matches(/^[0-9]{10}$/, "Số điện thoại không hợp lệ")
+    .required("Vui lòng nhập số điện thoại"),
+  address: Yup.string().required("Vui lòng nhập địa chỉ cụ thể"),
+  province: Yup.object().shape({
+    id: Yup.string().required("Vui lòng chọn tỉnh/thành phố"),
+    name: Yup.string().required("Tên tỉnh/thành phố không được để trống"),
+  }),
+  district: Yup.object().shape({
+    id: Yup.string().required("Vui lòng chọn quận/huyện"),
+    name: Yup.string().required("Tên quận/huyện không được để trống"),
+  }),
+  ward: Yup.object().shape({
+    id: Yup.string().required("Vui lòng chọn phường/xã"),
+    name: Yup.string().required("Tên phường/xã không được để trống"),
+  }),
+});

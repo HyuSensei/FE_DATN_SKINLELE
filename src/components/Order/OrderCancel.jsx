@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   List,
   Card,
@@ -8,10 +8,13 @@ import {
   Typography,
   Space,
   Tag,
+  Tooltip,
 } from "antd";
-import { ShoppingCartOutlined } from "@ant-design/icons";
+import { EyeOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { formatPrice } from "../../helpers/formatPrice";
 import { formatDateReview } from "../../helpers/formatDate";
+import ModalOrderDetail from "../Modal/ModalOrderDetail";
+import isEmpty from "lodash/isEmpty";
 
 const { Title, Text } = Typography;
 
@@ -24,8 +27,18 @@ const OrderCancel = ({
   totalItems,
   setPaginate,
 }) => {
+  const [open, setOpen] = useState(false);
+  const [order, setOrder] = useState({});
+
   return (
     <Spin spinning={isLoading}>
+      <ModalOrderDetail
+        {...{
+          open,
+          setOpen,
+          order,
+        }}
+      />
       <List
         grid={{ gutter: 16, column: 1 }}
         dataSource={orders}
@@ -35,7 +48,14 @@ const OrderCancel = ({
               title={
                 <Space className="flex items-center justify-between flex-wrap">
                   <Title level={5}>Đơn hàng: <span className="uppercase">OD{order._id}</span></Title>
+                  <div className="flex items-center gap-2">
                   <Button icon={<ShoppingCartOutlined />}>Mua lại</Button>
+                    <Button onClick={() => {
+                      setOrder(order)
+                      setOpen(true)
+                    }}><EyeOutlined /></Button>
+                  </div>
+
                 </Space>
               }
             >
@@ -49,14 +69,27 @@ const OrderCancel = ({
                         <img
                           src={product.image}
                           alt={product.name}
-                          style={{ width: 50, height: 50, objectFit: "cover" }}
+                          className="w-16 h-16 object-cover rounded-md"
                         />
                       }
                       title={product.name}
-                      description={`${formatPrice(product.price)} đ x ${product.quantity
-                        }`}
+                      description={
+                        <>
+                          <Text>
+                            {formatPrice(product.price)} đ x {product.quantity}
+                          </Text>
+                          {
+                            !isEmpty(product.color) &&
+                            <Tooltip title={product.color.name}>
+                              <div
+                                style={{ backgroundColor: product.color.code }}
+                                className={`w-6 h-6 rounded-full border border-gray-300`}
+                              />
+                            </Tooltip>
+                          }
+                        </>
+                      }
                     />
-                    <div>{formatPrice(product.price * product.quantity)} đ</div>
                   </List.Item>
                 )}
               />

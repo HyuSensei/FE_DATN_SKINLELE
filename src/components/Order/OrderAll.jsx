@@ -8,10 +8,12 @@ import {
   Pagination,
   Typography,
   Space,
+  Tooltip,
 } from "antd";
-import { ShoppingCartOutlined, StarOutlined } from "@ant-design/icons";
+import { EyeOutlined, ShoppingCartOutlined, StarOutlined } from "@ant-design/icons";
 import { formatPrice } from "../../helpers/formatPrice";
 import ModalOrderDetail from "../Modal/ModalOrderDetail";
+import isEmpty from "lodash/isEmpty";
 
 const { Title, Text } = Typography;
 
@@ -93,14 +95,16 @@ const OrderAll = ({
               className="mb-4 sm:mb-6 shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
               title={
                 <Space
-                  onClick={() => {
-                    setOpen(true);
-                    setOrder(order);
-                  }}
                   className="flex items-center justify-between flex-wrap py-2"
                 >
                   <Title level={5}>Đơn hàng: <span className="uppercase">OD{order._id}</span></Title>
-                  {renderOrderActions(order)}
+                  <div className="flex items-center gap-2">
+                    {renderOrderActions(order)}
+                    <Button onClick={() => {
+                      setOrder(order)
+                      setOpen(true)
+                    }}><EyeOutlined /></Button>
+                  </div>
                 </Space>
               }
             >
@@ -114,16 +118,30 @@ const OrderAll = ({
                         <img
                           src={product.image}
                           alt={product.name}
-                          style={{ width: 50, height: 50, objectFit: "cover" }}
+                          className="w-16 h-16 object-cover rounded-md"
                         />
                       }
                       title={product.name}
-                      description={`${formatPrice(product.price)} đ x ${product.quantity
-                        }`}
+                      description={
+                        <>
+                          <Text>
+                            {formatPrice(product.price)} đ x {product.quantity}
+                          </Text>
+                          {
+                            !isEmpty(product.color) &&
+                            <Tooltip title={product.color.name}>
+                              <div
+                                style={{ backgroundColor: product.color.code }}
+                                className={`w-6 h-6 rounded-full border border-gray-300`}
+                              />
+                            </Tooltip>
+                          }
+                        </>
+                      }
                     />
-                    <div className="flex flex-col items-center justify-end gap-1">
+                    <div className="flex flex-col items-center justify-end gap-1 flex-wrap">
                       {order.status === "delivered" && (
-                        <Button icon={<StarOutlined />}>Đánh giá</Button>
+                        <Button disabled={product.isReviewed} icon={<StarOutlined />}> {product.isReviewed ? "Đã đánh giá" : "Đánh giá"}</Button>
                       )}
                     </div>
                   </List.Item>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   List,
   Card,
@@ -9,6 +9,7 @@ import {
   Tag,
   Steps,
   Button,
+  Tooltip,
 } from "antd";
 import {
   ClockCircleOutlined,
@@ -16,9 +17,13 @@ import {
   CarOutlined,
   CheckCircleOutlined,
   HighlightOutlined,
+  EyeOutlined
 } from "@ant-design/icons";
 import { formatPrice } from "../../helpers/formatPrice";
 import { formatDateReview } from "../../helpers/formatDate";
+import ModalOrderDetail from "../Modal/ModalOrderDetail";
+import isEmpty from "lodash/isEmpty";
+import ModalEditShip from "../Modal/ModalEditShip";
 
 const { Title, Text } = Typography;
 const { Step } = Steps;
@@ -32,6 +37,10 @@ const OrderProcess = ({
   totalItems,
   setPaginate,
 }) => {
+  const [open, setOpen] = useState(false);
+  const [order, setOrder] = useState({});
+  const [openOrder, setOpenEdit] = useState(false);
+
   const getStatusInfo = (status) => {
     switch (status) {
       case "pending":
@@ -47,6 +56,20 @@ const OrderProcess = ({
 
   return (
     <Spin spinning={isLoading}>
+      <ModalEditShip
+        {...{
+          open: openOrder,
+          setOpen: setOpenEdit,
+          order
+        }}
+      />
+      <ModalOrderDetail
+        {...{
+          open,
+          setOpen,
+          order,
+        }}
+      />
       <List
         grid={{ gutter: 16, column: 1 }}
         dataSource={orders}
@@ -60,7 +83,14 @@ const OrderProcess = ({
                   <Space className="flex items-center justify-between flex-wrap py-2">
                     <Title level={5}>Đơn hàng: <span className="uppercase">OD{order._id}</span></Title>
                     <div className="flex items-center gap-2">
-                      <Button disabled={order.status === 'pending' || order.status === 'processing' ? false : true}><HighlightOutlined /></Button>
+                      <Button onClick={() => {
+                        setOrder(order)
+                        setOpen(true)
+                      }}><EyeOutlined /></Button>
+                      <Button onClick={() => {
+                        setOrder(order)
+                        setOpenEdit(true)
+                      }}><HighlightOutlined /></Button>
                     </div>
                   </Space>
                 }
@@ -81,16 +111,26 @@ const OrderProcess = ({
                           <img
                             src={product.image}
                             alt={product.name}
-                            style={{
-                              width: 50,
-                              height: 50,
-                              objectFit: "cover",
-                            }}
+                            className="w-16 h-16 object-cover rounded-md"
                           />
                         }
                         title={product.name}
-                        description={`${formatPrice(product.price)} đ x ${product.quantity
-                          }`}
+                        description={
+                          <>
+                            <Text>
+                              {formatPrice(product.price)} đ x {product.quantity}
+                            </Text>
+                            {
+                              !isEmpty(product.color) &&
+                              <Tooltip title={product.color.name}>
+                                <div
+                                  style={{ backgroundColor: product.color.code }}
+                                  className={`w-6 h-6 rounded-full border border-gray-300`}
+                                />
+                              </Tooltip>
+                            }
+                          </>
+                        }
                       />
                       <div>
                         {formatPrice(product.price * product.quantity)} đ

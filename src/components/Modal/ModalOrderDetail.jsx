@@ -184,7 +184,7 @@ const ModalOrderDetail = ({ open, setOpen, order = {} }) => {
                 <img
                   src={product.image}
                   alt={product.name}
-                  style={{ width: 80, height: 80, objectFit: "cover" }}
+                  className="w-20 h-20 object-cover rounded-md"
                 />
               }
               title={product.name}
@@ -196,7 +196,6 @@ const ModalOrderDetail = ({ open, setOpen, order = {} }) => {
                 </Space>
               }
             />
-            <div>{formatPrice(product.price * product.quantity)} đ</div>
           </List.Item>
         )}
       />

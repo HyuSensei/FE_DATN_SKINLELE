@@ -126,7 +126,7 @@ export const updateOrder = createAsyncThunk(
 );
 
 export const deleteOrder = createAsyncThunk(
-  "order/updateOrder",
+  "order/deleteOrder",
   async (id, { rejectWithValue }) => {
     try {
       return await axios.delete(
@@ -147,6 +147,21 @@ export const getOrderDetail = createAsyncThunk(
         `/admin/orders/${id}`
       );
     } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+
+export const updateOrderByUser = createAsyncThunk(
+  "order/updateOrderByUser",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      return await axios.put(
+        `/orders/${id}`, data
+      );
+    } catch (error) {
+      message.error(error.response.data.message);
       return rejectWithValue(error.response.data);
     }
   }

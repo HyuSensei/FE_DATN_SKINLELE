@@ -8,11 +8,14 @@ import {
   Typography,
   Space,
   Tag,
+  Tooltip,
 } from "antd";
-import { StarOutlined } from "@ant-design/icons";
+import { EyeOutlined, StarOutlined } from "@ant-design/icons";
 import { formatPrice } from "../../helpers/formatPrice";
 import { formatDateReview } from "../../helpers/formatDate";
 import ModalRate from "../Modal/ModalRate";
+import ModalOrderDetail from "../Modal/ModalOrderDetail";
+import isEmpty from "lodash/isEmpty";
 
 const { Title, Text } = Typography;
 
@@ -30,9 +33,18 @@ const OrderComplete = ({
   const [rate, setRate] = useState(0);
   const [orderId, setOrderId] = useState("");
   const [productDetail, setProductDetail] = useState({});
+  const [openOrder, setOpenOrder] = useState(false);
+  const [order, setOrder] = useState({});
 
   return (
     <Spin spinning={isLoading}>
+      <ModalOrderDetail
+        {...{
+          open: openOrder,
+          setOpen: setOpenOrder,
+          order,
+        }}
+      />
       <ModalRate
         {...{
           product: productDetail,
@@ -55,6 +67,12 @@ const OrderComplete = ({
               title={
                 <Space className="flex items-center justify-between flex-wrap py-2">
                   <Title level={5}>Đơn hàng: <span className="uppercase">OD{order._id}</span></Title>
+                  <div className="flex items-center gap-2">
+                    <Button onClick={() => {
+                      setOrder(order)
+                      setOpenOrder(true)
+                    }}><EyeOutlined /></Button>
+                  </div>
                 </Space>
               }
             >
@@ -68,15 +86,28 @@ const OrderComplete = ({
                         <img
                           src={product.image}
                           alt={product.name}
-                          style={{ width: 50, height: 50, objectFit: "cover" }}
+                          className="w-16 h-16 object-cover rounded-md"
                         />
                       }
                       title={product.name}
                       description={
                         <Space direction="vertical">
-                          <Text>{`${formatPrice(product.price)} đ x ${product.quantity
-                            }`}</Text>
+                          <>
+                            <Text>
+                              {formatPrice(product.price)} đ x {product.quantity}
+                            </Text>
+                            {
+                              !isEmpty(product.color) &&
+                              <Tooltip title={product.color.name}>
+                                <div
+                                  style={{ backgroundColor: product.color.code }}
+                                  className={`w-6 h-6 rounded-full border border-gray-300`}
+                                />
+                              </Tooltip>
+                            }
+                          </>
                           <Button
+                            disabled={product.isReviewed}
                             onClick={() => {
                               setOrderId(order._id);
                               setProductDetail((prev) => ({
@@ -89,7 +120,7 @@ const OrderComplete = ({
                             }}
                             icon={<StarOutlined />}
                           >
-                            Đánh giá
+                            {product.isReviewed ? "Đã đánh giá" : "Đánh giá"}
                           </Button>
                         </Space>
                       }

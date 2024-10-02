@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   List,
   Card,
@@ -9,14 +9,18 @@ import {
   Space,
   Tag,
   Timeline,
+  Tooltip,
 } from "antd";
 import {
   ShopOutlined,
   CarOutlined,
   CheckCircleOutlined,
+  EyeOutlined,
 } from "@ant-design/icons";
 import { formatPrice } from "../../helpers/formatPrice";
 import { formatDateReview } from "../../helpers/formatDate";
+import ModalOrderDetail from "../Modal/ModalOrderDetail";
+import isEmpty from "lodash/isEmpty";
 
 const { Title, Text } = Typography;
 
@@ -29,36 +33,57 @@ const OrderShip = ({
   totalItems,
   setPaginate,
 }) => {
-  const renderShippingTimeline = (order) => (
-    <Timeline mode="left">
-      <Timeline.Item
-        dot={<ShopOutlined style={{ fontSize: "16px" }} />}
-        color="blue"
-      >
-        Đơn hàng đã được xử lý
-        <p>{formatDateReview(order.updatedAt)}</p>
-      </Timeline.Item>
-      <Timeline.Item
-        dot={<CarOutlined style={{ fontSize: "16px" }} />}
-        color="green"
-      >
-        Đơn hàng đang được vận chuyển
-        <p>{formatDateReview(new Date())}</p>
-      </Timeline.Item>
-      <Timeline.Item
-        dot={<CheckCircleOutlined style={{ fontSize: "16px" }} />}
-        color="gray"
-      >
-        Dự kiến giao hàng
-        <p>
-          {formatDateReview(new Date(Date.now() + 2 * 24 * 60 * 60 * 1000))}
-        </p>
-      </Timeline.Item>
-    </Timeline>
-  );
+  const [open, setOpen] = useState(false);
+  const [order, setOrder] = useState({});
+
+  const renderShippingTimeline = (order) => {
+    const items = [
+      {
+        dot: <ShopOutlined style={{ fontSize: "16px" }} />,
+        color: "blue",
+        children: (
+          <>
+            Đơn hàng đã được xử lý
+            <p>{formatDateReview(order.updatedAt)}</p>
+          </>
+        ),
+      },
+      {
+        dot: <CarOutlined style={{ fontSize: "16px" }} />,
+        color: "green",
+        children: (
+          <>
+            Đơn hàng đang được vận chuyển
+            <p>{formatDateReview(new Date())}</p>
+          </>
+        ),
+      },
+      {
+        dot: <CheckCircleOutlined style={{ fontSize: "16px" }} />,
+        color: "gray",
+        children: (
+          <>
+            Dự kiến giao hàng
+            <p>
+              {formatDateReview(new Date(Date.now() + 2 * 24 * 60 * 60 * 1000))}
+            </p>
+          </>
+        ),
+      },
+    ];
+
+    return <Timeline mode="left" items={items} />;
+  };
 
   return (
     <Spin spinning={isLoading}>
+      <ModalOrderDetail
+        {...{
+          open,
+          setOpen,
+          order,
+        }}
+      />
       <List
         grid={{ gutter: 16, column: 1 }}
         dataSource={orders}
@@ -69,7 +94,13 @@ const OrderShip = ({
               title={
                 <Space className="flex items-center justify-between flex-wrap py-2">
                   <Title level={5}>Đơn hàng: <span className="uppercase">OD{order._id}</span></Title>
-                  <Button type="primary">Đã nhận hàng</Button>
+                  <div className="flex items-center gap-2">
+                    <Button type="primary">Đã nhận hàng</Button>
+                    <Button onClick={() => {
+                      setOrder(order)
+                      setOpen(true)
+                    }}><EyeOutlined /></Button>
+                  </div>
                 </Space>
               }
             >
@@ -85,16 +116,26 @@ const OrderShip = ({
                             <img
                               src={product.image}
                               alt={product.name}
-                              style={{
-                                width: 50,
-                                height: 50,
-                                objectFit: "cover",
-                              }}
+                              className="w-16 h-16 object-cover rounded-md"
                             />
                           }
                           title={product.name}
-                          description={`${formatPrice(product.price)} đ x ${product.quantity
-                            }`}
+                          description={
+                            <>
+                              <Text>
+                                {formatPrice(product.price)} đ x {product.quantity}
+                              </Text>
+                              {
+                                !isEmpty(product.color) &&
+                                <Tooltip title={product.color.name}>
+                                  <div
+                                    style={{ backgroundColor: product.color.code }}
+                                    className={`w-6 h-6 rounded-full border border-gray-300`}
+                                  />
+                                </Tooltip>
+                              }
+                            </>
+                          }
                         />
                       </List.Item>
                     )}
@@ -105,7 +146,10 @@ const OrderShip = ({
                 </div>
               </div>
               <Space direction="vertical" className="w-full mt-4">
-                <Text>Địa chỉ giao hàng: {order.address}</Text>
+                <Text>
+                  Địa chỉ: {order.address}, {order.ward.name},{" "}
+                  {order.district.name}, {order.province.name}
+                </Text>
                 <Text>Số điện thoại: {order.phone}</Text>
                 <div className="flex items-center justify-between">
                   <Tag color="cyan">Đang giao hàng</Tag>
