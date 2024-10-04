@@ -16,6 +16,7 @@ import { getAllBrand } from "../../redux/brand/brand.thunk";
 import { getAllCategory } from "../../redux/category/category.thunk";
 import { logoutUser } from "../../redux/auth/auth.slice";
 import { FaRegUserCircle } from "react-icons/fa";
+import SearchHeader from "../Search/SearchHeader";
 
 const HeaderUser = () => {
   const dispatch = useDispatch();
@@ -214,13 +215,7 @@ const HeaderUser = () => {
           </motion.div>
 
           <div className="hidden md:block flex-grow max-w-xl mx-8">
-            <Input
-              placeholder="Tìm kiếm..."
-              prefix={<SearchOutlined />}
-              size="large"
-              className="rounded-full"
-              onPressEnter={(e) => handleSearch(e.target.value)}
-            />
+            <SearchHeader />
           </div>
 
           <div className="flex items-center space-x-4">

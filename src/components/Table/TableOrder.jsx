@@ -44,7 +44,7 @@ const TableOrder = ({
         title: "Khách hàng",
         dataIndex: "name",
         key: "name",
-        width: 120,
+        width: 150,
         render: (text) => (
           <Tooltip title={text}>
             <div className="max-w-64 break-words font-medium truncate-2-lines text-sm">

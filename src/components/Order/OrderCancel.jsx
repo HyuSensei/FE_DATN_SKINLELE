@@ -9,12 +9,16 @@ import {
   Space,
   Tag,
   Tooltip,
+  Popconfirm,
+  message,
 } from "antd";
 import { EyeOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { formatPrice } from "../../helpers/formatPrice";
 import { formatDateReview } from "../../helpers/formatDate";
 import ModalOrderDetail from "../Modal/ModalOrderDetail";
 import isEmpty from "lodash/isEmpty";
+import { useDispatch } from "react-redux";
+import { getOrderHistory, updateStatusOrderByUser } from "../../redux/order/order.thunk";
 
 const { Title, Text } = Typography;
 
@@ -27,8 +31,26 @@ const OrderCancel = ({
   totalItems,
   setPaginate,
 }) => {
+  const dispatch = useDispatch()
   const [open, setOpen] = useState(false);
   const [order, setOrder] = useState({});
+
+  const handleOrderAgain = async (orderId) => {
+    const res = await dispatch(updateStatusOrderByUser({
+      id: orderId,
+      data: {
+        status: 'pending'
+      }
+    })).unwrap()
+    if (res.success) {
+      message.success(res.message)
+      dispatch(getOrderHistory({
+        page,
+        pageSize,
+        status: 'cancelled'
+      }))
+    }
+  }
 
   return (
     <Spin spinning={isLoading}>
@@ -49,13 +71,25 @@ const OrderCancel = ({
                 <Space className="flex items-center justify-between flex-wrap">
                   <Title level={5}>Đơn hàng: <span className="uppercase">OD{order._id}</span></Title>
                   <div className="flex items-center gap-2">
-                  <Button icon={<ShoppingCartOutlined />}>Mua lại</Button>
+                    <Popconfirm
+                      className="max-w-40"
+                      placement="bottom"
+                      title={"Xác nhận mua lại ngay"}
+                      onConfirm={() => handleOrderAgain(order._id)}
+                      okText="Xác nhận"
+                      cancelText="Hủy"
+                      okButtonProps={{
+                        loading: isLoading,
+                      }}
+                      destroyTooltipOnHide={true}
+                    >
+                      <Button icon={<ShoppingCartOutlined />}>Mua lại</Button>
+                    </Popconfirm>
                     <Button onClick={() => {
                       setOrder(order)
                       setOpen(true)
                     }}><EyeOutlined /></Button>
                   </div>
-
                 </Space>
               }
             >

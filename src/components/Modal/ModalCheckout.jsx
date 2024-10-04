@@ -185,9 +185,6 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
                 <span className="text-xs md:text-sm text-gray-500">
                   Đơn giá: {formatPrice(item.price)}đ
                 </span>
-                <span className="text-sm md:text-base">
-                  {formatPrice(item.quantity * item.price)}đ
-                </span>
               </div>
             </div>
           </div>

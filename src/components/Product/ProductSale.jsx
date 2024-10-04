@@ -5,7 +5,7 @@ const ProductSale = ({ products = defaultProduct, isLoading, title }) => {
   if (products.length === 0) return null;
   return (
     <div className="p-2 lg:p-12 bg bg-gradient-to-r from-pink-500 to-[#fc9cc7] rounded-lg">
-      <div className="flex gap-8 items-center justify-center">
+      <div className="flex gap-8 items-center justify-center zoom-in-zoom-out">
         <img
           src="https://image.hsv-tech.io/1920x0/bbx/common/165e9150-d748-49be-954f-9cd6745a42cf.webp"
           alt="Sale"

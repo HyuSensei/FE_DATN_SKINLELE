@@ -29,9 +29,9 @@ import { formatDateOrder } from "../../helpers/formatDate";
 import { formatPrice } from "../../helpers/formatPrice";
 import Loading from "../../components/Loading";
 import {
-  clearCart,
   removeProductAfterOrderSuccess,
 } from "../../redux/cart/cart.slice";
+import isEmpty from "lodash/isEmpty";
 
 const { Title, Text } = Typography;
 
@@ -176,9 +176,8 @@ const OrderReturn = () => {
     <div className="min-h-screen bg-gradient-to-r from-pink-100 to-purple-100 py-12 px-4 sm:px-6 lg:px-8 rounded-xl">
       <Card className="max-w-4xl mx-auto shadow-2xl rounded-lg overflow-hidden">
         <div
-          className={`text-center ${
-            isSuccess ? "text-pink-600" : "text-red-600"
-          }`}
+          className={`text-center ${isSuccess ? "text-pink-600" : "text-red-600"
+            }`}
         >
           {isSuccess ? (
             <CheckCircleFilled style={{ fontSize: 80 }} className="mb-4" />
@@ -198,7 +197,7 @@ const OrderReturn = () => {
           </Text>
         </div>
 
-        {isSuccess && orderReturn && (
+        {isSuccess && !isEmpty(orderReturn) && (
           <>
             <Divider className="my-8" />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
