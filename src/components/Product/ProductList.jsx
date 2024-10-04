@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { formatPrice } from "../../helpers/formatPrice";
 import { defaultProduct } from "../../const/defaultProduct";
-import { createIcon } from "../../ultis/createIcon";
+import { createAverageRate } from "../../ultis/createIcon";
 import ImageCarousel from "../ImageCarousel";
 
 const ProductList = ({
@@ -70,7 +70,7 @@ const ProductList = ({
             </span>
           </div>
           <div className="py-2 flex items-center justify-center gap-2">
-            <Rate
+            {/* <Rate
               disabled
               character={({ index }) =>
                 createIcon({
@@ -80,8 +80,19 @@ const ProductList = ({
                   height: "12px",
                 })
               }
+            /> */}
+            <Rate
+              disabled
+              character={({ index }) =>
+                createAverageRate({
+                  index: index + 1,
+                  rate: parseFloat(item.averageRating),
+                  width: "12px",
+                  height: "12px",
+                })
+              }
             />
-            <span className="font-medium">(0)</span>
+            <span className="font-medium">({item.totalReviews})</span>
           </div>
         </div>
       </motion.div>

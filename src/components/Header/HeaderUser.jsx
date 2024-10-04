@@ -203,12 +203,12 @@ const HeaderUser = () => {
           <motion.div
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            className="cursor-pointer text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 font-extrabold text-3xl m-0 text-center"
+            className="cursor-pointer text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 font-extrabold text-2xl m-0 text-center"
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <div onClick={() => navigate("/")} className="logo-text">
+            <div onClick={() => navigate("/")} className="logo-text zoom-in-zoom-out">
               Skin<span>LeLe</span>
             </div>
           </motion.div>

@@ -17,7 +17,6 @@ import { useNavigate } from "react-router-dom";
 import { getOrderHistory } from "../../redux/order/order.thunk";
 import { createIcon } from "../../ultis/createIcon";
 import { IoMdCloseCircle } from "react-icons/io";
-import isEmpty from "lodash/isEmpty";
 
 const ModalRate = ({
   product = {},
@@ -28,6 +27,7 @@ const ModalRate = ({
   setRate,
   setHoverValue,
   hoverValue,
+  status = "all"
 }) => {
   const [review, setReview] = useState({
     order: "",
@@ -134,7 +134,7 @@ const ModalRate = ({
         borderRadius: 10,
       },
       className:
-        "bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 animate-bounce",
+        "bg-gradient-to-r from-yellow-400 via-red-400 to-pink-400 zoom-in-zoom-out",
     });
   };
 
@@ -184,7 +184,7 @@ const ModalRate = ({
         } else {
           dispatch(
             getOrderHistory({
-              status: order.status,
+              status,
               page: pagination.page,
               pageSize: pagination.pageSize,
             })

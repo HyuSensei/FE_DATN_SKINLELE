@@ -100,3 +100,17 @@ export const getProductByCategory = createAsyncThunk(
     }
   }
 );
+
+export const getAllProductOther = createAsyncThunk(
+  "product/getallProductOther",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const productList = await axios.get(
+        `/products/all-other?page=${payload.page}&pageSize=${payload.pageSize}`
+      );
+      return productList
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);

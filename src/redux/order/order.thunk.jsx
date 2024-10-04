@@ -81,21 +81,6 @@ export const orderStripeReturn = createAsyncThunk(
   }
 );
 
-export const updateStatuByCustomer = createAsyncThunk(
-  "order/updateStatuByCustomer",
-  async (payload, { rejectWithValue }) => {
-    try {
-      const res = await axios.put(`/orders/status/${payload.id}`, {
-        status: payload.status,
-      });
-      return res;
-    } catch (error) {
-      message.error(error.response.data.message);
-      return rejectWithValue(error.response.data);
-    }
-  }
-);
-
 export const getOrderListAdmin = createAsyncThunk(
   "order/getOrderListAdmin",
   async (payload, { rejectWithValue }) => {
@@ -166,4 +151,19 @@ export const updateOrderByUser = createAsyncThunk(
     }
   }
 );
+
+export const updateStatusOrderByUser = createAsyncThunk(
+  "order/updateStatusOrderByUser",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      return await axios.put(
+        `/orders/status/${id}`, data
+      );
+    } catch (error) {
+      message.warning(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 

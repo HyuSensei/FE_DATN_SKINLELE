@@ -44,7 +44,7 @@ const Home = () => {
         )}
         {SALE && SALE.length >= 5 && (
           <ProductSale
-            {...{ title: "Sản phẩm khuyến mãi", products: SALE, isLoading }}
+            {...{ products: SALE, isLoading }}
           />
         )}
         <SilderList {...{ slides: sliderBrand }} />

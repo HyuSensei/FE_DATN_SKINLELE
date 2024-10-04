@@ -9,11 +9,17 @@ import {
   Typography,
   Space,
   Tooltip,
+  Popconfirm,
+  message,
 } from "antd";
 import { EyeOutlined, ShoppingCartOutlined, StarOutlined } from "@ant-design/icons";
 import { formatPrice } from "../../helpers/formatPrice";
 import ModalOrderDetail from "../Modal/ModalOrderDetail";
 import isEmpty from "lodash/isEmpty";
+import ModalRate from "../Modal/ModalRate";
+import ModalReansonCancel from '../Modal/ModalReasonCancel'
+import { getOrderHistory, updateStatusOrderByUser } from "../../redux/order/order.thunk";
+import { useDispatch } from "react-redux";
 
 const { Title, Text } = Typography;
 
@@ -26,8 +32,15 @@ const OrderAll = ({
   totalItems,
   setPaginate,
 }) => {
+  const dispatch = useDispatch()
   const [open, setOpen] = useState(false);
   const [order, setOrder] = useState({});
+  const [hoverValue, setHoverValue] = useState(0);
+  const [rate, setRate] = useState(0);
+  const [orderId, setOrderId] = useState("");
+  const [productDetail, setProductDetail] = useState({});
+  const [openRate, setOpenRate] = useState(false);
+  const [openCancel, setOpenCancel] = useState(false)
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -67,9 +80,25 @@ const OrderAll = ({
     switch (order.status) {
       case "pending":
       case "processing":
-        return <Button danger>Hủy đơn hàng</Button>;
+        return <Button onClick={() => {
+          setOrderId(order._id)
+          setOpenCancel(true)
+        }} danger>Hủy đơn hàng</Button>;
       case "shipping":
-        return <Button type="primary">Đã nhận hàng</Button>;
+        return <Popconfirm
+          className="max-w-40"
+          placement="bottom"
+          title={"Xác nhận giao hàng thành công"}
+          onConfirm={() => handleCompleteOrder(order._id)}
+          okText="Xác nhận"
+          cancelText="Hủy"
+          okButtonProps={{
+            loading: isLoading,
+          }}
+          destroyTooltipOnHide={true}
+        >
+          <Button type="primary">Đã nhận hàng</Button>
+        </Popconfirm>;
       case "cancelled":
         return <Button icon={<ShoppingCartOutlined />}>Mua lại</Button>;
       default:
@@ -77,8 +106,59 @@ const OrderAll = ({
     }
   };
 
+  const groupProductsByProductId = (products) => {
+    const groupedProducts = {};
+    products.forEach(product => {
+      if (!groupedProducts[product.productId]) {
+        groupedProducts[product.productId] = {
+          ...product,
+          variants: [{ color: product.color, quantity: product.quantity }]
+        };
+      } else {
+        groupedProducts[product.productId].variants.push({ color: product.color, quantity: product.quantity });
+        groupedProducts[product.productId].quantity += product.quantity;
+      }
+    });
+    return Object.values(groupedProducts);
+  };
+
+  const handleCompleteOrder = async (orderId) => {
+    const res = await dispatch(updateStatusOrderByUser({
+      id: orderId,
+      data: {
+        status: 'delivered'
+      }
+    })).unwrap()
+    if (res.success) {
+      message.success(res.message)
+      dispatch(getOrderHistory({
+        page,
+        pageSize,
+        status: 'all'
+      }))
+    }
+  }
+
   return (
     <Spin spinning={isLoading}>
+      <ModalReansonCancel {...{
+        open: openCancel,
+        setOpen: setOpenCancel,
+        orderId,
+        setOrderId,
+      }} />
+      <ModalRate
+        {...{
+          product: productDetail,
+          open: openRate,
+          setOpen: setOpenRate,
+          rate,
+          setRate,
+          hoverValue,
+          setHoverValue,
+          order: orderId,
+        }}
+      />
       <ModalOrderDetail
         {...{
           open,
@@ -94,9 +174,7 @@ const OrderAll = ({
             <Card
               className="mb-4 sm:mb-6 shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
               title={
-                <Space
-                  className="flex items-center justify-between flex-wrap py-2"
-                >
+                <Space className="flex items-center justify-between flex-wrap py-2">
                   <Title level={5}>Đơn hàng: <span className="uppercase">OD{order._id}</span></Title>
                   <div className="flex items-center gap-2">
                     {renderOrderActions(order)}
@@ -110,7 +188,7 @@ const OrderAll = ({
             >
               <List
                 itemLayout="horizontal"
-                dataSource={order.products}
+                dataSource={groupProductsByProductId(order.products)}
                 renderItem={(product) => (
                   <List.Item>
                     <List.Item.Meta
@@ -127,21 +205,38 @@ const OrderAll = ({
                           <Text>
                             {formatPrice(product.price)} đ x {product.quantity}
                           </Text>
-                          {
-                            !isEmpty(product.color) &&
-                            <Tooltip title={product.color.name}>
-                              <div
-                                style={{ backgroundColor: product.color.code }}
-                                className={`w-6 h-6 rounded-full border border-gray-300`}
-                              />
-                            </Tooltip>
-                          }
+                          <div className="flex gap-2 mt-2">
+                            {product.variants.map((variant, index) => (
+                              !isEmpty(variant.color) && (
+                                <Tooltip key={index} title={`${variant.color.name} (x${variant.quantity})`}>
+                                  <div
+                                    style={{ backgroundColor: variant.color.code }}
+                                    className={`w-6 h-6 rounded-full border border-gray-300`}
+                                  />
+                                </Tooltip>
+                              )
+                            ))}
+                          </div>
                         </>
                       }
                     />
                     <div className="flex flex-col items-center justify-end gap-1 flex-wrap">
                       {order.status === "delivered" && (
-                        <Button disabled={product.isReviewed} icon={<StarOutlined />}> {product.isReviewed ? "Đã đánh giá" : "Đánh giá"}</Button>
+                        <Button
+                          onClick={() => {
+                            setOrderId(order._id);
+                            setProductDetail({
+                              _id: product.productId,
+                              name: product.name,
+                              image: product.image,
+                            });
+                            setOpenRate(true);
+                          }}
+                          disabled={product.isReviewed}
+                          icon={<StarOutlined />}
+                        >
+                          {product.isReviewed ? "Đã đánh giá" : "Đánh giá"}
+                        </Button>
                       )}
                     </div>
                   </List.Item>
@@ -159,8 +254,7 @@ const OrderAll = ({
           </List.Item>
         )}
       />
-      {
-        orders.length > 0 &&
+      {orders.length > 0 && (
         <div className="text-right mt-4">
           <Pagination
             current={page}
@@ -175,8 +269,7 @@ const OrderAll = ({
             showTotal={(total) => `Tổng ${total} đơn hàng`}
           />
         </div>
-      }
-
+      )}
     </Spin>
   );
 };

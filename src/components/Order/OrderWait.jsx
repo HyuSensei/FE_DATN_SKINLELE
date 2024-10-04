@@ -19,6 +19,7 @@ import { formatDateReview } from "../../helpers/formatDate";
 import ModalEditShip from "../Modal/ModalEditShip";
 import ModalOrderDetail from "../Modal/ModalOrderDetail";
 import isEmpty from "lodash/isEmpty";
+import ModalReansonCancel from "../Modal/ModalReasonCancel";
 
 const { Title, Text } = Typography;
 
@@ -34,6 +35,8 @@ const OrderWait = ({
   const [open, setOpen] = useState(false)
   const [orderItem, setOrderItem] = useState({})
   const [openOrder, setOpenOrder] = useState(false);
+  const [openCancel, setOpenCancel] = useState(false)
+  const [orderId, setOrderId] = useState("")
 
   const renderPaymentMethod = (method) => {
     switch (method) {
@@ -50,6 +53,13 @@ const OrderWait = ({
 
   return (
     <Spin spinning={isLoading}>
+      <ModalReansonCancel {...{
+        open: openCancel,
+        setOpen: setOpenCancel,
+        orderId,
+        setOrderId,
+        statusPage: 'pending'
+      }} />
       <ModalOrderDetail
         {...{
           open: openOrder,
@@ -75,7 +85,10 @@ const OrderWait = ({
                 <Space className="flex items-center justify-between flex-wrap py-2">
                   <Title level={5}>Đơn hàng: <span className="uppercase">OD{order._id}</span></Title>
                   <div className="flex items-center gap-2">
-                    <Button danger>Hủy đơn hàng</Button>
+                    <Button onClick={() => {
+                      setOrderId(order._id)
+                      setOpenCancel(true)
+                    }} danger>Hủy đơn hàng</Button>
                     <Button onClick={() => {
                       setOrderItem(order)
                       setOpen(false)

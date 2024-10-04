@@ -19,7 +19,7 @@ import {
   EyeOutlined,
   HighlightOutlined,
 } from "@ant-design/icons";
-import { useCallback, useRef, useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 import ModalRate from "./Modal/ModalRate";
 import { useDispatch, useSelector } from "react-redux";
 import isEmpty from "lodash/isEmpty";
@@ -27,8 +27,6 @@ import { getReviewProduct } from "../redux/review/review.thunk";
 import { formatDateReview } from "../helpers/formatDate";
 import { FaQuoteLeft, FaQuoteRight } from "react-icons/fa6";
 import { MdVerified, MdDateRange } from "react-icons/md";
-
-const { Text } = Typography;
 
 const RateList = ({ product }) => {
   const dispatch = useDispatch();
@@ -48,12 +46,9 @@ const RateList = ({ product }) => {
     totalPage: 0,
     totalItems: 0,
   });
-  const [hasNoReviews, setHasNoReviews] = useState(false);
-  const apiCallCount = useRef(0);
 
   const fetchReviews = useCallback(() => {
-    if (!isEmpty(product) && !hasNoReviews) {
-      apiCallCount.current += 1;
+    if (!isEmpty(product)) {
       dispatch(
         getReviewProduct({
           productId: product._id,
@@ -62,14 +57,6 @@ const RateList = ({ product }) => {
           ...reviewFilter,
         })
       )
-        .unwrap()
-        .then((result) => {
-          if (result.data.length === 0 && result.pagination.totalItems === 0) {
-            setHasNoReviews(true);
-          } else {
-            setHasNoReviews(false);
-          }
-        });
     }
   }, [
     product?._id,
@@ -77,13 +64,10 @@ const RateList = ({ product }) => {
     paginate.pageSize,
     reviewFilter,
     dispatch,
-    hasNoReviews,
   ]);
 
   useEffect(() => {
-    if (apiCallCount.current < 2) {
-      fetchReviews();
-    }
+    fetchReviews();
   }, [fetchReviews]);
 
   useEffect(() => {
@@ -177,7 +161,11 @@ const RateList = ({ product }) => {
             <Space wrap>
               <Button
                 type={reviewFilter.rate === "" ? "primary" : "default"}
-                onClick={() => handleFilterChange("rate", "")}
+                onClick={() => {
+                  handleFilterChange("rate", "")
+                  handleFilterChange('hasImage', "")
+                  handleFilterChange('hasComment', "")
+                }}
               >
                 Tất cả
               </Button>
@@ -193,11 +181,12 @@ const RateList = ({ product }) => {
               />
               <Button
                 type={reviewFilter.hasImage === "true" ? "primary" : "default"}
-                onClick={() =>
+                onClick={() => {
                   handleFilterChange(
                     "hasImage",
                     reviewFilter.hasImage === "true" ? "" : "true"
                   )
+                }
                 }
               >
                 <CameraOutlined /> Có hình

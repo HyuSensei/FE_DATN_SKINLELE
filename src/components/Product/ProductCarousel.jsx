@@ -3,7 +3,7 @@ import Slider from "react-slick";
 import { defaultProduct } from "../../const/defaultProduct";
 import { formatPrice } from "../../helpers/formatPrice";
 import { Rate, Spin } from "antd";
-import { createIcon } from "../../ultis/createIcon";
+import { createAverageRate, createIcon } from "../../ultis/createIcon";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { motion } from "framer-motion";
 import ImageCarousel from "../ImageCarousel";
@@ -136,15 +136,15 @@ const ProductCarousel = ({
                   <Rate
                     disabled
                     character={({ index }) =>
-                      createIcon({
+                      createAverageRate({
                         index: index + 1,
-                        rate: 5,
+                        rate: parseFloat(item.averageRating),
                         width: "12px",
                         height: "12px",
                       })
                     }
                   />
-                  <span className="font-medium">(0)</span>
+                  <span className="font-medium">({item.totalReviews})</span>
                 </div>
               </div>
             </div>

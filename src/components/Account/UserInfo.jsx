@@ -2,8 +2,6 @@ import React from "react";
 import { Card, Avatar, Typography } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 
-const { Title } = Typography;
-
 const UserInfo = ({ user }) => (
   <Card className="shadow-md rounded-lg mb-6 overflow-hidden">
     <div className="flex flex-col items-center space-y-3 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-md">

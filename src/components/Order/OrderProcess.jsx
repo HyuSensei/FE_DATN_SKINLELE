@@ -132,9 +132,6 @@ const OrderProcess = ({
                           </>
                         }
                       />
-                      <div>
-                        {formatPrice(product.price * product.quantity)} đ
-                      </div>
                     </List.Item>
                   )}
                 />

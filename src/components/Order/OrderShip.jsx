@@ -10,6 +10,8 @@ import {
   Tag,
   Timeline,
   Tooltip,
+  message,
+  Popconfirm,
 } from "antd";
 import {
   ShopOutlined,
@@ -21,6 +23,8 @@ import { formatPrice } from "../../helpers/formatPrice";
 import { formatDateReview } from "../../helpers/formatDate";
 import ModalOrderDetail from "../Modal/ModalOrderDetail";
 import isEmpty from "lodash/isEmpty";
+import { useDispatch, useSelector } from "react-redux";
+import { getOrderHistory, updateStatusOrderByUser } from "../../redux/order/order.thunk";
 
 const { Title, Text } = Typography;
 
@@ -33,8 +37,26 @@ const OrderShip = ({
   totalItems,
   setPaginate,
 }) => {
+  const dispatch = useDispatch()
   const [open, setOpen] = useState(false);
   const [order, setOrder] = useState({});
+
+  const handleCompleteOrder = async (orderId) => {
+    const res = await dispatch(updateStatusOrderByUser({
+      id: orderId,
+      data: {
+        status: 'delivered'
+      }
+    })).unwrap()
+    if (res.success) {
+      message.success(res.message)
+      dispatch(getOrderHistory({
+        page,
+        pageSize,
+        status: 'shipping'
+      }))
+    }
+  }
 
   const renderShippingTimeline = (order) => {
     const items = [
@@ -95,7 +117,20 @@ const OrderShip = ({
                 <Space className="flex items-center justify-between flex-wrap py-2">
                   <Title level={5}>Đơn hàng: <span className="uppercase">OD{order._id}</span></Title>
                   <div className="flex items-center gap-2">
-                    <Button type="primary">Đã nhận hàng</Button>
+                    <Popconfirm
+                      className="max-w-40"
+                      placement="bottom"
+                      title={"Xác nhận giao hàng thành công"}
+                      onConfirm={() => handleCompleteOrder(order._id)}
+                      okText="Xác nhận"
+                      cancelText="Hủy"
+                      okButtonProps={{
+                        loading: isLoading,
+                      }}
+                      destroyTooltipOnHide={true}
+                    >
+                      <Button type="primary">Đã nhận hàng</Button>
+                    </Popconfirm>
                     <Button onClick={() => {
                       setOrder(order)
                       setOpen(true)

@@ -6,7 +6,6 @@ import {
   orderCod,
   orderStripe,
   orderStripeReturn,
-  updateStatuByCustomer,
   getOrderListAdmin,
   getOrderDetail,
 } from "./order.thunk";
@@ -125,20 +124,6 @@ export const orderSlice = createSlice({
         }
       })
       .addCase(getOrderHistory.rejected, (state, action) => {
-        state.error = action.payload;
-        state.isLoading = false;
-      })
-
-      //Update status order by customer
-      .addCase(updateStatuByCustomer.pending, (state, action) => {
-        state.isLoading = true;
-      })
-      .addCase(updateStatuByCustomer.fulfilled, (state, action) => {
-        if (action.payload.success) {
-          state.isLoading = false;
-        }
-      })
-      .addCase(updateStatuByCustomer.rejected, (state, action) => {
         state.error = action.payload;
         state.isLoading = false;
       })

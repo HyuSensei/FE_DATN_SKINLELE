@@ -3,9 +3,9 @@ import { Card, Badge } from "antd";
 import {
   UserOutlined,
   UnorderedListOutlined,
-  ShopOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
+import { LiaShoppingBasketSolid } from "react-icons/lia";
 
 const AccountMenu = ({ cartItemCount, setContentType, navigate, logout }) => (
   <Card className="shadow-md rounded-lg">
@@ -23,7 +23,7 @@ const AccountMenu = ({ cartItemCount, setContentType, navigate, logout }) => (
       <MenuItem
         icon={
           <Badge color="#e38282" count={cartItemCount} className="mr-3">
-            <ShopOutlined className="text-xl" />
+            <LiaShoppingBasketSolid className="text-2xl" />
           </Badge>
         }
         onClick={() => navigate("/cart")}

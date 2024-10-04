@@ -7,6 +7,7 @@ import {
   getProductHome,
   getProductSearch,
   getProductByCategory,
+  getAllProductOther,
 } from "./product.thunk";
 
 const initialState = {
@@ -152,6 +153,22 @@ export const productSlice = createSlice({
         }
       })
       .addCase(updateProduct.rejected, (state, action) => {
+        state.error = action.payload;
+        state.isLoading = false;
+      })
+
+      // Get all other Product
+      .addCase(getAllProductOther.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(getAllProductOther.fulfilled, (state, action) => {
+        if (action.payload.success) {
+          state.isLoading = false;
+          state.products = action.payload.data;
+          state.pagination = action.payload.pagination;
+        }
+      })
+      .addCase(getAllProductOther.rejected, (state, action) => {
         state.error = action.payload;
         state.isLoading = false;
       });

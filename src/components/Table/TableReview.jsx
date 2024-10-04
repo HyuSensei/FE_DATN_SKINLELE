@@ -188,7 +188,6 @@ const TableReview = ({
               }))
             }
             showSizeChanger
-            showQuickJumper
           />
         </div>
       )}

@@ -20,15 +20,23 @@ import {
 } from "../../redux/cart/cart.slice";
 import { formatPrice } from "../../helpers/formatPrice";
 import { isEmpty } from "lodash";
+import { getAllProductOther } from "../../redux/product/product.thunk";
 
 const { Text } = Typography;
 
 const Cart = () => {
   const dispatch = useDispatch();
   const { products } = useSelector((state) => state.cart.cart);
+  const { products: productList, isLoading, pagination } = useSelector((state) => state.product);
   const [selectedItems, setSelectedItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [open, setOpen] = useState(false);
+  const [paginate, setPaginate] = useState({
+    page: 1,
+    pageSize: 10,
+    totalPage: 0,
+    totalItems: 0
+  })
 
   const selectedProducts = useMemo(() => {
     return products.filter((product) =>
@@ -37,6 +45,22 @@ const Cart = () => {
   }, [products, selectedItems]);
 
   useEffect(() => {
+    dispatch(getAllProductOther({ ...paginate }))
+  }, [paginate.page, paginate.pageSize]);
+
+useEffect(() => {
+    if (pagination) {
+      setPaginate((prev) => ({
+        ...prev,
+        page: pagination.page,
+        pageSize: pagination.pageSize,
+        totalPage: pagination.totalPage,
+        totalItems: pagination.totalItems,
+      }));
+    }
+  }, [pagination]);
+
+  useEffect(() => { 
     const newTotalPrice = selectedItems.reduce((total, itemId) => {
       const item = products.find((product) => product.productId === itemId);
       return total + (item ? item.price * item.quantity : 0);
@@ -229,7 +253,14 @@ const Cart = () => {
           </Card>
         </>
       )}
-      <ProductList title={"Sản phẩm khác"} />
+      <ProductList {...{
+        isLoading,
+        products: productList,
+        title: "Sản phẩm khác",
+        setPaginate,
+        paginate,
+      }
+      } />
     </div>
   );
 };

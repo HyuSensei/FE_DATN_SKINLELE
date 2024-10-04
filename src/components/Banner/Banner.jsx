@@ -120,6 +120,22 @@ const Banner = () => {
           </AnimatePresence>
           <AnimatePresence mode="wait">
             <motion.div
+              key="slide3"
+              initial={{ opacity: 0, scale: 1.1 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.7 }}
+              className="focus:outline-none"
+            >
+              <img
+                src="https://image.hsv-tech.io/1920x0/bbx/common/2684287e-5db5-4592-8aae-c42617c34958.webp"
+                alt="Slide 2"
+                className="w-full h-auto rounded-lg"
+              />
+            </motion.div>
+          </AnimatePresence>
+          <AnimatePresence mode="wait">
+            <motion.div
               key="slide2"
               initial={{ opacity: 0, scale: 1.1 }}
               animate={{ opacity: 1, scale: 1 }}

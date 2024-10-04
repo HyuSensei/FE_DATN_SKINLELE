@@ -36,6 +36,25 @@ const OrderComplete = ({
   const [openOrder, setOpenOrder] = useState(false);
   const [order, setOrder] = useState({});
 
+  const groupProductsByProductId = (products) => {
+    const groupedProducts = {};
+    products.forEach(product => {
+      if (!groupedProducts[product.productId]) {
+        groupedProducts[product.productId] = {
+          ...product,
+          variants: [{ color: product.color, quantity: product.quantity }],
+          totalQuantity: product.quantity,
+          isReviewed: product.isReviewed,
+        };
+      } else {
+        groupedProducts[product.productId].variants.push({ color: product.color, quantity: product.quantity });
+        groupedProducts[product.productId].totalQuantity += product.quantity;
+        groupedProducts[product.productId].isReviewed = groupedProducts[product.productId].isReviewed || product.isReviewed;
+      }
+    });
+    return Object.values(groupedProducts);
+  };
+
   return (
     <Spin spinning={isLoading}>
       <ModalOrderDetail
@@ -47,6 +66,7 @@ const OrderComplete = ({
       />
       <ModalRate
         {...{
+          status: "delivered",
           product: productDetail,
           open,
           setOpen,
@@ -78,7 +98,7 @@ const OrderComplete = ({
             >
               <List
                 itemLayout="horizontal"
-                dataSource={order.products}
+                dataSource={groupProductsByProductId(order.products)}
                 renderItem={(product) => (
                   <List.Item>
                     <List.Item.Meta
@@ -92,30 +112,30 @@ const OrderComplete = ({
                       title={product.name}
                       description={
                         <Space direction="vertical">
-                          <>
-                            <Text>
-                              {formatPrice(product.price)} đ x {product.quantity}
-                            </Text>
-                            {
-                              !isEmpty(product.color) &&
-                              <Tooltip title={product.color.name}>
-                                <div
-                                  style={{ backgroundColor: product.color.code }}
-                                  className={`w-6 h-6 rounded-full border border-gray-300`}
-                                />
-                              </Tooltip>
-                            }
-                          </>
+                          <Text>
+                            {formatPrice(product.price)} đ x {product.totalQuantity}
+                          </Text>
+                          <div className="flex gap-2">
+                            {product.variants.map((variant, index) => (
+                              !isEmpty(variant.color) && (
+                                <Tooltip key={index} title={`${variant.color.name} (x${variant.quantity})`}>
+                                  <div
+                                    style={{ backgroundColor: variant.color.code }}
+                                    className={`w-6 h-6 rounded-full border border-gray-300`}
+                                  />
+                                </Tooltip>
+                              )
+                            ))}
+                          </div>
                           <Button
                             disabled={product.isReviewed}
                             onClick={() => {
                               setOrderId(order._id);
-                              setProductDetail((prev) => ({
-                                ...prev,
+                              setProductDetail({
                                 _id: product.productId,
                                 name: product.name,
                                 image: product.image,
-                              }));
+                              });
                               setOpen(true);
                             }}
                             icon={<StarOutlined />}
@@ -125,7 +145,6 @@ const OrderComplete = ({
                         </Space>
                       }
                     />
-                    <div>{formatPrice(product.price * product.quantity)} đ</div>
                   </List.Item>
                 )}
               />
@@ -144,8 +163,7 @@ const OrderComplete = ({
           </List.Item>
         )}
       />
-      {
-        orders.length > 0 &&
+      {orders.length > 0 && (
         <div className="text-right mt-4">
           <Pagination
             current={page}
@@ -158,8 +176,7 @@ const OrderComplete = ({
             showTotal={(total) => `Tổng ${total} đơn hàng đã hoàn thành`}
           />
         </div>
-      }
-
+      )}
     </Spin>
   );
 };
