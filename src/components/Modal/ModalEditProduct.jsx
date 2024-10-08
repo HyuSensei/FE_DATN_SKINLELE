@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Upload, message, Select, Input, Spin } from "antd";
+import { Modal, Upload, message, Select, Input, Spin, Card, Row, Col, Checkbox, DatePicker } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { SketchPicker } from "react-color";
 import { deleteFile, uploadFile } from "../../helpers/uploadCloudinary";
@@ -17,6 +17,7 @@ import {
   validateForm,
 } from "../../validate/validate";
 import ErrorMessage from "../../components/Error/ErrorMessage";
+import moment from "moment";
 
 const ModalEditProduct = ({ open = false, setOpen, data = {}, setData }) => {
   const [input, setInput] = useState({
@@ -33,6 +34,7 @@ const ModalEditProduct = ({ open = false, setOpen, data = {}, setData }) => {
     variants: [],
     enable: true,
     tags: [],
+    expiry: "",
     capacity: "",
   });
   const [categoryDataLoaded, setCategoryDataLoaded] = useState(false);
@@ -46,11 +48,10 @@ const ModalEditProduct = ({ open = false, setOpen, data = {}, setData }) => {
 
   const dispatch = useDispatch();
   const { brands } = useSelector((state) => state.brand);
-  const { categories, isLoading: categoriesLoading } = useSelector(
-    (state) => state.category
-  );
+  const { categories, isLoading: categoriesLoading } = useSelector((state) => state.category);
   const { isLoading } = useSelector((state) => state.product);
   const [loadingUpload, setLoadingUpload] = useState(false);
+  const { paginateAdmin } = useSelector((state) => state.product);
 
   useEffect(() => {
     if (open) {
@@ -75,6 +76,7 @@ const ModalEditProduct = ({ open = false, setOpen, data = {}, setData }) => {
         variants: data.variants,
         enable: data.enable,
         tags: data.tags,
+        expiry: data.expiry || "",
         capacity: data.capacity,
       }));
       setMainImage(data.mainImage);
@@ -285,8 +287,8 @@ const ModalEditProduct = ({ open = false, setOpen, data = {}, setData }) => {
       }
       dispatch(
         getProductAdmin({
-          page: 1,
-          pageSize: 10,
+          page: paginateAdmin.page,
+          pageSize: paginateAdmin.pageSize,
           name: "",
           category: "",
           brand: "",
@@ -309,6 +311,409 @@ const ModalEditProduct = ({ open = false, setOpen, data = {}, setData }) => {
   };
 
   return (
+    // <Modal
+    //   open={open}
+    //   title={
+    //     <div className="text-lg md:text-2xl font-bold text-center">
+    //       Cập nhật thông tin sản phẩm
+    //     </div>
+    //   }
+    //   onOk={handleUpdate}
+    //   onCancel={() => setOpen(false)}
+    //   footer={[
+    //     <div key="footer" className="flex gap-1 items-center justify-end">
+    //       <button
+    //         key="cancel"
+    //         onClick={() => setOpen(false)}
+    //         className="bg-white border-2 text-gray-700 flex justify-center py-4 px-4 rounded-md shadow-sm text-sm font-medium"
+    //       >
+    //         Hủy
+    //       </button>
+    //       <button
+    //         key="update"
+    //         onClick={handleUpdate}
+    //         disabled={isLoading || loadingUpload}
+    //         className="flex justify-center py-4 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+    //       >
+    //         {isLoading || loadingUpload ? "Đang xử lý..." : "Cập nhật sản phẩm"}
+    //       </button>
+    //     </div>,
+    //   ]}
+    //   width={"1000px"}
+    // >
+    //   <form className="space-y-6 mt-4">
+    //     <div className="grid grid-cols-2 gap-4">
+    //       <div>
+    //         <label
+    //           htmlFor="name"
+    //           className="block text-sm font-medium text-[#14134f]"
+    //         >
+    //           Tên sản phẩm
+    //         </label>
+    //         <Input
+    //           placeholder="Nhập tên sản phẩm..."
+    //           size="large"
+    //           id="name"
+    //           name="name"
+    //           value={input.name}
+    //           onChange={handleInputChange}
+    //           className="mt-1"
+    //         />
+    //         {validates.name && <ErrorMessage message={validates.name} />}
+    //       </div>
+
+    //       <div>
+    //         <label
+    //           htmlFor="brand"
+    //           className="block text-sm font-medium text-[#14134f]"
+    //         >
+    //           Thương hiệu
+    //         </label>
+    //         <Select
+    //           name="brand"
+    //           placeholder="Chọn thương hiệu"
+    //           size="large"
+    //           value={input.brand}
+    //           onChange={(value) => handleSelectChange("brand", value)}
+    //           className="w-full mt-1"
+    //         >
+    //           {brands.length > 0 &&
+    //             brands.map((brand) => (
+    //               <Select.Option key={brand._id} value={brand._id}>
+    //                 {brand.name}
+    //               </Select.Option>
+    //             ))}
+    //         </Select>
+    //         {validates.brand && <ErrorMessage message={validates.brand} />}
+    //       </div>
+    //     </div>
+
+    //     {categoriesLoading || !categoryDataLoaded ? (
+    //       <div className="flex justify-center items-center h-20">
+    //         <Spin />
+    //         <span className="ml-2">Đang tải...</span>
+    //       </div>
+    //     ) : (
+    //       <>
+    //         <div>
+    //           <label
+    //             htmlFor="categories"
+    //             className="block text-sm font-medium text-[#14134f]"
+    //           >
+    //             Danh mục (0)
+    //           </label>
+    //           <Select
+    //             placeholder="Chọn danh mục"
+    //             size="large"
+    //             value={selectedLevel0}
+    //             onChange={handleLevel0Change}
+    //             className="w-full mt-1"
+    //           >
+    //             {renderCategoryOptions(categories)}
+    //           </Select>
+    //         </div>
+
+    //         {selectedLevel0 && (
+    //           <div>
+    //             <label
+    //               htmlFor="categories"
+    //               className="block text-sm font-medium text-[#14134f]"
+    //             >
+    //               Danh mục (1)
+    //             </label>
+    //             <Select
+    //               placeholder="Chọn danh mục con"
+    //               size="large"
+    //               value={selectedLevel1}
+    //               onChange={handleLevel1Change}
+    //               className="w-full mt-1"
+    //             >
+    //               {renderCategoryOptions(getLevel1Categories())}
+    //             </Select>
+    //           </div>
+    //         )}
+
+    //         {selectedLevel1 && (
+    //           <div>
+    //             <label
+    //               htmlFor="categories"
+    //               className="block text-sm font-medium text-[#14134f]"
+    //             >
+    //               Danh mục (2)
+    //             </label>
+    //             <Select
+    //               placeholder="Chọn danh mục con"
+    //               size="large"
+    //               mode="multiple"
+    //               value={input.categories.slice(2)}
+    //               onChange={handleLevel2Change}
+    //               className="w-full mt-1"
+    //             >
+    //               {renderCategoryOptions(getLevel2Categories())}
+    //             </Select>
+    //           </div>
+    //         )}
+    //       </>
+    //     )}
+
+    //     <div className="grid grid-cols-2 gap-4">
+    //       <div>
+    //         <label
+    //           htmlFor="price"
+    //           className="block text-sm font-medium text-[#14134f]"
+    //         >
+    //           Giá
+    //         </label>
+    //         <Input
+    //           placeholder="Nhập giá..."
+    //           size="large"
+    //           type="number"
+    //           id="price"
+    //           name="price"
+    //           value={input.price}
+    //           onChange={handleInputChange}
+    //           className="w-full mt-1"
+    //         />
+    //         {validates.price && <ErrorMessage message={validates.price} />}
+    //       </div>
+
+    //       <div>
+    //         <label
+    //           htmlFor="capacity"
+    //           className="block text-sm font-medium text-[#14134f]"
+    //         >
+    //           Dung tích
+    //         </label>
+    //         <Input
+    //           placeholder="Nhập dung tích..."
+    //           size="large"
+    //           id="capacity"
+    //           name="capacity"
+    //           value={input.capacity}
+    //           onChange={handleInputChange}
+    //           className="mt-1"
+    //         />
+    //       </div>
+    //     </div>
+
+    //     <div className="flex items-center gap-4 flex-wrap">
+    //       <div>
+    //         <label className="block text-sm font-medium text-[#14134f] py-1">
+    //           Ảnh hiển thị
+    //         </label>
+    //         <Upload
+    //           accept="image/*"
+    //           listType="picture-card"
+    //           maxCount={1}
+    //           beforeUpload={() => false}
+    //           fileList={mainImage ? [mainImage] : []}
+    //           onChange={({ fileList }) => setMainImage(fileList[0])}
+    //         >
+    //           <div>
+    //             <PlusOutlined />
+    //             <div className="mt-2">Tải lên</div>
+    //           </div>
+    //         </Upload>
+    //       </div>
+
+    //       <div>
+    //         <label className="block text-sm font-medium text-[#14134f] py-1">
+    //           Danh sách ảnh
+    //         </label>
+    //         <Upload
+    //           accept="image/*"
+    //           listType="picture-card"
+    //           multiple
+    //           maxCount={3}
+    //           beforeUpload={() => false}
+    //           fileList={images}
+    //           onChange={({ fileList }) => setImages(fileList)}
+    //         >
+    //           <div>
+    //             <PlusOutlined />
+    //             <div className="mt-2">Tải lên</div>
+    //           </div>
+    //         </Upload>
+    //       </div>
+    //     </div>
+
+    //     {input.variants.map((variant, index) => (
+    //       <div
+    //         key={index}
+    //         className="p-4 border-2 border-[#3b71ca] rounded-md space-y-2"
+    //       >
+    //         <div>
+    //           <label className="block text-sm font-medium text-[#14134f] py-1">
+    //             Tên màu
+    //           </label>
+    //           <Input
+    //             size="large"
+    //             value={variant.color.name}
+    //             onChange={(e) =>
+    //               handleVariantChange(index, "name", e.target.value)
+    //             }
+    //             className="shadow-lg"
+    //           />
+    //           {validates?.variants && (
+    //             <ErrorMessage
+    //               message={validates?.variants[`variants[${index}].color.name`]}
+    //             />
+    //           )}
+    //         </div>
+    //         <div>
+    //           <label className="block text-sm font-medium text-[#14134f] py-1">
+    //             Mã màu
+    //           </label>
+    //           <div className="flex gap-4 items-center">
+    //             <Input
+    //               className="flex-1"
+    //               size="large"
+    //               value={variant.color.code}
+    //               onChange={(e) =>
+    //                 handleVariantChange(index, "code", e.target.value)
+    //               }
+    //             />
+    //             {variant.color.code && (
+    //               <div
+    //                 className="w-10 h-10 rounded-full border border-gray-300 flex-shrink-0"
+    //                 style={{ backgroundColor: variant.color.code }}
+    //               ></div>
+    //             )}
+    //             <button
+    //               type="button"
+    //               onClick={() => {
+    //                 setActiveColorIndex(index);
+    //                 setShowColorPicker(!showColorPicker);
+    //               }}
+    //               className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+    //             >
+    //               Chọn màu
+    //             </button>
+    //           </div>
+    //           {showColorPicker && activeColorIndex === index && (
+    //             <div className="absolute mt-2 z-10">
+    //               <SketchPicker
+    //                 color={variant.color.code}
+    //                 onChangeComplete={(color) => {
+    //                   handleVariantChange(index, "code", color.hex);
+    //                   setShowColorPicker(false);
+    //                 }}
+    //               />
+    //             </div>
+    //           )}
+    //         </div>
+    //         {validates.variants && (
+    //           <ErrorMessage
+    //             message={validates.variants[`variants[${index}].color.code`]}
+    //           />
+    //         )}
+    //         <div>
+    //           <Upload
+    //             accept="image/*"
+    //             listType="picture-card"
+    //             maxCount={1}
+    //             beforeUpload={() => false}
+    //             fileList={variant.color.image ? [variant.color.image] : []}
+    //             onChange={({ fileList }) => {
+    //               handleVariantChange(index, "image", fileList[0]);
+    //               setValidates((prev) => ({
+    //                 ...prev,
+    //                 variants: {
+    //                   ...prev.variants,
+    //                   [`variants[${index}].color.image.url`]: "",
+    //                 },
+    //               }));
+    //             }}
+    //           >
+    //             <div>
+    //               <PlusOutlined />
+    //               <div className="mt-2">Tải ảnh màu</div>
+    //             </div>
+    //           </Upload>
+    //           {validates?.variants && (
+    //             <ErrorMessage
+    //               message={
+    //                 validates?.variants[`variants[${index}].color.image.url`]
+    //               }
+    //             />
+    //           )}
+    //         </div>
+    //         <div className="flex justify-end">
+    //           <button
+    //             type="button"
+    //             onClick={() => removeVariant(index)}
+    //             className="mt-2 px-3 py-1 text-sm text-red-600 hover:text-red-800"
+    //           >
+    //             Xóa màu sản phẩm
+    //           </button>
+    //         </div>
+    //       </div>
+    //     ))}
+
+    //     <button
+    //       type="button"
+    //       onClick={addVariant}
+    //       className="mt-2 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+    //     >
+    //       Thêm màu sản phẩm
+    //     </button>
+
+    //     <div className="flex items-center">
+    //       <input
+    //         type="checkbox"
+    //         id="enable"
+    //         name="enable"
+    //         checked={input.enable}
+    //         onChange={(e) => setInput({ ...input, enable: e.target.checked })}
+    //         className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+    //       />
+    //       <label
+    //         htmlFor="enable"
+    //         className="ml-2 block text-sm text-[#14134f] font-bold"
+    //       >
+    //         Kích hoạt sản phẩm
+    //       </label>
+    //     </div>
+
+    //     <div>
+    //       <label
+    //         htmlFor="tags"
+    //         className="block text-sm font-medium text-[#14134f]"
+    //       >
+    //         Tags
+    //       </label>
+    //       <Select
+    //         placeholder="Chọn tags"
+    //         size="large"
+    //         id="tags"
+    //         mode="tags"
+    //         value={input.tags}
+    //         onChange={(value) => handleSelectChange("tags", value)}
+    //         className="w-full mt-1"
+    //       >
+    //         {tags?.map((item) => (
+    //           <Select.Option key={item.key} value={item.value}>
+    //             {item.value}
+    //           </Select.Option>
+    //         ))}
+    //       </Select>
+    //     </div>
+
+    //     <div>
+    //       <label
+    //         htmlFor="description"
+    //         className="block text-sm font-medium text-[#14134f] pb-1"
+    //       >
+    //         Mô tả
+    //       </label>
+    //       <QuillEditor value={input.description} onChange={handleChangeQill} />
+    //       {validates.description && (
+    //         <ErrorMessage message={validates.description} />
+    //       )}
+    //     </div>
+    //   </form>
+    // </Modal>
+
     <Modal
       open={open}
       title={
@@ -337,67 +742,97 @@ const ModalEditProduct = ({ open = false, setOpen, data = {}, setData }) => {
           </button>
         </div>,
       ]}
-      width={"1000px"}
+      width={"80%"}
+      style={{ top: 20 }}
     >
-      <form className="space-y-6 mt-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-[#14134f]"
-            >
-              Tên sản phẩm
-            </label>
-            <Input
-              placeholder="Nhập tên sản phẩm..."
-              size="large"
-              id="name"
-              name="name"
-              value={input.name}
-              onChange={handleInputChange}
-              className="mt-1"
-            />
-            {validates.name && <ErrorMessage message={validates.name} />}
-          </div>
-
-          <div>
-            <label
-              htmlFor="brand"
-              className="block text-sm font-medium text-[#14134f]"
-            >
-              Thương hiệu
-            </label>
-            <Select
-              name="brand"
-              placeholder="Chọn thương hiệu"
-              size="large"
-              value={input.brand}
-              onChange={(value) => handleSelectChange("brand", value)}
-              className="w-full mt-1"
-            >
-              {brands.length > 0 &&
-                brands.map((brand) => (
-                  <Select.Option key={brand._id} value={brand._id}>
-                    {brand.name}
-                  </Select.Option>
-                ))}
-            </Select>
-            {validates.brand && <ErrorMessage message={validates.brand} />}
-          </div>
+      {categoriesLoading || !categoryDataLoaded ? (
+        <div className="flex justify-center items-center h-20">
+          <Spin />
+          <span className="ml-2">Đang tải...</span>
         </div>
+      ) : (
+          <form className="space-y-6 mt-4">
+            <Card title="Thông tin cơ bản" className="shadow-md">
+              <Row gutter={16}>
+                <Col span={12}>
+                  <div className="mb-4">
+                    <label htmlFor="name" className="block text-sm font-medium text-[#14134f] mb-1">
+                      Tên sản phẩm
+                    </label>
+                    <Input
+                      placeholder="Nhập tên sản phẩm..."
+                      size="large"
+                      id="name"
+                      name="name"
+                      value={input.name}
+                      onChange={handleInputChange}
+                    />
+                    {validates.name && <ErrorMessage message={validates.name} />}
+                  </div>
+                </Col>
+                <Col span={12}>
+                  <div className="mb-4">
+                    <label htmlFor="brand" className="block text-sm font-medium text-[#14134f] mb-1">
+                      Thương hiệu
+                    </label>
+                    <Select
+                      name="brand"
+                      placeholder="Chọn thương hiệu"
+                      size="large"
+                      value={input.brand}
+                      onChange={(value) => handleSelectChange("brand", value)}
+                      className="w-full"
+                    >
+                      {brands.length > 0 &&
+                        brands.map((brand) => (
+                          <Select.Option key={brand._id} value={brand._id}>
+                            {brand.name}
+                          </Select.Option>
+                        ))}
+                    </Select>
+                    {validates.brand && <ErrorMessage message={validates.brand} />}
+                  </div>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <div className="mb-4">
+                    <label htmlFor="price" className="block text-sm font-medium text-[#14134f] mb-1">
+                      Giá
+                    </label>
+                    <Input
+                      placeholder="Nhập giá..."
+                      size="large"
+                      type="number"
+                      id="price"
+                      name="price"
+                      value={input.price}
+                      onChange={handleInputChange}
+                    />
+                    {validates.price && <ErrorMessage message={validates.price} />}
+                  </div>
+                </Col>
+                <Col span={12}>
+                  <div className="mb-4">
+                    <label htmlFor="capacity" className="block text-sm font-medium text-[#14134f] mb-1">
+                      Dung tích
+                    </label>
+                    <Input
+                      placeholder="Nhập dung tích..."
+                      size="large"
+                      id="capacity"
+                      name="capacity"
+                      value={input.capacity}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </Col>
+              </Row>
+            </Card>
 
-        {categoriesLoading || !categoryDataLoaded ? (
-          <div className="flex justify-center items-center h-20">
-            <Spin />
-            <span className="ml-2">Đang tải...</span>
-          </div>
-        ) : (
-          <>
-            <div>
-              <label
-                htmlFor="categories"
-                className="block text-sm font-medium text-[#14134f]"
-              >
+            <Card title="Danh mục sản phẩm" className="shadow-md">
+              <div className="mb-4">
+                <label htmlFor="categories" className="block text-sm font-medium text-[#14134f] mb-1">
                 Danh mục (0)
               </label>
               <Select
@@ -405,18 +840,14 @@ const ModalEditProduct = ({ open = false, setOpen, data = {}, setData }) => {
                 size="large"
                 value={selectedLevel0}
                 onChange={handleLevel0Change}
-                className="w-full mt-1"
+                  className="w-full"
               >
                 {renderCategoryOptions(categories)}
               </Select>
-            </div>
-
+              </div>
             {selectedLevel0 && (
-              <div>
-                <label
-                  htmlFor="categories"
-                  className="block text-sm font-medium text-[#14134f]"
-                >
+                <div className="mb-4">
+                  <label htmlFor="categories" className="block text-sm font-medium text-[#14134f] mb-1">
                   Danh mục (1)
                 </label>
                 <Select
@@ -424,19 +855,15 @@ const ModalEditProduct = ({ open = false, setOpen, data = {}, setData }) => {
                   size="large"
                   value={selectedLevel1}
                   onChange={handleLevel1Change}
-                  className="w-full mt-1"
+                    className="w-full"
                 >
                   {renderCategoryOptions(getLevel1Categories())}
                 </Select>
               </div>
-            )}
-
+              )}
             {selectedLevel1 && (
-              <div>
-                <label
-                  htmlFor="categories"
-                  className="block text-sm font-medium text-[#14134f]"
-                >
+                <div className="mb-4">
+                  <label htmlFor="categories" className="block text-sm font-medium text-[#14134f] mb-1">
                   Danh mục (2)
                 </label>
                 <Select
@@ -445,271 +872,236 @@ const ModalEditProduct = ({ open = false, setOpen, data = {}, setData }) => {
                   mode="multiple"
                   value={input.categories.slice(2)}
                   onChange={handleLevel2Change}
-                  className="w-full mt-1"
+                    className="w-full"
                 >
                   {renderCategoryOptions(getLevel2Categories())}
                 </Select>
               </div>
             )}
-          </>
-        )}
+            </Card>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label
-              htmlFor="price"
-              className="block text-sm font-medium text-[#14134f]"
-            >
-              Giá
-            </label>
-            <Input
-              placeholder="Nhập giá..."
-              size="large"
-              type="number"
-              id="price"
-              name="price"
-              value={input.price}
-              onChange={handleInputChange}
-              className="w-full mt-1"
-            />
-            {validates.price && <ErrorMessage message={validates.price} />}
-          </div>
+            <Card title="Hình ảnh sản phẩm" className="shadow-md">
+              <Row gutter={16}>
+                <Col span={12}>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-[#14134f] mb-1">
+                      Ảnh hiển thị
+                    </label>
+                    <Upload
+                      accept="image/*"
+                      listType="picture-card"
+                      maxCount={1}
+                      beforeUpload={() => false}
+                      fileList={mainImage ? [mainImage] : []}
+                      onChange={({ fileList }) => setMainImage(fileList[0])}
+                    >
+                      <div>
+                        <PlusOutlined />
+                        <div className="mt-2">Tải lên</div>
+                      </div>
+                    </Upload>
+                  </div>
+                </Col>
+                <Col span={12}>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-[#14134f] mb-1">
+                      Danh sách ảnh
+                    </label>
+                    <Upload
+                      accept="image/*"
+                      listType="picture-card"
+                      multiple
+                      maxCount={3}
+                      beforeUpload={() => false}
+                      fileList={images}
+                      onChange={({ fileList }) => setImages(fileList)}
+                    >
+                      <div>
+                        <PlusOutlined />
+                        <div className="mt-2">Tải lên</div>
+                      </div>
+                    </Upload>
+                  </div>
+                </Col>
+              </Row>
+            </Card>
 
-          <div>
-            <label
-              htmlFor="capacity"
-              className="block text-sm font-medium text-[#14134f]"
-            >
-              Dung tích
-            </label>
-            <Input
-              placeholder="Nhập dung tích..."
-              size="large"
-              id="capacity"
-              name="capacity"
-              value={input.capacity}
-              onChange={handleInputChange}
-              className="mt-1"
-            />
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4 flex-wrap">
-          <div>
-            <label className="block text-sm font-medium text-[#14134f] py-1">
-              Ảnh hiển thị
-            </label>
-            <Upload
-              accept="image/*"
-              listType="picture-card"
-              maxCount={1}
-              beforeUpload={() => false}
-              fileList={mainImage ? [mainImage] : []}
-              onChange={({ fileList }) => setMainImage(fileList[0])}
-            >
-              <div>
-                <PlusOutlined />
-                <div className="mt-2">Tải lên</div>
-              </div>
-            </Upload>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-[#14134f] py-1">
-              Danh sách ảnh
-            </label>
-            <Upload
-              accept="image/*"
-              listType="picture-card"
-              multiple
-              maxCount={3}
-              beforeUpload={() => false}
-              fileList={images}
-              onChange={({ fileList }) => setImages(fileList)}
-            >
-              <div>
-                <PlusOutlined />
-                <div className="mt-2">Tải lên</div>
-              </div>
-            </Upload>
-          </div>
-        </div>
-
-        {input.variants.map((variant, index) => (
-          <div
-            key={index}
-            className="p-4 border-2 border-[#3b71ca] rounded-md space-y-2"
-          >
-            <div>
-              <label className="block text-sm font-medium text-[#14134f] py-1">
-                Tên màu
-              </label>
-              <Input
-                size="large"
-                value={variant.color.name}
-                onChange={(e) =>
-                  handleVariantChange(index, "name", e.target.value)
-                }
-                className="shadow-lg"
-              />
-              {validates?.variants && (
-                <ErrorMessage
-                  message={validates?.variants[`variants[${index}].color.name`]}
-                />
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-[#14134f] py-1">
-                Mã màu
-              </label>
-              <div className="flex gap-4 items-center">
-                <Input
-                  className="flex-1"
-                  size="large"
-                  value={variant.color.code}
-                  onChange={(e) =>
-                    handleVariantChange(index, "code", e.target.value)
+            <Card title="Biến thể sản phẩm" className="shadow-md">
+              {input.variants.map((variant, index) => (
+                <Card
+                  key={index}
+                  type="inner"
+                  title={`Màu sản phẩm ${index + 1}`}
+                  extra={
+                    <button
+                      type="button"
+                      onClick={() => removeVariant(index)}
+                      className="text-red-600 hover:text-red-800"
+                    >
+                      Xóa màu sản phẩm
+                    </button>
                   }
-                />
-                {variant.color.code && (
-                  <div
-                    className="w-10 h-10 rounded-full border border-gray-300 flex-shrink-0"
-                    style={{ backgroundColor: variant.color.code }}
-                  ></div>
-                )}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveColorIndex(index);
-                    setShowColorPicker(!showColorPicker);
-                  }}
-                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="mb-4"
                 >
-                  Chọn màu
-                </button>
-              </div>
-              {showColorPicker && activeColorIndex === index && (
-                <div className="absolute mt-2 z-10">
-                  <SketchPicker
-                    color={variant.color.code}
-                    onChangeComplete={(color) => {
-                      handleVariantChange(index, "code", color.hex);
-                      setShowColorPicker(false);
-                    }}
-                  />
-                </div>
-              )}
-            </div>
-            {validates.variants && (
-              <ErrorMessage
-                message={validates.variants[`variants[${index}].color.code`]}
-              />
-            )}
-            <div>
-              <Upload
-                accept="image/*"
-                listType="picture-card"
-                maxCount={1}
-                beforeUpload={() => false}
-                fileList={variant.color.image ? [variant.color.image] : []}
-                onChange={({ fileList }) => {
-                  handleVariantChange(index, "image", fileList[0]);
-                  setValidates((prev) => ({
-                    ...prev,
-                    variants: {
-                      ...prev.variants,
-                      [`variants[${index}].color.image.url`]: "",
-                    },
-                  }));
-                }}
-              >
-                <div>
-                  <PlusOutlined />
-                  <div className="mt-2">Tải ảnh màu</div>
-                </div>
-              </Upload>
-              {validates?.variants && (
-                <ErrorMessage
-                  message={
-                    validates?.variants[`variants[${index}].color.image.url`]
-                  }
-                />
-              )}
-            </div>
-            <div className="flex justify-end">
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-[#14134f] mb-1">
+                          Tên màu
+                        </label>
+                        <Input
+                          size="large"
+                          value={variant.color.name}
+                          onChange={(e) => handleVariantChange(index, "name", e.target.value)}
+                        />
+                        {validates?.variants && (
+                          <ErrorMessage
+                            message={validates?.variants[`variants[${index}].color.name`]}
+                          />
+                        )}
+                      </div>
+                    </Col>
+                    <Col span={12}>
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-[#14134f] mb-1">
+                          Mã màu
+                        </label>
+                        <div className="flex gap-4 items-center">
+                          <Input
+                            className="flex-1"
+                            size="large"
+                            value={variant.color.code}
+                            onChange={(e) => handleVariantChange(index, "code", e.target.value)}
+                          />
+                          {variant.color.code && (
+                            <div
+                              className="w-10 h-10 rounded-full border border-gray-300 flex-shrink-0"
+                              style={{ backgroundColor: variant.color.code }}
+                            ></div>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setActiveColorIndex(index);
+                              setShowColorPicker(!showColorPicker);
+                            }}
+                            className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                          >
+                            Chọn màu
+                          </button>
+                        </div>
+                        {showColorPicker && activeColorIndex === index && (
+                          <div className="absolute mt-2 z-10">
+                            <SketchPicker
+                              color={variant.color.code}
+                              onChangeComplete={(color) => {
+                                handleVariantChange(index, "code", color.hex);
+                                setShowColorPicker(false);
+                              }}
+                            />
+                          </div>
+                        )}
+                        {validates.variants && (
+                          <ErrorMessage
+                            message={validates.variants[`variants[${index}].color.code`]}
+                          />
+                        )}
+                      </div>
+                    </Col>
+                  </Row>
+                  <div className="mb-4">
+                    <Upload
+                      accept="image/*"
+                      listType="picture-card"
+                      maxCount={1}
+                      beforeUpload={() => false}
+                      fileList={variant.color.image ? [variant.color.image] : []}
+                      onChange={({ fileList }) => {
+                        handleVariantChange(index, "image", fileList[0]);
+                      }}
+                    >
+                      <div>
+                        <PlusOutlined />
+                        <div className="mt-2">Tải ảnh màu</div>
+                      </div>
+                    </Upload>
+                    {validates?.variants && (
+                      <ErrorMessage
+                        message={validates?.variants[`variants[${index}].color.image.url`]}
+                      />
+                    )}
+                  </div>
+                </Card>
+              ))}
               <button
                 type="button"
-                onClick={() => removeVariant(index)}
-                className="mt-2 px-3 py-1 text-sm text-red-600 hover:text-red-800"
+                onClick={addVariant}
+                className="mt-2 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
-                Xóa màu sản phẩm
+                Thêm màu sản phẩm
               </button>
-            </div>
-          </div>
-        ))}
+            </Card>
 
-        <button
-          type="button"
-          onClick={addVariant}
-          className="mt-2 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          Thêm màu sản phẩm
-        </button>
+            <Card title="Thông tin bổ sung" className="shadow-md">
+              <Row gutter={16}>
+                <Col span={12}>
+                  <div className="mb-4">
+                    <label htmlFor="tags" className="block text-sm font-medium text-[#14134f] mb-1">
+                      Tags
+                    </label>
+                    <Select
+                      placeholder="Chọn tags"
+                      size="large"
+                      id="tags"
+                      mode="tags"
+                      value={input.tags}
+                      onChange={(value) => handleSelectChange("tags", value)}
+                      className="w-full"
+                    >
+                      {tags?.map((item) => (
+                        <Select.Option key={item.key} value={item.value}>
+                          {item.value}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </div>
+                </Col>
+                <Col span={12}>
+                  <div className="mb-4">
+                    <label htmlFor="expiry" className="block text-sm font-medium text-[#14134f] mb-1">
+                      Hạn sử dụng
+                    </label>
+                    <DatePicker
+                      value={input.expiry ? moment(input.expiry) : ""}
+                      placeholder="Hạn sử dụng"
+                      onChange={(_, dateString) => {
+                        setInput(prev => ({ ...prev, expiry: dateString }))
+                      }}
+                      size="large"
+                      className="w-full"
+                    />
+                  </div>
+                </Col>
+              </Row>
+              <div className="mb-4">
+                <Checkbox
+                  id="enable"
+                  checked={input.enable}
+                  onChange={(e) => setInput({ ...input, enable: e.target.checked })}
+                >
+                  <span className="ml-2 text-sm text-[#14134f] font-medium">Kích hoạt sản phẩm</span>
+                </Checkbox>
+              </div>
+            </Card>
 
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="enable"
-            name="enable"
-            checked={input.enable}
-            onChange={(e) => setInput({ ...input, enable: e.target.checked })}
-            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-          />
-          <label
-            htmlFor="enable"
-            className="ml-2 block text-sm text-[#14134f] font-bold"
-          >
-            Kích hoạt sản phẩm
-          </label>
-        </div>
-
-        <div>
-          <label
-            htmlFor="tags"
-            className="block text-sm font-medium text-[#14134f]"
-          >
-            Tags
-          </label>
-          <Select
-            placeholder="Chọn tags"
-            size="large"
-            id="tags"
-            mode="tags"
-            value={input.tags}
-            onChange={(value) => handleSelectChange("tags", value)}
-            className="w-full mt-1"
-          >
-            {tags?.map((item) => (
-              <Select.Option key={item.key} value={item.value}>
-                {item.value}
-              </Select.Option>
-            ))}
-          </Select>
-        </div>
-
-        <div>
-          <label
-            htmlFor="description"
-            className="block text-sm font-medium text-[#14134f] pb-1"
-          >
-            Mô tả
-          </label>
-          <QuillEditor value={input.description} onChange={handleChangeQill} />
-          {validates.description && (
-            <ErrorMessage message={validates.description} />
-          )}
-        </div>
-      </form>
+            <Card title="Mô tả sản phẩm" className="shadow-md">
+              <div className="mb-4">
+                <QuillEditor value={input.description} onChange={handleChangeQill} />
+                {validates.description && <ErrorMessage message={validates.description} />}
+              </div>
+            </Card>
+          </form>
+      )}
     </Modal>
   );
 };

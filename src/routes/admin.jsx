@@ -26,7 +26,16 @@ const ManageOrder = lazy(() => import("../pages/ManageOrder/ManageOrder"));
 const ManageUser = lazy(() => import("../pages/ManageUser/ManageUser"));
 const ManageReview = lazy(() => import("../pages/ManageReview/ManageReview"));
 const SettingAdmin = lazy(() => import("../pages/SettingAdmin/SettingAdmin"));
+const ManagePromotion = lazy(() =>
+  import("../pages/ManagePromotion/ManagePromotion")
+);
 const OrderDetail = lazy(() => import("../pages/OrderDetail/OrderDetail"));
+const CreatePromotion = lazy(() =>
+  import("../pages/CreatePromotion/CreatePromotion")
+);
+const PromotionDetail = lazy(() =>
+  import("../pages/PromotionDetail/PromotionDetail")
+);
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticatedAdmin, isLoading } = useSelector(
@@ -155,6 +164,27 @@ const adminRoutes = [
     element: OrderDetail,
     title: "Admin - Chi tiết đơn hàng",
     layoutTitle: "Chi tiết đơn hàng",
+    isProtected: true,
+  },
+  {
+    path: "/admin/promotions",
+    element: ManagePromotion,
+    title: "Admin - Quản lý khuyến mãi",
+    layoutTitle: "Danh sách khuyến mãi",
+    isProtected: true,
+  },
+  {
+    path: "/admin/promotions/create",
+    element: CreatePromotion,
+    title: "Admin - Tạo mới khuyến mãi",
+    layoutTitle: "",
+    isProtected: true,
+  },
+  {
+    path: "/admin/promotions/:id",
+    element: PromotionDetail,
+    title: "Admin - Chi tiết khuyến mãi",
+    layoutTitle: "Chi tiết khuyến mãi",
     isProtected: true,
   },
 ];

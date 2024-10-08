@@ -31,6 +31,8 @@ export const validateCreateProductSchema = Yup.object({
 
   mainImage: Yup.object().required("Vui lòng chọn ảnh chính hiển thị sản phẩm"),
 
+  expiry: Yup.string().required("Vui lòng chọn hạn sử dụng cho sản phẩm"),
+
   images: Yup.array()
     .of(Yup.object().required("Vui lòng chọn ảnh phụ hiển thị sản phẩm"))
     .min(1, "Phải có ít nhất một hình ảnh phụ"),

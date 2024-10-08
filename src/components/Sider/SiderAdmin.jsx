@@ -10,6 +10,7 @@ import {
   AppstoreOutlined,
   TagOutlined,
   ShopOutlined,
+  GiftOutlined,
 } from "@ant-design/icons";
 import { motion } from "framer-motion";
 import useScreen from "../../hook/useScreen";
@@ -57,6 +58,9 @@ const SiderAdmin = ({ collapsed, setCollapsed }) => {
         navigate("/admin/reviews");
         break;
       case "8":
+        navigate("/admin/promotions");
+        break;
+      case "9":
         navigate("/admin/settings");
         break;
       default:
@@ -134,6 +138,11 @@ const SiderAdmin = ({ collapsed, setCollapsed }) => {
           },
           {
             key: "8",
+            icon: <GiftOutlined />,
+            label: "Khuyến mãi",
+          },
+          {
+            key: "9",
             icon: <SettingOutlined />,
             label: "Cài đặt",
           },

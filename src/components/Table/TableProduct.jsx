@@ -8,7 +8,6 @@ import {
   Popconfirm,
   message,
 } from "antd";
-import { FaEye } from "react-icons/fa";
 import { GrEdit } from "react-icons/gr";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { PiSpinnerBall } from "react-icons/pi";
@@ -20,6 +19,7 @@ import {
   getProductAdmin,
 } from "../../redux/product/product.thunk";
 import { deleteFile } from "../../helpers/uploadCloudinary";
+import { formatDateReview } from "../../helpers/formatDate";
 
 const getColorTag = (tag) => {
   switch (tag) {
@@ -211,17 +211,23 @@ const TableProduct = ({
         ),
       },
       {
+        title: "Hạn sử dụng",
+        dataIndex: "expiry",
+        key: "expiry",
+        width: 160,
+        render: (expiry) => (
+          <p className="font-medium">
+            {expiry ? formatDateReview(expiry) : "Không có"}
+          </p>
+        ),
+      },
+      {
         title: "Thao Tác",
         key: "action",
         width: 120,
         fixed: "right",
         render: (_, record) => (
           <div className="flex gap-2 items-center text-[#00246a]">
-            <Tooltip title="Xem">
-              <button className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
-                <FaEye />
-              </button>
-            </Tooltip>
             <Tooltip title="Sửa">
               <button
                 onClick={() => {

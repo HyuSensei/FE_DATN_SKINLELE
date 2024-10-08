@@ -70,17 +70,6 @@ const ProductList = ({
             </span>
           </div>
           <div className="py-2 flex items-center justify-center gap-2">
-            {/* <Rate
-              disabled
-              character={({ index }) =>
-                createIcon({
-                  index: index + 1,
-                  rate: 5,
-                  width: "12px",
-                  height: "12px",
-                })
-              }
-            /> */}
             <Rate
               disabled
               character={({ index }) =>

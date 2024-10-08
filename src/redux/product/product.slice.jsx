@@ -88,8 +88,8 @@ export const productSlice = createSlice({
       })
       .addCase(getProductHome.fulfilled, (state, action) => {
         if (action.payload.success) {
-          state.isLoading = false;
           state.collections = action.payload.data;
+          state.isLoading = false;
         }
       })
       .addCase(getProductHome.rejected, (state, action) => {

@@ -36,9 +36,8 @@ const ProductCarousel = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
-        className={`absolute top-1/2 -translate-y-1/2 ${
-          direction === "prev" ? "left-4" : "right-4"
-        } z-10 cursor-pointer bg-white bg-opacity-70 rounded-full p-3 shadow-lg`}
+        className={`absolute top-1/2 -translate-y-1/2 ${direction === "prev" ? "left-4" : "right-4"
+          } z-10 cursor-pointer bg-white bg-opacity-70 rounded-full p-3 shadow-lg`}
         onClick={onClick}
       >
         {direction === "prev" ? (
@@ -85,6 +84,52 @@ const ProductCarousel = ({
 
   if (products.length === 0) return null;
 
+  const ProductItem = ({ item }) => (
+    <div className="px-2">
+      <div
+        onClick={() => navigate(`/detail/${item.slug}`)}
+        className="cursor-pointer flex flex-col h-full bg-white pt-2 hover:py-6 pb-4 px-2 rounded-md"
+      >
+        <ImageCarousel
+          images={[item.mainImage, ...(item.images || [])].filter(
+            (img) => img && img.url
+          )}
+          name={item.name}
+        />
+        <div className="font-bold text-sm pt-2 text-center">
+          {item.brand.name}
+        </div>
+        <div className="mt-2 flex-grow">
+          <h3 className="text-xs line-clamp-2 items-center leading-5">
+            {item.name}
+          </h3>
+          <div className="mt-2 flex items-center justify-center gap-4">
+            <span className="font-bold text-sm">
+              {formatPrice(item.price)}đ
+            </span>
+            <span className="text-slate-400 line-through text-sm">
+              {formatPrice(item.price * 1.3)}đ
+            </span>
+          </div>
+          <div className="py-2 flex items-center justify-center gap-2">
+            <Rate
+              disabled
+              character={({ index }) =>
+                createAverageRate({
+                  index: index + 1,
+                  rate: parseFloat(item.averageRating),
+                  width: "12px",
+                  height: "12px",
+                })
+              }
+            />
+            <span className="font-medium">({item.totalReviews})</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+
   return (
     <div className="relative px-6">
       <motion.div
@@ -106,49 +151,7 @@ const ProductCarousel = ({
       </motion.div>
       <Slider {...settings}>
         {products.map((item, index) => (
-          <div key={index} className="px-2">
-            <div
-              onClick={() => navigate(`/detail/${item.slug}`)}
-              className="cursor-pointer flex flex-col h-full bg-white pt-2 hover:py-6 pb-4 px-2 rounded-md"
-            >
-              <ImageCarousel
-                images={[item.mainImage, ...(item.images || [])].filter(
-                  (img) => img && img.url
-                )}
-                name={item.name}
-              />
-              <div className="font-bold text-sm pt-2 text-center">
-                {item.brand.name}
-              </div>
-              <div className="mt-2 flex-grow">
-                <h3 className="text-xs line-clamp-2 items-center leading-5">
-                  {item.name}
-                </h3>
-                <div className="mt-2 flex items-center justify-center gap-4">
-                  <span className="font-bold text-sm">
-                    {formatPrice(item.price)}đ
-                  </span>
-                  <span className="text-slate-400 line-through text-sm">
-                    {formatPrice(item.price * 1.3)}đ
-                  </span>
-                </div>
-                <div className="py-2 flex items-center justify-center gap-2">
-                  <Rate
-                    disabled
-                    character={({ index }) =>
-                      createAverageRate({
-                        index: index + 1,
-                        rate: parseFloat(item.averageRating),
-                        width: "12px",
-                        height: "12px",
-                      })
-                    }
-                  />
-                  <span className="font-medium">({item.totalReviews})</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <ProductItem key={index} {...{ item }} />
         ))}
       </Slider>
     </div>
