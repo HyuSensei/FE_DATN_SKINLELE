@@ -7,6 +7,7 @@ import {
   deletePromotion,
   getListPromotion,
 } from "../../redux/promotion/promotion.thunk";
+import { useNavigate } from "react-router-dom";
 
 const TablePromotion = ({
   promotions = [],
@@ -16,6 +17,7 @@ const TablePromotion = ({
   totalItems,
   setPaginate,
 }) => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const columns = useMemo(
     () => [
@@ -52,7 +54,10 @@ const TablePromotion = ({
         render: (_, record) => (
           <div className="flex gap-2 items-center text-[#00246a]">
             <Tooltip title="Chi tiết">
-              <button className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
+              <button
+                onClick={() => navigate(`/admin/promotions/${record._id}`)}
+                className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors"
+              >
                 <FaEye />
               </button>
             </Tooltip>

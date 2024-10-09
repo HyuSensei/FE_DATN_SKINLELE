@@ -52,3 +52,14 @@ export const deletePromotion = createAsyncThunk(
     }
   }
 );
+
+export const getPromotionDetail = createAsyncThunk(
+  "promotion/getPromotionDetail",
+  async (id, { rejectWithValue }) => {
+    try {
+      return await axios.get(`/admin/promotions/${id}`);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);

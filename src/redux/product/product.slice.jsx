@@ -8,6 +8,7 @@ import {
   getProductSearch,
   getProductByCategory,
   getAllProductOther,
+  getAllProductPromitionAdd,
 } from "./product.thunk";
 
 const initialState = {
@@ -169,6 +170,22 @@ export const productSlice = createSlice({
         }
       })
       .addCase(getAllProductOther.rejected, (state, action) => {
+        state.error = action.payload;
+        state.isLoading = false;
+      })
+
+      //Get product add promotion
+      .addCase(getAllProductPromitionAdd.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(getAllProductPromitionAdd.fulfilled, (state, action) => {
+        if (action.payload.success) {
+          state.isLoading = false;
+          state.products = action.payload.data;
+          state.paginateAdmin = action.payload.pagination;
+        }
+      })
+      .addCase(getAllProductPromitionAdd.rejected, (state, action) => {
         state.error = action.payload;
         state.isLoading = false;
       });

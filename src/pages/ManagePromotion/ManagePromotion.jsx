@@ -45,11 +45,11 @@ const ManagePromotion = () => {
 
   return (
     <div className="p-4">
-      <div className="mb-4 bg-white p-4 rounded-md shadow-lg flex gap-4 items-center">
+      <div className="mb-4 bg-white p-6 rounded-md shadow-lg flex gap-4 items-center flex-wrap">
         <RangePicker
-          size="large"
+          size="middle"
           locale={locale}
-          className="w-full"
+          className="flex-1"
           onChange={(_, dateStrings) => {
             setFilter((prev) => ({
               ...prev,
@@ -65,7 +65,7 @@ const ManagePromotion = () => {
         />
         <Button
           onClick={() => navigate("/admin/promotions/create")}
-          size="large"
+          size="middle"
           type="primary"
           icon={<PlusOutlined />}
           className="bg-indigo-600 hover:bg-indigo-700"

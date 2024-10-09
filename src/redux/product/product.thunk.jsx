@@ -108,7 +108,21 @@ export const getAllProductOther = createAsyncThunk(
       const productList = await axios.get(
         `/products/all-other?page=${payload.page}&pageSize=${payload.pageSize}`
       );
-      return productList
+      return productList;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const getAllProductPromitionAdd = createAsyncThunk(
+  "product/getAllProductPromitionAdd",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const productList = await axios.get(
+        `/admin/products/promotion-create?page=${payload.page}&pageSize=${payload.pageSize}`
+      );
+      return productList;
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
