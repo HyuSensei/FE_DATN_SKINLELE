@@ -9,6 +9,7 @@ import {
   getProductByCategory,
   getAllProductOther,
   getAllProductPromitionAdd,
+  getProductPromotion,
 } from "./product.thunk";
 
 const initialState = {
@@ -36,6 +37,7 @@ const initialState = {
     brands: [],
     subcategories: [],
     tags: [],
+    categories: [],
   },
   category: "",
 };
@@ -186,6 +188,23 @@ export const productSlice = createSlice({
         }
       })
       .addCase(getAllProductPromitionAdd.rejected, (state, action) => {
+        state.error = action.payload;
+        state.isLoading = false;
+      })
+
+      //Get product promotion by user
+      .addCase(getProductPromotion.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(getProductPromotion.fulfilled, (state, action) => {
+        if (action.payload.success) {
+          state.isLoading = false;
+          state.products = action.payload.data;
+          state.pagination = action.payload.pagination;
+          state.filters = action.payload.filters;
+        }
+      })
+      .addCase(getProductPromotion.rejected, (state, action) => {
         state.error = action.payload;
         state.isLoading = false;
       });

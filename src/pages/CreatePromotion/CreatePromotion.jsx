@@ -1,180 +1,195 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getAllProductPromitionAdd,
-  getProductAdmin,
-} from "../../redux/product/product.thunk";
+import { useNavigate } from "react-router-dom";
+import { getAllProductPromitionAdd } from "../../redux/product/product.thunk";
+import { createPromotion } from "../../redux/promotion/promotion.thunk";
 import {
   Button,
   DatePicker,
   Input,
   Table,
   InputNumber,
-  Empty,
-  Image,
-  Tooltip,
   Form,
   Card,
   message,
+  Image,
+  Tooltip,
   Tag,
 } from "antd";
 import locale from "antd/es/date-picker/locale/vi_VN";
 import { PiSpinnerBall } from "react-icons/pi";
 import { formatPrice } from "../../helpers/formatPrice";
 import { formatDateReview } from "../../helpers/formatDate";
-import { useNavigate } from "react-router-dom";
-import { createPromotion } from "../../redux/promotion/promotion.thunk";
 
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
 
-const CreatePromotion = () => {
-  const navigate = useNavigate();
-  const [form] = Form.useForm();
+const useProductList = () => {
   const dispatch = useDispatch();
-  const [paginate, setPaginate] = useState({
-    page: 1,
-    pageSize: 5,
-  });
   const {
     products,
     isLoading,
     paginateAdmin: pagination,
   } = useSelector((state) => state.product);
 
-  const [selectedProducts, setSelectedProducts] = useState([]);
-  const [data, setData] = useState([]);
+  const [paginate, setPaginate] = React.useState({ page: 1, pageSize: 5 });
 
   useEffect(() => {
-    if (products.length > 0) {
-      const newData = products.map((item) => ({
-        key: item._id,
-        ...item,
-      }));
-      setData(newData);
-    }
+    dispatch(getAllProductPromitionAdd(paginate));
+  }, [dispatch, paginate]);
+
+  return { products, isLoading, pagination, setPaginate };
+};
+
+const CreatePromotion = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [form] = Form.useForm();
+  const { products, isLoading, pagination, setPaginate } = useProductList();
+
+  const [selectedProducts, setSelectedProducts] = React.useState([]);
+
+  const formattedProducts = useMemo(() => {
+    return products.map((item) => ({
+      key: item._id,
+      ...item,
+    }));
   }, [products]);
 
-  useEffect(() => {
-    dispatch(getAllProductPromitionAdd({ ...paginate }));
-  }, [paginate.page, paginate.pageSize]);
-
-  const columns = [
-    {
-      title: "Ảnh",
-      dataIndex: "mainImage",
-      key: "mainImage",
-      width: 100,
-      render: (mainImage) => (
-        <Image
-          className="rounded-md"
-          src={mainImage.url}
-          alt="Product"
-          width={80}
-          height={80}
-          placeholder={<PiSpinnerBall className="animate-spin" />}
-        />
-      ),
-    },
-    {
-      title: "Tên sản phẩm",
-      dataIndex: "name",
-      key: "name",
-      render: (_, record) => (
-        <div className="space-y-1">
-          <Tooltip title={record.name}>
-            <div className="text-sm truncate-2-lines">{record.name}</div>
-          </Tooltip>
-          <div className="flex flex-col sm:flex-row sm:items-center">
-            <span className="font-bold mr-1">Hạn sử dụng:</span>
-            {formatDateReview(record.expiry)}
-          </div>
-          <div className="text-sm truncate-2-lines">
-            <span className="font-bold mr-1">Giá:</span>
-            <span>{formatPrice(record.price)} đ</span>
-          </div>
-          {record.isPromotion && (
-            <div className="text-sm">
-              <Tag color="#ff8a4d">Khuyến mãi</Tag>
+  const columns = useMemo(
+    () => [
+      {
+        title: "Ảnh",
+        dataIndex: "mainImage",
+        key: "mainImage",
+        width: 100,
+        render: (mainImage) => (
+          <Image
+            className="rounded-md"
+            src={mainImage.url}
+            alt="Product"
+            width={80}
+            height={80}
+            placeholder={<PiSpinnerBall className="animate-spin" />}
+          />
+        ),
+      },
+      {
+        title: "Tên sản phẩm",
+        dataIndex: "name",
+        key: "name",
+        render: (_, record) => (
+          <div className="space-y-1">
+            <Tooltip title={record.name}>
+              <div className="text-sm truncate-2-lines">{record.name}</div>
+            </Tooltip>
+            <div className="flex flex-col sm:flex-row sm:items-center">
+              <span className="font-bold mr-1">Hạn sử dụng:</span>
+              {formatDateReview(record.expiry)}
             </div>
-          )}
-        </div>
-      ),
-    },
-  ];
+            <div className="text-sm truncate-2-lines">
+              <span className="font-bold mr-1">Giá:</span>
+              <span>{formatPrice(record.price)} đ</span>
+            </div>
+            {record.promotion && (
+              <>
+                <div className="text-sm truncate-2-lines">
+                  <span className="font-bold mr-1">Khuyến mãi:</span>
+                  <span className="italic">
+                    {record.promotion.name}{" "}
+                    <Tag color="#fc541e">
+                      - {record.promotion.discountPercentage} %
+                    </Tag>
+                  </span>
+                </div>
+                <div className="text-sm truncate-2-lines">
+                  <span className="font-bold mr-1">Thời gian:</span>
+                  <span className="italic">
+                    {formatDateReview(record.promotion.startDate)} -
+                    {formatDateReview(record.promotion.endDate)}
+                  </span>
+                </div>
+              </>
+            )}
+          </div>
+        ),
+      },
+    ],
+    []
+  );
 
-  const rowSelection = {
-    selectedRowKeys: selectedProducts.map((p) => p.product),
-    onChange: (selectedRowKeys, selectedRows) => {
-      const updatedSelectedProducts = selectedRows.map((item) => ({
-        product: item._id,
-        discountPercentage: 0,
-        maxQty: 0,
-      }));
-      setSelectedProducts(updatedSelectedProducts);
-
-      const productsFieldsValue = {};
-      updatedSelectedProducts.forEach((product) => {
-        productsFieldsValue[product.product] = {
+  const rowSelection = useMemo(
+    () => ({
+      selectedRowKeys: selectedProducts.map((p) => p.product),
+      onChange: (selectedRowKeys, selectedRows) => {
+        const updatedSelectedProducts = selectedRows.map((item) => ({
+          product: item._id,
           discountPercentage: 0,
           maxQty: 0,
-        };
-      });
-      form.setFieldsValue({ products: productsFieldsValue });
+        }));
+        setSelectedProducts(updatedSelectedProducts);
 
-      const previousProductIds = selectedProducts.map((p) => p.product);
-      const unselectedProductIds = previousProductIds.filter(
-        (id) => !selectedRowKeys.includes(id)
-      );
-      unselectedProductIds.forEach((id) => {
-        form.setFields([
-          {
-            name: ["products", id],
-            value: null,
-          },
-        ]);
-      });
-    },
-    getCheckboxProps: (record) => ({
-      disabled: record.isPromotion === true,
+        const productsFieldsValue = {};
+        updatedSelectedProducts.forEach((product) => {
+          productsFieldsValue[product.product] = {
+            discountPercentage: 0,
+            maxQty: 0,
+          };
+        });
+        form.setFieldsValue({ products: productsFieldsValue });
+
+        const previousProductIds = selectedProducts.map((p) => p.product);
+        const unselectedProductIds = previousProductIds.filter(
+          (id) => !selectedRowKeys.includes(id)
+        );
+        unselectedProductIds.forEach((id) => {
+          form.setFields([
+            {
+              name: ["products", id],
+              value: null,
+            },
+          ]);
+        });
+      },
+      getCheckboxProps: (record) => ({
+        disabled: record.promotion !== null,
+      }),
     }),
-  };
+    [selectedProducts, form]
+  );
 
-  const formatPayload = (values) => {
-    const productsData = values.products;
+  const handleSubmit = useCallback(
+    async (values) => {
+      if (selectedProducts.length === 0) {
+        message.warning("Vui lòng chọn sản phẩm khuyến mãi");
+        return;
+      }
 
-    const formattedProducts = Object.entries(productsData).map(
-      ([productId, data]) => ({
-        product: productId,
-        discountPercentage: data.discountPercentage,
-        maxQty: data.maxQty,
-      })
-    );
+      const formattedValues = {
+        ...values,
+        products: selectedProducts.map((product) => ({
+          product: product.product,
+          discountPercentage:
+            values.products[product.product].discountPercentage,
+          maxQty: values.products[product.product].maxQty,
+        })),
+        startDate: values.date[0].format("YYYY-MM-DD"),
+        endDate: values.date[1].format("YYYY-MM-DD"),
+      };
+      delete formattedValues.date;
 
-    const formattedValues = {
-      ...values,
-      products: formattedProducts || [],
-      startDate: values.date[0].format("YYYY-MM-DD"),
-      endDate: values.date[1].format("YYYY-MM-DD"),
-    };
-
-    delete formattedValues.date;
-
-    return formattedValues;
-  };
-
-  const handleSubmit = async (values) => {
-    if (selectedProducts.length === 0) {
-      message.warning("Vui chọn sản phẩm khuyến mãi");
-      return;
-    }
-    const payload = formatPayload(values);
-    const res = await dispatch(createPromotion(payload)).unwrap();
-    if (res.success) {
-      message.success(res.message);
-      navigate("/admin/promotions");
-    }
-  };
+      try {
+        const res = await dispatch(createPromotion(formattedValues)).unwrap();
+        if (res.success) {
+          message.success(res.message);
+          navigate("/admin/promotions");
+        }
+      } catch (error) {
+        message.error("Tạo khuyến mãi thất bại: " + error.message);
+      }
+    },
+    [dispatch, navigate, selectedProducts]
+  );
 
   return (
     <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4">
@@ -182,14 +197,13 @@ const CreatePromotion = () => {
         <h2 className="text-lg font-bold mb-4">Danh sách sản phẩm</h2>
         <Table
           columns={columns}
-          dataSource={data}
+          dataSource={formattedProducts}
           loading={isLoading}
           rowSelection={{
             type: "checkbox",
             ...rowSelection,
           }}
           pagination={{
-            disabled: selectedProducts.length > 0,
             current: pagination.page,
             pageSize: pagination.pageSize,
             total: pagination.totalItems,
@@ -261,54 +275,59 @@ const CreatePromotion = () => {
           </Form.Item>
           <div>
             <h3 className="text-sm font-medium mb-2">Sản phẩm được chọn</h3>
-            {selectedProducts.length === 0 && <Empty />}
-            {selectedProducts.map((product) => (
-              <Card
-                size="small"
-                className="shadow-md hover:shadow-lg transition-shadow duration-300 my-2"
-                key={product.product}
-                title={
-                  <div className="text-sm font-normal truncate">
-                    {products.find((p) => p._id === product.product).name}
-                  </div>
-                }
-              >
-                <div className="flex flex-col sm:flex-row sm:space-y-0 sm:space-x-2 mb-2">
-                  <Form.Item
-                    name={["products", product.product, "discountPercentage"]}
-                    label="Giảm giá (%)"
-                    rules={[
-                      { required: true, message: "Vui lòng nhập giảm giá" },
-                    ]}
-                    className="w-full sm:w-1/2"
-                  >
-                    <InputNumber
-                      placeholder="% giảm giá"
-                      min={1}
-                      max={100}
-                      className="w-full"
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    name={["products", product.product, "maxQty"]}
-                    label="Số lượng"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Vui lòng nhập số lượng tối đa",
-                      },
-                    ]}
-                    className="w-full sm:w-1/2"
-                  >
-                    <InputNumber
-                      placeholder="Số lượng tối đa"
-                      min={0}
-                      className="w-full"
-                    />
-                  </Form.Item>
-                </div>
+            {selectedProducts.length === 0 ? (
+              <Card size="small" className="text-center py-4">
+                Chưa có sản phẩm nào được chọn
               </Card>
-            ))}
+            ) : (
+              selectedProducts.map((product) => (
+                <Card
+                  size="small"
+                  className="shadow-md hover:shadow-lg transition-shadow duration-300 my-2"
+                  key={product.product}
+                  title={
+                    <div className="text-sm font-normal truncate">
+                      {products.find((p) => p._id === product.product)?.name}
+                    </div>
+                  }
+                >
+                  <div className="flex flex-col sm:flex-row sm:space-y-0 sm:space-x-2 mb-2">
+                    <Form.Item
+                      name={["products", product.product, "discountPercentage"]}
+                      label="Giảm giá (%)"
+                      rules={[
+                        { required: true, message: "Vui lòng nhập giảm giá" },
+                      ]}
+                      className="w-full sm:w-1/2"
+                    >
+                      <InputNumber
+                        placeholder="% giảm giá"
+                        min={1}
+                        max={100}
+                        className="w-full"
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      name={["products", product.product, "maxQty"]}
+                      label="Số lượng"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng nhập số lượng tối đa",
+                        },
+                      ]}
+                      className="w-full sm:w-1/2"
+                    >
+                      <InputNumber
+                        placeholder="Số lượng tối đa"
+                        min={0}
+                        className="w-full"
+                      />
+                    </Form.Item>
+                  </div>
+                </Card>
+              ))
+            )}
           </div>
         </Form>
       </div>

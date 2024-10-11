@@ -16,6 +16,7 @@ const Account = lazy(() => import("../pages/Account/Account"));
 const OrderReturn = lazy(() => import("../pages/OrderReturn/OrderReturn"));
 const Category = lazy(() => import("../pages/Category/Category"));
 const Brand = lazy(() => import("../pages/Brand/Brand"));
+const Promotion = lazy(() => import("../pages/Promotion/Promotion"));
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isLoading } = useSelector((state) => state.auth);
@@ -72,6 +73,7 @@ const routes = [
   { path: "/account", element: Account, title: "Tài khoản", isProtected: true },
   { path: "/categories/:slug", element: Category, title: "Danh mục sản phẩm" },
   { path: "/brands/:slug", element: Brand, title: "Thương hiệu" },
+  { path: "/promotions", element: Promotion, title: "Khuyến mãi hot" },
 ];
 
 const UserRoutes = routes.map(

@@ -128,3 +128,16 @@ export const getAllProductPromitionAdd = createAsyncThunk(
     }
   }
 );
+
+export const getProductPromotion = createAsyncThunk(
+  "product/getProductPromotion",
+  async (payload, { rejectWithValue }) => {
+    try {
+      return await axios.get(
+        `/products/promotions?page=${payload.page}&pageSize=${payload.pageSize}&priceRange=${payload.priceRange}&brands=${payload.brands}&sortOrder=${payload.sortOrder}&tags=${payload.tags}&categoriesList=${payload.categoriesList}`
+      );
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);

@@ -33,7 +33,7 @@ const TablePromotion = ({
         key: "name",
         render: (text) => (
           <Tooltip title={text}>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 font-extrabold text-sm text-center uppercase">
+            <span className="font-extrabold text-sm text-center uppercase">
               {text}
             </span>
           </Tooltip>

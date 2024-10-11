@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -18,6 +18,8 @@ import {
   Card,
   message,
   Image,
+  Tag,
+  Tooltip,
 } from "antd";
 import { isEmpty } from "lodash";
 import moment from "moment";
@@ -43,10 +45,7 @@ const PromotionDetail = () => {
   } = useSelector((state) => state.product);
   const { id } = useParams();
   const [selectedProducts, setSelectedProducts] = useState([]);
-  const [paginate, setPaginate] = useState({
-    page: 1,
-    pageSize: 5,
-  });
+  const [paginate, setPaginate] = useState({ page: 1, pageSize: 5 });
 
   useEffect(() => {
     if (id) {
@@ -55,7 +54,7 @@ const PromotionDetail = () => {
   }, [id, dispatch]);
 
   useEffect(() => {
-    dispatch(getAllProductPromitionAdd({ ...paginate }));
+    dispatch(getAllProductPromitionAdd(paginate));
   }, [paginate, dispatch]);
 
   useEffect(() => {
@@ -65,15 +64,20 @@ const PromotionDetail = () => {
         description: promotion.description,
         date: [moment(promotion.startDate), moment(promotion.endDate)],
       });
-      setSelectedProducts(
-        promotion.products.map((p) => ({
-          ...p,
-          product: p.product._id,
-          name: p.product.name,
-        }))
-      );
+      setSelectedProducts(promotion.products);
     }
   }, [promotion, form]);
+
+  const productsWithPromoInfo = useMemo(() => {
+    if (isEmpty(promotion) || isEmpty(products)) return [];
+    return products.map((product) => ({
+      ...product,
+      isInCurrentPromotion: promotion.products.some(
+        (p) => p.product._id === product._id
+      ),
+      promotionInfo: product.promotion,
+    }));
+  }, [promotion, products]);
 
   const handleSubmit = async (values) => {
     const formattedProducts = selectedProducts.map((product) => ({
@@ -94,16 +98,13 @@ const PromotionDetail = () => {
     };
     delete formattedValues.date;
 
-    console.log("====================================");
-    console.log(formattedValues);
-    console.log("====================================");
-    // const res = await dispatch(
-    //   updatePromotion({ id, data: formattedValues })
-    // ).unwrap();
-    // if (res.success) {
-    //   message.success(res.message);
-    //   navigate("/admin/promotions");
-    // }
+    const res = await dispatch(
+      updatePromotion({ id, data: formattedValues })
+    ).unwrap();
+    if (res.success) {
+      message.success(res.message);
+      navigate("/admin/promotions");
+    }
   };
 
   const columns = [
@@ -138,6 +139,26 @@ const PromotionDetail = () => {
             <span className="font-bold mr-1">Giá:</span>
             <span>{formatPrice(record.price)} đ</span>
           </div>
+          {record.promotion && (
+            <>
+              <div className="text-sm truncate-2-lines">
+                <span className="font-bold mr-1">Khuyến mãi:</span>
+                <span className="italic">
+                  {record.promotion.name}{" "}
+                  <Tag color="#fc541e">
+                    - {record.promotion.discountPercentage} %
+                  </Tag>
+                </span>
+              </div>
+              <div className="text-sm truncate-2-lines">
+                <span className="font-bold mr-1">Thời gian:</span>
+                <span className="italic">
+                  {formatDateReview(record.promotion.startDate)} -{" "}
+                  {formatDateReview(record.promotion.endDate)}
+                </span>
+              </div>
+            </>
+          )}
         </div>
       ),
     },
@@ -146,15 +167,19 @@ const PromotionDetail = () => {
   const rowSelection = {
     selectedRowKeys: selectedProducts.map((p) => p.product),
     onChange: (selectedRowKeys, selectedRows) => {
-      const updatedSelectedProducts = selectedRows.map((row) => ({
-        product: row._id,
-        name: row.name,
-        discountPercentage:
-          selectedProducts.find((p) => p.product === row._id)
-            ?.discountPercentage || 0,
-        maxQty:
-          selectedProducts.find((p) => p.product === row._id)?.maxQty || 0,
-      }));
+      const updatedSelectedProducts = selectedRows.map((row) => {
+        const existingProduct = selectedProducts.find(
+          (p) => p.product === row._id
+        );
+        return {
+          product: row._id,
+          name: row.name,
+          discountPercentage: existingProduct
+            ? existingProduct.discountPercentage
+            : 0,
+          maxQty: existingProduct ? existingProduct.maxQty : 0,
+        };
+      });
       setSelectedProducts(updatedSelectedProducts);
 
       const productsFieldsValue = {};
@@ -165,33 +190,20 @@ const PromotionDetail = () => {
         };
       });
       form.setFieldsValue({ products: productsFieldsValue });
-
-      const previousProductIds = selectedProducts.map((p) => p.product);
-      const unselectedProductIds = previousProductIds.filter(
-        (id) => !selectedRowKeys.includes(id)
-      );
-      unselectedProductIds.forEach((id) => {
-        form.setFields([
-          {
-            name: ["products", id],
-            value: undefined,
-          },
-        ]);
-      });
     },
-    // getCheckboxProps: (record) => ({
-    //   disabled:
-    //     record.isPromotion &&
-    //     !selectedProducts.some((p) => p.product === record._id),
-    // }),
+    getCheckboxProps: (record) => ({
+      disabled: record.promotionInfo && !record.isInCurrentPromotion,
+      name: record.name,
+    }),
   };
 
-  if (promotionLoading || productsLoading)
+  if (promotionLoading || productsLoading) {
     return (
       <div className="flex items-center justify-center flex-col h-screen">
         <Spin size="large" />
       </div>
     );
+  }
 
   if (isEmpty(promotion)) return <Empty className="mt-24" />;
 
@@ -201,7 +213,7 @@ const PromotionDetail = () => {
         <h2 className="text-lg font-bold mb-4">Danh sách sản phẩm</h2>
         <Table
           columns={columns}
-          dataSource={products}
+          dataSource={productsWithPromoInfo}
           rowSelection={rowSelection}
           rowKey="_id"
           pagination={{
@@ -266,15 +278,20 @@ const PromotionDetail = () => {
           <div>
             <h3 className="text-sm font-medium mb-2">Sản phẩm được chọn</h3>
             {selectedProducts.length === 0 && <Empty />}
-            {selectedProducts.map((product, index) => (
+          {selectedProducts.map((product) => (
               <Card
                 size="small"
                 className="shadow-md hover:shadow-lg transition-shadow duration-300 my-2"
-                key={index}
+                key={product.product}
                 title={
-                  <div className="text-sm font-normal truncate">
-                    {product.name}
-                  </div>
+                  <Tooltip
+                    title={
+                      products.find((p) => p._id === product.product)?.name
+                    }
+                    className="text-sm font-normal truncate"
+                  >
+                    {products.find((p) => p._id === product.product)?.name}
+                  </Tooltip>
                 }
               >
                 <div className="flex flex-col sm:flex-row sm:space-y-0 sm:space-x-2 mb-2">
@@ -292,6 +309,9 @@ const PromotionDetail = () => {
                       min={0}
                       max={100}
                       className="w-full"
+                      disabled={
+                        !product.isInCurrentPromotion && product.promotionInfo
+                      }
                     />
                   </Form.Item>
                   <Form.Item
@@ -310,6 +330,9 @@ const PromotionDetail = () => {
                       placeholder="Số lượng tối đa"
                       min={0}
                       className="w-full"
+                      disabled={
+                        !product.isInCurrentPromotion && product.promotionInfo
+                      }
                     />
                   </Form.Item>
                 </div>

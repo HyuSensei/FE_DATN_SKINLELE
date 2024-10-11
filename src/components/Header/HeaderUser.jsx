@@ -95,16 +95,21 @@ const HeaderUser = () => {
       children:
         isArray(brands) && brands.length > 0
           ? brands.map((item) => ({
-            key: item._id,
-            label: <div className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 font-extrabold text-sm text-center uppercase">{item.name}</div>,
-            path: `/brands/${item.slug}`,
-          }))
+              key: item._id,
+              label: (
+                <div className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 font-extrabold text-sm text-center uppercase">
+                  {item.name}
+                </div>
+              ),
+              path: `/brands/${item.slug}`,
+            }))
           : [],
     },
     ...createMenuCategoryItems(categories),
     {
       key: "promotions",
       label: "Khuyến mãi hot",
+      path: "/promotions",
     },
     {
       key: "vips",
