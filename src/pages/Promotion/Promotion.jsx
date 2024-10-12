@@ -152,7 +152,7 @@ const Promotion = () => {
       <div className="w-full">
         <img
           className="rounded-lg w-full h-auto"
-          src="https://image.hsv-tech.io/1920x0/bbx/common/85ae3acf-97e0-4310-9094-f81a6158f5fb.webp"
+          src="https://image.hsv-tech.io/1920x480/bbx/common/58c62c9c-61d0-495c-9db8-a0a515764d33.webp"
           alt=""
         />
       </div>

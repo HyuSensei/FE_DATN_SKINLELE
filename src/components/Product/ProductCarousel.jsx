@@ -2,7 +2,7 @@ import React from "react";
 import Slider from "react-slick";
 import { defaultProduct } from "../../const/defaultProduct";
 import { formatPrice } from "../../helpers/formatPrice";
-import { Rate, Spin } from "antd";
+import { Rate, Spin, Tag } from "antd";
 import { createAverageRate, createIcon } from "../../ultis/createIcon";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { motion } from "framer-motion";
@@ -36,8 +36,9 @@ const ProductCarousel = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
-        className={`absolute top-1/2 -translate-y-1/2 ${direction === "prev" ? "left-4" : "right-4"
-          } z-10 cursor-pointer bg-white bg-opacity-70 rounded-full p-3 shadow-lg`}
+        className={`absolute top-1/2 -translate-y-1/2 ${
+          direction === "prev" ? "left-4" : "right-4"
+        } z-10 cursor-pointer bg-white bg-opacity-70 rounded-full p-3 shadow-lg`}
         onClick={onClick}
       >
         {direction === "prev" ? (
@@ -84,66 +85,84 @@ const ProductCarousel = ({
 
   if (products.length === 0) return null;
 
-  const ProductItem = ({ item }) => (
-    <div className="px-2">
-      <div
-        onClick={() => navigate(`/detail/${item.slug}`)}
-        className="cursor-pointer flex flex-col h-full bg-white pt-2 hover:py-6 pb-4 px-2 rounded-md"
-      >
-        <ImageCarousel
-          images={[item.mainImage, ...(item.images || [])].filter(
-            (img) => img && img.url
-          )}
-          name={item.name}
-        />
-        <div className="font-bold text-sm pt-2 text-center">
-          {item.brand.name}
-        </div>
-        <div className="mt-2 flex-grow">
-          <h3 className="text-xs line-clamp-2 items-center leading-5">
-            {item.name}
-          </h3>
-          <div className="mt-2 flex items-center justify-center gap-4">
-            <span className="font-bold text-sm">
-              {formatPrice(item.price)}đ
-            </span>
-            <span className="text-slate-400 line-through text-sm">
-              {formatPrice(item.price * 1.3)}đ
-            </span>
-          </div>
-          <div className="py-2 flex items-center justify-center gap-2">
-            <Rate
-              disabled
-              character={({ index }) =>
-                createAverageRate({
-                  index: index + 1,
-                  rate: parseFloat(item.averageRating),
-                  width: "12px",
-                  height: "12px",
-                })
-              }
+  const ProductItem = ({ item }) => {
+    const discountPercentage = item.promotion
+      ? item.promotion.discountPercentage
+      : 0;
+    const originalPrice = item.originalPrice || item.price;
+    const discountedPrice = item.price;
+
+    return (
+      <div className="px-2 py-2">
+        <div
+          onClick={() => navigate(`/detail/${item.slug}`)}
+          className="cursor-pointer flex flex-col h-full bg-white shadow-md rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl"
+        >
+          <div className="relative">
+            <ImageCarousel
+              images={[item.mainImage, ...(item.images || [])].filter(
+                (img) => img && img.url
+              )}
+              name={item.name}
             />
-            <span className="font-medium">({item.totalReviews})</span>
+            {discountPercentage > 0 && (
+              <Tag color="#f50" className="absolute top-2 left-2 z-10">
+                -{discountPercentage}%
+              </Tag>
+            )}
+          </div>
+          <div className="p-4">
+            <div className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 font-extrabold text-sm text-center uppercase">
+              {item.brand.name}
+            </div>
+            <h3 className="text-xs line-clamp-2 items-center leading-5 mb-2">
+              {item.name}
+            </h3>
+            <div className="flex items-center justify-between mb-2">
+              <span className="font-bold">{formatPrice(discountedPrice)}đ</span>
+              {discountPercentage > 0 && (
+                <span className="text-gray-400 line-through text-sm">
+                  {formatPrice(originalPrice)}đ
+                </span>
+              )}
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <Rate
+                disabled
+                value={parseFloat(item.averageRating)}
+                character={({ index }) =>
+                  createAverageRate({
+                    index: index + 1,
+                    rate: parseFloat(item.averageRating),
+                    width: "12px",
+                    height: "12px",
+                  })
+                }
+              />
+              <span className="text-sm text-gray-500">
+                ({item.totalReviews})
+              </span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  )
+    );
+  };
 
   return (
-    <div className="relative px-6">
+    <div className="relative px-6 py-8">
       <motion.div
         initial="hidden"
         animate="visible"
         variants={containerVariants}
-        className="mx-auto px-4 py-4 md:px-8"
+        className="mx-auto px-4 pb-6 md:px-8"
       >
         {title && (
           <motion.h2
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="texl lg:text-3xl font-bold uppercase text-center"
+            className="text-2xl lg:text-3xl font-bold text-center text-gray-800 uppercase"
           >
             {title}
           </motion.h2>
@@ -151,7 +170,7 @@ const ProductCarousel = ({
       </motion.div>
       <Slider {...settings}>
         {products.map((item, index) => (
-          <ProductItem key={index} {...{ item }} />
+          <ProductItem key={index} item={item} />
         ))}
       </Slider>
     </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import { List, Pagination, Rate, Spin } from "antd";
+import { List, Pagination, Rate, Spin, Tag } from "antd";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { formatPrice } from "../../helpers/formatPrice";
@@ -39,54 +39,69 @@ const ProductList = ({
     },
   };
 
-  const renderItem = (item) => (
-    <List.Item>
-      <motion.div
-        variants={itemVariants}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className="cursor-pointer flex flex-col h-full"
-        onClick={() => navigate(`/detail/${item.slug}`)}
-      >
-        <ImageCarousel
-          images={[item.mainImage, ...(item.images || [])].filter(
-            (img) => img && img.url
-          )}
-          name={item.name}
-        />
-        <div className="font-bold text-sm pt-2 text-center">
-          {item.brand.name}
-        </div>
-        <div className="mt-2 flex-grow">
-          <h3 className="text-xs line-clamp-2 items-center leading-5">
-            {item.name}
-          </h3>
-          <div className="mt-2 flex items-center justify-center gap-6">
-            <span className="font-bold text-sm">
-              {formatPrice(item.price)}đ
-            </span>
-            <span className="text-slate-400 line-through text-sm">
-              {formatPrice(item.price * 1.3)}đ
-            </span>
-          </div>
-          <div className="py-2 flex items-center justify-center gap-2">
-            <Rate
-              disabled
-              character={({ index }) =>
-                createAverageRate({
-                  index: index + 1,
-                  rate: parseFloat(item.averageRating),
-                  width: "12px",
-                  height: "12px",
-                })
-              }
+  const renderItem = (item) => {
+    const discountPercentage = item.promotion
+      ? item.promotion.discountPercentage
+      : 0;
+    const originalPrice = item.originalPrice || item.price;
+    const discountedPrice = item.price;
+
+    return (
+      <List.Item>
+        <motion.div
+          variants={itemVariants}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="cursor-pointer flex flex-col h-full"
+          onClick={() => navigate(`/detail/${item.slug}`)}
+        >
+          <div className="relative">
+            <ImageCarousel
+              images={[item.mainImage, ...(item.images || [])].filter(
+                (img) => img && img.url
+              )}
+              name={item.name}
             />
-            <span className="font-medium">({item.totalReviews})</span>
+            {discountPercentage > 0 && (
+              <Tag color="#f50" className="absolute top-2 left-2 z-10">
+                -{discountPercentage}%
+              </Tag>
+            )}
           </div>
-        </div>
-      </motion.div>
-    </List.Item>
-  );
+          <div className="pt-2 text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 font-extrabold text-sm text-center uppercase">
+            {item.brand.name || item?.brandInfo?.name}
+          </div>
+          <div className="mt-2 flex-grow">
+            <h3 className="text-xs line-clamp-2 items-center leading-5">
+              {item.name}
+            </h3>
+            <div className="flex items-center justify-between mb-2">
+              <span className="font-bold">{formatPrice(discountedPrice)}đ</span>
+              {discountPercentage > 0 && (
+                <span className="text-gray-400 line-through text-sm">
+                  {formatPrice(originalPrice)}đ
+                </span>
+              )}
+            </div>
+            <div className="py-2 flex items-center justify-center gap-2">
+              <Rate
+                disabled
+                character={({ index }) =>
+                  createAverageRate({
+                    index: index + 1,
+                    rate: parseFloat(item.averageRating),
+                    width: "12px",
+                    height: "12px",
+                  })
+                }
+              />
+              <span className="font-medium">({item.totalReviews})</span>
+            </div>
+          </div>
+        </motion.div>
+      </List.Item>
+    );
+  };
 
   const Loading = () => (
     <div className="flex items-center justify-center py-4">
