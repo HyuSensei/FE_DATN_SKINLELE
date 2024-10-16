@@ -115,10 +115,14 @@ const ProductCarousel = ({
             <div className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 font-extrabold text-sm text-center uppercase">
               {item.brand.name}
             </div>
-            <h3 className="text-xs line-clamp-2 items-center leading-5 mb-2">
+            <h3 className="text-xs line-clamp-2 items-center leading-5 mb-1">
               {item.name}
             </h3>
-            <div className="flex items-center justify-between mb-2">
+            <div
+              className={`flex items-center ${
+                discountPercentage > 0 ? "justify-between" : "justify-center"
+              } mb-2`}
+            >
               <span className="font-bold">{formatPrice(discountedPrice)}đ</span>
               {discountPercentage > 0 && (
                 <span className="text-gray-400 line-through text-sm">

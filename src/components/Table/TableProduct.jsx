@@ -215,10 +215,14 @@ const TableProduct = ({
         dataIndex: "expiry",
         key: "expiry",
         width: 160,
-        render: (expiry) => (
-          <p className="font-medium">
-            {expiry ? formatDateReview(expiry) : "Không có"}
-          </p>
+        render: (expiry, record) => (
+          <>
+            <p className="font-medium">
+              {expiry ? formatDateReview(expiry) : "Không có"}
+            </p>
+            {record.isExpired && <Tag color="#f9ca3e">Hết hạn</Tag>}
+            {record.isAlmostExpired && <Tag color="#db521c">Sắp hết hạn</Tag>}
+          </>
         ),
       },
       {

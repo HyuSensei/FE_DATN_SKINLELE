@@ -10,7 +10,6 @@ import {
   Spin,
   Pagination,
   Image,
-  Typography,
 } from "antd";
 import { createAverageRate, createIcon } from "../ultis/createIcon";
 import {
@@ -27,6 +26,7 @@ import { getReviewProduct } from "../redux/review/review.thunk";
 import { formatDateReview } from "../helpers/formatDate";
 import { FaQuoteLeft, FaQuoteRight } from "react-icons/fa6";
 import { MdVerified, MdDateRange } from "react-icons/md";
+import emptyReview from "../assets/images/review-empty.png";
 
 const RateList = ({ product }) => {
   const dispatch = useDispatch();
@@ -56,15 +56,9 @@ const RateList = ({ product }) => {
           pageSize: paginate.pageSize,
           ...reviewFilter,
         })
-      )
+      );
     }
-  }, [
-    product?._id,
-    paginate.page,
-    paginate.pageSize,
-    reviewFilter,
-    dispatch,
-  ]);
+  }, [product?._id, paginate.page, paginate.pageSize, reviewFilter, dispatch]);
 
   useEffect(() => {
     fetchReviews();
@@ -162,9 +156,9 @@ const RateList = ({ product }) => {
               <Button
                 type={reviewFilter.rate === "" ? "primary" : "default"}
                 onClick={() => {
-                  handleFilterChange("rate", "")
-                  handleFilterChange('hasImage', "")
-                  handleFilterChange('hasComment', "")
+                  handleFilterChange("rate", "");
+                  handleFilterChange("hasImage", "");
+                  handleFilterChange("hasComment", "");
                 }}
               >
                 Tất cả
@@ -185,9 +179,8 @@ const RateList = ({ product }) => {
                   handleFilterChange(
                     "hasImage",
                     reviewFilter.hasImage === "true" ? "" : "true"
-                  )
-                }
-                }
+                  );
+                }}
               >
                 <CameraOutlined /> Có hình
               </Button>
@@ -219,7 +212,7 @@ const RateList = ({ product }) => {
                 <div className="space-y-2">
                   <img
                     className="w-40 lg:w-60 m-auto"
-                    src="https://cdni.iconscout.com/illustration/premium/thumb/empty-review-illustration-download-in-svg-png-gif-file-formats--blank-feedback-no-comments-rating-unfilled-marketplace-states-pack-windows-interface-illustrations-9824449.png"
+                    src={emptyReview}
                     alt=""
                   />
                   <div className="text-sm md:text-base italic text-center">

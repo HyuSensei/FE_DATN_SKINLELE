@@ -6,6 +6,7 @@ import { formatPrice } from "../../helpers/formatPrice";
 import { defaultProduct } from "../../const/defaultProduct";
 import { createAverageRate } from "../../ultis/createIcon";
 import ImageCarousel from "../ImageCarousel";
+import emptyProductList from "../../assets/images/skinlele-product-list-empty.gif";
 
 const ProductList = ({
   isLoading,
@@ -75,7 +76,11 @@ const ProductList = ({
             <h3 className="text-xs line-clamp-2 items-center leading-5">
               {item.name}
             </h3>
-            <div className="flex items-center justify-between mb-2">
+            <div
+              className={`flex items-center ${
+                discountPercentage > 0 ? "justify-between" : "justify-center"
+              } mb-2`}
+            >
               <span className="font-bold">{formatPrice(discountedPrice)}đ</span>
               {discountPercentage > 0 && (
                 <span className="text-gray-400 line-through text-sm">
@@ -113,11 +118,7 @@ const ProductList = ({
     return (
       <div className="flex items-center justify-center">
         <div className="space-y-4">
-          <img
-            className="w-80 m-auto"
-            src="https://i.gifer.com/embedded/download/VjWO.gif"
-            alt=""
-          />
+          <img className="w-80 m-auto" src={emptyProductList} alt="" />
           <div className="text-sm md:text-base italic text-center">
             Quý khách có thể tham khảo các sản phẩm khác. SkinLeLe cảm ơn quý
             khách ❤️

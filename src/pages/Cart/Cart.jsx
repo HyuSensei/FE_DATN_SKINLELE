@@ -7,7 +7,6 @@ import {
   Card,
   message,
   Image,
-  Empty,
 } from "antd";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import ProductList from "../../components/Product/ProductList";
@@ -21,13 +20,18 @@ import {
 import { formatPrice } from "../../helpers/formatPrice";
 import { isEmpty } from "lodash";
 import { getAllProductOther } from "../../redux/product/product.thunk";
+import cartEmpty from "../../assets/images/skinlele-empty-cart.png";
 
 const { Text } = Typography;
 
 const Cart = () => {
   const dispatch = useDispatch();
   const { products } = useSelector((state) => state.cart.cart);
-  const { products: productList, isLoading, pagination } = useSelector((state) => state.product);
+  const {
+    products: productList,
+    isLoading,
+    pagination,
+  } = useSelector((state) => state.product);
   const [selectedItems, setSelectedItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [open, setOpen] = useState(false);
@@ -35,8 +39,8 @@ const Cart = () => {
     page: 1,
     pageSize: 10,
     totalPage: 0,
-    totalItems: 0
-  })
+    totalItems: 0,
+  });
 
   const selectedProducts = useMemo(() => {
     return products.filter((product) =>
@@ -45,10 +49,10 @@ const Cart = () => {
   }, [products, selectedItems]);
 
   useEffect(() => {
-    dispatch(getAllProductOther({ ...paginate }))
+    dispatch(getAllProductOther({ ...paginate }));
   }, [paginate.page, paginate.pageSize]);
 
-useEffect(() => {
+  useEffect(() => {
     if (pagination) {
       setPaginate((prev) => ({
         ...prev,
@@ -60,7 +64,7 @@ useEffect(() => {
     }
   }, [pagination]);
 
-  useEffect(() => { 
+  useEffect(() => {
     const newTotalPrice = selectedItems.reduce((total, itemId) => {
       const item = products.find((product) => product.productId === itemId);
       return total + (item ? item.price * item.quantity : 0);
@@ -124,7 +128,7 @@ useEffect(() => {
             <div>
               <img
                 className="w-64 m-auto flex items-center justify-center"
-                src="https://jrdsolar.com/templates/default-new/images/empty-cart.png"
+                src={cartEmpty}
                 alt="Empty-Cart"
               />
               <Typography.Text className="text-base">
@@ -253,14 +257,15 @@ useEffect(() => {
           </Card>
         </>
       )}
-      <ProductList {...{
-        isLoading,
-        products: productList,
-        title: "Sản phẩm khác",
-        setPaginate,
-        paginate,
-      }
-      } />
+      <ProductList
+        {...{
+          isLoading,
+          products: productList,
+          title: "Sản phẩm khác",
+          setPaginate,
+          paginate,
+        }}
+      />
     </div>
   );
 };

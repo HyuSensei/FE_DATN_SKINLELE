@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import bannerCategory from "../../assets/images/skinele-notfound-page_1.gif";
 
 const NotFound = () => {
   const navigate = useNavigate();
@@ -9,7 +10,7 @@ const NotFound = () => {
       <div className="max-w-lg text-center">
         <div className="relative">
           <img
-            src="https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif"
+            src={bannerCategory}
             alt="404 Not Found"
             className="w-full h-auto rounded-md"
           />

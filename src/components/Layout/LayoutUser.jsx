@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import HeaderUser from "../Header/HeaderUser";
 import { FaFacebookF, FaInstagram, FaTiktok } from "react-icons/fa";
+import verifyImage from "../../assets/images/skinlele-verified.png";
 
 const LayoutUser = ({ children }) => {
   const location = useLocation();
@@ -56,7 +57,7 @@ const LayoutUser = ({ children }) => {
                 <FaTiktok className="text-2xl" />
               </div>
               <img
-                src="https://beautybox.com.vn/images/verified.png"
+                src={verifyImage}
                 alt="Certification"
                 className="w-24 h-auto"
               />

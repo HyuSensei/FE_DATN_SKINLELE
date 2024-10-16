@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { Card, Tooltip } from "antd";
+import React, { useEffect, useState } from "react";
+import { Button, Card, Tooltip } from "antd";
 import { motion } from "framer-motion";
 import { PiShoppingBagOpenFill } from "react-icons/pi";
 import { HiMiniUserGroup } from "react-icons/hi2";
@@ -8,10 +8,11 @@ import { FaMoneyCheck } from "react-icons/fa6";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 import StatisticalProductSelling from "../../components/Statistical/StatisticalProductSelling";
 import StatisicalRevenue from "../../components/Statistical/StatisicalRevenue";
-import StatisticalTopReview from "../../components/Statistical/StatisticalTopReview";
 import { useDispatch, useSelector } from "react-redux";
 import { formatPrice } from "../../helpers/formatPrice";
 import { getStatisticalAdmin } from "../../redux/statistical/statistical.thunk";
+import { getProductAlmostExpired } from "../../redux/product/product.thunk";
+import TableProductAlmostExpired from "../../components/Table/TableProductAlmostExpired";
 
 const DashboardCard = ({
   title,
@@ -71,6 +72,16 @@ const DashboardCard = ({
 
 const DashBoard = () => {
   const dispatch = useDispatch();
+  const [paginate, setPaginate] = useState({
+    page: 1,
+    pageSize: 2,
+    totalPage: 0,
+    totalItems: 0,
+  });
+  const [products, setProducts] = useState([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(false);
+  const [open, setOpen] = useState(false);
+
   const {
     isLoading,
     totalOrders,
@@ -79,12 +90,30 @@ const DashBoard = () => {
     totalOrderAmount,
     monthlyRevenue,
     topSellingProducts,
-    topReviewedProducts,
   } = useSelector((state) => state.statistical);
 
   useEffect(() => {
     dispatch(getStatisticalAdmin());
   }, []);
+
+  const fetchProduct = async () => {
+    setIsLoadingProducts(true);
+    const res = await dispatch(
+      getProductAlmostExpired({ ...paginate })
+    ).unwrap();
+    if (res.success) {
+      setProducts(res.data);
+      setPaginate((prev) => ({
+        ...prev,
+        ...res.pagination,
+      }));
+    }
+    setIsLoadingProducts(false);
+  };
+
+  useEffect(() => {
+    fetchProduct();
+  }, [paginate.page, paginate.pageSize]);
 
   return (
     <div className="p-6 mt-2 bg-gray-100">
@@ -139,17 +168,29 @@ const DashBoard = () => {
         </Card>
 
         <Card className="shadow-lg" bordered={false}>
-          <h2 className="uppercase text-sm font-semibold text-[#14134f]">
-            Top đánh giá sản phẩm
-          </h2>
-          <div className={`max-w-[1100px] m-auto overflow-hidden`}>
-            <StatisticalTopReview
-              {...{
-                isLoading,
-                topReviewedProducts,
-              }}
-            />
+          <div className="flex items-center justify-between mb-2 flex-wrap">
+            <h2 className="uppercase text-sm font-semibold text-[#14134f] pb-2">
+              Thống kê sản phẩm sắp hết hạn
+            </h2>
+            <Button
+              onClick={() => setOpen(true)}
+              disabled={products.length === 0}
+              type="primary"
+              className="bg-indigo-600 hover:bg-indigo-700 w-full sm:w-auto shadow-xl"
+            >
+              Tạo khuyến mãi
+            </Button>
           </div>
+          <TableProductAlmostExpired
+            {...{
+              products,
+              setPaginate,
+              paginate,
+              isLoading: isLoadingProducts,
+              open,
+              setOpen,
+            }}
+          />
         </Card>
       </div>
 

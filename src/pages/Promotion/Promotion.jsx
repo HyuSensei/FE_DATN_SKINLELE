@@ -5,6 +5,7 @@ import ProductList from "../../components/Product/ProductList";
 import { Breadcrumb, Checkbox, Select, Collapse } from "antd";
 import { getProductPromotion } from "../../redux/product/product.thunk";
 import { debounce } from "lodash";
+import bannerPromtion from "../../assets/images/skinlele-banner-promotion.webp";
 
 const Promotion = () => {
   const { isMobile } = useScreen();
@@ -150,11 +151,7 @@ const Promotion = () => {
   return (
     <div className="space-y-4">
       <div className="w-full">
-        <img
-          className="rounded-lg w-full h-auto"
-          src="https://image.hsv-tech.io/1920x480/bbx/common/58c62c9c-61d0-495c-9db8-a0a515764d33.webp"
-          alt=""
-        />
+        <img className="rounded-lg w-full h-auto" src={bannerPromtion} alt="" />
       </div>
       <div>
         <Breadcrumb

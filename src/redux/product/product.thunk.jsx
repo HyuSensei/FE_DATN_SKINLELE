@@ -141,3 +141,16 @@ export const getProductPromotion = createAsyncThunk(
     }
   }
 );
+
+export const getProductAlmostExpired = createAsyncThunk(
+  "product/getProductAlmostExpired",
+  async (payload, { rejectWithValue }) => {
+    try {
+      return await axios.get(
+        `/admin/products/almost-expired?page=${payload.page}&pageSize=${payload.pageSize}`
+      );
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);

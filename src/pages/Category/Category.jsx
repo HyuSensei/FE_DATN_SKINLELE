@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { getProductByCategory } from "../../redux/product/product.thunk";
 import { debounce } from "lodash";
+import bannerCategory from "../../assets/images/skinlele-banner-category.webp";
 
 const { Option } = Select;
 
@@ -156,11 +157,7 @@ const Category = () => {
   return (
     <div className="space-y-4">
       <div className="w-full">
-        <img
-          className="rounded-lg w-full h-auto"
-          src="https://image.hsv-tech.io/1920x480/bbx/common/affc19d8-f19c-4d4b-8325-a0f309c99688.webp"
-          alt=""
-        />
+        <img className="rounded-lg w-full h-auto" src={bannerCategory} alt="" />
       </div>
       <div>
         <Breadcrumb
