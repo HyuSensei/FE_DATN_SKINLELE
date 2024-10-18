@@ -45,7 +45,12 @@ const PromotionDetail = () => {
   } = useSelector((state) => state.product);
   const { id } = useParams();
   const [selectedProducts, setSelectedProducts] = useState([]);
-  const [paginate, setPaginate] = useState({ page: 1, pageSize: 5 });
+  const [paginate, setPaginate] = useState({
+    page: 1,
+    pageSize: 5,
+    totalPage: 0,
+    totalItems: 0,
+  });
 
   useEffect(() => {
     if (id) {
@@ -59,21 +64,23 @@ const PromotionDetail = () => {
 
   useEffect(() => {
     if (!isEmpty(promotion)) {
-      form.setFieldsValue({
-        name: promotion.name,
-        description: promotion.description,
-        date: [moment(promotion.startDate), moment(promotion.endDate)],
-      });
-      setSelectedProducts(promotion.products);
+      const newData = promotion.products.map((item) => ({
+        image: item.product.mainImage.url,
+        product: item.product._id,
+        name: item.product.name,
+        discountPercentage: item.discountPercentage,
+        maxQty: item.maxQty,
+      }));
+      setSelectedProducts(newData);
     }
-  }, [promotion, form]);
+  }, [promotion]);
 
   const productsWithPromoInfo = useMemo(() => {
     if (isEmpty(promotion) || isEmpty(products)) return [];
     return products.map((product) => ({
       ...product,
       isInCurrentPromotion: promotion.products.some(
-        (p) => p.product._id === product._id
+        (p) => p._id === product.product
       ),
       promotionInfo: product.promotion,
     }));
@@ -166,12 +173,19 @@ const PromotionDetail = () => {
 
   const rowSelection = {
     selectedRowKeys: selectedProducts.map((p) => p.product),
-    onChange: (selectedRowKeys, selectedRows) => {
-      const updatedSelectedProducts = selectedRows.map((row) => {
+    onChange: (_, selectedRows) => {
+      const currentPageProducts = products.map((p) => p._id);
+
+      const productsFromOtherPages = selectedProducts.filter(
+        (p) => !currentPageProducts.includes(p.product)
+      );
+
+      const updatedCurrentPageProducts = selectedRows.map((row) => {
         const existingProduct = selectedProducts.find(
           (p) => p.product === row._id
         );
         return {
+          image: row.mainImage.url,
           product: row._id,
           name: row.name,
           discountPercentage: existingProduct
@@ -180,20 +194,14 @@ const PromotionDetail = () => {
           maxQty: existingProduct ? existingProduct.maxQty : 0,
         };
       });
-      setSelectedProducts(updatedSelectedProducts);
 
-      const productsFieldsValue = {};
-      updatedSelectedProducts.forEach((product) => {
-        productsFieldsValue[product.product] = {
-          discountPercentage: product.discountPercentage,
-          maxQty: product.maxQty,
-        };
-      });
-      form.setFieldsValue({ products: productsFieldsValue });
+      setSelectedProducts([
+        ...productsFromOtherPages,
+        ...updatedCurrentPageProducts,
+      ]);
     },
     getCheckboxProps: (record) => ({
-      disabled: record.promotionInfo && !record.isInCurrentPromotion,
-      name: record.name,
+      disabled: record.promotion && record.promotion.id !== id,
     }),
   };
 
@@ -212,6 +220,7 @@ const PromotionDetail = () => {
       <div className="w-full lg:w-1/2">
         <h2 className="text-lg font-bold mb-4">Danh sách sản phẩm</h2>
         <Table
+          loading={productsLoading}
           columns={columns}
           dataSource={productsWithPromoInfo}
           rowSelection={rowSelection}
@@ -231,6 +240,18 @@ const PromotionDetail = () => {
           onFinish={handleSubmit}
           layout="vertical"
           className="space-y-4"
+          initialValues={{
+            products: selectedProducts.reduce((acc, product) => {
+              acc[product.product] = {
+                discountPercentage: product.discountPercentage,
+                maxQty: product.maxQty,
+              };
+              return acc;
+            }, {}),
+            name: promotion.name,
+            description: promotion.description,
+            date: [moment(promotion.startDate), moment(promotion.endDate)],
+          }}
         >
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
             <h2 className="text-lg font-bold">Cập nhật thông tin khuyến mãi</h2>
@@ -278,23 +299,26 @@ const PromotionDetail = () => {
           <div>
             <h3 className="text-sm font-medium mb-2">Sản phẩm được chọn</h3>
             {selectedProducts.length === 0 && <Empty />}
-          {selectedProducts.map((product) => (
+            {selectedProducts.map((product) => (
               <Card
                 size="small"
                 className="shadow-md hover:shadow-lg transition-shadow duration-300 my-2"
                 key={product.product}
                 title={
                   <Tooltip
-                    title={
-                      products.find((p) => p._id === product.product)?.name
-                    }
+                    title={product.name}
                     className="text-sm font-normal truncate"
                   >
-                    {products.find((p) => p._id === product.product)?.name}
+                    {product.name}
                   </Tooltip>
                 }
               >
                 <div className="flex flex-col sm:flex-row sm:space-y-0 sm:space-x-2 mb-2">
+                  <Image
+                    src={product.image}
+                    width={100}
+                    className="rounded-md"
+                  />
                   <Form.Item
                     name={["products", product.product, "discountPercentage"]}
                     label="Giảm giá (%)"
@@ -302,16 +326,12 @@ const PromotionDetail = () => {
                       { required: true, message: "Vui lòng nhập giảm giá" },
                     ]}
                     className="w-full sm:w-1/2"
-                    initialValue={product.discountPercentage}
                   >
                     <InputNumber
                       placeholder="% giảm giá"
-                      min={0}
+                      min={1}
                       max={100}
                       className="w-full"
-                      disabled={
-                        !product.isInCurrentPromotion && product.promotionInfo
-                      }
                     />
                   </Form.Item>
                   <Form.Item
@@ -324,15 +344,11 @@ const PromotionDetail = () => {
                       },
                     ]}
                     className="w-full sm:w-1/2"
-                    initialValue={product.maxQty}
                   >
                     <InputNumber
                       placeholder="Số lượng tối đa"
-                      min={0}
+                      min={1}
                       className="w-full"
-                      disabled={
-                        !product.isInCurrentPromotion && product.promotionInfo
-                      }
                     />
                   </Form.Item>
                 </div>

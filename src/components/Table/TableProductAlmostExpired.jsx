@@ -4,6 +4,7 @@ import { formatDateReview } from "../../helpers/formatDate";
 import { PiSpinnerBall } from "react-icons/pi";
 import { formatPrice } from "../../helpers/formatPrice";
 import ModalSaveProductPromotion from "../Modal/ModalSaveProductPromotion";
+import { isEmpty } from "lodash";
 
 const TableProductAlmostExpired = ({
   products,
@@ -12,6 +13,7 @@ const TableProductAlmostExpired = ({
   setPaginate,
   open,
   setOpen,
+  setProducts
 }) => {
   const [selectedProducts, setSelectedProducts] = useState([]);
 
@@ -77,45 +79,39 @@ const TableProductAlmostExpired = ({
     []
   );
 
-  const rowSelection = useMemo(
-    () => ({
-      selectedRowKeys: selectedProducts.map((p) => p.product),
-      onChange: (selectedRowKeys, selectedRows) => {
-        const updatedSelectedProducts = selectedRows.map((item) => ({
-          product: item._id,
-          discountPercentage: 0,
-          maxQty: 0,
-        }));
-        setSelectedProducts(updatedSelectedProducts);
+  const rowSelection = {
+    selectedRowKeys: selectedProducts.map((p) => p.product),
+    onChange: (_, selectedRows) => {
+      const currentPageProducts = products.map((p) => p._id);
 
-        const productsFieldsValue = {};
-        updatedSelectedProducts.forEach((product) => {
-          productsFieldsValue[product.product] = {
-            discountPercentage: 0,
-            maxQty: 0,
-          };
-        });
-        form.setFieldsValue({ products: productsFieldsValue });
+      const productsFromOtherPages = selectedProducts.filter(
+        (p) => !currentPageProducts.includes(p.product)
+      );
 
-        const previousProductIds = selectedProducts.map((p) => p.product);
-        const unselectedProductIds = previousProductIds.filter(
-          (id) => !selectedRowKeys.includes(id)
+      const updatedCurrentPageProducts = selectedRows.map((row) => {
+        const existingProduct = selectedProducts.find(
+          (p) => p.product === row._id
         );
-        unselectedProductIds.forEach((id) => {
-          form.setFields([
-            {
-              name: ["products", id],
-              value: null,
-            },
-          ]);
-        });
-      },
-      getCheckboxProps: (record) => ({
-        disabled: record.promotion !== null,
-      }),
+        return {
+          image: row.mainImage.url,
+          product: row._id,
+          name: row.name,
+          discountPercentage: existingProduct
+            ? existingProduct.discountPercentage
+            : 0,
+          maxQty: existingProduct ? existingProduct.maxQty : 0,
+        };
+      });
+
+      setSelectedProducts([
+        ...productsFromOtherPages,
+        ...updatedCurrentPageProducts,
+      ]);
+    },
+    getCheckboxProps: (record) => ({
+      disabled: !isEmpty(record.promotion),
     }),
-    [selectedProducts]
-  );
+  };
 
   return (
     <>
@@ -123,9 +119,14 @@ const TableProductAlmostExpired = ({
         {...{
           open,
           setOpen,
+          selectedProducts,
+          paginate,
+          setSelectedProducts,
+          setProducts
         }}
       />
       <Table
+        rowKey={(record) => record._id}
         columns={columns}
         dataSource={products}
         loading={isLoading}
@@ -141,7 +142,6 @@ const TableProductAlmostExpired = ({
         }}
         scroll={{ x: true }}
       />
-      ;
     </>
   );
 };

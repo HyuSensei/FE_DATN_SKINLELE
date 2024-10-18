@@ -186,8 +186,8 @@ const Promotion = () => {
               style={{ width: "100%", maxWidth: 200 }}
               onChange={handleSortChange}
             >
-              <Option value="asc">Giá: Thấp đến cao</Option>
-              <Option value="desc">Giá: Cao đến thấp</Option>
+              <Select.Option value="asc">Giá: Thấp đến cao</Select.Option>
+              <Select.Option value="desc">Giá: Cao đến thấp</Select.Option>
             </Select>
           </div>
           <ProductList {...{ products, isLoading, paginate, setPaginate }} />

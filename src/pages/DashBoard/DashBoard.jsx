@@ -13,6 +13,7 @@ import { formatPrice } from "../../helpers/formatPrice";
 import { getStatisticalAdmin } from "../../redux/statistical/statistical.thunk";
 import { getProductAlmostExpired } from "../../redux/product/product.thunk";
 import TableProductAlmostExpired from "../../components/Table/TableProductAlmostExpired";
+import { PlusOutlined } from "@ant-design/icons";
 
 const DashboardCard = ({
   title,
@@ -176,7 +177,10 @@ const DashBoard = () => {
               onClick={() => setOpen(true)}
               disabled={products.length === 0}
               type="primary"
-              className="bg-indigo-600 hover:bg-indigo-700 w-full sm:w-auto shadow-xl"
+              icon={<PlusOutlined />}
+              className={`bg-indigo-600 ${
+                products.length > 0 ? "hover:bg-indigo-700" : ""
+              } w-full sm:w-auto shadow-xl`}
             >
               Tạo khuyến mãi
             </Button>
@@ -189,6 +193,7 @@ const DashBoard = () => {
               isLoading: isLoadingProducts,
               open,
               setOpen,
+              setProducts,
             }}
           />
         </Card>

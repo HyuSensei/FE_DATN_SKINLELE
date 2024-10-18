@@ -1,38 +1,195 @@
-import { Modal } from "antd";
+import {
+  Button,
+  Card,
+  DatePicker,
+  Empty,
+  Form,
+  Image,
+  Input,
+  InputNumber,
+  message,
+  Modal,
+  Tooltip,
+} from "antd";
+import locale from "antd/es/date-picker/locale/vi_VN";
 import React from "react";
+import { createPromotion } from "../../redux/promotion/promotion.thunk";
+import { useDispatch } from "react-redux";
+import { getProductAlmostExpired } from "../../redux/product/product.thunk";
 
-const ModalSaveProductPromotion = ({ open, setOpen }) => {
-  const handleSubmit = () => {};
+const { TextArea } = Input;
+const { RangePicker } = DatePicker;
+
+const ModalSaveProductPromotion = ({
+  open,
+  setOpen,
+  selectedProducts,
+  paginate,
+  setSelectedProducts,
+  setProducts,
+}) => {
+  const [form] = Form.useForm();
+  const dispatch = useDispatch();
+
+  const handleSubmit = async (values) => {
+    const formattedProducts = selectedProducts.map((product) => ({
+      product: product.product,
+      discountPercentage: form.getFieldValue([
+        "products",
+        product.product,
+        "discountPercentage",
+      ]),
+      maxQty: form.getFieldValue(["products", product.product, "maxQty"]),
+    }));
+    const formattedValues = {
+      ...values,
+      products: formattedProducts,
+      startDate: values.date[0].format("YYYY-MM-DD HH:mm:ss"),
+      endDate: values.date[1].format("YYYY-MM-DD HH:mm:ss"),
+    };
+    delete formattedValues.date;
+
+    if (selectedProducts.length === 0) {
+      message.warning("Vui lòng chọn sản phẩm");
+      return;
+    }
+    const res = await dispatch(createPromotion(formattedValues)).unwrap();
+    if (res.success) {
+      message.success(res.message);
+      form.resetFields();
+      setSelectedProducts([]);
+      setOpen(false);
+
+      const resPro = await dispatch(
+        getProductAlmostExpired({ ...paginate })
+      ).unwrap();
+      if (resPro.success) {
+        setProducts(resPro.data);
+      }
+    }
+  };
   const handleClose = () => {
     setOpen(false);
+    form.resetFields();
+    setSelectedProducts([]);
   };
 
   return (
     <Modal
       open={open}
-      title={
-        <div className="text-2xl font-bold text-center">Cập nhật dịch vụ</div>
-      }
+      title={null}
       onOk={handleSubmit}
       onCancel={handleClose}
-      footer={[
-        <button
-          key="cancel"
-          onClick={handleClose}
-          className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50 border px-6 py-2 rounded-md transition duration-300 ease-in-out"
+      footer={null}
+      width={900}
+    >
+      <Form
+        form={form}
+        onFinish={handleSubmit}
+        layout="vertical"
+        className="space-y-4"
+        initialValues={{
+          products: selectedProducts.reduce((acc, product) => {
+            acc[product.product] = {
+              discountPercentage: product.discountPercentage,
+              maxQty: product.maxQty,
+            };
+            return acc;
+          }, {}),
+        }}
+      >
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0 pt-8">
+          <h2 className="text-lg font-bold">Thông tin khuyến mãi</h2>
+          <div className="flex items-center gap-2">
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="bg-indigo-600 hover:bg-indigo-700 w-full sm:w-auto"
+            >
+              Tạo ngay
+            </Button>
+          </div>
+        </div>
+        <Form.Item
+          name="name"
+          label="Tên khuyến mãi"
+          rules={[{ required: true, message: "Vui lòng nhập tên khuyến mãi" }]}
         >
-          Hủy
-        </button>,
-        <button
-          key="submit"
-          onClick={handleSubmit}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-md transition duration-300 ease-in-out mx-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          <Input size="middle" placeholder="Nhập tên khuyến mãi..." />
+        </Form.Item>
+        <Form.Item
+          name="description"
+          label="Mô tả"
+          rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
         >
-          Cập nhật
-        </button>,
-      ]}
-      width={800}
-    ></Modal>
+          <TextArea rows={4} placeholder="Nhập mô tả..." />
+        </Form.Item>
+        <Form.Item
+          name="date"
+          label="Thời gian áp dụng"
+          rules={[
+            { required: true, message: "Vui lòng chọn thời gian áp dụng" },
+          ]}
+        >
+          <RangePicker size="middle" locale={locale} className="w-full" />
+        </Form.Item>
+        <div>
+          <h3 className="text-sm font-medium mb-2">Sản phẩm được chọn</h3>
+          {selectedProducts.length === 0 && <Empty />}
+          {selectedProducts.map((product) => (
+            <Card
+              size="small"
+              className="shadow-md hover:shadow-lg transition-shadow duration-300 my-2"
+              key={product.product}
+              title={
+                <Tooltip
+                  title={product.name}
+                  className="text-sm font-normal truncate"
+                >
+                  {product.name}
+                </Tooltip>
+              }
+            >
+              <div className="flex flex-col sm:flex-row sm:space-y-0 sm:space-x-2 mb-2">
+                <Image src={product.image} width={100} className="rounded-md" />
+                <Form.Item
+                  name={["products", product.product, "discountPercentage"]}
+                  label="Giảm giá (%)"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập giảm giá" },
+                  ]}
+                  className="w-full sm:w-1/2"
+                >
+                  <InputNumber
+                    placeholder="% giảm giá"
+                    min={1}
+                    max={100}
+                    className="w-full"
+                  />
+                </Form.Item>
+                <Form.Item
+                  name={["products", product.product, "maxQty"]}
+                  label="Số lượng"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập số lượng tối đa",
+                    },
+                  ]}
+                  className="w-full sm:w-1/2"
+                >
+                  <InputNumber
+                    placeholder="Số lượng tối đa"
+                    min={1}
+                    className="w-full"
+                  />
+                </Form.Item>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </Form>
+    </Modal>
   );
 };
 
