@@ -20,6 +20,7 @@ import {
   Image,
   Tag,
   Tooltip,
+  Checkbox,
 } from "antd";
 import { isEmpty } from "lodash";
 import moment from "moment";
@@ -252,6 +253,7 @@ const PromotionDetail = () => {
             name: promotion.name,
             description: promotion.description,
             date: [moment(promotion.startDate), moment(promotion.endDate)],
+            isActive: promotion.isActive,
           }}
         >
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
@@ -296,6 +298,9 @@ const PromotionDetail = () => {
             ]}
           >
             <RangePicker size="middle" locale={locale} className="w-full" />
+          </Form.Item>
+          <Form.Item name="isActive" valuePropName="checked">
+            <Checkbox>Kích hoạt khuyến mãi</Checkbox>
           </Form.Item>
           <div>
             <h3 className="text-sm font-medium mb-2">Sản phẩm được chọn</h3>

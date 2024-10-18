@@ -76,7 +76,7 @@ const DashBoard = () => {
   const dispatch = useDispatch();
   const [paginate, setPaginate] = useState({
     page: 1,
-    pageSize: 2,
+    pageSize: 3,
     totalPage: 0,
     totalItems: 0,
   });

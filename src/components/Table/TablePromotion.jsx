@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Table, Tooltip, Pagination, Popconfirm, message } from "antd";
+import { Table, Tooltip, Pagination, Popconfirm, message, Tag } from "antd";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { FaEye } from "react-icons/fa";
 import { useDispatch } from "react-redux";
@@ -8,6 +8,7 @@ import {
   getListPromotion,
 } from "../../redux/promotion/promotion.thunk";
 import { useNavigate } from "react-router-dom";
+import { formatDateReview } from "../../helpers/formatDate";
 
 const TablePromotion = ({
   promotions = [],
@@ -45,6 +46,32 @@ const TablePromotion = ({
         key: "description",
         render: (text) => (
           <div className="text-sm">{text ? text : "Không có"}</div>
+        ),
+      },
+      {
+        title: "Thời gian",
+        key: "time",
+        render: (_, record) => (
+          <div>
+            <div className="text-sm space-y-1">
+              <span className="font-bold">Bắt đầu</span>:{" "}
+              {formatDateReview(record.startDate)}
+            </div>
+            <div className="text-sm">
+              <span className="font-bold">Kết thúc</span>:{" "}
+              {formatDateReview(record.endDate)}
+            </div>
+          </div>
+        ),
+      },
+      {
+        title: "Trạng thái",
+        dataIndex: "isActive",
+        key: "isActive",
+        render: (isActive) => (
+          <Tag className="text-sm" color={isActive ? "green" : "gold"}>
+            {isActive ? "Hoạt động" : "Đã ngừng"}
+          </Tag>
         ),
       },
       {
