@@ -119,7 +119,7 @@ const Category = () => {
             ))}
         </Checkbox.Group>
       </div>
-      {subcategories.length > 0 && (
+      {subcategories && subcategories.length > 0 && (
         <div>
           <h3 className="font-bold mb-2">Danh mục con</h3>
           <Checkbox.Group
@@ -127,29 +127,30 @@ const Category = () => {
             onChange={handleSubcategoriesChange}
             className="flex flex-col space-y-2"
           >
-            {subcategories &&
-              subcategories.map((subcategory) => (
-                <Checkbox key={subcategory._id} value={subcategory._id}>
-                  {subcategory.name}
-                </Checkbox>
-              ))}
+            {subcategories.map((subcategory) => (
+              <Checkbox key={subcategory._id} value={subcategory._id}>
+                {subcategory.name}
+              </Checkbox>
+            ))}
           </Checkbox.Group>
         </div>
       )}
       <div>
         <h3 className="font-bold mb-2">Tags</h3>
-        <Checkbox.Group
-          value={filters.tags}
-          onChange={handleTagChange}
-          className="flex flex-col space-y-2"
-        >
-          {tags &&
-            tags.map((tag) => (
-              <Checkbox key={tag} value={tag}>
-                {tag}
-              </Checkbox>
-            ))}
-        </Checkbox.Group>
+        {products && products.length > 0 && (
+          <Checkbox.Group
+            value={filters.tags}
+            onChange={handleTagChange}
+            className="flex flex-col space-y-2"
+          >
+            {tags &&
+              tags.map((tag) => (
+                <Checkbox key={tag} value={tag}>
+                  {tag}
+                </Checkbox>
+              ))}
+          </Checkbox.Group>
+        )}
       </div>
     </div>
   );

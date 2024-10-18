@@ -11,7 +11,7 @@ import {
   Pagination,
   Image,
 } from "antd";
-import { createAverageRate, createIcon } from "../ultis/createIcon";
+import { createAverageRate, createIcon, SingleStar } from "../ultis/createIcon";
 import {
   CameraOutlined,
   CommentOutlined,
@@ -135,7 +135,9 @@ const RateList = ({ product }) => {
           <div className="mt-4">
             {ratings.map(({ score, count }) => (
               <div key={score} className="flex items-center space-x-2 mb-2">
-                <span className="w-12">{score} sao</span>
+                <span className="w-12 flex items-center gap-2">
+                  {score} <SingleStar />
+                </span>
                 <div className="flex-grow">
                   <Progress
                     percent={Math.round((count / totalRatings) * 100)}
@@ -170,7 +172,11 @@ const RateList = ({ product }) => {
                 onChange={(value) => handleFilterChange("rate", value)}
                 options={[5, 4, 3, 2, 1].map((score) => ({
                   value: score,
-                  label: `${score} sao`,
+                  label: (
+                    <span className="w-12 flex items-center gap-2">
+                      {score} <SingleStar />
+                    </span>
+                  ),
                 }))}
               />
               <Button

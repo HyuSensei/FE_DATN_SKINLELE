@@ -113,7 +113,7 @@ const Promotion = () => {
             ))}
         </Checkbox.Group>
       </div>
-      {categories.length > 0 && (
+      {categories && categories.length > 0 && (
         <div>
           <h3 className="font-bold mb-2">Danh mục</h3>
           <Checkbox.Group
@@ -121,29 +121,30 @@ const Promotion = () => {
             onChange={handleCategoriesChange}
             className="flex flex-col space-y-2"
           >
-            {categories &&
-              categories.map((category) => (
-                <Checkbox key={category._id} value={category._id}>
-                  {category.name}
-                </Checkbox>
-              ))}
+            {categories.map((category) => (
+              <Checkbox key={category._id} value={category._id}>
+                {category.name}
+              </Checkbox>
+            ))}
           </Checkbox.Group>
         </div>
       )}
       <div>
         <h3 className="font-bold mb-2">Tags</h3>
-        <Checkbox.Group
-          value={filters.tags}
-          onChange={handleTagChange}
-          className="flex flex-col space-y-2"
-        >
-          {tags &&
-            tags.map((tag) => (
-              <Checkbox key={tag} value={tag}>
-                {tag}
-              </Checkbox>
-            ))}
-        </Checkbox.Group>
+        {products && products.length > 0 && (
+          <Checkbox.Group
+            value={filters.tags}
+            onChange={handleTagChange}
+            className="flex flex-col space-y-2"
+          >
+            {tags &&
+              tags.map((tag) => (
+                <Checkbox key={tag} value={tag}>
+                  {tag}
+                </Checkbox>
+              ))}
+          </Checkbox.Group>
+        )}
       </div>
     </div>
   );

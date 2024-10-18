@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Tooltip } from "antd";
+import { Button, Card, Tooltip, Select } from "antd";
 import { motion } from "framer-motion";
 import { PiShoppingBagOpenFill } from "react-icons/pi";
 import { HiMiniUserGroup } from "react-icons/hi2";
@@ -14,6 +14,7 @@ import { getStatisticalAdmin } from "../../redux/statistical/statistical.thunk";
 import { getProductAlmostExpired } from "../../redux/product/product.thunk";
 import TableProductAlmostExpired from "../../components/Table/TableProductAlmostExpired";
 import { PlusOutlined } from "@ant-design/icons";
+import moment from "moment";
 
 const DashboardCard = ({
   title,
@@ -82,6 +83,9 @@ const DashBoard = () => {
   const [products, setProducts] = useState([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
   const [open, setOpen] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedYear, setSelectedYear] = useState(moment().year());
+  const [filterType, setFilterType] = useState("year");
 
   const {
     isLoading,
@@ -94,8 +98,13 @@ const DashBoard = () => {
   } = useSelector((state) => state.statistical);
 
   useEffect(() => {
-    dispatch(getStatisticalAdmin());
-  }, []);
+    dispatch(
+      getStatisticalAdmin({
+        month: selectedMonth,
+        year: selectedYear,
+      })
+    );
+  }, [selectedMonth, selectedYear, filterType]);
 
   const fetchProduct = async () => {
     setIsLoadingProducts(true);
@@ -115,6 +124,18 @@ const DashBoard = () => {
   useEffect(() => {
     fetchProduct();
   }, [paginate.page, paginate.pageSize]);
+
+  const handleChangeType = (value) => {
+    console.log("====================================");
+    console.log(value);
+    console.log("====================================");
+    if (value === "month") {
+      setSelectedMonth(moment().month() + 1);
+    } else {
+      setSelectedMonth("");
+    }
+    setFilterType(value);
+  };
 
   return (
     <div className="p-6 mt-2 bg-gray-100">
@@ -152,26 +173,93 @@ const DashBoard = () => {
           trendValue="1.8"
         />
       </div>
+      <Card className="shadow-lg" bordered={false}>
+        <h2 className="uppercase text-sm font-semibold text-[#14134f]">
+          Doanh thu
+        </h2>
+        <div className="space-x-4 py-4">
+          <Select
+            defaultValue={filterType}
+            onChange={handleChangeType}
+            className="w-36"
+            optionFilterProp="label"
+            options={[
+              {
+                key: "month",
+                label: "Lọc theo tháng",
+              },
+              {
+                key: "year",
+                label: "Lọc theo năm",
+              },
+            ].map((item) => ({
+              value: item.key,
+              label: (
+                <span className="w-12 flex items-center gap-2">
+                  {item.label}
+                </span>
+              ),
+            }))}
+          />
+          {filterType === "month" && (
+            <Select
+              defaultValue={selectedMonth}
+              onChange={setSelectedMonth}
+              className="w-36"
+              optionFilterProp="label"
+              options={[...Array(12)].map((_, i) => ({
+                value: i + 1,
+                label: (
+                  <span className="w-12 flex items-center gap-2">
+                    Tháng {i + 1}
+                  </span>
+                ),
+              }))}
+            />
+          )}
+          <Select
+            defaultValue={selectedYear}
+            onChange={setSelectedYear}
+            className="w-36"
+            optionFilterProp="label"
+            options={[...Array(moment().year() - 1990 + 1)].map((_, i) => ({
+              value: moment().year() + i,
+              label: (
+                <span className="w-12 flex items-center gap-2">
+                  Năm {moment().year() + i}
+                </span>
+              ),
+            }))}
+          />
+        </div>
+        <div className={`m-auto overflow-hidden`}>
+          <StatisicalRevenue
+            isLoading={isLoading}
+            yearlyStats={monthlyRevenue}
+            year={selectedYear}
+            month={filterType.key === "month" ? selectedMonth : null}
+          />
+        </div>
+      </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         <Card className="shadow-lg" bordered={false}>
           <h2 className="uppercase text-sm font-semibold text-[#14134f]">
-            Thống kê doanh thu
+            Top sản phẩm bán chạy
           </h2>
-          <div className={`max-w-[550px] m-auto overflow-hidden`}>
-            <StatisicalRevenue
+          <div className={`max-w-[1100px] m-auto`}>
+            <StatisticalProductSelling
               {...{
                 isLoading,
-                monthlyRevenue,
+                topSellingProducts,
               }}
             />
           </div>
         </Card>
-
         <Card className="shadow-lg" bordered={false}>
           <div className="flex items-center justify-between mb-2 flex-wrap">
             <h2 className="uppercase text-sm font-semibold text-[#14134f] pb-2">
-              Thống kê sản phẩm sắp hết hạn
+              Sản phẩm sắp hết hạn
             </h2>
             <Button
               onClick={() => setOpen(true)}
@@ -198,20 +286,6 @@ const DashBoard = () => {
           />
         </Card>
       </div>
-
-      <Card className="mt-6 shadow-lg" bordered={false}>
-        <h2 className="uppercase text-sm font-semibold text-[#14134f]">
-          Thống kê sản phẩm bán chạy
-        </h2>
-        <div className={`max-w-[1100px] m-auto`}>
-          <StatisticalProductSelling
-            {...{
-              isLoading,
-              topSellingProducts,
-            }}
-          />
-        </div>
-      </Card>
     </div>
   );
 };

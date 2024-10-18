@@ -41,6 +41,7 @@ export const promotionSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(getPromotionDetail.fulfilled, (state, action) => {
+        console.log(action.payload.data);
         if (action.payload.success) {
           state.isLoading = false;
           state.promotion = action.payload.data;

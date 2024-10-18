@@ -3,9 +3,11 @@ import axios from "../../axios/axios";
 
 export const getStatisticalAdmin = createAsyncThunk(
   "statistical/getStatisticAdmin",
-  async (_, { rejectWithValue }) => {
+  async (payload, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`/admin/statistical`);
+      const res = await axios.get(
+        `/admin/statistical?month=${payload.month}&year=${payload.year}`
+      );
       return res;
     } catch (error) {
       return rejectWithValue(error.response.data);

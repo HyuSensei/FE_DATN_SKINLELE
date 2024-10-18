@@ -97,7 +97,7 @@ const HeaderUser = () => {
           ? brands.map((item) => ({
               key: item._id,
               label: (
-                <div className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 font-extrabold text-sm text-center uppercase">
+                <div className="mt-2.5 text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 font-extrabold text-sm text-center uppercase">
                   {item.name}
                 </div>
               ),
@@ -111,15 +111,15 @@ const HeaderUser = () => {
       label: "Khuyến mãi hot",
       path: "/promotions",
     },
-    {
-      key: "vips",
-      label: "Sản phẩm cao cấp",
-    },
-    { key: "discount", label: "Mã giảm" },
-    {
-      key: "news",
-      label: "Sản phẩm mới",
-    },
+    // {
+    //   key: "vips",
+    //   label: "Sản phẩm cao cấp",
+    // },
+    // { key: "discount", label: "Mã giảm" },
+    // {
+    //   key: "news",
+    //   label: "Sản phẩm mới",
+    // },
   ];
 
   const authMenu = () => {

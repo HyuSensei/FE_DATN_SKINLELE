@@ -35,9 +35,8 @@ const PromotionDetail = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { promotion, isLoading: promotionLoading } = useSelector(
-    (state) => state.promotion
-  );
+  const { promotion: promotionDetail, isLoading: promotionLoading } =
+    useSelector((state) => state.promotion);
   const {
     products,
     isLoading: productsLoading,
@@ -51,6 +50,7 @@ const PromotionDetail = () => {
     totalPage: 0,
     totalItems: 0,
   });
+  const [promotion, setPromotion] = useState(null);
 
   useEffect(() => {
     if (id) {
@@ -63,8 +63,8 @@ const PromotionDetail = () => {
   }, [paginate, dispatch]);
 
   useEffect(() => {
-    if (!isEmpty(promotion)) {
-      const newData = promotion.products.map((item) => ({
+    if (!isEmpty(promotionDetail)) {
+      const newData = promotionDetail.products.map((item) => ({
         image: item.product.mainImage.url,
         product: item.product._id,
         name: item.product.name,
@@ -72,8 +72,9 @@ const PromotionDetail = () => {
         maxQty: item.maxQty,
       }));
       setSelectedProducts(newData);
+      setPromotion(promotionDetail);
     }
-  }, [promotion]);
+  }, [promotionDetail]);
 
   const productsWithPromoInfo = useMemo(() => {
     if (isEmpty(promotion) || isEmpty(products)) return [];
