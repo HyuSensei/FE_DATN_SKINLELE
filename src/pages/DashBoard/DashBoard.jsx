@@ -126,9 +126,6 @@ const DashBoard = () => {
   }, [paginate.page, paginate.pageSize]);
 
   const handleChangeType = (value) => {
-    console.log("====================================");
-    console.log(value);
-    console.log("====================================");
     if (value === "month") {
       setSelectedMonth(moment().month() + 1);
     } else {
