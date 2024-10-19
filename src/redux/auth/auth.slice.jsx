@@ -22,6 +22,7 @@ const initialState = {
       url: "",
       publicId: "",
     },
+    googleId: "",
   },
   isLoading: false,
   error: {},

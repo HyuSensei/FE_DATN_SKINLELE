@@ -7,6 +7,7 @@ import UserInfo from "../../components/Account/UserInfo";
 import AccountMenu from "../../components/Account/AccountMenu";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../../redux/auth/auth.slice";
+import { clearCart } from "../../redux/cart/cart.slice";
 
 const CONTENT_TYPES = {
   ACCOUNT: "account",
@@ -21,6 +22,7 @@ const Account = () => {
   const { products } = useSelector((state) => state.cart.cart);
 
   const logout = () => {
+    dispatch(clearCart());
     dispatch(logoutUser());
     navigate("/");
   };

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { message, Spin, Upload } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
@@ -6,6 +6,7 @@ import { uploadFile, deleteFile } from "../../helpers/uploadCloudinary";
 import ErrorMessage from "../Error/ErrorMessage";
 import { getAccountUser, updateAccount } from "../../redux/auth/auth.thunk";
 import { setUserInfo } from "../../redux/auth/auth.slice";
+import { isEmpty } from "lodash";
 
 const AccountForm = () => {
   const dispatch = useDispatch();
@@ -22,6 +23,16 @@ const AccountForm = () => {
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isEmpty(userInfo)) {
+      setInput((prev) => ({
+        ...prev,
+        name: userInfo.name,
+        email: userInfo.email,
+      }));
+    }
+  }, [userInfo]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -151,6 +162,7 @@ const AccountForm = () => {
           Mật khẩu mới
         </label>
         <input
+          disabled={userInfo?.googleId ? true : false}
           type="password"
           name="password"
           value={input.password}
@@ -165,6 +177,7 @@ const AccountForm = () => {
           Nhập lại mật khẩu
         </label>
         <input
+          disabled={userInfo?.googleId ? true : false}
           type="password"
           name="rePassword"
           value={input.rePassword}

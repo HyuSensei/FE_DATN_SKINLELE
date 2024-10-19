@@ -222,6 +222,7 @@ const OrderTabs = () => {
           pageSize: 5,
         }));
       }}
+      tabPosition={"top"}
     />
   );
 };

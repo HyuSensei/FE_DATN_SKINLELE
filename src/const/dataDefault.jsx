@@ -45,3 +45,32 @@ export const sliderBrand = [
     alt: "Slide 4",
   },
 ];
+
+export const menuDefaut = [
+  {
+    key: "san-pham-cao-cap",
+    label: "Sản phẩm cao cấp",
+    path: `/categories/san-pham-cao-cap`,
+  },
+  { key: "ma-giam-gia", label: "Mã giảm" },
+  {
+    key: "san-pham-moi",
+    label: "Sản phẩm mới",
+    path: `/categories/san-pham-moi`,
+  },
+  {
+    key: "cham-soc-da",
+    label: "Chăm sóc da",
+    path: `/categories/cham-soc-da`,
+  },
+  {
+    key: "Trang điểm",
+    label: "Trang điểm",
+    path: `/categories/cham-soc-da`,
+  },
+  {
+    key: "cham-soc-co-the",
+    label: "Chăm sóc cơ thể",
+    path: `/categories/cham-soc-co-the`,
+  },
+];

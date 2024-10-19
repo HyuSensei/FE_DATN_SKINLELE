@@ -6,10 +6,13 @@ import SilderList from "../../components/Slider/SilderList";
 import { sliderBrand, sliderPromotion } from "../../const/dataDefault";
 import { useDispatch, useSelector } from "react-redux";
 import { getProductHome } from "../../redux/product/product.thunk";
+import useScreen from "../../hook/useScreen";
+import ProductList from "../../components/Product/ProductList";
 
 const Home = () => {
   const dispatch = useDispatch();
   const { collections, isLoading } = useSelector((state) => state.product);
+  const { isMobile } = useScreen();
 
   useEffect(() => {
     dispatch(getProductHome());
@@ -30,23 +33,37 @@ const Home = () => {
       <Banner />
       <div className="space-y-8">
         <div className="mt-8">
-          {HOT && HOT.length >= 5 && (
-            <ProductCarousel
-              {...{ title: "Sản phẩm nổi bật", products: HOT, isLoading }}
-            />
-          )}
+          {HOT &&
+            HOT.length >= 5 &&
+            (!isMobile ? (
+              <ProductCarousel
+                {...{ title: "Sản phẩm nổi bật", products: HOT, isLoading }}
+              />
+            ) : (
+              <ProductList
+                {...{ title: "Sản phẩm nổi bật", products: HOT, isLoading }}
+              />
+            ))}
         </div>
         <SilderList {...{ slides: sliderPromotion }} />
-        {NEW && NEW.length >= 5 && (
-          <ProductCarousel
-            {...{ title: "Sản phẩm mới", products: NEW, isLoading }}
-          />
-        )}
-        {SALE && SALE.length >= 5 && (
-          <ProductSale
-            {...{ products: SALE, isLoading }}
-          />
-        )}
+        {NEW &&
+          NEW.length >= 5 &&
+          (!isMobile ? (
+            <ProductCarousel
+              {...{ title: "Sản phẩm mới", products: NEW, isLoading }}
+            />
+          ) : (
+            <ProductList
+              {...{ title: "Sản phẩm mới", products: NEW, isLoading }}
+            />
+          ))}
+        {SALE &&
+          SALE.length >= 5 &&
+          (!isMobile ? (
+            <ProductSale {...{ products: SALE, isLoading }} />
+          ) : (
+            <ProductList {...{ products: SALE, isLoading }} />
+          ))}
         <SilderList {...{ slides: sliderBrand }} />
       </div>
     </>

@@ -17,6 +17,8 @@ import { getAllCategory } from "../../redux/category/category.thunk";
 import { logoutUser } from "../../redux/auth/auth.slice";
 import { FaRegUserCircle } from "react-icons/fa";
 import SearchHeader from "../Search/SearchHeader";
+import { menuDefaut } from "../../const/dataDefault";
+import { clearCart } from "../../redux/cart/cart.slice";
 
 const HeaderUser = () => {
   const dispatch = useDispatch();
@@ -50,10 +52,10 @@ const HeaderUser = () => {
           children:
             child.children && child.children.length > 0
               ? child.children.map((grandChild) => ({
-                key: grandChild._id,
-                label: grandChild.name,
-                path: `/categories/${grandChild.slug}`,
-              }))
+                  key: grandChild._id,
+                  label: grandChild.name,
+                  path: `/categories/${grandChild.slug}`,
+                }))
               : null,
         }));
       }
@@ -63,6 +65,7 @@ const HeaderUser = () => {
   };
 
   const handleLogout = () => {
+    dispatch(clearCart());
     dispatch(logoutUser());
     navigate("/");
   };
@@ -87,7 +90,16 @@ const HeaderUser = () => {
     }
   };
 
+  const menuDataDefault =
+    isArray(categories) &&
+    categories.length > 0 &&
+    isArray(brands) &&
+    brands.length > 0
+      ? []
+      : menuDefaut;
+
   const menuItems = [
+    ...menuDataDefault,
     {
       key: "brands",
       label: "Thương hiệu",
@@ -111,15 +123,6 @@ const HeaderUser = () => {
       label: "Khuyến mãi hot",
       path: "/promotions",
     },
-    // {
-    //   key: "vips",
-    //   label: "Sản phẩm cao cấp",
-    // },
-    // { key: "discount", label: "Mã giảm" },
-    // {
-    //   key: "news",
-    //   label: "Sản phẩm mới",
-    // },
   ];
 
   const authMenu = () => {
@@ -189,7 +192,7 @@ const HeaderUser = () => {
     },
   ];
 
-  const handleSearch = (value) => { };
+  const handleSearch = (value) => {};
 
   return (
     <>
@@ -214,7 +217,10 @@ const HeaderUser = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <div onClick={() => navigate("/")} className="logo-text zoom-in-zoom-out">
+            <div
+              onClick={() => navigate("/")}
+              className="logo-text zoom-in-zoom-out"
+            >
               Skin<span>LeLe</span>
             </div>
           </motion.div>
@@ -271,7 +277,7 @@ const HeaderUser = () => {
         <nav className="bg-white border-t border-b border-gray-200 hidden md:block">
           <Menu
             mode="horizontal"
-            className="container mx-auto px-4 flex justify-between custom-menu custom-menu-item overflow-hidden"
+            className="container mx-auto px-4 flex justify-between custom-menu custom-menu-item overflow-hidden hidden-scroll"
             selectedKeys={[current]}
             onClick={handleClick}
             items={menuItems}

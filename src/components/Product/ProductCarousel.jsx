@@ -83,7 +83,7 @@ const ProductCarousel = ({
 
   if (isLoading) return Loading();
 
-  if (products.length === 0) return null;
+  if (products.length === 0 && !isLoading) return null;
 
   const ProductItem = ({ item }) => {
     const discountPercentage = item.promotion
@@ -166,7 +166,7 @@ const ProductCarousel = ({
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-2xl lg:text-3xl font-bold text-center text-gray-800 uppercase"
+            className="text-base lg:text-3xl font-bold text-center text-gray-800 uppercase"
           >
             {title}
           </motion.h2>

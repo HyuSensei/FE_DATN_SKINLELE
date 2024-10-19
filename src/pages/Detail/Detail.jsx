@@ -10,6 +10,7 @@ import {
   Spin,
   Empty,
   notification,
+  Tag,
 } from "antd";
 import {
   HeartOutlined,
@@ -55,6 +56,12 @@ const Detail = () => {
 
   const { slug } = useParams();
 
+  const discountPercentage = productDetail.promotion
+    ? productDetail.promotion.discountPercentage
+    : 0;
+  const originalPrice = productDetail.originalPrice || productDetail.price;
+  const discountedPrice = productDetail.price;
+
   useEffect(() => {
     if (slug) {
       dispatch(getDetailProduct(slug));
@@ -92,7 +99,7 @@ const Detail = () => {
 
     notification.success({
       message: (
-        <div className="text-lg mb-2 animate-pulse text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-rose-700 font-extrabold">
+        <div className="text-xs md:text-lg mb-2 animate-pulse text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-rose-700 font-extrabold">
           Thông báo thêm giỏ hàng thành công
         </div>
       ),
@@ -223,7 +230,9 @@ const Detail = () => {
 
         <div className="product-info">
           <Card className="mb-6 shadow-md hover:shadow-lg transition-shadow duration-300 text-base">
-            <h1 className="text-xl font-bold mb-4">{productDetail.name}</h1>
+            <h1 className="text-base md:text-xl font-bold mb-4">
+              {productDetail.name}
+            </h1>
             <div className="flex items-center mb-4">
               <Rate
                 disabled
@@ -245,7 +254,7 @@ const Detail = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <GiDiamondTrophy className="text-3xl text-yellow-500" />
-                    <div className="text-xl text-[#2e352d] font-bold">
+                    <div className="text-sm md:text-xl text-[#2e352d] font-bold">
                       Top bán chạy
                     </div>
                   </div>
@@ -256,15 +265,43 @@ const Detail = () => {
                     </div>
                   </Tooltip>
                 </div>
-                <div className="mt-2 text-sm text-gray-600">
+                <div className="mt-2 text-xs md:text-sm text-gray-600">
                   Sản phẩm đã trở thành xu hướng làm đẹp
                 </div>
               </div>
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-300 via-red-400 to-pink-400"></div>
             </div>
-            <p className="text-2xl font-bold mb-4">
-              {formatPrice(productDetail.price)}đ
-            </p>
+            <div className="bg-gradient-to-r from-white to-gray-100 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 mb-2">
+              <div className="flex items-end mb-2">
+                <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-pink-500">
+                  {formatPrice(discountedPrice)}đ
+                </span>
+                {discountPercentage > 0 && (
+                  <Tag
+                    color="red"
+                    className="ml-2 mb-1 text-sm font-semibold animate-pulse"
+                  >
+                    -{discountPercentage}% OFF
+                  </Tag>
+                )}
+              </div>
+              {discountPercentage > 0 && (
+                <div className="flex items-center">
+                  <span className="text-lg text-gray-500 line-through mr-2">
+                    {formatPrice(originalPrice)}đ
+                  </span>
+                  <Tooltip
+                    title={`Bạn tiết kiệm: ${formatPrice(
+                      originalPrice - discountedPrice
+                    )}đ`}
+                  >
+                    <span className="text-sm text-green-600 font-medium cursor-help">
+                      Tiết kiệm
+                    </span>
+                  </Tooltip>
+                </div>
+              )}
+            </div>
             {productDetail.variants.length > 0 && (
               <div className="mb-6">
                 <h3 className="font-semibold mb-2">
@@ -311,10 +348,10 @@ const Detail = () => {
           <div className="flex space-x-4 mb-6 items-center">
             <button
               onClick={handleAddCart}
-              className="flex-1 bg-gradient-to-r from-yellow-300 via-orange-600 to-purple-800 text-white py-3 rounded-md text-lg font-bold flex items-center justify-center gap-2"
+              className="flex-1 bg-gradient-to-r from-yellow-300 via-orange-600 to-purple-800 text-white py-3 rounded-md font-bold flex items-center justify-center gap-2 px-2"
             >
               <LiaShoppingBasketSolid className="text-3xl cursor-pointer" />
-              Thêm vào giỏ hàng
+              <span className="text-xs lg:text-lg">Thêm vào giỏ hàng</span>
             </button>
             <button className="w-12 h-12 flex items-center justify-center border border-gray-300 rounded-md">
               <HeartOutlined className="text-xl text-gray-500" />
@@ -346,7 +383,7 @@ const Detail = () => {
       </div>
 
       <div className="mt-12">
-        <h2 className="text-2xl font-bold mb-4">Mô tả sản phẩm</h2>
+        <h2 className="text-2xl font-bold">Mô tả sản phẩm</h2>
         <div dangerouslySetInnerHTML={{ __html: productDetail.description }} />
       </div>
 
