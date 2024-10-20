@@ -98,8 +98,10 @@ const HeaderUser = () => {
       ? []
       : menuDefaut;
 
+  console.log(menuDataDefault);
+
   const menuItems = [
-    ...menuDataDefault,
+    // ...menuDataDefault,
     {
       key: "brands",
       label: "Thương hiệu",

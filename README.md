@@ -1,9 +1,9 @@
 # React + Vite
 stripe listen --forward-to localhost:8081/webhook-stripe
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+# Test checkout VNPAY
+Ngân hàng: NCB
+Số thẻ: 9704198526191432198
+Tên chủ thẻ:NGUYEN VAN A
+Ngày phát hành:07/15
+Mật khẩu OTP:123456

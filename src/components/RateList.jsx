@@ -243,7 +243,7 @@ const RateList = ({ product }) => {
                         <div className="flex-grow">
                           <div className="flex items-center justify-between w-full flex-wrap">
                             <div className="text-base">
-                              <div className="flex items-center gap-4">
+                              <div className="flex items-center gap-4 flex-wrap">
                                 <div className="text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-rose-700 font-extrabold text-sm text-center uppercase">
                                   {review.user.name}
                                 </div>
