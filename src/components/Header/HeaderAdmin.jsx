@@ -28,7 +28,7 @@ const HeaderAdmin = ({ collapsed, setCollapsed }) => {
 
   const handleLogout = () => {
     dispatch(logoutAdmin());
-    navigate("/admin");
+    window.location.href = "/admin";
   };
 
   const items = [

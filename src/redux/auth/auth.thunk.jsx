@@ -103,6 +103,7 @@ export const getAccountAdmin = createAsyncThunk(
     try {
       return await axios.get("/admin/auth/account");
     } catch (error) {
+      message.error(error.response.data.message);
       return rejectWithValue(error.response.data);
     }
   }

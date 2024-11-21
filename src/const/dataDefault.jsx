@@ -74,3 +74,7 @@ export const menuDefaut = [
     path: `/categories/cham-soc-co-the`,
   },
 ];
+
+export const ADMIN = "ADMIN";
+export const SUPPORT = "SUPPORT";
+export const DOCTOR = "DOCTOR";

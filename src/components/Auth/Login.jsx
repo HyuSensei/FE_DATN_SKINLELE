@@ -12,7 +12,7 @@ import Cookies from "js-cookie";
 const STYLE_INPUT =
   "mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 transition-colors duration-300";
 const STYLE_LABEL = "block text-sm font-medium text-gray-700";
-const BE_URL = import.meta.env.VITE_APP_API_GOOGLE;
+const BE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 
 const Login = ({ setStep }) => {
   const dispatch = useDispatch();

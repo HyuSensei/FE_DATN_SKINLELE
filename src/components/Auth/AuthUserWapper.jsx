@@ -1,24 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAccountUser } from "../../redux/auth/auth.thunk";
-import { set } from "../../storage/storage";
+import { get, set } from "../../storage/storage";
 import Loading from "../Loading";
 import { useLocation } from "react-router-dom";
 
 const AuthUserWrapper = ({ children }) => {
   const dispatch = useDispatch();
-  const { isLoading } = useSelector((state) => state.auth);
+  const { isLoading, isAuthenticated } = useSelector((state) => state.auth);
   const [isInitialized, setIsInitialized] = useState(false);
   const urlParams = new URLSearchParams(window.location.search);
   const { pathname } = useLocation();
   const token = urlParams.get("token");
 
   const initAuth = () => {
+    const accessToken = get("ACCESS_TOKEN");
     if (token) {
       set("ACCESS_TOKEN", token);
       window.location.href = "/";
+      dispatch(getAccountUser());
     }
-    dispatch(getAccountUser());
+    if (accessToken && !isAuthenticated) {
+      dispatch(getAccountUser());
+    }
     setIsInitialized(true);
   };
 

@@ -75,6 +75,32 @@ body {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.logo-text-booking {
+  font-family: 'Bungee';
+  font-weight: bold;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, #f39728, #cc784e, #f39728);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shine 3s linear infinite;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo-text-booking span {
+  font-family: 'Bungee';
+  font-weight: bold;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, #cc784e, #f39728, #cc784e);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shine 3s linear infinite;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 .custom-menu {
   border: none;
 }
@@ -119,58 +145,21 @@ body {
 
 /* Tùy chỉnh thanh cuộn cho Webkit browsers (Chrome, Safari) */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px !important;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #f1f1f1 !important;
+  border-radius: 10px !important;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cc784e;
-  border-radius: 5px;
-  background-image: -webkit-linear-gradient(45deg,
-      #cc784e 25%,
-      #f9ca3e 25%,
-      #f9ca3e 50%,
-      #fc9cc7 50%,
-      #fc9cc7 75%,
-      #cc784e 75%,
-      #cc784e 100%);
+  background: #c3c7f4 !important;
+  border-radius: 10px !important;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #cc784e;
-  background-image: -webkit-linear-gradient(45deg,
-      #cc784e 25%,
-      #f9ca3e 25%,
-      #f9ca3e 50%,
-      #fc9cc7 50%,
-      #fc9cc7 75%,
-      #cc784e 75%,
-      #cc784e 100%);
-}
-
-/* Tùy chỉnh thanh cuộn cho Firefox */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: #cc784e #f1f1f1;
-}
-
-/* Tạo hiệu ứng gradient bằng cách sử dụng một pseudo-element */
-* {
-  scrollbar-color: #cc784e #f1f1f1;
-}
-
-*::-moz-scrollbar-thumb {
-  background-image: linear-gradient(45deg,
-      #cc784e 25%,
-      #f9ca3e 25%,
-      #f9ca3e 50%,
-      #fc9cc7 50%,
-      #fc9cc7 75%,
-      #cc784e 75%,
-      #cc784e 100%);
+  background: #c4cfd3 !important;
 }
 
 .zoom-in-zoom-out {

@@ -14,7 +14,7 @@ import { remove } from "../../storage/storage";
 
 const initialState = {
   userInfo: {
-    id: "",
+    _id: "",
     name: "",
     email: "",
     phone: "",
@@ -28,9 +28,10 @@ const initialState = {
   error: {},
   isAuthenticated: false,
   isAuthenticatedAdmin: false,
+  isAuthenticatedDoctor: false,
   emailVerify: "",
   adminInfo: {
-    id: "",
+    _id: "",
     name: "",
     username: "",
     role: "",
@@ -38,6 +39,18 @@ const initialState = {
       url: "",
       publicId: "",
     },
+  },
+  doctorInfo: {
+    _id: "",
+    name: "",
+    email: "",
+    about: "",
+    avatar: {
+      url: "",
+      publicId: "",
+    },
+    fees: 0,
+    slug: "",
   },
 };
 
@@ -204,6 +217,7 @@ export const authSlice = createSlice({
       .addCase(getAccountAdmin.rejected, (state, action) => {
         state.error = action.payload;
         state.isLoading = false;
+        state.isAuthenticatedAdmin = false;
       });
   },
 });

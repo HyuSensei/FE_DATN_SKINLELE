@@ -22,16 +22,12 @@ const LoginAdmin = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
     dispatch(loginAdmin(input)).then((res) => {
       if (res.payload.success) {
         set("ACCESS_TOKEN_ADMIN", res.payload.accessToken);
-        dispatch(getAccountAdmin()).then(() => {
-          message.success("Đăng nhập thành công");
-          navigate("/admin/dashboard");
-        });
+        navigate("/admin/dashboard");
       }
     });
   };

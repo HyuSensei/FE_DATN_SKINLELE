@@ -30,6 +30,12 @@ const createAxiosInstance = () => {
     (response) => response.data,
     (error) => {
       if (error.response) {
+        const { status, data } = error.response;
+        if ((status === 401 || status === 403) && data.data === "ADMIN") {
+          window.location.href = "/admin";
+          localStorage.removeItem("ACCESS_TOKEN_ADMIN");
+        }
+
         console.error(
           "Response error:",
           error.response.status,

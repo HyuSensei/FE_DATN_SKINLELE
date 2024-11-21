@@ -10,32 +10,20 @@ const AuthAdminWrapper = lazy(() =>
 );
 
 // Lazy load all page components
-const LoginAdmin = lazy(() => import("../pages/LoginAdmin/LoginAdmin"));
-const Dashboard = lazy(() => import("../pages/DashBoard/DashBoard"));
-const ManageProduct = lazy(() =>
-  import("../pages/ManageProduct/ManageProduct")
-);
-const CreateProduct = lazy(() =>
-  import("../pages/CreateProduct/CreateProduct")
-);
-const ManageCategory = lazy(() =>
-  import("../pages/ManageCategory/ManageCategory")
-);
-const ManageBrand = lazy(() => import("../pages/ManageBrand/ManageBrand"));
-const ManageOrder = lazy(() => import("../pages/ManageOrder/ManageOrder"));
-const ManageUser = lazy(() => import("../pages/ManageUser/ManageUser"));
-const ManageReview = lazy(() => import("../pages/ManageReview/ManageReview"));
-const SettingAdmin = lazy(() => import("../pages/SettingAdmin/SettingAdmin"));
-const ManagePromotion = lazy(() =>
-  import("../pages/ManagePromotion/ManagePromotion")
-);
-const OrderDetail = lazy(() => import("../pages/OrderDetail/OrderDetail"));
-const CreatePromotion = lazy(() =>
-  import("../pages/CreatePromotion/CreatePromotion")
-);
-const PromotionDetail = lazy(() =>
-  import("../pages/PromotionDetail/PromotionDetail")
-);
+const LoginAdmin = lazy(() => import("../pages/LoginAdmin"));
+const Dashboard = lazy(() => import("../pages/DashBoard"));
+const ManageProduct = lazy(() => import("../pages/ManageProduct"));
+const CreateProduct = lazy(() => import("../pages/CreateProduct"));
+const ManageCategory = lazy(() => import("../pages/ManageCategory"));
+const ManageBrand = lazy(() => import("../pages/ManageBrand"));
+const ManageOrder = lazy(() => import("../pages/ManageOrder"));
+const ManageUser = lazy(() => import("../pages/ManageUser"));
+const ManageReview = lazy(() => import("../pages/ManageReview"));
+const SettingAdmin = lazy(() => import("../pages/SettingAdmin"));
+const ManagePromotion = lazy(() => import("../pages/ManagePromotion"));
+const OrderDetail = lazy(() => import("../pages/OrderDetail"));
+const CreatePromotion = lazy(() => import("../pages/CreatePromotion"));
+const PromotionDetail = lazy(() => import("../pages/PromotionDetail"));
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticatedAdmin, isLoading } = useSelector(

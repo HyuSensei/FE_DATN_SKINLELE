@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Upload, message, Select, Input, DatePicker, Card, Row, Col, Checkbox } from "antd";
+import {
+  Upload,
+  message,
+  Select,
+  Input,
+  DatePicker,
+  Card,
+  Row,
+  Col,
+  Checkbox,
+} from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { SketchPicker } from "react-color";
 import { uploadFile } from "../../helpers/uploadCloudinary";
@@ -32,7 +42,7 @@ const CreateProduct = () => {
     enable: true,
     tags: [],
     capacity: "",
-    expiry: ""
+    expiry: "",
   });
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [selectedLevel0, setSelectedLevel0] = useState(null);
@@ -129,7 +139,7 @@ const CreateProduct = () => {
       enable: true,
       tags: [],
       capacity: "",
-      expiry: ""
+      expiry: "",
     });
     setSelectedLevel0("");
     setSelectedLevel1("");
@@ -188,9 +198,9 @@ const CreateProduct = () => {
             ...variant.color,
             image: uploadedImage
               ? {
-                url: uploadedImage.secure_url,
-                publicId: uploadedImage.public_id,
-              }
+                  url: uploadedImage.secure_url,
+                  publicId: uploadedImage.public_id,
+                }
               : null,
           },
         };
@@ -201,9 +211,9 @@ const CreateProduct = () => {
       ...input,
       mainImage: uploadedMainImage
         ? {
-          url: uploadedMainImage.secure_url,
-          publicId: uploadedMainImage.public_id,
-        }
+            url: uploadedMainImage.secure_url,
+            publicId: uploadedMainImage.public_id,
+          }
         : null,
       images: uploadedImages.map((img) => ({
         url: img.url,

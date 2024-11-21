@@ -98,8 +98,6 @@ const HeaderUser = () => {
       ? []
       : menuDefaut;
 
-  console.log(menuDataDefault);
-
   const menuItems = [
     // ...menuDataDefault,
     {
