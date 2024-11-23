@@ -1,7 +1,7 @@
-import { Button, Drawer, Input, Layout, Dropdown } from "antd";
+import { Input, Layout, Dropdown } from "antd";
 import { FaBars, FaHandshake, FaSearch, FaUserCircle } from "react-icons/fa";
 import { IoCalendarNumberSharp } from "react-icons/io5";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import logo from "../../assets/images/logo-booking.png";
 import React, { useState } from "react";
 import { RiLoginCircleFill } from "react-icons/ri";
@@ -16,108 +16,163 @@ const HeaderBooking = () => {
     {
       label: "Quay lại SkinLeLe",
       key: "doctor",
-      icon: <IoCaretBackCircle size={20} color="#4f637e" />,
-      onClick: () => setModalAuthDoctorOpen(true),
+      icon: <IoCaretBackCircle size={20} className="text-blue-600" />,
     },
     {
       label: "Đăng nhập",
       key: "login",
-      icon: <RiLoginCircleFill size={20} color="#4f637e" />,
-      onClick: () => setModalAuthDoctorOpen(true),
+      icon: <RiLoginCircleFill size={20} className="text-blue-600" />,
     },
     {
       label: "Đăng xuất",
       key: "logout",
-      icon: <IoLogOut size={20} color="#4f637e" />,
-      onClick: () => setModalAuthDoctorOpen(true),
+      icon: <IoLogOut size={20} className="text-blue-600" />,
     },
   ];
 
+  const CustomButton = ({ icon, children, variant = "default" }) => {
+    const variants = {
+      default: "bg-gray-50",
+      primary: "bg-[#f4dd22]/20 text-[#fccc11]",
+      secondary: "text-[#1677ff] bg-[#1677ff]/10",
+    };
+
+    return (
+      <motion.button
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        className={`
+          flex items-center gap-2 px-4 py-2 rounded-lg
+          font-medium transition-all duration-200 text-sm
+          ${variants[variant]}
+        `}
+      >
+        {icon}
+        <span>{children}</span>
+      </motion.button>
+    );
+  };
+
   return (
-    <AntHeader className="sticky top-0 z-50 p-0">
-      <div className="relative shadow-md bg-gradient-to-r from-slate-50 via-white to-slate-100">
-        <div className="container mx-auto flex h-20 items-center justify-between px-4">
-          <motion.div
-            className="flex items-center space-x-2 cursor-pointer"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-          >
-            <img src={logo} alt="logo" className="w-16" />
-            <div className="logo-text-booking text-2xl">
-              Skin<span>LeLe</span> - Clinic
+    <AntHeader className="fixed top-0 left-0 right-0 z-50 p-0">
+      <div className="bg-white shadow-sm">
+        <div className="max-w-[1536px] mx-auto">
+          <div className="flex h-16 items-center justify-between px-4 gap-4">
+            {/* Logo Section */}
+            <motion.div
+              className="flex items-center gap-2 min-w-[180px]"
+              whileHover={{ scale: 1.02 }}
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="w-14 h-14 rounded-lg overflow-hidden">
+                <img
+                  src={logo}
+                  alt="logo"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="font-extrabold text-2xl text-[#1677ff]">
+                SkinLeLe <span className="text-gray-500">Clinic</span>
+              </div>
+            </motion.div>
+
+            {/* Search Section */}
+            <div className="hidden lg:flex flex-1 max-w-xl">
+              <Input
+                size="large"
+                prefix={<FaSearch className="text-gray-400" />}
+                placeholder="Tìm kiếm dịch vụ, bác sĩ..."
+                className="rounded-lg"
+              />
             </div>
-          </motion.div>
 
-          <div className="hidden flex-1 items-center justify-center px-8 lg:flex">
-            <Input
-              size="middle"
-              prefix={<FaSearch className="text-slate-400" />}
-              placeholder="Tìm kiếm dịch vụ, bác sĩ..."
-              className="h-10 rounded-lg text-base max-w-xl"
-            />
-          </div>
+            {/* Actions Section */}
+            <div className="hidden md:flex items-center gap-3">
+              <CustomButton
+                icon={<IoCalendarNumberSharp className="w-5 h-5" />}
+                variant="secondary"
+              >
+                Lịch khám
+              </CustomButton>
 
-          <div className="hidden items-center space-x-6 md:flex">
-            <motion.div
-              className="group flex items-center space-x-2 rounded-lg px-3 py-2 transition-all hover:bg-white cursor-pointer"
-              whileHover={{ scale: 1.05 }}
+              <CustomButton
+                icon={<FaHandshake className="w-5 h-5" />}
+                variant="primary"
+              >
+                Hợp tác
+              </CustomButton>
+
+              <Dropdown
+                menu={{ items: authItems }}
+                placement="bottomRight"
+                trigger={["click"]}
+              >
+                <div className="p-1.5 hover:bg-gray-50 rounded-lg cursor-pointer">
+                  <FaUserCircle className="w-6 h-6 text-[#1677ff]" />
+                </div>
+              </Dropdown>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden p-2 hover:bg-gray-50 rounded-lg"
+              onClick={() => setIsDrawerOpen(true)}
             >
-              <IoCalendarNumberSharp className="h-5 w-5 text-[#4b4b4b]" />
-              <span className="text-sm font-medium">Lịch khám</span>
-            </motion.div>
-
-            <motion.div
-              className="group flex items-center space-x-2 rounded-lg px-3 py-2 bg-[#6c9bbf] hover:bg-[#4f637e] cursor-pointer"
-              whileHover={{ scale: 1.05 }}
-            >
-              <FaHandshake className="h-5 w-5 text-white" />
-              <span className="text-sm font-medium text-white">Hợp tác</span>
-            </motion.div>
-            <Dropdown menu={{ items: authItems }} placement="bottomRight">
-              <FaUserCircle size={30} color="#93b2f3" />
-            </Dropdown>
+              <FaBars className="w-5 h-5 text-gray-600" />
+            </button>
           </div>
-
-          <Button
-            type="text"
-            className="flex md:hidden"
-            onClick={() => setIsDrawerOpen(true)}
-          >
-            <FaBars className="h-6 w-6" />
-          </Button>
         </div>
       </div>
 
-      <Drawer
-        title="Menu"
-        placement="right"
-        onClose={() => setIsDrawerOpen(false)}
-        open={isDrawerOpen}
-      >
-        <div className="flex flex-col space-y-4">
-          <Input
-            prefix={<FaSearch className="text-gray-400" />}
-            placeholder="Tìm kiếm..."
-            className="mb-4"
-          />
-          <Dropdown menu={{ items: authItems }} trigger={["click"]}>
-            <div className="flex items-center gap-2 py-2 cursor-pointer">
-              <FaUserCircle className="h-5 w-5 text-[#facc16]" />
-              Tài khoản
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isDrawerOpen && (
+          <motion.div
+            initial={{ opacity: 0, x: "100%" }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: "100%" }}
+            className="fixed inset-0 z-50 md:hidden"
+          >
+            <div
+              className="absolute inset-0 bg-black/20"
+              onClick={() => setIsDrawerOpen(false)}
+            />
+            <div className="absolute right-0 top-0 h-full w-72 bg-white shadow-xl">
+              <div className="p-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-lg font-medium">Menu</h2>
+                  <button
+                    onClick={() => setIsDrawerOpen(false)}
+                    className="p-2 hover:bg-gray-50 rounded-lg"
+                  >
+                    <IoLogOut className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <Input
+                  prefix={<FaSearch className="text-gray-400" />}
+                  placeholder="Tìm kiếm..."
+                  className="mb-4"
+                />
+
+                <div className="space-y-1">
+                  {authItems.map((item) => (
+                    <div
+                      key={item.key}
+                      className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer"
+                    >
+                      {item.icon}
+                      <span className="font-medium text-sm">{item.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-          </Dropdown>
-          <div className="flex items-center space-x-2 py-2">
-            <IoCalendarNumberSharp className="h-5 w-5 text-[#6c9bbf]" />
-            <span>Lịch khám</span>
-          </div>
-          <div className="flex items-center space-x-2 py-2">
-            <FaHandshake className="h-5 w-5 text-[#6c9bbf]" />
-            <span>Hợp tác</span>
-          </div>
-        </div>
-      </Drawer>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </AntHeader>
   );
 };
