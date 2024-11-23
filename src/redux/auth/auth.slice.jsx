@@ -52,17 +52,26 @@ const initialState = {
     fees: 0,
     slug: "",
   },
+  openModelAuth: false,
+  openModelAuthDoctor: false,
 };
 
 export const authSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
+    setOpenModelAuth(state, action) {
+      state.openModelAuth = action.payload;
+    },
+    setOpenModelAuthDoctor(state, action) {
+      state.openModelAuthDoctor = action.payload;
+    },
     setEmailVerify(state, action) {
       state.emailVerify = action.payload;
     },
     logoutUser(state, action) {
       remove("ACCESS_TOKEN");
+      remove("cart");
       state.isAuthenticated = false;
       state.userInfo = {};
     },
@@ -202,7 +211,7 @@ export const authSlice = createSlice({
         state.isLoading = false;
       })
 
-      //Get Account Admin
+      // Get Account Admin
       .addCase(getAccountAdmin.pending, (state, action) => {
         state.isLoading = true;
       })
@@ -221,6 +230,12 @@ export const authSlice = createSlice({
       });
   },
 });
-export const { setEmailVerify, logoutUser, setUserInfo, logoutAdmin } =
-  authSlice.actions;
+export const {
+  setEmailVerify,
+  logoutUser,
+  setUserInfo,
+  logoutAdmin,
+  setOpenModelAuth,
+  setOpenModelAuthDoctor,
+} = authSlice.actions;
 export default authSlice.reducer;

@@ -6,6 +6,7 @@ const PageTitle = lazy(() => import("../components/Layout/PageTitle"));
 const LayoutBooking = lazy(() => import("../components/Layout/LayoutBooking"));
 
 const HomeBooking = lazy(() => import("../pages/HomeBooking"));
+const DoctorOwner = lazy(() => import("../pages/DoctorOwner"));
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticatedDoctor } = useSelector((state) => state.auth);
@@ -17,8 +18,8 @@ const ProtectedRoute = ({ children }) => {
 };
 
 const AuthRoute = ({ children }) => {
-  const { isAuthenticatedAdmin } = useSelector((state) => state.auth);
-  return isAuthenticatedAdmin ? (
+  const { isAuthenticatedDoctor } = useSelector((state) => state.auth);
+  return isAuthenticatedDoctor ? (
     <Navigate to="/home-booking" replace />
   ) : (
     children
@@ -54,7 +55,12 @@ const routes = [
   {
     path: "/home-booking",
     element: HomeBooking,
-    title: "✨ SkinLeLeClinic - Phòng khám da liễu ✨",
+    title: "SkinLeLeClinic - Phòng khám da liễu",
+  },
+  {
+    path: "/doctor-owner",
+    element: DoctorOwner,
+    title: "SkinLeLeClinic - Quản lý thông tin bác sĩ hợp tác",
   },
 ];
 

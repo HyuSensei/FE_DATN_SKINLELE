@@ -1,17 +1,14 @@
 import React from "react";
-import { Layout } from "antd";
 import HeaderBooking from "../Header/HeaderBooking";
 import FooterBooking from "../Footer/FooterBooking";
 
-const { Content } = Layout;
-
 const LayoutBooking = ({ children }) => {
   return (
-    <Layout className="min-h-screen">
+    <div className="site-layout flex flex-col overflow-x-hidden">
       <HeaderBooking />
-      <Content className="bg-white h-screen">{children}</Content>
+      <div className="bg-white min-h-screen">{children}</div>
       <FooterBooking />
-    </Layout>
+    </div>
   );
 };
 

@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "../../axios/axios";
 import { message } from "antd";
+import { remove } from "../../storage/storage";
 
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
@@ -32,6 +33,8 @@ export const getAccountUser = createAsyncThunk(
     try {
       return await axios.get("/auth/account");
     } catch (error) {
+      remove("ACCESS_TOKEN");
+      remove("cart");
       return rejectWithValue(error.response.data);
     }
   }
@@ -103,7 +106,7 @@ export const getAccountAdmin = createAsyncThunk(
     try {
       return await axios.get("/admin/auth/account");
     } catch (error) {
-      message.error(error.response.data.message);
+      remove("ACCESS_TOKEN_ADMIN");
       return rejectWithValue(error.response.data);
     }
   }

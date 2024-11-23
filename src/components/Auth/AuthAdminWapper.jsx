@@ -23,7 +23,7 @@ const AuthAdminWrapper = ({ children }) => {
 
   useEffect(() => {
     initAuth();
-  }, [isAuthenticatedAdmin]);
+  }, [dispatch]);
 
   if ((!isInitialized || isLoading) && pathname !== "/admin") {
     return <Loading />;

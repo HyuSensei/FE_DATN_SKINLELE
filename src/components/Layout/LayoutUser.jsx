@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import HeaderUser from "../Header/HeaderUser";
-import { FaFacebookF, FaInstagram, FaTiktok } from "react-icons/fa";
-import verifyImage from "../../assets/images/skinlele-verified.png";
 import FooterUser from "../Footer/FooterUser";
 
 const LayoutUser = ({ children }) => {

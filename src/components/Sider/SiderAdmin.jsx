@@ -1,5 +1,8 @@
 import React, { useEffect } from "react";
 import { Layout, Menu } from "antd";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import useScreen from "../../hook/useScreen";
 import {
   DashboardOutlined,
   ShoppingOutlined,
@@ -12,78 +15,144 @@ import {
   ShopOutlined,
   GiftOutlined,
 } from "@ant-design/icons";
-import { motion } from "framer-motion";
-import useScreen from "../../hook/useScreen";
-import { useNavigate } from "react-router-dom";
+import { BiClinic } from "react-icons/bi";
+import { GrUserAdmin } from "react-icons/gr";
+
+const LOGO_ANIMATION = {
+  initial: { y: -20, opacity: 0 },
+  animate: { y: 0, opacity: 1 },
+};
+
+const LOGO_TRANSITION = {
+  duration: 0.5,
+};
+
+const MENU_ITEMS = [
+  {
+    key: "1",
+    icon: <DashboardOutlined />,
+    label: "Thống kê",
+    className: "mt-2",
+    path: "/admin/dashboard",
+  },
+  {
+    key: "sub1",
+    icon: <ShoppingOutlined />,
+    label: "Sản phẩm",
+    children: [
+      {
+        key: "2",
+        icon: <AppstoreOutlined />,
+        label: "Tất cả sản phẩm",
+        path: "/admin/products",
+      },
+      {
+        key: "3",
+        icon: <ShopOutlined />,
+        label: "Danh mục",
+        path: "/admin/categories",
+      },
+      {
+        key: "4",
+        icon: <TagOutlined />,
+        label: "Thương hiệu",
+        path: "/admin/brands",
+      },
+      {
+        key: "5",
+        icon: <GiftOutlined />,
+        label: "Khuyến mãi",
+        path: "/admin/promotions",
+      },
+      {
+        key: "6",
+        icon: <StarOutlined />,
+        label: "Đánh giá",
+        path: "/admin/reviews",
+      },
+    ],
+  },
+  {
+    key: "7",
+    icon: <UsergroupAddOutlined />,
+    label: "Khách hàng",
+    path: "/admin/users",
+  },
+  {
+    key: "8",
+    icon: <ShoppingCartOutlined />,
+    label: "Đơn hàng",
+    path: "/admin/orders",
+  },
+  {
+    key: "9",
+    icon: <SettingOutlined />,
+    label: "Cài đặt",
+    path: "/admin/settings",
+  },
+  {
+    key: "10",
+    icon: <GrUserAdmin />,
+    label: "Quản trị",
+    path: "",
+  },
+  {
+    key: "11",
+    icon: <BiClinic />,
+    label: "Phòng khám",
+    path: "",
+  },
+];
 
 const { Sider } = Layout;
+
+const Logo = ({ collapsed }) => (
+  <div className="bg-white px-4 py-2 border-r">
+    <motion.div
+      className="cursor-pointer text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 font-extrabold text-2xl m-0 text-center"
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.95 }}
+      initial={LOGO_ANIMATION.initial}
+      animate={LOGO_ANIMATION.animate}
+      transition={LOGO_TRANSITION}
+    >
+      {collapsed ? "SL" : "SkinLeLe"}
+    </motion.div>
+  </div>
+);
 
 const SiderAdmin = ({ collapsed, setCollapsed }) => {
   const navigate = useNavigate();
   const { isMobile } = useScreen();
 
   useEffect(() => {
-    if (isMobile) {
-      setCollapsed(true);
-    } else {
-      setCollapsed(false);
-    }
-  }, [isMobile]);
+    setCollapsed(isMobile);
+  }, [isMobile, setCollapsed]);
 
-  const changePage = (path) => {
-    navigate(path);
-  };
+  const handleLogoClick = () => navigate("/admin/dashboard");
 
   const handleMenuClick = ({ key }) => {
-    switch (key) {
-      case "1":
-        navigate("/admin/dashboard");
-        break;
-      case "2":
-        navigate("/admin/products");
-        break;
-      case "3":
-        navigate("/admin/categories");
-        break;
-      case "4":
-        navigate("/admin/brands");
-        break;
-      case "5":
-        navigate("/admin/users");
-        break;
-      case "6":
-        navigate("/admin/orders");
-        break;
-      case "7":
-        navigate("/admin/reviews");
-        break;
-      case "8":
-        navigate("/admin/promotions");
-        break;
-      case "9":
-        navigate("/admin/settings");
-        break;
-      default:
-        break;
+    const selectedItem = findMenuItemByKey(MENU_ITEMS, key);
+    if (selectedItem?.path) {
+      navigate(selectedItem.path);
     }
+  };
+
+  const findMenuItemByKey = (items, targetKey) => {
+    for (const item of items) {
+      if (item.key === targetKey) return item;
+      if (item.children) {
+        const found = findMenuItemByKey(item.children, targetKey);
+        if (found) return found;
+      }
+    }
+    return null;
   };
 
   return (
     <Sider trigger={null} collapsible collapsed={collapsed}>
-      <div
-        className="bg-white px-4 py-2 border-r"
-        onClick={() => changePage("/admin/dashboard")}
-      >
-        <motion.div
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          className="cursor-pointer text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 font-extrabold text-2xl m-0 text-center"
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          {collapsed ? "SL" : "SkinLeLe"}
-        </motion.div>
+      <div onClick={handleLogoClick}>
+        <Logo collapsed={collapsed} />
       </div>
       <Menu
         onClick={handleMenuClick}
@@ -91,62 +160,7 @@ const SiderAdmin = ({ collapsed, setCollapsed }) => {
         defaultSelectedKeys={["1"]}
         defaultOpenKeys={["sub1"]}
         className="h-screen bg-white"
-        items={[
-          {
-            key: "1",
-            icon: <DashboardOutlined />,
-            label: "Thống kê",
-            className: "mt-2",
-          },
-          {
-            key: "sub1",
-            icon: <ShoppingOutlined />,
-            label: "Sản phẩm",
-            children: [
-              {
-                key: "2",
-                icon: <AppstoreOutlined />,
-                label: "Tất cả sản phẩm",
-              },
-              {
-                key: "3",
-                icon: <ShopOutlined />,
-                label: "Danh mục",
-                onClick: () => changePage("/admin/categories"),
-              },
-              {
-                key: "4",
-                icon: <TagOutlined />,
-                label: "Thương hiệu",
-              },
-            ],
-          },
-          {
-            key: "5",
-            icon: <UsergroupAddOutlined />,
-            label: "Người dùng",
-          },
-          {
-            key: "6",
-            icon: <ShoppingCartOutlined />,
-            label: "Đơn hàng",
-          },
-          {
-            key: "7",
-            icon: <StarOutlined />,
-            label: "Đánh giá",
-          },
-          {
-            key: "8",
-            icon: <GiftOutlined />,
-            label: "Khuyến mãi",
-          },
-          {
-            key: "9",
-            icon: <SettingOutlined />,
-            label: "Cài đặt",
-          },
-        ]}
+        items={MENU_ITEMS}
       />
     </Sider>
   );

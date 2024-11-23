@@ -7,7 +7,7 @@ import Verify from "../../components/Auth/Verify";
 import { Card, message } from "antd";
 import { useNavigate } from "react-router-dom";
 
-const Auth = () => {
+const Auth = ({ isModel = false }) => {
   const [step, setStep] = useState("login");
   const [isReset, setIsReset] = useState(false);
   const navigate = useNavigate();
@@ -46,10 +46,16 @@ const Auth = () => {
   return (
     <div className="flex">
       <div className="w-full flex items-center justify-center px-4 sm:px-6 mt-6 lg:px-8">
-        <div className="max-w-xl w-full space-y-8">
-          <Card className="mb-6 shadow-md hover:shadow-lg transition-shadow duration-300 py-6">
-            {renderStep()}
-          </Card>
+        <div
+          className={`max-w-xl w-full space-y-8 ${isModel ? "pt-6 pb-8" : ""}`}
+        >
+          {!isModel ? (
+            <Card className="mb-6 shadow-md hover:shadow-lg transition-shadow duration-300 py-6">
+              {renderStep()}
+            </Card>
+          ) : (
+            renderStep()
+          )}
         </div>
       </div>
     </div>

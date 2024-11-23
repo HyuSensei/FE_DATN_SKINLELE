@@ -1,5 +1,6 @@
 import React from "react";
 import { FaFacebookF, FaInstagram, FaTiktok } from "react-icons/fa";
+import verifyImage from "../../assets/images/skinlele-verified.png";
 
 const FooterUser = () => {
   return (

@@ -1,14 +1,11 @@
-import { Layout } from "antd";
 import React from "react";
 import { FaMapMarkerAlt, FaPhone } from "react-icons/fa";
 import { ImMail4 } from "react-icons/im";
 
-const { Footer: AntFooter } = Layout;
-
 const FooterBooking = () => {
   return (
-    <>
-      <AntFooter className="bg-slate-50 p-0">
+    <footer>
+      <div className="bg-slate-50 p-0">
         <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-4 md:grid-cols-2">
             <div>
@@ -65,8 +62,8 @@ const FooterBooking = () => {
             </p>
           </div>
         </div>
-      </AntFooter>
-    </>
+      </div>
+    </footer>
   );
 };
 

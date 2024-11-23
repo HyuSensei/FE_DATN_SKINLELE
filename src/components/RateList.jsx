@@ -235,7 +235,7 @@ const RateList = ({ product }) => {
                 renderItem={(review) => (
                   <Card className="mb-4 shadow-lg hover:shadow-xl transition-all duration-300 w-full">
                     <div className="flex flex-col space-y-2">
-                      <div className="flex items-start space-x-4">
+                      <div className="flex items-start space-x-2">
                         <Avatar
                           className="w-12 h-12"
                           src={review.user.avatar.url}
