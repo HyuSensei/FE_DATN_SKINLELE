@@ -47,7 +47,7 @@ const FooterBooking = () => {
   );
 
   return (
-    <footer className="bg-gradient-to-b from-gray-50/50 to-white shadow-lg">
+    <footer className="bg-gradient-to-b from-gray-50/50 to-white shadow-lg px-4">
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-3 md:grid-cols-2">
           {/* About Section */}

@@ -128,7 +128,7 @@ const HomeBooking = () => {
   return (
     <>
       {/* Hero Section */}
-      <div className="relative h-[550px] w-full overflow-hidden">
+      <div className="relative h-[550px] w-full overflow-hidden pt-10">
         <motion.div
           initial={{ scale: 1.1 }}
           animate={{ scale: 1 }}

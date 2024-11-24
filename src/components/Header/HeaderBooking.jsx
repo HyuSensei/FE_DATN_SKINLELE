@@ -1,11 +1,10 @@
 import { Input, Layout, Dropdown } from "antd";
 import { FaBars, FaHandshake, FaSearch, FaUserCircle } from "react-icons/fa";
-import { IoCalendarNumberSharp } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
 import logo from "../../assets/images/logo-booking.png";
 import React, { useState } from "react";
-import { RiLoginCircleFill } from "react-icons/ri";
-import { IoCaretBackCircle, IoLogOut } from "react-icons/io5";
+import { IoLogOut } from "react-icons/io5";
+import { PiCalendarCheckFill } from "react-icons/pi";
 
 const { Header: AntHeader } = Layout;
 
@@ -16,24 +15,21 @@ const HeaderBooking = () => {
     {
       label: "Quay lại SkinLeLe",
       key: "doctor",
-      icon: <IoCaretBackCircle size={20} className="text-blue-600" />,
     },
     {
       label: "Đăng nhập",
       key: "login",
-      icon: <RiLoginCircleFill size={20} className="text-blue-600" />,
     },
     {
       label: "Đăng xuất",
       key: "logout",
-      icon: <IoLogOut size={20} className="text-blue-600" />,
     },
   ];
 
   const CustomButton = ({ icon, children, variant = "default" }) => {
     const variants = {
       default: "bg-gray-50",
-      primary: "bg-[#f4dd22]/20 text-[#fccc11]",
+      primary: "bg-amber-400/20 text-[#fccc11]",
       secondary: "text-[#1677ff] bg-[#1677ff]/10",
     };
 
@@ -42,7 +38,7 @@ const HeaderBooking = () => {
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         className={`
-          flex items-center gap-2 px-4 py-2 rounded-lg
+          flex items-center gap-2 px-4 py-2 rounded-full
           font-medium transition-all duration-200 text-sm
           ${variants[variant]}
         `}
@@ -73,7 +69,7 @@ const HeaderBooking = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="font-extrabold text-2xl text-[#1677ff]">
+              <div className="font-extrabold text-xl text-[#2464ec] font-[Bungee]">
                 SkinLeLe <span className="text-gray-500">Clinic</span>
               </div>
             </motion.div>
@@ -91,7 +87,7 @@ const HeaderBooking = () => {
             {/* Actions Section */}
             <div className="hidden md:flex items-center gap-3">
               <CustomButton
-                icon={<IoCalendarNumberSharp className="w-5 h-5" />}
+                icon={<PiCalendarCheckFill className="w-5 h-5" />}
                 variant="secondary"
               >
                 Lịch khám
@@ -109,7 +105,7 @@ const HeaderBooking = () => {
                 placement="bottomRight"
                 trigger={["click"]}
               >
-                <div className="p-1.5 hover:bg-gray-50 rounded-lg cursor-pointer">
+                <div className="p-1.5 bg-gray-50 rounded-lg cursor-pointer">
                   <FaUserCircle className="w-6 h-6 text-[#1677ff]" />
                 </div>
               </Dropdown>

@@ -8,6 +8,8 @@ const LayoutBooking = lazy(() => import("../components/Layout/LayoutBooking"));
 const HomeBooking = lazy(() => import("../pages/HomeBooking"));
 const DoctorOwner = lazy(() => import("../pages/DoctorOwner"));
 const Doctor = lazy(() => import("../pages/Doctor"));
+const Clinic = lazy(() => import("../pages/Clinic"));
+const BookingHistory = lazy(() => import("../pages/BookingHistory"));
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticatedDoctor } = useSelector((state) => state.auth);
@@ -67,6 +69,16 @@ const routes = [
     path: "/doctor/:slug",
     element: Doctor,
     title: "SkinLeLeClinic - Thông tin chi tiết bác sĩ",
+  },
+  {
+    path: "/clinic/:slug",
+    element: Clinic,
+    title: "SkinLeLeClinic - Thông tin chi tiết phòng khám",
+  },
+  {
+    path: "/booking-history",
+    element: BookingHistory,
+    title: "SkinLeLeClinic - Lịch sử đặt khám",
   },
 ];
 
