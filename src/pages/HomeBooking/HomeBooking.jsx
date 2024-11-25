@@ -5,6 +5,7 @@ import Slider from "react-slick";
 import { FaUserMd, FaClock, FaCalendarCheck, FaStar } from "react-icons/fa";
 import { MdHealthAndSafety, MdSupportAgent } from "react-icons/md";
 import { FaLocationDot } from "react-icons/fa6";
+import CustomButton from "../../components/CustomButton/CustomButton";
 
 const HomeBooking = () => {
   const fadeInUp = {
@@ -241,10 +242,7 @@ const HomeBooking = () => {
           <Slider {...sliderSettings}>
             {doctors.map((doctor, index) => (
               <div key={index} className="px-4 py-2">
-                <Card
-                  hoverable
-                  className="text-center bg-gradient-to-t from-[#ebe8fb] to-fuchsia-100 shadow-md"
-                >
+                <Card hoverable className="text-center shadow-md">
                   <img
                     src={doctor.image}
                     alt={doctor.name}

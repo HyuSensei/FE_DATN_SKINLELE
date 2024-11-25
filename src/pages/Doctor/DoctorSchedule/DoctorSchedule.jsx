@@ -43,7 +43,7 @@ const DoctorSchedule = () => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-white to-indigo-50/30 rounded-2xl shadow-lg border border-indigo-100 overflow-hidden">
+    <div className="bg-gradient-to-br from-white to-indigo-50/30 rounded-2xl shadow-lg border border-indigo-100 overflow-hidden mb-10">
       {/* Header */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between p-6 bg-gradient-to-r from-violet-50 via-indigo-50 to-white border-b border-indigo-100">
         <div className="flex items-center mb-4 md:mb-0">

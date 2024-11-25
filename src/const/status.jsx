@@ -30,3 +30,30 @@ export const orderStatus = [
     color: "#eb1c26",
   },
 ];
+
+export const bookingStatus = [
+  {
+    id: 1,
+    name: "Đang chờ",
+    value: "pending",
+    color: "#e3c01c",
+  },
+  {
+    id: 2,
+    name: "Đã xác nhận",
+    value: "confirmed",
+    color: "#fa6024",
+  },
+  {
+    id: 3,
+    name: "Hoàn thành",
+    value: "completed",
+    color: "#19c37d",
+  },
+  {
+    id: 4,
+    name: "Đã hủy",
+    value: "cancelled",
+    color: "#eb1c26",
+  },
+];

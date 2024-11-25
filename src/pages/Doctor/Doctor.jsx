@@ -9,6 +9,7 @@ import {
 import DoctorSchedule from "./DoctorSchedule/DoctorSchedule";
 import DoctorReview from "./DoctorReview/DoctorReview";
 import CustomButton from "../../components/CustomButton/CustomButton";
+import { MdVerified } from "react-icons/md";
 
 const mockDoctor = {
   name: "Bs.CK2 Nguyễn Thị Hương",
@@ -46,8 +47,8 @@ const Doctor = () => {
           <div className="w-full md:w-3/4">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold mb-2 text-gray-800">
-                  {mockDoctor.name}
+                <h1 className="text-2xl md:text-3xl font-bold mb-2 text-gray-800 flex items-center gap-2">
+                  {mockDoctor.name} <MdVerified color="#5ad7ff" />
                 </h1>
                 <Tag
                   color="blue"
