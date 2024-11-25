@@ -17,7 +17,7 @@ import CustomButton from "../../components/CustomButton/CustomButton";
 
 // Mock Data
 const clinicData = {
-  name: "Phòng khám Da liễu SkinCare Premium",
+  name: "Phòng Khám Da Liễu SkinCare Premium",
   logo: {
     url: "",
   },
