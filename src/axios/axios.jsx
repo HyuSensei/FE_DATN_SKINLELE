@@ -2,7 +2,7 @@ import axios from "axios";
 import { get } from "../storage/storage";
 
 const API_URL = import.meta.env.VITE_APP_API_URl;
-const TIMEOUT = 1000;
+const TIMEOUT = 5000;
 
 const createAxiosInstance = () => {
   const instance = axios.create({
@@ -10,6 +10,7 @@ const createAxiosInstance = () => {
     timeout: TIMEOUT,
     headers: {
       Accept: "application/json",
+      "Content-Type": "application/json",
     },
   });
 

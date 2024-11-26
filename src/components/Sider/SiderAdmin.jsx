@@ -16,7 +16,8 @@ import {
   GiftOutlined,
 } from "@ant-design/icons";
 import { BiClinic } from "react-icons/bi";
-import { GrUserAdmin } from "react-icons/gr";
+import { GrUserAdd, GrUserAdmin } from "react-icons/gr";
+import { IoCalendarClearOutline } from "react-icons/io5";
 
 const LOGO_ANIMATION = {
   initial: { y: -20, opacity: 0 },
@@ -94,13 +95,25 @@ const MENU_ITEMS = [
     key: "10",
     icon: <GrUserAdmin />,
     label: "Quản trị",
-    path: "",
+    path: "/admin/accounts",
   },
   {
     key: "11",
     icon: <BiClinic />,
     label: "Phòng khám",
-    path: "",
+    path: "/admin/clinics",
+  },
+  {
+    key: "12",
+    icon: <GrUserAdd />,
+    label: "Bác sĩ",
+    path: "/admin/doctors",
+  },
+  {
+    key: "13",
+    icon: <IoCalendarClearOutline />,
+    label: "Lịch khám",
+    path: "/admin/bookings",
   },
 ];
 

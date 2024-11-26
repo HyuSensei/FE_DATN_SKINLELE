@@ -24,6 +24,11 @@ const ManagePromotion = lazy(() => import("../pages/ManagePromotion"));
 const OrderDetail = lazy(() => import("../pages/OrderDetail"));
 const CreatePromotion = lazy(() => import("../pages/CreatePromotion"));
 const PromotionDetail = lazy(() => import("../pages/PromotionDetail"));
+const DashBoardClinic = lazy(() => import("../pages/DashBoardClinic"));
+const ManageAccount = lazy(() => import("../pages/ManageAccount"));
+const ManageDoctor = lazy(() => import("../pages/ManageDoctor"));
+const ManageBooking = lazy(() => import("../pages/ManageBooking"));
+const ManageClinic = lazy(() => import("../pages/ManageClinic"));
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticatedAdmin, isLoading } = useSelector(
@@ -172,6 +177,41 @@ const adminRoutes = [
     path: "/admin/promotions/:id",
     element: PromotionDetail,
     title: "Admin - Chi tiết khuyến mãi",
+    layoutTitle: "",
+    isProtected: true,
+  },
+  {
+    path: "/admin/accounts",
+    element: ManageAccount,
+    title: "Admin - Quản lý tài khoản",
+    layoutTitle: "Danh sách tài khoản quản trị",
+    isProtected: true,
+  },
+  {
+    path: "/admin/doctors",
+    element: ManageDoctor,
+    title: "Admin - Quản lý bác sĩ",
+    layoutTitle: "",
+    isProtected: true,
+  },
+  {
+    path: "/admin/clinics",
+    element: ManageClinic,
+    title: "Admin - Quản lý phòng khám",
+    layoutTitle: "Danh sách phòng khám",
+    isProtected: true,
+  },
+  {
+    path: "/admin/bookings",
+    element: ManageBooking,
+    title: "Admin - Quản lý lịch khám",
+    layoutTitle: "",
+    isProtected: true,
+  },
+  {
+    path: "/admin/dashboard-clinic",
+    element: DashBoardClinic,
+    title: "Admin - Phòng khám",
     layoutTitle: "",
     isProtected: true,
   },

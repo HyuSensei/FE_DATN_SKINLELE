@@ -9,6 +9,7 @@ const initialState = {
   totalOrderAmount: 0,
   monthlyRevenue: [],
   topSellingProducts: [],
+  orderStatuses: [],
 };
 
 export const statisticalSlice = createSlice({
@@ -30,6 +31,7 @@ export const statisticalSlice = createSlice({
           state.totalOrderAmount = action.payload.data.totals.revenue;
           state.monthlyRevenue = action.payload.data.yearlyStats;
           state.topSellingProducts = action.payload.data.topSellingProducts;
+          state.orderStatuses = action.payload.data.orderStatuses;
         }
       })
       .addCase(getStatisticalAdmin.rejected, (state, action) => {

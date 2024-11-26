@@ -112,3 +112,18 @@ export const getAccountAdmin = createAsyncThunk(
   }
 );
 
+export const getAllAccountAdmin = createAsyncThunk(
+  "auth/getAllAccountAdmin",
+  async (
+    { page = 1, pageSize = 10, search = "", role = "" },
+    { rejectWithValue }
+  ) => {
+    try {
+      return await axios.get(
+        `/admin/admin-accounts?page=${page}&pageSize=${pageSize}&search=${search}&role=${role}`
+      );
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);

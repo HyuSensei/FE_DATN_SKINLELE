@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Tooltip, Select } from "antd";
+import {
+  Button,
+  Card,
+  Tooltip,
+  Select,
+  Progress,
+  Typography,
+  Row,
+  Col,
+  Empty,
+} from "antd";
 import { motion } from "framer-motion";
 import { PiShoppingBagOpenFill } from "react-icons/pi";
 import { HiMiniUserGroup } from "react-icons/hi2";
@@ -15,6 +25,43 @@ import { getProductAlmostExpired } from "../../redux/product/product.thunk";
 import TableProductAlmostExpired from "../../components/Table/TableProductAlmostExpired";
 import { PlusOutlined } from "@ant-design/icons";
 import moment from "moment";
+
+const { Text } = Typography;
+
+const colors = [
+  "#faad14",
+  "#52c41a",
+  "#ff4d4f",
+  "#1890ff",
+  "#bfbfbf",
+  "#ff7875",
+];
+
+const gradientBgColors = [
+  "from-orange-50 to-orange-100",
+  "from-green-50 to-green-100",
+  "from-red-50 to-red-100",
+  "from-blue-50 to-blue-100",
+  "from-gray-50 to-gray-100",
+  "from-pink-50 to-pink-100",
+];
+
+const statusConfig = {
+  pending: {
+    color: "#faad14",
+    label: "Đang chờ",
+  },
+  processing: {
+    color: "#1890ff",
+    label: "Đang xử lý",
+  },
+  shipping: { color: "#722ed1", label: "Đang giao" },
+  delivered: { color: "#52c41a", label: "Hoàn thành" },
+  cancelled: {
+    color: "#ff4d4f",
+    label: "Đã hủy",
+  },
+};
 
 const DashboardCard = ({
   title,
@@ -72,6 +119,31 @@ const DashboardCard = ({
   </motion.div>
 );
 
+const StatusProgress = ({ status, count, total }) => {
+  const config = statusConfig[status];
+  const percentage = total ? (count / total) * 100 : 0;
+
+  return (
+    <div className="flex flex-col items-center">
+      <Progress
+        type="circle"
+        percent={percentage}
+        strokeColor={config?.color}
+        format={() => (
+          <div className="space-x-1 text-center">
+            <Text strong style={{ color: config?.color }} className="text-lg">
+              {count}
+            </Text>{" "}
+            <Text type="secondary">{config?.label}</Text>
+          </div>
+        )}
+        className="mt-4"
+        size={180}
+      />
+    </div>
+  );
+};
+
 const DashBoard = () => {
   const dispatch = useDispatch();
   const [paginate, setPaginate] = useState({
@@ -95,6 +167,7 @@ const DashBoard = () => {
     totalOrderAmount,
     monthlyRevenue,
     topSellingProducts,
+    orderStatuses,
   } = useSelector((state) => state.statistical);
 
   useEffect(() => {
@@ -174,7 +247,7 @@ const DashBoard = () => {
         <h2 className="uppercase text-sm font-semibold text-[#14134f]">
           Doanh thu
         </h2>
-        <div className="space-x-4 py-4">
+        <div className="space-x-4 py-4 space-y-2">
           <Select
             defaultValue={filterType}
             onChange={handleChangeType}
@@ -244,13 +317,38 @@ const DashBoard = () => {
           <h2 className="uppercase text-sm font-semibold text-[#14134f]">
             Top sản phẩm bán chạy
           </h2>
-          <div className={`max-w-[1100px] m-auto`}>
+          {!isLoading && !topSellingProducts.length && <Empty />}
+          {/* <div className={`max-w-[1100px] m-auto`}>
             <StatisticalProductSelling
               {...{
                 isLoading,
                 topSellingProducts,
               }}
             />
+          </div> */}
+          <div className="space-y-6 mt-4">
+            {topSellingProducts?.map((item, index) => (
+              <div
+                key={index}
+                className={`bg-gradient-to-r ${gradientBgColors[index]} p-5 rounded-xl`}
+                style={{ background: gradientBgColors[index] }}
+              >
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-gray-700 font-medium capitalize text-xs">
+                    {item.name}
+                  </span>
+                  <span className="text-gray-900 font-semibold text-base">
+                    {item.totalSold}
+                  </span>
+                </div>
+                <Progress
+                  strokeColor={colors[index]}
+                  percent={Math.round((item.totalSold / totalProducts) * 100)}
+                  size="default"
+                  trailColor="#f0f0f0"
+                />
+              </div>
+            ))}
           </div>
         </Card>
         <Card className="shadow-lg" bordered={false}>
@@ -283,6 +381,22 @@ const DashBoard = () => {
           />
         </Card>
       </div>
+      <Card className="shadow-lg mt-6" bordered={false}>
+        <h2 className="uppercase text-sm font-semibold text-[#14134f] mb-2">
+          Trạng thái đơn hàng
+        </h2>
+        <Row gutter={[16, 16]}>
+          {Object.entries(orderStatuses || {}).map(([status, count]) => (
+            <Col xs={24} sm={12} md={8} key={status}>
+              <StatusProgress
+                status={status}
+                count={count}
+                total={totalOrders || 0}
+              />
+            </Col>
+          ))}
+        </Row>
+      </Card>
     </div>
   );
 };
