@@ -6,8 +6,10 @@ import { getAllClinicAdmin } from "../../redux/clinic/clinic.thunk";
 import { Button, Input } from "antd";
 import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
 import TableClinic from "../../components/Table/TableClinic";
+import { useNavigate } from "react-router-dom";
 
 const ManageClinic = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [clinics, setClinics] = useState([]);
   const [paginate, setPaginate] = useState({
@@ -61,7 +63,7 @@ const ManageClinic = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="mt-4">
       <div className="mb-4 bg-white p-4 rounded-md shadow-lg flex gap-4 items-center">
         <Input
           size="middle"
@@ -71,6 +73,7 @@ const ManageClinic = () => {
           allowClear
         />
         <Button
+          onClick={() => navigate("/admin/clinics/create")}
           size="middle"
           type="primary"
           icon={<PlusOutlined />}

@@ -1,11 +1,54 @@
-import { Form, Input, Modal, Select } from "antd";
+import { Form, Input, message, Modal, Select } from "antd";
 import { isEmpty } from "lodash";
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import {
+  createAccountAdmin,
+  updateAccountAdmin,
+} from "../../redux/auth/auth.thunk";
 
-const ModelAccountAction = ({ open, onClose, account = {} }) => {
+const ModelAccountAction = ({
+  open,
+  onClose,
+  account = {},
+  setStateByAction,
+}) => {
+  const dispatch = useDispatch();
   const [form] = Form.useForm();
 
-  const handleSubmit = (values) => {};
+  useEffect(() => {
+    if (!isEmpty(account)) {
+      form.setFieldValue("name", account.name);
+      form.setFieldValue("role", account.role);
+      form.setFieldValue("username", account.username);
+    }
+  }, [account]);
+
+  const handleSubmit = async (values) => {
+    delete values.resPassword;
+    const action = isEmpty(account) ? createAccountAdmin : updateAccountAdmin;
+    const payload = isEmpty(account)
+      ? values
+      : { id: account._id, data: values };
+    const res = await dispatch(action(payload)).unwrap();
+    if (res.success) {
+      form.resetFields();
+      if (isEmpty(account)) {
+        setStateByAction({
+          data: res.data,
+          action: "create",
+        });
+      } else {
+        setStateByAction({
+          id: res.data._id,
+          data: res.data,
+          action: "update",
+        });
+      }
+      message.success(res.message);
+      onClose();
+    }
+  };
 
   return (
     <Modal
@@ -33,7 +76,11 @@ const ModelAccountAction = ({ open, onClose, account = {} }) => {
               { required: true, message: "Vui lòng nhập tên đăng nhập !" },
             ]}
           >
-            <Input size="large" placeholder="Tên đăng nhập..." />
+            <Input
+              disabled={!isEmpty(account)}
+              size="large"
+              placeholder="Tên đăng nhập..."
+            />
           </Form.Item>
         </div>
         <div className="flex gap-4 items-center">
@@ -41,7 +88,16 @@ const ModelAccountAction = ({ open, onClose, account = {} }) => {
             className="flex-1"
             label="Mật khẩu"
             name="password"
-            rules={[{ required: true, message: "Vui lòng nhập mật khẩu !" }]}
+            rules={[
+              {
+                required: isEmpty(account),
+                message: "Vui lòng nhập mật khẩu !",
+              },
+              {
+                min: 6,
+                message: "Mật khẩu phải có ít nhất 6 ký tự.",
+              },
+            ]}
           >
             <Input.Password size="large" placeholder="Mật khẩu..." />
           </Form.Item>
@@ -50,7 +106,20 @@ const ModelAccountAction = ({ open, onClose, account = {} }) => {
             label="Nhập lại mật khẩu"
             name="rePassword"
             rules={[
-              { required: true, message: "Vui lòng nhập lại mật khẩu !" },
+              {
+                required: isEmpty(account),
+                message: "Vui lòng nhập lại mật khẩu !",
+              },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("password") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(
+                    new Error("Mật khẩu nhập lại không khớp")
+                  );
+                },
+              }),
             ]}
           >
             <Input.Password size="large" placeholder="Nhập lại mật khẩu..." />
@@ -74,6 +143,10 @@ const ModelAccountAction = ({ open, onClose, account = {} }) => {
         </Form.Item>
         <div className="flex items-center justify-end gap-2">
           <button
+            onClick={() => {
+              form.resetFields();
+              onClose();
+            }}
             type="button"
             className="py-2 px-4 rounded-md border-2 hover:opacity-80"
           >
@@ -83,7 +156,7 @@ const ModelAccountAction = ({ open, onClose, account = {} }) => {
             type="submit"
             className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-base text-white rounded-md"
           >
-            Tạo tài khoản
+            {isEmpty(account) ? "Tạo tài khoản" : "Cập nhật tài khoản"}
           </button>
         </div>
       </Form>

@@ -63,12 +63,39 @@ const ManageAccount = () => {
     debouncedFilter(key, value);
   };
 
+  const setStateByAction = ({ id, data, action = "update" }) => {
+    const actions = {
+      update: () => {
+        setAccounts((prevAccounts) => {
+          const index = prevAccounts.findIndex((item) => item._id === id);
+          if (index !== -1) {
+            const updatedAccounts = [...prevAccounts];
+            updatedAccounts[index] = data;
+            return updatedAccounts;
+          }
+          return prevAccounts;
+        });
+      },
+      remove: () => {
+        setAccounts((prevAccounts) =>
+          prevAccounts.filter((item) => item._id !== id)
+        );
+      },
+      create: () => {
+        setAccounts((prevAccounts) => [data, ...prevAccounts]);
+      },
+    };
+
+    actions[action]?.();
+  };
+
   return (
-    <div className="p-4">
+    <div className="mt-4">
       <ModelAccountAction
         {...{
           open,
           onClose: () => setOpen(false),
+          setStateByAction,
         }}
       />
       <div className="mb-4 bg-white p-4 rounded-md shadow-lg flex gap-4 items-center">
@@ -107,6 +134,7 @@ const ManageAccount = () => {
           pageSize: paginate.page,
           setPaginate,
           loading,
+          setStateByAction,
         }}
       />
     </div>

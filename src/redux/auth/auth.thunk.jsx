@@ -127,3 +127,40 @@ export const getAllAccountAdmin = createAsyncThunk(
     }
   }
 );
+
+export const createAccountAdmin = createAsyncThunk(
+  "auth/createAccountAdmin",
+  async (payload, { rejectWithValue }) => {
+    try {
+      return await axios.post("/admin/admin-accounts", payload);
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const updateAccountAdmin = createAsyncThunk(
+  "auth/updateAccountAdmin",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      return await axios.put(`/admin/admin-accounts/${id}`, data);
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const removeAccountAdmin = createAsyncThunk(
+  "auth/removeAccountAdmin",
+  async (payload, { rejectWithValue }) => {
+    try {
+      return await axios.delete(`/admin/admin-accounts/${payload}`);
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+

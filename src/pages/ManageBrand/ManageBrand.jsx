@@ -51,11 +51,13 @@ const ManageBrand = () => {
   };
 
   return (
-    <div className="p-4">
-      <ModalBrandAction {...{
-        open,
-        setOpen
-      }} />
+    <div className="mt-4">
+      <ModalBrandAction
+        {...{
+          open,
+          setOpen,
+        }}
+      />
       <div className="mb-4 bg-white p-4 rounded-md shadow-lg flex gap-4 items-center">
         <Input
           size="large"

@@ -60,3 +60,25 @@ export const refreshAxiosInstance = () => {
 };
 
 export default axiosInstance;
+
+export const baseQuery = async (
+  { url, method = "GET", data, params },
+  { getState, extra }
+) => {
+  try {
+    const response = await axiosInstance({
+      url,
+      method,
+      data,
+      params,
+    });
+    return { data: response };
+  } catch (error) {
+    return {
+      error: {
+        status: error.response ? error.response.status : "FETCH_ERROR",
+        message: error.response ? error.response.data : error.message,
+      },
+    };
+  }
+};

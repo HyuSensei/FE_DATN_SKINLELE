@@ -44,7 +44,7 @@ const ManagePromotion = () => {
   }, [pagination]);
 
   return (
-    <div className="p-4">
+    <div className="mt-4">
       <div className="mb-4 bg-white p-6 rounded-md shadow-lg flex gap-4 items-center flex-wrap">
         <RangePicker
           size="middle"

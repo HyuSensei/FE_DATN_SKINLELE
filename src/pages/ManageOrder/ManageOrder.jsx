@@ -62,7 +62,7 @@ const ManageOrder = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="mt-4">
       <Card className="mb-4 bg-white rounded-md shadow-lg">
         <Row gutter={[16, 16]} align="middle">
           <Col xs={24} md={8} lg={6}>
@@ -109,18 +109,16 @@ const ManageOrder = () => {
                   locale={locale}
                   className="w-full"
                   onChange={(_, dateStrings) => {
-                    setFilter((prev) => (
-                      {
-                        ...prev,
-                        fromDate: dateStrings[0],
-                        toDate: dateStrings[1]
-                      }
-                    ))
-                    setPaginate(prev => ({
+                    setFilter((prev) => ({
+                      ...prev,
+                      fromDate: dateStrings[0],
+                      toDate: dateStrings[1],
+                    }));
+                    setPaginate((prev) => ({
                       ...prev,
                       page: 1,
-                      pageSize: 10
-                    }))
+                      pageSize: 10,
+                    }));
                   }}
                 />
               </Col>

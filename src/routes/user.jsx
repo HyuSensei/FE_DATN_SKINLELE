@@ -1,7 +1,7 @@
 import React, { lazy, Suspense } from "react";
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
-import Loading from "../components/Loading";
+import Loading from "../components/Loading/Loading";
 
 const PageTitle = lazy(() => import("../components/Layout/PageTitle"));
 const LayoutUser = lazy(() => import("../components/Layout/LayoutUser"));

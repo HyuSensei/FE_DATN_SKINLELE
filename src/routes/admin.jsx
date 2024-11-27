@@ -1,7 +1,8 @@
 import React, { lazy, Suspense } from "react";
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
-import Loading from "../components/Loading";
+import Loading from "../components/Loading/Loading";
+import LoadingClinic from "../components/Loading/LoadingClinic";
 
 const PageTitle = lazy(() => import("../components/Layout/PageTitle"));
 const LayoutAdmin = lazy(() => import("../components/Layout/LayoutAdmin"));
@@ -29,6 +30,7 @@ const ManageAccount = lazy(() => import("../pages/ManageAccount"));
 const ManageDoctor = lazy(() => import("../pages/ManageDoctor"));
 const ManageBooking = lazy(() => import("../pages/ManageBooking"));
 const ManageClinic = lazy(() => import("../pages/ManageClinic"));
+const CreateClinic = lazy(() => import("../pages/CreateClinic"));
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticatedAdmin, isLoading } = useSelector(
@@ -58,8 +60,9 @@ const WrapAdminRoute = ({
   layoutTitle,
   isProtected,
   isAuthRoute,
+  isClinic = false,
 }) => (
-  <Suspense fallback={<Loading />}>
+  <Suspense fallback={isClinic ? <LoadingClinic /> : <Loading />}>
     <PageTitle title={`SkinLeLe | ${title}`}>
       <AuthAdminWrapper>
         {isAuthRoute ? (
@@ -191,8 +194,9 @@ const adminRoutes = [
     path: "/admin/doctors",
     element: ManageDoctor,
     title: "Admin - Quản lý bác sĩ",
-    layoutTitle: "",
+    layoutTitle: "Danh sách bác sĩ",
     isProtected: true,
+    isClinic: true,
   },
   {
     path: "/admin/clinics",
@@ -205,8 +209,9 @@ const adminRoutes = [
     path: "/admin/bookings",
     element: ManageBooking,
     title: "Admin - Quản lý lịch khám",
-    layoutTitle: "",
+    layoutTitle: "Danh sách lịch khám",
     isProtected: true,
+    isClinic: true,
   },
   {
     path: "/admin/dashboard-clinic",
@@ -214,11 +219,28 @@ const adminRoutes = [
     title: "Admin - Phòng khám",
     layoutTitle: "",
     isProtected: true,
+    isClinic: true,
+  },
+  {
+    path: "/admin/clinics/create",
+    element: CreateClinic,
+    title: "Admin - Tạo Thông Tin Phòng khám",
+    layoutTitle: "Tạo thông tin phòng khám",
+    isProtected: true,
+    isClinic: true,
   },
 ];
 
 const AdminRoutes = adminRoutes.map(
-  ({ path, element, title, layoutTitle, isProtected, isAuthRoute }) => ({
+  ({
+    path,
+    element,
+    title,
+    layoutTitle,
+    isProtected,
+    isAuthRoute,
+    isClinic,
+  }) => ({
     path,
     element: (
       <WrapAdminRoute
@@ -227,6 +249,7 @@ const AdminRoutes = adminRoutes.map(
         layoutTitle={layoutTitle}
         isProtected={isProtected}
         isAuthRoute={isAuthRoute}
+        isClinic={isClinic}
       />
     ),
   })

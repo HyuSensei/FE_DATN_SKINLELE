@@ -1,9 +1,21 @@
-import { Pagination, Popconfirm, Switch, Table, Tag, Tooltip } from "antd";
+import {
+  message,
+  Pagination,
+  Popconfirm,
+  Switch,
+  Table,
+  Tag,
+  Tooltip,
+} from "antd";
 import React, { useMemo, useState } from "react";
 import { GrEdit } from "react-icons/gr";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { useDispatch } from "react-redux";
 import ModelAccountAction from "../Modal/ModelAccountAction";
+import {
+  removeAccountAdmin,
+  updateAccountAdmin,
+} from "../../redux/auth/auth.thunk";
 
 const TableAccount = ({
   accounts = [],
@@ -12,10 +24,29 @@ const TableAccount = ({
   pageSize,
   totalItems,
   setPaginate,
+  setStateByAction,
 }) => {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [account, setAccount] = useState({});
+
+  const removeAccount = async (id) => {
+    const res = await dispatch(removeAccountAdmin(id)).unwrap();
+    if (res.success) {
+      setStateByAction({ id, action: "remove" });
+      message.success(res.message);
+    }
+  };
+
+  const handleToggle = async ({ id, isActive }) => {
+    const res = await dispatch(
+      updateAccountAdmin({ id, data: { isActive } })
+    ).unwrap();
+    if (res.success) {
+      setStateByAction({ id, action: "update", data: res.data });
+      message.success(res.message);
+    }
+  };
 
   const columns = useMemo(
     () => [
@@ -31,20 +62,26 @@ const TableAccount = ({
         dataIndex: "avatar",
         width: 80,
         render: (avatar) => (
-          <img src={avatar.url} className="w-full h-auto" alt="" />
+          <img src={avatar?.url} className="w-full h-auto" alt="" />
         ),
       },
       {
         title: "Họ và tên",
         dataIndex: "name",
         key: "name",
-        render: (text) => <div className="text-sm font-bold">{text}</div>,
+        render: (text) => <div className="text-sm">{text}</div>,
       },
       {
         title: "Tên đăng nhập",
         dataIndex: "username",
         key: "username",
-        render: (text) => <div className="text-sm font-medium">{text}</div>,
+        render: (text) => <div className="text-sm">{text}</div>,
+      },
+      {
+        title: "Vai trò",
+        dataIndex: "role",
+        key: "role",
+        render: (text) => <div className="text-sm">{text}</div>,
       },
       {
         title: "Trạng thái",
@@ -53,9 +90,9 @@ const TableAccount = ({
         render: (isActive) => (
           <div className="text-base font-bold">
             {isActive ? (
-              <Tag color="#a4dec6">Đang hoạt động</Tag>
+              <Tag color="green">Đang hoạt động</Tag>
             ) : (
-              <Tag color="#f4dd22">Đã dừng</Tag>
+              <Tag color="red">Đã dừng</Tag>
             )}
           </div>
         ),
@@ -67,7 +104,12 @@ const TableAccount = ({
         render: (_, record) => (
           <div className="flex gap-2 items-center text-[#00246a]">
             <Tooltip title={record.isActive ? "Tạm dừng" : "Mở hoạt động"}>
-              <Switch checked={record.isActive} />
+              <Switch
+                checked={record.isActive}
+                onChange={(checked) =>
+                  handleToggle({ id: record._id, isActive: checked })
+                }
+              />
             </Tooltip>
             <Tooltip title="Sửa">
               <button
@@ -85,7 +127,9 @@ const TableAccount = ({
               placement="topLeft"
               title={"Xác nhận xóa tài khoản"}
               description={record?.name}
-              onConfirm={() => {}}
+              onConfirm={() => {
+                removeAccount(record._id);
+              }}
               okText="Xóa"
               cancelText="Hủy"
               destroyTooltipOnHide={true}
@@ -113,6 +157,7 @@ const TableAccount = ({
             setAccount({});
           },
           account,
+          setStateByAction,
         }}
       />
       <Table

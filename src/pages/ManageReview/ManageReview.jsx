@@ -48,7 +48,7 @@ const ManageReview = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="mt-4">
       <Card className="mb-4 shadow-lg">
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={12} md={6}>

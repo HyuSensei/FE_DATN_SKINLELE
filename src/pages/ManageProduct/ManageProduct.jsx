@@ -67,7 +67,7 @@ const ManageProduct = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="mt-4">
       <Card className="mb-4 bg-white rounded-md shadow-lg">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           <Input
