@@ -9,11 +9,15 @@ import {
   Row,
   Col,
   Card,
+  message,
+  Tag,
 } from "antd";
-import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
-import { message, Tag } from "antd";
+import { IoAdd, IoCloudUpload, IoTrash } from "react-icons/io5";
+import moment from "moment";
+import locale from "antd/es/date-picker/locale/vi_VN";
+import dayjs from "dayjs";
 
-const weekdays = [
+const WEEKDAYS = [
   "Thứ 2",
   "Thứ 3",
   "Thứ 4",
@@ -25,42 +29,81 @@ const weekdays = [
 
 const CreateClinic = () => {
   const [form] = Form.useForm();
-  const [tags, setTags] = useState([]);
-  const [logoImage, setLogoImage] = useState(null);
+  const [specialties, setSpecialties] = useState([]);
+  const [logoImage, setLogoImage] = useState([]);
   const [images, setImages] = useState([]);
   const [inputVisible, setInputVisible] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
 
-  const handleCloseTag = (removedTag) => {
-    const newTags = tags.filter((tag) => tag !== removedTag);
-    setTags(newTags);
-    form.setFieldsValue({ specialties: newTags });
+  const handleSpecialtyClose = (removedTag) => {
+    const newSpecialties = specialties.filter((tag) => tag !== removedTag);
+    setSpecialties(newSpecialties);
+    form.setFieldsValue({ specialties: newSpecialties });
   };
 
-  const showInput = () => setInputVisible(true);
+  const showSpecialtyInput = () => {
+    setInputVisible(true);
+    setTimeout(() => inputRef.current?.focus(), 0);
+  };
 
-  const handleInputChange = (e) => setInputValue(e.target.value);
+  const handleSpecialtyInputChange = (e) => {
+    setInputValue(e.target.value.trim());
+  };
 
-  const handleInputConfirm = () => {
-    if (inputValue && tags.indexOf(inputValue) === -1) {
-      const newTags = [...tags, inputValue];
-      setTags(newTags);
-      form.setFieldsValue({ specialties: newTags });
+  const handleSpecialtyInputConfirm = () => {
+    if (inputValue && !specialties.includes(inputValue)) {
+      const newSpecialties = [...specialties, inputValue];
+      setSpecialties(newSpecialties);
+      form.setFieldsValue({ specialties: newSpecialties });
     }
     setInputVisible(false);
     setInputValue("");
   };
 
-  const handleSubmit = (values) => {
-    console.log(values);
+  const isDaySelected = (day, currentIndex, fields) => {
+    return fields.some((_, index) => {
+      const currentDay = form.getFieldValue([
+        "workingHours",
+        index,
+        "dayOfWeek",
+      ]);
+      return currentDay === day && index !== currentIndex;
+    });
+  };
+
+  const handleSubmit = async (values) => {
+    try {
+      setLoading(true);
+      const formattedWorkingHours = values.workingHours.map((slot) => ({
+        ...slot,
+        startTime: dayjs(slot.startTime).format("HH:mm"),
+        endTime: dayjs(slot.endTime).format("HH:mm"),
+      }));
+
+      const payload = {
+        ...values,
+        workingHours: formattedWorkingHours,
+      };
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="py-6 mx-auto">
-      <Form form={form} layout="vertical" onFinish={handleSubmit}>
-        <Card title="Thông tin cơ bản" className="shadow-md mb-4">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <Form
+      className="mt-4"
+      form={form}
+      layout="vertical"
+      onFinish={handleSubmit}
+      requiredMark={false}
+    >
+      <Card title="Thông tin cơ bản" className="mb-6 shadow-md">
+        <Row gutter={16}>
+          <Col xs={24} md={12}>
             <Form.Item
               name="name"
               label="Tên phòng khám"
@@ -69,238 +112,338 @@ const CreateClinic = () => {
               ]}
             >
               <Input
+                placeholder="VD: Phòng khám Da liễu"
+                className="rounded-lg"
                 size="large"
-                placeholder="Nhập tên phòng khám"
-                className="rounded-md"
               />
             </Form.Item>
-
+          </Col>
+          <Col xs={24} md={12}>
             <Form.Item
               name="phone"
               label="Số điện thoại"
               rules={[
                 { required: true, message: "Vui lòng nhập số điện thoại" },
+                {
+                  pattern: /^[0-9]{10}$/,
+                  message: "Số điện thoại không hợp lệ",
+                },
               ]}
             >
               <Input
+                placeholder="0123456789"
+                className="rounded-lg"
                 size="large"
-                placeholder="Nhập số điện thoại"
-                className="rounded-md"
               />
             </Form.Item>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          </Col>
+        </Row>
+
+        <Row gutter={16}>
+          <Col xs={24} md={12}>
+            <Form.Item
+              name="email"
+              label="Email"
+              rules={[
+                { required: true, message: "Vui lòng nhập email" },
+                { type: "email", message: "Email không hợp lệ" },
+              ]}
+            >
+              <Input
+                placeholder="email@example.com"
+                className="rounded-lg"
+                size="large"
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={12}>
             <Form.Item
               name="address"
               label="Địa chỉ"
               rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
             >
               <Input
+                placeholder="Số nhà, đường, phường/xã..."
+                className="rounded-lg"
                 size="large"
-                placeholder="Nhập địa chỉ"
-                className="rounded-md"
               />
             </Form.Item>
+          </Col>
+        </Row>
+      </Card>
 
-            <Form.Item
-              name="email"
-              label="Email"
-              rules={[
-                { required: true, message: "Vui lòng nhập email" },
-                { type: "email", message: "Vui lòng nhập email hợp lệ" },
-              ]}
-            >
-              <Input
-                size="large"
-                placeholder="Nhập email"
-                className="rounded-md"
-              />
-            </Form.Item>
-          </div>
-        </Card>
+      <Card title="Lịch làm việc" className="mb-6 shadow-md">
+        <Form.List name="workingHours">
+          {(fields, { add, remove }) => (
+            <div className="space-y-4">
+              {fields.map((field, index) => (
+                <div
+                  key={field.key}
+                  className="p-4 border rounded-lg bg-gray-50"
+                >
+                  <Row gutter={16} align="middle">
+                    <Col xs={24} md={7}>
+                      <Form.Item
+                        label="Ngày trong tuần"
+                        name={[field.name, "dayOfWeek"]}
+                        rules={[
+                          { required: true, message: "Vui lòng chọn ngày" },
+                          {
+                            validator: (_, value) =>
+                              value && isDaySelected(value, index, fields)
+                                ? Promise.reject("Ngày này đã được chọn")
+                                : Promise.resolve(),
+                          },
+                        ]}
+                      >
+                        <Select placeholder="Chọn ngày" size="large">
+                          {WEEKDAYS.map((day) => (
+                            <Select.Option
+                              key={day}
+                              value={day}
+                              disabled={isDaySelected(day, index, fields)}
+                            >
+                              {day}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    </Col>
 
-        <Card title="Giờ làm việc" className="shadow-md mb-4">
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                rules={[
-                  {
-                    required: "Vui lòng chọn ngày bắt đầu",
-                  },
-                ]}
-                name={["workingHours", "startDay"]}
-                label="Ngày bắt đầu"
-              >
-                <Select placeholder="Chọn ngày" size="large">
-                  {weekdays.map((day) => (
-                    <Select.Option key={day} value={day}>
-                      {day}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                rules={[
-                  {
-                    required: "Vui lòng chọn ngày kết",
-                  },
-                ]}
-                name={["workingHours", "endDay"]}
-                label="Ngày kết thúc"
-              >
-                <Select placeholder="Chọn ngày" size="large">
-                  {weekdays.map((day) => (
-                    <Select.Option key={day} value={day}>
-                      {day}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
+                    <Col xs={24} md={7}>
+                      <Form.Item
+                        label="Giờ mở cửa"
+                        name={[field.name, "startTime"]}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng chọn giờ mở cửa",
+                          },
+                          {
+                            validator: (_, value) => {
+                              const endTime = form.getFieldValue([
+                                "workingHours",
+                                field.name,
+                                "endTime",
+                              ]);
+                              return !endTime || value <= endTime
+                                ? Promise.resolve()
+                                : Promise.reject(
+                                    "Giờ mở cửa phải trước hoặc bằng giờ đóng cửa"
+                                  );
+                            },
+                          },
+                        ]}
+                      >
+                        <TimePicker
+                          locale={locale}
+                          format="HH:mm"
+                          size="large"
+                          className="w-full"
+                          minuteStep={15}
+                        />
+                      </Form.Item>
+                    </Col>
 
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                rules={[
-                  {
-                    required: "Vui lòng chọn giờ bắt đầu",
-                  },
-                ]}
-                name={["workingHours", "startTime"]}
-                label="Giờ bắt đầu"
-              >
-                <TimePicker format="HH:mm" size="large" className="w-full" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                rules={[
-                  {
-                    required: "Vui lòng chọn giờ kết thúc",
-                  },
-                ]}
-                name={["workingHours", "endTime"]}
-                label="Giờ kết thúc"
-              >
-                <TimePicker format="HH:mm" size="large" className="w-full" />
-              </Form.Item>
-            </Col>
-          </Row>
-        </Card>
-        <Card title="Ảnh hiển thị" className="shadow-md mb-4">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <Col xs={24} md={7}>
+                      <Form.Item
+                        label="Giờ đóng cửa"
+                        name={[field.name, "endTime"]}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng chọn giờ đóng cửa",
+                          },
+                          {
+                            validator: (_, value) => {
+                              const startTime = form.getFieldValue([
+                                "workingHours",
+                                field.name,
+                                "startTime",
+                              ]);
+                              return !startTime || value >= startTime
+                                ? Promise.resolve()
+                                : Promise.reject(
+                                    "Giờ đóng cửa phải sau hoặc bằng giờ mở cửa"
+                                  );
+                            },
+                          },
+                        ]}
+                      >
+                        <TimePicker
+                          locale={locale}
+                          format="HH:mm"
+                          size="large"
+                          className="w-full"
+                          minuteStep={15}
+                        />
+                      </Form.Item>
+                    </Col>
+
+                    <Col
+                      xs={24}
+                      md={3}
+                      className="flex items-center justify-end"
+                    >
+                      {fields.length > 1 && (
+                        <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center">
+                          <button
+                            type="button"
+                            onClick={() => remove(field.name)}
+                          >
+                            <IoTrash className="text-2xl text-red-400" />
+                          </button>
+                        </div>
+                      )}
+                    </Col>
+                  </Row>
+                </div>
+              ))}
+
+              {fields.length < 7 && (
+                <Button
+                  type="dashed"
+                  onClick={() => add()}
+                  block
+                  className="rounded-lg"
+                >
+                  <IoAdd className="text-lg inline-block mr-2" />
+                  Thêm lịch làm việc
+                </Button>
+              )}
+            </div>
+          )}
+        </Form.List>
+      </Card>
+
+      <Card title="Hình ảnh" className="mb-6 shadow-md">
+        <Row gutter={16}>
+          <Col xs={24} md={12}>
             <Form.Item
               name="logo"
               label="Logo phòng khám"
-              rules={[
-                {
-                  required: "Vui lòng chọn logo phòng khám",
-                },
-              ]}
+              rules={[{ required: true, message: "Vui lòng tải lên logo" }]}
             >
               <Upload
+                accept="image/*"
+                onChange={({ fileList }) => setLogoImage(fileList)}
+                fileList={logoImage}
                 listType="picture-card"
                 beforeUpload={() => false}
                 maxCount={1}
               >
-                <div>
-                  <UploadOutlined />
-                  <div className="mt-2">Tải lên</div>
-                </div>
+                {logoImage.length === 0 && (
+                  <div className="flex flex-col items-center">
+                    <IoCloudUpload className="w-6 h-6" />
+                    <div className="mt-2">Tải logo</div>
+                  </div>
+                )}
               </Upload>
             </Form.Item>
+          </Col>
+          <Col xs={24} md={12}>
             <Form.Item
               name="images"
-              label="Ảnh hiển thị"
+              label="Ảnh phòng khám"
               rules={[
-                {
-                  required: "Vui lòng chọn ảnh hiển thị",
-                },
+                { required: true, message: "Vui lòng tải lên ít nhất 1 ảnh" },
               ]}
             >
               <Upload
+                accept="image/*"
+                onChange={({ fileList }) => setImages(fileList)}
+                fileList={images}
                 listType="picture-card"
                 beforeUpload={() => false}
                 maxCount={4}
+                multiple
               >
-                <div>
-                  <UploadOutlined />
-                  <div className="mt-2">Tải lên</div>
-                </div>
+                {images.length < 4 && (
+                  <div className="flex flex-col items-center">
+                    <IoCloudUpload className="w-6 h-6" />
+                    <div className="mt-2">Tải ảnh</div>
+                  </div>
+                )}
               </Upload>
             </Form.Item>
-          </div>
-        </Card>
-        <Card title="Thông tin chuyên môn" className="shadow-md mb-4">
-          <Form.Item
-            name="description"
-            label="Mô tả phòng khám"
-            rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
-          >
-            <Input.TextArea
-              rows={4}
-              placeholder="Nhập mô tả"
-              className="rounded-md"
-            />
-          </Form.Item>
-          <Form.Item
-            rules={[
-              {
-                required: "Vui lòng chọn ảnh hiển thị",
-              },
-            ]}
-            name="specialties"
-            label={<div className="dark:text-primary">Chuyên khoa</div>}
-          >
-            <div className="flex flex-wrap gap-2 mb-2">
-              {tags.map((tag) => (
+          </Col>
+        </Row>
+      </Card>
+
+      <Card title="Thông tin chuyên môn" className="mb-6 shadow-md">
+        <Form.Item
+          name="description"
+          label="Mô tả phòng khám"
+          rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
+        >
+          <Input.TextArea
+            rows={4}
+            placeholder="Giới thiệu về phòng khám, trang thiết bị, đội ngũ..."
+            className="rounded-lg"
+          />
+        </Form.Item>
+
+        <Form.Item
+          name="specialties"
+          label="Chuyên khoa"
+          rules={[
+            {
+              required: true,
+              message: "Vui lòng thêm ít nhất 1 chuyên khoa",
+            },
+          ]}
+        >
+          <div className="space-y-4">
+            <div className="flex flex-wrap gap-2">
+              {specialties.map((specialty) => (
                 <Tag
-                  key={tag}
+                  key={specialty}
                   closable
-                  onClose={() => handleCloseTag(tag)}
-                  className="text-sm font-medium bg-blue-50 text-blue-600 rounded-full px-3 py-1 border border-blue-200"
+                  onClose={() => handleSpecialtyClose(specialty)}
+                  className="py-1 px-3 rounded-full bg-blue-50 text-blue-600 border-blue-200"
                 >
-                  {tag}
+                  {specialty}
                 </Tag>
               ))}
             </div>
+
             {inputVisible ? (
               <Input
-                placeholder="Chuyên khoa..."
                 ref={inputRef}
                 type="text"
-                size="large"
-                className="w-full rounded-full"
+                size="middle"
+                className="w-full max-w-xs rounded-full"
                 value={inputValue}
-                onChange={handleInputChange}
-                onBlur={handleInputConfirm}
-                onPressEnter={handleInputConfirm}
+                onChange={handleSpecialtyInputChange}
+                onBlur={handleSpecialtyInputConfirm}
+                onPressEnter={handleSpecialtyInputConfirm}
+                placeholder="Nhập tên chuyên khoa..."
               />
             ) : (
               <Tag
-                onClick={showInput}
-                className="text-sm font-medium border-dashed border-2 border-blue-300 text-blue-500 hover:text-blue-600 hover:border-blue-400 rounded-full px-4 py-3 cursor-pointer dark:bg-slate-700"
+                onClick={showSpecialtyInput}
+                className="py-2 px-4 rounded-full border-2 border-dashed border-blue-300 text-blue-600 hover:border-blue-400 cursor-pointer"
               >
-                <PlusOutlined /> Thêm chuyên khoa
+                <IoAdd className="inline w-4 h-4 mr-2" />
+                Thêm chuyên khoa
               </Tag>
             )}
-          </Form.Item>
-        </Card>
-        <div className="w-full">
-          <Button
-            type="primary"
-            htmlType="submit"
-            size="large"
-            className="w-full text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none rounded-full"
-          >
-            Tạo phòng khám
-          </Button>
-        </div>
-      </Form>
-    </div>
+          </div>
+        </Form.Item>
+      </Card>
+
+      <div className="w-full">
+        <Button
+          loading={loading}
+          type="primary"
+          htmlType="submit"
+          size="large"
+          className="w-full text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none rounded-full"
+        >
+          Tạo phòng khám
+        </Button>
+      </div>
+    </Form>
   );
 };
 
