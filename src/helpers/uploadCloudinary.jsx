@@ -7,10 +7,25 @@ const SECRET_KEY = import.meta.env.VITE_APP_CLOUDINARY_SECRET_KEY;
 const UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_NAME}/auto/upload`;
 const DESTROY_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_NAME}/image/destroy`;
 
-export const uploadFile = async (file) => {
+export const UPLOAD_SKINLELE_PRESET = "store";
+export const UPLOAD_SKINLELE_CLINIC_PRESET = "clinic";
+
+const getPreset = (type) => {
+  switch (type) {
+    case UPLOAD_SKINLELE_PRESET:
+      return "skinlele-upload";
+    case UPLOAD_SKINLELE_CLINIC_PRESET:
+      return "skinlele-clinic-upload";
+    default:
+      return "skinlele-upload";
+  }
+};
+
+export const uploadFile = async ({ file, type = "store" }) => {
   const formData = new FormData();
+  const preset = getPreset(type);
   formData.append("file", file);
-  formData.append("upload_preset", "skinlele-upload");
+  formData.append("upload_preset", preset);
   try {
     const response = await fetch(UPLOAD_URL, {
       method: "POST",

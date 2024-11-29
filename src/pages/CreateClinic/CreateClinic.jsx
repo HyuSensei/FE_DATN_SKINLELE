@@ -1,33 +1,41 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Form,
   Input,
   Button,
   Upload,
-  Select,
   TimePicker,
   Row,
   Col,
   Card,
-  message,
+  Checkbox,
   Tag,
+  message,
 } from "antd";
-import { IoAdd, IoCloudUpload, IoTrash } from "react-icons/io5";
-import moment from "moment";
+import { IoAdd, IoCloudUpload } from "react-icons/io5";
 import locale from "antd/es/date-picker/locale/vi_VN";
 import dayjs from "dayjs";
+import {
+  UPLOAD_SKINLELE_CLINIC_PRESET,
+  uploadFile,
+} from "../../helpers/uploadCloudinary";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { createClinicByAdmin } from "../../redux/clinic/clinic.thunk";
 
 const WEEKDAYS = [
-  "Thứ 2",
-  "Thứ 3",
-  "Thứ 4",
-  "Thứ 5",
-  "Thứ 6",
-  "Thứ 7",
-  "Chủ nhật",
+  { label: "Thứ 2", value: "Thứ 2" },
+  { label: "Thứ 3", value: "Thứ 3" },
+  { label: "Thứ 4", value: "Thứ 4" },
+  { label: "Thứ 5", value: "Thứ 5" },
+  { label: "Thứ 6", value: "Thứ 6" },
+  { label: "Thứ 7", value: "Thứ 7" },
+  { label: "Chủ nhật", value: "Chủ nhật" },
 ];
 
 const CreateClinic = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [form] = Form.useForm();
   const [specialties, setSpecialties] = useState([]);
   const [logoImage, setLogoImage] = useState([]);
@@ -36,6 +44,21 @@ const CreateClinic = () => {
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
+
+  useEffect(() => {
+    const initialWorkingHours = WEEKDAYS.reduce((acc, day) => {
+      acc[day.value] = {
+        startTime: dayjs("08:00", "HH:mm"),
+        endTime: dayjs("17:00", "HH:mm"),
+        isClosed: false,
+      };
+      return acc;
+    }, {});
+
+    form.setFieldsValue({
+      workingHours: initialWorkingHours,
+    });
+  }, []);
 
   const handleSpecialtyClose = (removedTag) => {
     const newSpecialties = specialties.filter((tag) => tag !== removedTag);
@@ -48,9 +71,7 @@ const CreateClinic = () => {
     setTimeout(() => inputRef.current?.focus(), 0);
   };
 
-  const handleSpecialtyInputChange = (e) => {
-    setInputValue(e.target.value.trim());
-  };
+  const handleSpecialtyInputChange = (e) => setInputValue(e.target.value);
 
   const handleSpecialtyInputConfirm = () => {
     if (inputValue && !specialties.includes(inputValue)) {
@@ -62,32 +83,97 @@ const CreateClinic = () => {
     setInputValue("");
   };
 
-  const isDaySelected = (day, currentIndex, fields) => {
-    return fields.some((_, index) => {
-      const currentDay = form.getFieldValue([
-        "workingHours",
-        index,
-        "dayOfWeek",
-      ]);
-      return currentDay === day && index !== currentIndex;
-    });
+  const validateTimeRange = (rule, value, callback, dayValue, field) => {
+    const dayData = form.getFieldValue(["workingHours", dayValue]) || {};
+    const isClosed = dayData.isClosed;
+
+    if (isClosed) {
+      return Promise.resolve();
+    }
+
+    if (!value) {
+      return Promise.reject(
+        new Error(
+          `Vui lòng chọn ${
+            field === "startTime" ? "giờ mở cửa" : "giờ đóng cửa"
+          }`
+        )
+      );
+    }
+
+    if (field === "startTime" && dayData.endTime) {
+      if (value.isAfter(dayData.endTime)) {
+        return Promise.reject(new Error("Giờ mở cửa phải trước giờ đóng cửa"));
+      }
+    }
+
+    if (field === "endTime" && dayData.startTime) {
+      if (value.isBefore(dayData.startTime)) {
+        return Promise.reject(new Error("Giờ đóng cửa phải sau giờ mở cửa"));
+      }
+    }
+
+    return Promise.resolve();
   };
 
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
-      const formattedWorkingHours = values.workingHours.map((slot) => ({
-        ...slot,
-        startTime: dayjs(slot.startTime).format("HH:mm"),
-        endTime: dayjs(slot.endTime).format("HH:mm"),
-      }));
+      const uploadLogoImage =
+        logoImage && logoImage[0].originFileObj
+          ? await uploadFile({
+              file: logoImage[0].originFileObj,
+              type: UPLOAD_SKINLELE_CLINIC_PRESET,
+            })
+          : null;
+      const uploadedImages = await Promise.all(
+        images.map(async (file) => {
+          if (file.originFileObj) {
+            const result = await uploadFile({
+              file: file.originFileObj,
+              type: UPLOAD_SKINLELE_CLINIC_PRESET,
+            });
+            if (result && result.secure_url && result.public_id) {
+              return { url: result.secure_url, publicId: result.public_id };
+            }
+          }
+          return null;
+        })
+      );
+
+      const workingHours = WEEKDAYS.map((day) => {
+        const dayData = values.workingHours?.[day.value] || {};
+        return {
+          dayOfWeek: day.value,
+          isOpen: !dayData.isClosed,
+          startTime: dayData.startTime
+            ? dayjs(dayData.startTime).format("HH:mm")
+            : "08:00",
+          endTime: dayData.endTime
+            ? dayjs(dayData.endTime).format("HH:mm")
+            : "17:00",
+        };
+      });
 
       const payload = {
         ...values,
-        workingHours: formattedWorkingHours,
+        workingHours,
+        logo: {
+          url: uploadLogoImage.secure_url,
+          publicId: uploadLogoImage.public_id,
+        },
+        images: uploadedImages.map((img) => ({
+          url: img.url,
+          publicId: img.publicId,
+        })),
       };
+      const res = await dispatch(createClinicByAdmin(payload)).unwrap();
+      if (res.success) {
+        message.success(res.message);
+        navigate("/admin/clinics");
+      }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -101,6 +187,7 @@ const CreateClinic = () => {
       onFinish={handleSubmit}
       requiredMark={false}
     >
+      {/* Basic Info Card - Same as before */}
       <Card title="Thông tin cơ bản" className="mb-6 shadow-md">
         <Row gutter={16}>
           <Col xs={24} md={12}>
@@ -172,150 +259,86 @@ const CreateClinic = () => {
         </Row>
       </Card>
 
+      {/* Working Hours Card - Updated with validation */}
       <Card title="Lịch làm việc" className="mb-6 shadow-md">
-        <Form.List name="workingHours">
-          {(fields, { add, remove }) => (
-            <div className="space-y-4">
-              {fields.map((field, index) => (
-                <div
-                  key={field.key}
-                  className="p-4 border rounded-lg bg-gray-50"
-                >
-                  <Row gutter={16} align="middle">
-                    <Col xs={24} md={7}>
-                      <Form.Item
-                        label="Ngày trong tuần"
-                        name={[field.name, "dayOfWeek"]}
-                        rules={[
-                          { required: true, message: "Vui lòng chọn ngày" },
-                          {
-                            validator: (_, value) =>
-                              value && isDaySelected(value, index, fields)
-                                ? Promise.reject("Ngày này đã được chọn")
-                                : Promise.resolve(),
-                          },
-                        ]}
-                      >
-                        <Select placeholder="Chọn ngày" size="large">
-                          {WEEKDAYS.map((day) => (
-                            <Select.Option
-                              key={day}
-                              value={day}
-                              disabled={isDaySelected(day, index, fields)}
-                            >
-                              {day}
-                            </Select.Option>
-                          ))}
-                        </Select>
-                      </Form.Item>
-                    </Col>
+        {WEEKDAYS.map((day) => (
+          <div
+            key={day.value}
+            className="mb-4 p-4 border rounded-lg bg-gray-50"
+          >
+            <Form.Item noStyle>
+              <Row gutter={16} align="middle">
+                <Col xs={24} md={6} className="mb-4 md:mb-0">
+                  <Form.Item
+                    name={["workingHours", day.value, "isClosed"]}
+                    valuePropName="checked"
+                  >
+                    <Checkbox className="font-medium">
+                      {day.label} (Ngày nghỉ)
+                    </Checkbox>
+                  </Form.Item>
+                </Col>
 
-                    <Col xs={24} md={7}>
-                      <Form.Item
-                        label="Giờ mở cửa"
-                        name={[field.name, "startTime"]}
-                        rules={[
-                          {
-                            required: true,
-                            message: "Vui lòng chọn giờ mở cửa",
-                          },
-                          {
-                            validator: (_, value) => {
-                              const endTime = form.getFieldValue([
-                                "workingHours",
-                                field.name,
-                                "endTime",
-                              ]);
-                              return !endTime || value <= endTime
-                                ? Promise.resolve()
-                                : Promise.reject(
-                                    "Giờ mở cửa phải trước hoặc bằng giờ đóng cửa"
-                                  );
-                            },
-                          },
-                        ]}
-                      >
-                        <TimePicker
-                          locale={locale}
-                          format="HH:mm"
-                          size="large"
-                          className="w-full"
-                          minuteStep={15}
-                        />
-                      </Form.Item>
-                    </Col>
+                <Col xs={24} md={9}>
+                  <Form.Item
+                    label="Giờ mở cửa"
+                    name={["workingHours", day.value, "startTime"]}
+                    rules={[
+                      {
+                        validator: (rule, value) =>
+                          validateTimeRange(
+                            rule,
+                            value,
+                            null,
+                            day.value,
+                            "startTime"
+                          ),
+                      },
+                    ]}
+                  >
+                    <TimePicker
+                      locale={locale}
+                      format="HH:mm"
+                      size="large"
+                      className="w-full"
+                      minuteStep={15}
+                    />
+                  </Form.Item>
+                </Col>
 
-                    <Col xs={24} md={7}>
-                      <Form.Item
-                        label="Giờ đóng cửa"
-                        name={[field.name, "endTime"]}
-                        rules={[
-                          {
-                            required: true,
-                            message: "Vui lòng chọn giờ đóng cửa",
-                          },
-                          {
-                            validator: (_, value) => {
-                              const startTime = form.getFieldValue([
-                                "workingHours",
-                                field.name,
-                                "startTime",
-                              ]);
-                              return !startTime || value >= startTime
-                                ? Promise.resolve()
-                                : Promise.reject(
-                                    "Giờ đóng cửa phải sau hoặc bằng giờ mở cửa"
-                                  );
-                            },
-                          },
-                        ]}
-                      >
-                        <TimePicker
-                          locale={locale}
-                          format="HH:mm"
-                          size="large"
-                          className="w-full"
-                          minuteStep={15}
-                        />
-                      </Form.Item>
-                    </Col>
-
-                    <Col
-                      xs={24}
-                      md={3}
-                      className="flex items-center justify-end"
-                    >
-                      {fields.length > 1 && (
-                        <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center">
-                          <button
-                            type="button"
-                            onClick={() => remove(field.name)}
-                          >
-                            <IoTrash className="text-2xl text-red-400" />
-                          </button>
-                        </div>
-                      )}
-                    </Col>
-                  </Row>
-                </div>
-              ))}
-
-              {fields.length < 7 && (
-                <Button
-                  type="dashed"
-                  onClick={() => add()}
-                  block
-                  className="rounded-lg"
-                >
-                  <IoAdd className="text-lg inline-block mr-2" />
-                  Thêm lịch làm việc
-                </Button>
-              )}
-            </div>
-          )}
-        </Form.List>
+                <Col xs={24} md={9}>
+                  <Form.Item
+                    label="Giờ đóng cửa"
+                    name={["workingHours", day.value, "endTime"]}
+                    rules={[
+                      {
+                        validator: (rule, value) =>
+                          validateTimeRange(
+                            rule,
+                            value,
+                            null,
+                            day.value,
+                            "endTime"
+                          ),
+                      },
+                    ]}
+                  >
+                    <TimePicker
+                      locale={locale}
+                      format="HH:mm"
+                      size="large"
+                      className="w-full"
+                      minuteStep={15}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Form.Item>
+          </div>
+        ))}
       </Card>
 
+      {/* Images Card - Same as before */}
       <Card title="Hình ảnh" className="mb-6 shadow-md">
         <Row gutter={16}>
           <Col xs={24} md={12}>
@@ -370,6 +393,7 @@ const CreateClinic = () => {
         </Row>
       </Card>
 
+      {/* Professional Info Card - Same as before */}
       <Card title="Thông tin chuyên môn" className="mb-6 shadow-md">
         <Form.Item
           name="description"
@@ -387,10 +411,7 @@ const CreateClinic = () => {
           name="specialties"
           label="Chuyên khoa"
           rules={[
-            {
-              required: true,
-              message: "Vui lòng thêm ít nhất 1 chuyên khoa",
-            },
+            { required: true, message: "Vui lòng thêm ít nhất 1 chuyên khoa" },
           ]}
         >
           <div className="space-y-4">

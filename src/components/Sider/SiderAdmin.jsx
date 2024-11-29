@@ -18,6 +18,7 @@ import {
 import { BiClinic } from "react-icons/bi";
 import { GrUserAdd, GrUserAdmin } from "react-icons/gr";
 import { IoCalendarClearOutline } from "react-icons/io5";
+import { useSelector } from "react-redux";
 
 const LOGO_ANIMATION = {
   initial: { y: -20, opacity: 0 },
@@ -87,33 +88,55 @@ const MENU_ITEMS = [
   },
   {
     key: "9",
-    icon: <SettingOutlined />,
-    label: "Cài đặt",
-    path: "/admin/settings",
-  },
-  {
-    key: "10",
     icon: <GrUserAdmin />,
     label: "Quản trị",
     path: "/admin/accounts",
   },
   {
-    key: "11",
+    key: "10",
     icon: <BiClinic />,
     label: "Phòng khám",
     path: "/admin/clinics",
   },
   {
-    key: "12",
+    key: "11",
+    icon: <SettingOutlined />,
+    label: "Cài đặt",
+    path: "/admin/settings",
+  },
+];
+
+const MENU_CLINIC_ITEMS = [
+  {
+    key: "1",
+    icon: <DashboardOutlined />,
+    label: "Thống kê",
+    className: "mt-2",
+    path: "/admin/dashboard-clinic",
+  },
+  {
+    key: "2",
+    icon: <BiClinic />,
+    label: "Phòng khám",
+    path: "/admin/clinics/create",
+  },
+  {
+    key: "3",
     icon: <GrUserAdd />,
     label: "Bác sĩ",
     path: "/admin/doctors",
   },
   {
-    key: "13",
+    key: "4",
     icon: <IoCalendarClearOutline />,
     label: "Lịch khám",
     path: "/admin/bookings",
+  },
+  {
+    key: "5",
+    icon: <SettingOutlined />,
+    label: "Cài đặt",
+    path: "/admin/settings",
   },
 ];
 
@@ -137,6 +160,7 @@ const Logo = ({ collapsed }) => (
 const SiderAdmin = ({ collapsed, setCollapsed }) => {
   const navigate = useNavigate();
   const { isMobile } = useScreen();
+  const { adminInfo } = useSelector((state) => state.auth);
 
   useEffect(() => {
     setCollapsed(isMobile);
@@ -145,7 +169,10 @@ const SiderAdmin = ({ collapsed, setCollapsed }) => {
   const handleLogoClick = () => navigate("/admin/dashboard");
 
   const handleMenuClick = ({ key }) => {
-    const selectedItem = findMenuItemByKey(MENU_ITEMS, key);
+    const selectedItem = findMenuItemByKey(
+      adminInfo.role === "ADMIN" ? MENU_ITEMS : MENU_CLINIC_ITEMS,
+      key
+    );
     if (selectedItem?.path) {
       navigate(selectedItem.path);
     }
@@ -173,7 +200,7 @@ const SiderAdmin = ({ collapsed, setCollapsed }) => {
         defaultSelectedKeys={["1"]}
         defaultOpenKeys={["sub1"]}
         className="h-screen bg-white"
-        items={MENU_ITEMS}
+        items={adminInfo.role === "ADMIN" ? MENU_ITEMS : MENU_CLINIC_ITEMS}
       />
     </Sider>
   );

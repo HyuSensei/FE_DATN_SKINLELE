@@ -5,7 +5,7 @@ import {
   LoadingOutlined,
   HeartFilled,
 } from "@ant-design/icons";
-import { uploadFile, deleteFile } from "../../helpers/uploadCloudinary";
+import { uploadFile, deleteFile, UPLOAD_SKINLELE_PRESET } from "../../helpers/uploadCloudinary";
 import { validateForm, validateReviewSchema } from "../../validate/validate";
 import ErrorValidate from "../../components/Error/ErrorMessage";
 import { useDispatch, useSelector } from "react-redux";
@@ -60,7 +60,10 @@ const ModalRate = ({
     setUploading(true);
     try {
       onProgress({ percent: 0 });
-      const result = await uploadFile(file);
+      const result = await uploadFile({
+        file,
+        type: UPLOAD_SKINLELE_PRESET,
+      });
       onProgress({ percent: 100 });
       onSuccess(result);
       setReview((prev) => ({

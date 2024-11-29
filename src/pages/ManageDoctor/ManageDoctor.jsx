@@ -5,8 +5,10 @@ import { debounce } from "lodash";
 import { Button, Input } from "antd";
 import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
 import TableDoctor from "../../components/Table/TableDoctor";
+import { useNavigate } from "react-router-dom";
 
 const ManageDoctor = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [doctors, setDoctors] = useState([]);
   const [paginate, setPaginate] = useState({
@@ -71,7 +73,7 @@ const ManageDoctor = () => {
           allowClear
         />
         <Button
-          onClick={() => setOpen(true)}
+          onClick={() => navigate("/admin/doctors/create")}
           size="middle"
           type="primary"
           icon={<PlusOutlined />}

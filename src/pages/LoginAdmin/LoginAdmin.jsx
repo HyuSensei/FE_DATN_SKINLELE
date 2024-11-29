@@ -26,8 +26,13 @@ const LoginAdmin = () => {
     e.preventDefault();
     dispatch(loginAdmin(input)).then((res) => {
       if (res.payload.success) {
+        const resData = res.payload.data;
         set("ACCESS_TOKEN_ADMIN", res.payload.accessToken);
-        navigate("/admin/dashboard");
+        if (resData.role === "ADMIN") {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/admin/dashboard-clinic");
+        }
       }
     });
   };

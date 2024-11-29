@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { message, Spin, Upload } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import { uploadFile, deleteFile } from "../../helpers/uploadCloudinary";
+import {
+  uploadFile,
+  deleteFile,
+  UPLOAD_SKINLELE_PRESET,
+} from "../../helpers/uploadCloudinary";
 import ErrorMessage from "../Error/ErrorMessage";
 import { getAccountUser, updateAccount } from "../../redux/auth/auth.thunk";
 import { setUserInfo } from "../../redux/auth/auth.slice";
@@ -72,7 +76,10 @@ const AccountForm = () => {
       setLoading(true);
       let avatarData;
       if (avatar.file) {
-        const result = await uploadFile(avatar.file);
+        const result = await uploadFile({
+          file: avatar.file,
+          type: UPLOAD_SKINLELE_PRESET,
+        });
         avatarData = {
           url: result.secure_url,
           publicId: result.public_id,

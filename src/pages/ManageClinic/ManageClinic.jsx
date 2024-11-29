@@ -62,6 +62,27 @@ const ManageClinic = () => {
     debouncedFilter(key, value);
   };
 
+  const setStateByAction = ({ id, data, action = "update" }) => {
+    const actions = {
+      update: () => {
+        setClinics((prev) => {
+          const index = prev.findIndex((item) => item._id === id);
+          if (index !== -1) {
+            const updatedClinics = [...prev];
+            updatedClinics[index] = data;
+            return updatedClinics;
+          }
+          return prev;
+        });
+      },
+      remove: () => {
+        setClinics((prev) => prev.filter((item) => item._id !== id));
+      },
+    };
+
+    actions[action]?.();
+  };
+
   return (
     <div className="mt-4">
       <div className="mb-4 bg-white p-4 rounded-md shadow-lg flex gap-4 items-center">
@@ -89,6 +110,7 @@ const ManageClinic = () => {
           pageSize: paginate.page,
           setPaginate,
           loading,
+          setStateByAction,
         }}
       />
     </div>

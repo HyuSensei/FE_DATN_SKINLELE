@@ -31,6 +31,7 @@ const ManageDoctor = lazy(() => import("../pages/ManageDoctor"));
 const ManageBooking = lazy(() => import("../pages/ManageBooking"));
 const ManageClinic = lazy(() => import("../pages/ManageClinic"));
 const CreateClinic = lazy(() => import("../pages/CreateClinic"));
+const CreateDoctor = lazy(() => import("../pages/CreateDoctor"));
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticatedAdmin, isLoading } = useSelector(
@@ -60,9 +61,8 @@ const WrapAdminRoute = ({
   layoutTitle,
   isProtected,
   isAuthRoute,
-  isClinic = false,
 }) => (
-  <Suspense fallback={isClinic ? <LoadingClinic /> : <Loading />}>
+  <Suspense fallback={<Loading />}>
     <PageTitle title={`SkinLeLe | ${title}`}>
       <AuthAdminWrapper>
         {isAuthRoute ? (
@@ -196,7 +196,6 @@ const adminRoutes = [
     title: "Admin - Quản lý bác sĩ",
     layoutTitle: "Danh sách bác sĩ",
     isProtected: true,
-    isClinic: true,
   },
   {
     path: "/admin/clinics",
@@ -211,7 +210,6 @@ const adminRoutes = [
     title: "Admin - Quản lý lịch khám",
     layoutTitle: "Danh sách lịch khám",
     isProtected: true,
-    isClinic: true,
   },
   {
     path: "/admin/dashboard-clinic",
@@ -219,7 +217,6 @@ const adminRoutes = [
     title: "Admin - Phòng khám",
     layoutTitle: "",
     isProtected: true,
-    isClinic: true,
   },
   {
     path: "/admin/clinics/create",
@@ -227,20 +224,18 @@ const adminRoutes = [
     title: "Admin - Tạo Thông Tin Phòng khám",
     layoutTitle: "Tạo thông tin phòng khám",
     isProtected: true,
-    isClinic: true,
+  },
+  {
+    path: "/admin/doctors/create",
+    element: CreateDoctor,
+    title: "Admin - Tạo Thông Tin Bác Sĩ",
+    layoutTitle: "Tạo thông tin bác sĩ",
+    isProtected: true,
   },
 ];
 
 const AdminRoutes = adminRoutes.map(
-  ({
-    path,
-    element,
-    title,
-    layoutTitle,
-    isProtected,
-    isAuthRoute,
-    isClinic,
-  }) => ({
+  ({ path, element, title, layoutTitle, isProtected, isAuthRoute }) => ({
     path,
     element: (
       <WrapAdminRoute
@@ -249,7 +244,6 @@ const AdminRoutes = adminRoutes.map(
         layoutTitle={layoutTitle}
         isProtected={isProtected}
         isAuthRoute={isAuthRoute}
-        isClinic={isClinic}
       />
     ),
   })

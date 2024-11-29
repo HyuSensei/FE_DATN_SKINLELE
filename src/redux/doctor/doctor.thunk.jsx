@@ -13,3 +13,40 @@ export const getAllDoctorByAdmin = createAsyncThunk(
     }
   }
 );
+
+export const createDoctorByAdmin = createAsyncThunk(
+  "doctor/createDoctorByAdmin",
+  async (payload, { rejectWithValue }) => {
+    try {
+      return await axios.post("/admin/doctors", payload);
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const updateDoctorByAdmin = createAsyncThunk(
+  "doctor/updateDoctorByAdmin",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      return await axios.put(`/admin/doctors/${id}`, data);
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const removeDoctorByAdmin = createAsyncThunk(
+  "doctor/removeDoctorByAdmin",
+  async (id, { rejectWithValue }) => {
+    try {
+      return await axios.delete(`/admin/doctors/${id}`);
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+

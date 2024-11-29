@@ -13,3 +13,41 @@ export const getAllClinicAdmin = createAsyncThunk(
     }
   }
 );
+
+export const createClinicByAdmin = createAsyncThunk(
+  "clinic/createClinicByAdmin",
+  async (payload, { rejectWithValue }) => {
+    try {
+      return await axios.post(`/admin/clinics`, payload);
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const updateClinicByAdmin = createAsyncThunk(
+  "clinic/updateClinicByAdmin",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      return await axios.put(`/admin/clinics/${id}`, data);
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const removeClinicByAdmin = createAsyncThunk(
+  "clinic/removeClinicByAdmin",
+  async (id, { rejectWithValue }) => {
+    try {
+      return await axios.delete(`/admin/clinics/${id}`);
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+

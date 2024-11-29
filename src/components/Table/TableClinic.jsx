@@ -1,7 +1,20 @@
-import { Pagination, Popconfirm, Switch, Table, Tag, Tooltip } from "antd";
+import {
+  message,
+  Pagination,
+  Popconfirm,
+  Switch,
+  Table,
+  Tag,
+  Tooltip,
+} from "antd";
 import React, { useMemo } from "react";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { useDispatch } from "react-redux";
+import {
+  removeClinicByAdmin,
+  updateClinicByAdmin,
+} from "../../redux/clinic/clinic.thunk";
+import { deleteFile } from "../../helpers/uploadCloudinary";
 
 const TableClinic = ({
   clinics = [],
@@ -10,8 +23,42 @@ const TableClinic = ({
   pageSize,
   totalItems,
   setPaginate,
+  setStateByAction,
 }) => {
   const dispatch = useDispatch();
+
+  const handleUpdate = async ({ id, isActive }) => {
+    const res = await dispatch(
+      updateClinicByAdmin({ id, data: { isActive } })
+    ).unwrap();
+    if (res.success) {
+      message.success(res.message);
+      setStateByAction({ id, data: res.data, action: "update" });
+    }
+  };
+
+  const handleRemove = async (clinic) => {
+    const res = await dispatch(removeClinicByAdmin(clinic._id)).unwrap();
+
+    if (!res.success) return;
+
+    const { message: successMessage } = res;
+
+    if (clinic.images?.length > 0) {
+      await deleteImages(clinic.images);
+    }
+
+    if (clinic.logo) {
+      await deleteFile(clinic.logo.publicId);
+    }
+
+    message.success(successMessage);
+    setStateByAction({ id: clinic._id, action: "remove" });
+  };
+
+  const deleteImages = async (images) => {
+    await Promise.all(images.map((image) => deleteFile(image.publicId)));
+  };
 
   const columns = useMemo(
     () => [
@@ -82,14 +129,21 @@ const TableClinic = ({
         render: (_, record) => (
           <div className="flex gap-2 items-center text-[#00246a]">
             <Tooltip title={record.isActive ? "Tạm dừng" : "Mở hoạt động"}>
-              <Switch checked={record.isActive} />
+              <Switch
+                checked={record.isActive}
+                onChange={(checked) =>
+                  handleUpdate({ id: record._id, isActive: checked })
+                }
+              />
             </Tooltip>
             <Popconfirm
               className="max-w-40"
               placement="topLeft"
               title={"Xác nhận xóa tài khoản"}
               description={record?.name}
-              onConfirm={() => {}}
+              onConfirm={() => {
+                handleRemove(record);
+              }}
               okText="Xóa"
               cancelText="Hủy"
               destroyTooltipOnHide={true}

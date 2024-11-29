@@ -12,7 +12,10 @@ import {
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { SketchPicker } from "react-color";
-import { uploadFile } from "../../helpers/uploadCloudinary";
+import {
+  UPLOAD_SKINLELE_PRESET,
+  uploadFile,
+} from "../../helpers/uploadCloudinary";
 import { tags } from "../../const/tags";
 import QuillEditor from "../../components/QuillEditor";
 import { useDispatch, useSelector } from "react-redux";
@@ -172,7 +175,10 @@ const CreateProduct = () => {
     const uploadedImages = await Promise.all(
       images.map(async (file) => {
         if (file.originFileObj) {
-          const result = await uploadFile(file.originFileObj);
+          const result = await uploadFile({
+            file: file.originFileObj,
+            type: UPLOAD_SKINLELE_PRESET,
+          });
           if (result && result.secure_url && result.public_id) {
             return { url: result.secure_url, publicId: result.public_id };
           }
@@ -183,14 +189,20 @@ const CreateProduct = () => {
     setLoadingUpload(true);
     const uploadedMainImage =
       mainImage && mainImage.originFileObj
-        ? await uploadFile(mainImage.originFileObj)
+        ? await uploadFile({
+            file: mainImage.originFileObj,
+            type: UPLOAD_SKINLELE_PRESET,
+          })
         : null;
 
     const uploadedVariants = await Promise.all(
       input.variants.map(async (variant) => {
         let uploadedImage = null;
         if (variant.color.image && variant.color.image.originFileObj) {
-          uploadedImage = await uploadFile(variant.color.image.originFileObj);
+          uploadedImage = await uploadFile({
+            file: variant.color.image.originFileObj,
+            type: UPLOAD_SKINLELE_PRESET,
+          });
         }
         return {
           ...variant,
