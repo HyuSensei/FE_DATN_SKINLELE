@@ -13,9 +13,9 @@ import {
 } from "antd";
 import locale from "antd/es/date-picker/locale/vi_VN";
 import React from "react";
-import { createPromotion } from "../../redux/promotion/promotion.thunk";
+import { createPromotion } from "@redux/promotion/promotion.thunk";
 import { useDispatch } from "react-redux";
-import { getProductAlmostExpired } from "../../redux/product/product.thunk";
+import { getProductAlmostExpired } from "@redux/product/product.thunk";
 
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;

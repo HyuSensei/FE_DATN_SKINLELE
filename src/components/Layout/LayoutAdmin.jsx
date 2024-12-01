@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Layout } from "antd";
 import { motion } from "framer-motion";
-import useScreen from "../../hook/useScreen";
-import HeaderAdmin from "../Header/HeaderAdmin";
-import SiderAdmin from "../Sider/SiderAdmin";
+import useScreen from "@/hook/useScreen";
+import HeaderAdmin from "@components/Header/HeaderAdmin";
+import SiderAdmin from "@components/Sider/SiderAdmin";
 
 const { Content, Footer } = Layout;
 

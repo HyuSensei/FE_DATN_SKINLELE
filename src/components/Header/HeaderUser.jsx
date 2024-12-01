@@ -12,13 +12,13 @@ import { LiaShoppingBasketSolid } from "react-icons/lia";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { isArray, isEmpty } from "lodash";
-import { getAllBrand } from "../../redux/brand/brand.thunk";
-import { getAllCategory } from "../../redux/category/category.thunk";
-import { logoutUser } from "../../redux/auth/auth.slice";
+import { getAllBrand } from "@redux/brand/brand.thunk";
+import { getAllCategory } from "@redux/category/category.thunk";
+import { logoutUser } from "@redux/auth/auth.slice";
 import { FaRegUserCircle } from "react-icons/fa";
-import SearchHeader from "../Search/SearchHeader";
-import { menuDefaut } from "../../const/dataDefault";
-import { clearCart } from "../../redux/cart/cart.slice";
+import SearchHeader from "@components/Search/SearchHeader";
+import { menuDefaut } from "@const/dataDefault";
+import { clearCart } from "@redux/cart/cart.slice";
 
 const HeaderUser = () => {
   const dispatch = useDispatch();

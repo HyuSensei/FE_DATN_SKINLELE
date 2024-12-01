@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAccountUser } from "../../redux/auth/auth.thunk";
-import { get, set } from "../../storage/storage";
-import Loading from "../../components/Loading/Loading";
+import { getAccountUser } from "@redux/auth/auth.thunk";
+import { get, set } from "@storage/storage";
+import Loading from "@components/Loading/Loading";
 import { useLocation } from "react-router-dom";
 
 const AuthUserWrapper = ({ children }) => {

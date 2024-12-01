@@ -10,7 +10,7 @@ import {
   updateAccount,
   verifyAccount,
 } from "./auth.thunk";
-import { remove } from "../../storage/storage";
+import { remove } from "@storage/storage";
 
 const initialState = {
   userInfo: {

@@ -3,9 +3,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { Input, Select, Row, Col, Card, DatePicker } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { debounce } from "lodash";
-import TableOrder from "../../components/Table/TableOrder";
-import { getOrderListAdmin } from "../../redux/order/order.thunk";
-import { orderStatus } from "../../const/status";
+import TableOrder from "@components/Table/TableOrder";
+import { getOrderListAdmin } from "@redux/order/order.thunk";
+import { orderStatus } from "@const/status";
 import locale from "antd/es/date-picker/locale/vi_VN";
 
 const { RangePicker } = DatePicker;

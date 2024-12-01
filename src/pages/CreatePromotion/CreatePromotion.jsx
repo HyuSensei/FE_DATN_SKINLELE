@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { getAllProductPromitionAdd } from "../../redux/product/product.thunk";
-import { createPromotion } from "../../redux/promotion/promotion.thunk";
+import { getAllProductPromitionAdd } from "@redux/product/product.thunk";
+import { createPromotion } from "@redux/promotion/promotion.thunk";
 import {
   Button,
   DatePicker,
@@ -18,8 +18,8 @@ import {
 } from "antd";
 import locale from "antd/es/date-picker/locale/vi_VN";
 import { PiSpinnerBall } from "react-icons/pi";
-import { formatPrice } from "../../helpers/formatPrice";
-import { formatDateReview } from "../../helpers/formatDate";
+import { formatPrice } from "@helpers/formatPrice";
+import { formatDateReview } from "@helpers/formatDate";
 
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;

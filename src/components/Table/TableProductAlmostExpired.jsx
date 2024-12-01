@@ -1,9 +1,9 @@
 import { Image, Table, Tag, Tooltip } from "antd";
 import React, { useMemo, useState } from "react";
-import { formatDateReview } from "../../helpers/formatDate";
+import { formatDateReview } from "@helpers/formatDate";
 import { PiSpinnerBall } from "react-icons/pi";
-import { formatPrice } from "../../helpers/formatPrice";
-import ModalSaveProductPromotion from "../Modal/ModalSaveProductPromotion";
+import { formatPrice } from "@helpers/formatPrice";
+import ModalSaveProductPromotion from "@components/Modal/ModalSaveProductPromotion";
 import { isEmpty } from "lodash";
 
 const TableProductAlmostExpired = ({

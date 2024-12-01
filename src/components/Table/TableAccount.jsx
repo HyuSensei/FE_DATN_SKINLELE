@@ -11,11 +11,8 @@ import React, { useMemo, useState } from "react";
 import { GrEdit } from "react-icons/gr";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { useDispatch } from "react-redux";
-import ModelAccountAction from "../Modal/ModelAccountAction";
-import {
-  removeAccountAdmin,
-  updateAccountAdmin,
-} from "../../redux/auth/auth.thunk";
+import ModelAccountAction from "@components/Modal/ModelAccountAction";
+import { removeAccountAdmin, updateAccountAdmin } from "@redux/auth/auth.thunk";
 
 const TableAccount = ({
   accounts = [],

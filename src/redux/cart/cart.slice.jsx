@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { get, set } from "../../storage/storage";
+import { get, set } from "@storage/storage";
 
 const initialState = {
   cart: get("cart") || {

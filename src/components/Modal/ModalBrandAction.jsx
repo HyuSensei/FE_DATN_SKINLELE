@@ -2,13 +2,10 @@ import { Input, message, Modal } from "antd";
 import React, { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { isEmpty } from "lodash";
-import {
-    validateBrandActionSchema,
-    validateForm,
-} from "../../validate/validate";
-import ErrorMessage from "../Error/ErrorMessage";
-import { createBrand, updateBrand } from "../../redux/brand/brand.thunk";
-import { setBrands } from "../../redux/brand/brand.slice";
+import { validateBrandActionSchema, validateForm } from "@validate/validate";
+import ErrorMessage from "@components/Error/ErrorMessage";
+import { createBrand, updateBrand } from "@redux/brand/brand.thunk";
+import { setBrands } from "@redux/brand/brand.slice";
 
 const ModalBrandAction = ({
     open,

@@ -2,7 +2,7 @@ import React from "react";
 import ReactApexChart from "react-apexcharts";
 import moment from "moment";
 import { Empty, Spin } from "antd";
-import { formatPrice } from "../../helpers/formatPrice";
+import { formatPrice } from "@helpers/formatPrice";
 
 const StatisticalRevenue = ({ isLoading, yearlyStats, year, month }) => {
   if (isLoading) {

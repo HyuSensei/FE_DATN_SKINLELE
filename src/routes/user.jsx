@@ -1,22 +1,22 @@
 import React, { lazy, Suspense } from "react";
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
-import Loading from "../components/Loading/Loading";
+import Loading from "@components/Loading/Loading";
 
-const PageTitle = lazy(() => import("../components/Layout/PageTitle"));
-const LayoutUser = lazy(() => import("../components/Layout/LayoutUser"));
-const AuthUserWapper = lazy(() => import("../components/Auth/AuthUserWapper"));
+const PageTitle = lazy(() => import("@components/Layout/PageTitle"));
+const LayoutUser = lazy(() => import("@components/Layout/LayoutUser"));
+const AuthUserWapper = lazy(() => import("@components/Auth/AuthUserWapper"));
 
 // Lazy load all page components
-const Home = lazy(() => import("../pages/Home/Home"));
-const Auth = lazy(() => import("../pages/Auth/Auth"));
-const Detail = lazy(() => import("../pages/Detail/Detail"));
-const Cart = lazy(() => import("../pages/Cart/Cart"));
-const Account = lazy(() => import("../pages/Account/Account"));
-const OrderReturn = lazy(() => import("../pages/OrderReturn/OrderReturn"));
-const Category = lazy(() => import("../pages/Category/Category"));
-const Brand = lazy(() => import("../pages/Brand/Brand"));
-const Promotion = lazy(() => import("../pages/Promotion/Promotion"));
+const Home = lazy(() => import("@pages/Home/Home"));
+const Auth = lazy(() => import("@pages/Auth/Auth"));
+const Detail = lazy(() => import("@pages/Detail/Detail"));
+const Cart = lazy(() => import("@pages/Cart/Cart"));
+const Account = lazy(() => import("@pages/Account/Account"));
+const OrderReturn = lazy(() => import("@pages/OrderReturn/OrderReturn"));
+const Category = lazy(() => import("@pages/Category/Category"));
+const Brand = lazy(() => import("@pages/Brand/Brand"));
+const Promotion = lazy(() => import("@pages/Promotion/Promotion"));
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isLoading } = useSelector((state) => state.auth);

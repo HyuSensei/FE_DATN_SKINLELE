@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "../../axios/axios";
+import axios from "@axios/axios";
 
 export const getAllClinicAdmin = createAsyncThunk(
   "clinic/getAllClinicAdmin",
@@ -45,6 +45,17 @@ export const removeClinicByAdmin = createAsyncThunk(
       return await axios.delete(`/admin/clinics/${id}`);
     } catch (error) {
       message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const getClinicDetailByAdmin = createAsyncThunk(
+  "clinic/getClinicDetailByAdmin",
+  async (_, { rejectWithValue }) => {
+    try {
+      return await axios.get("/admin/clinics/detail");
+    } catch (error) {
       return rejectWithValue(error.response.data);
     }
   }

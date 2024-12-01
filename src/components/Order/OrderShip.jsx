@@ -19,12 +19,15 @@ import {
   CheckCircleOutlined,
   EyeOutlined,
 } from "@ant-design/icons";
-import { formatPrice } from "../../helpers/formatPrice";
-import { formatDateReview } from "../../helpers/formatDate";
-import ModalOrderDetail from "../Modal/ModalOrderDetail";
+import { formatPrice } from "@helpers/formatPrice";
+import { formatDateReview } from "@helpers/formatDate";
+import ModalOrderDetail from "@components/Modal/ModalOrderDetail";
 import isEmpty from "lodash/isEmpty";
-import { useDispatch, useSelector } from "react-redux";
-import { getOrderHistory, updateStatusOrderByUser } from "../../redux/order/order.thunk";
+import { useDispatch } from "react-redux";
+import {
+  getOrderHistory,
+  updateStatusOrderByUser,
+} from "@redux/order/order.thunk";
 
 const { Title, Text } = Typography;
 

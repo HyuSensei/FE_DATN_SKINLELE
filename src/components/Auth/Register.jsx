@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { validateForm, validateRegisterSchema } from "../../validate/validate";
-import ErrorValidate from "../../components/Error/ErrorMessage";
+import { validateForm, validateRegisterSchema } from "@validate/validate";
+import ErrorValidate from "@components/Error/ErrorMessage";
 import { message } from "antd";
-import { registerUser } from "../../redux/auth/auth.thunk";
-import { setEmailVerify } from "../../redux/auth/auth.slice";
+import { registerUser } from "@redux/auth/auth.thunk";
+import { setEmailVerify } from "@redux/auth/auth.slice";
 
 const STYLE_LABEL = "block text-sm font-medium text-gray-700";
 const STYLE_INPUT =

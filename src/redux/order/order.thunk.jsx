@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { message } from "antd";
-import axios from "../../axios/axios";
+import axios from "@axios/axios";
 
 export const orderVnpay = createAsyncThunk(
   "order/orderVnpay",

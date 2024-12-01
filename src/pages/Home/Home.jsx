@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo } from "react";
-import Banner from "../../components/Banner/Banner";
-import ProductCarousel from "../../components/Product/ProductCarousel";
-import ProductSale from "../../components/Product/ProductSale";
-import SilderList from "../../components/Slider/SilderList";
-import { sliderBrand, sliderPromotion } from "../../const/dataDefault";
+import Banner from "@components/Banner/Banner";
+import ProductCarousel from "@components/Product/ProductCarousel";
+import ProductSale from "@components/Product/ProductSale";
+import SilderList from "@components/Slider/SilderList";
+import { sliderBrand, sliderPromotion } from "@const/dataDefault";
 import { useDispatch, useSelector } from "react-redux";
-import { getProductHome } from "../../redux/product/product.thunk";
-import useScreen from "../../hook/useScreen";
-import ProductList from "../../components/Product/ProductList";
+import { getProductHome } from "@redux/product/product.thunk";
+import useScreen from "@hook/useScreen";
+import ProductList from "@components/Product/ProductList";
 
 const Home = () => {
   const dispatch = useDispatch();

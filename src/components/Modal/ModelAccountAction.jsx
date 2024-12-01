@@ -2,10 +2,7 @@ import { Form, Input, message, Modal, Select } from "antd";
 import { isEmpty } from "lodash";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import {
-  createAccountAdmin,
-  updateAccountAdmin,
-} from "../../redux/auth/auth.thunk";
+import { createAccountAdmin, updateAccountAdmin } from "@redux/auth/auth.thunk";
 
 const ModelAccountAction = ({
   open,

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import Login from "../../components/Auth/Login";
-import Register from "../../components/Auth/Register";
-import ResetPassword from "../../components/Auth/ResetPassword";
-import SendOtp from "../../components/Auth/SendOtp";
-import Verify from "../../components/Auth/Verify";
+import Login from "@components/Auth/Login";
+import Register from "@components/Auth/Register";
+import ResetPassword from "@components/Auth/ResetPassword";
+import SendOtp from "@components/Auth/SendOtp";
+import Verify from "@components/Auth/Verify";
 import { Card, message } from "antd";
 import { useNavigate } from "react-router-dom";
 

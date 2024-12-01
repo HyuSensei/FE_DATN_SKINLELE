@@ -21,16 +21,11 @@ import {
 } from "@ant-design/icons";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  orderStripeReturn,
-  orderVnpayReturn,
-} from "../../redux/order/order.thunk";
-import { formatDateOrder } from "../../helpers/formatDate";
-import { formatPrice } from "../../helpers/formatPrice";
-import Loading from "../../components/Loading";
-import {
-  removeProductAfterOrderSuccess,
-} from "../../redux/cart/cart.slice";
+import { orderStripeReturn, orderVnpayReturn } from "@redux/order/order.thunk";
+import { formatDateOrder } from "@helpers/formatDate";
+import { formatPrice } from "@helpers/formatPrice";
+import Loading from "@components/Loading/Loading";
+import { removeProductAfterOrderSuccess } from "@redux/cart/cart.slice";
 import isEmpty from "lodash/isEmpty";
 
 const { Title, Text } = Typography;

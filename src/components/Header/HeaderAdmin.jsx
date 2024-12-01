@@ -12,7 +12,7 @@ import {
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { logoutAdmin } from "../../redux/auth/auth.slice";
+import { logoutAdmin } from "@redux/auth/auth.slice";
 
 const { Header } = Layout;
 

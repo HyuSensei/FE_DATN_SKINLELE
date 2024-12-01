@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
-import useScreen from "../../hook/useScreen";
+import useScreen from "@hook/useScreen";
 import { useDispatch, useSelector } from "react-redux";
-import ProductList from "../../components/Product/ProductList";
+import ProductList from "@components/Product/ProductList";
 import { Breadcrumb, Checkbox, Select, Collapse } from "antd";
-import { getProductPromotion } from "../../redux/product/product.thunk";
+import { getProductPromotion } from "@redux/product/product.thunk";
 import { debounce } from "lodash";
-import bannerPromtion from "../../assets/images/skinlele-banner-promotion.webp";
+import bannerPromtion from "@assets/images/skinlele-banner-promotion.webp";
 
 const Promotion = () => {
   const { isMobile } = useScreen();

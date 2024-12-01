@@ -1,12 +1,12 @@
 import React, { useMemo } from "react";
 import { Pagination, Table, Tooltip, Tag, Select, Popconfirm, message } from "antd";
 import { FaEye } from "react-icons/fa";
-import { formatDateOrder } from "../../helpers/formatDate";
-import { formatPrice } from "../../helpers/formatPrice";
-import { orderStatus } from "../../const/status";
+import { formatDateOrder } from "@helpers/formatDate";
+import { formatPrice } from "@helpers/formatPrice";
+import { orderStatus } from "@const/status";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { useDispatch } from "react-redux";
-import { deleteOrder, getOrderListAdmin, updateOrder } from "../../redux/order/order.thunk";
+import { deleteOrder, getOrderListAdmin, updateOrder } from "@redux/order/order.thunk";
 import { useNavigate } from "react-router-dom";
 
 const TableOrder = ({

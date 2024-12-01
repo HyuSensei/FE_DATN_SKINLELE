@@ -2,16 +2,16 @@ import React, { useMemo, useCallback } from "react";
 import Slider from "react-slick";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import banner_1 from "../../assets/images/skinlele-banner-1.webp";
-import banner_2 from "../../assets/images/skinlele-banner-2.webp";
-import banner_3 from "../../assets/images/skinlele-banner-3.webp";
-import banner_4 from "../../assets/images/skinlele-banner-4.webp";
-import banner_5 from "../../assets/images/skinlele-banner-5.webp";
-import banner_6 from "../../assets/images/skinlele-banner-6.webp";
-import banner_7 from "../../assets/images/skinlele-banner-7.webp";
-import banner_8 from "../../assets/images/skinlele-banner-8.webp";
-import banner_9 from "../../assets/images/skinlele-banner-9.webp";
-import banner_10 from "../../assets/images/skinlele-banner-10.webp";
+import banner_1 from "@assets/images/skinlele-banner-1.webp";
+import banner_2 from "@assets/images/skinlele-banner-2.webp";
+import banner_3 from "@assets/images/skinlele-banner-3.webp";
+import banner_4 from "@assets/images/skinlele-banner-4.webp";
+import banner_5 from "@assets/images/skinlele-banner-5.webp";
+import banner_6 from "@assets/images/skinlele-banner-6.webp";
+import banner_7 from "@assets/images/skinlele-banner-7.webp";
+import banner_8 from "@assets/images/skinlele-banner-8.webp";
+import banner_9 from "@assets/images/skinlele-banner-9.webp";
+import banner_10 from "@assets/images/skinlele-banner-10.webp";
 
 const SLIDE_IMAGES = [
   banner_1,

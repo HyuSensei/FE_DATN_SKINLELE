@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
-import { sendOtp, verifyAccount } from "../../redux/auth/auth.thunk";
+import { sendOtp, verifyAccount } from "@redux/auth/auth.thunk";
 import { useDispatch, useSelector } from "react-redux";
 import { message } from "antd";
-import { setEmailVerify } from "../../redux/auth/auth.slice";
+import { setEmailVerify } from "@redux/auth/auth.slice";
 
 const Verify = ({ setStep, isReset }) => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);

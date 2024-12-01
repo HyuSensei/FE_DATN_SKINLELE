@@ -2,10 +2,10 @@ import React, { useEffect, useState, useCallback } from "react";
 import { Input, message, Modal, Select } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import isEmpty from "lodash/isEmpty";
-import ErrorMessage from "../Error/ErrorMessage";
-import { getDistrict, getProvince, getWard } from "../../redux/ship/ship.thunk";
-import { validateEditShipSchema, validateForm } from "../../validate/validate";
-import { getOrderHistory, updateOrderByUser } from "../../redux/order/order.thunk";
+import ErrorMessage from "@components/Error/ErrorMessage";
+import { getDistrict, getProvince, getWard } from "@redux/ship/ship.thunk";
+import { validateEditShipSchema, validateForm } from "@validate/validate";
+import { getOrderHistory, updateOrderByUser } from "@redux/order/order.thunk";
 
 const ModalEditShip = ({ open, setOpen, order = {} }) => {
     const dispatch = useDispatch();

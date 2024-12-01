@@ -15,18 +15,18 @@ import { SketchPicker } from "react-color";
 import {
   UPLOAD_SKINLELE_PRESET,
   uploadFile,
-} from "../../helpers/uploadCloudinary";
-import { tags } from "../../const/tags";
-import QuillEditor from "../../components/QuillEditor";
+} from "@helpers/uploadCloudinary";
+import { tags } from "@const/tags";
+import QuillEditor from "@components/QuillEditor";
 import { useDispatch, useSelector } from "react-redux";
-import { getBrandByCreatePro } from "../../redux/brand/brand.thunk";
-import { getCategoryByCreatePro } from "../../redux/category/category.thunk";
-import { createProduct } from "../../redux/product/product.thunk";
+import { getBrandByCreatePro } from "@redux/brand/brand.thunk";
+import { getCategoryByCreatePro } from "@redux/category/category.thunk";
+import { createProduct } from "@redux/product/product.thunk";
 import {
   validateCreateProductSchema,
   validateForm,
-} from "../../validate/validate";
-import ErrorMessage from "../../components/Error/ErrorMessage";
+} from "@validate/validate";
+import ErrorMessage from "@components/Error/ErrorMessage";
 import moment from "moment";
 
 const CreateProduct = () => {

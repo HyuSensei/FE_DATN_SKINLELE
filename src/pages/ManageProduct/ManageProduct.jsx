@@ -3,12 +3,12 @@ import { useSelector, useDispatch } from "react-redux";
 import { Input, Select, Card, Button, Tooltip } from "antd";
 import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
 import { debounce } from "lodash";
-import TableProduct from "../../components/Table/TableProduct";
-import { tags } from "../../const/tags";
+import TableProduct from "@components/Table/TableProduct";
+import { tags } from "@const/tags";
 import { useNavigate } from "react-router-dom";
-import { getBrandByCreatePro } from "../../redux/brand/brand.thunk";
-import { getAllCategoryFilter } from "../../redux/category/category.thunk";
-import { getProductAdmin } from "../../redux/product/product.thunk";
+import { getBrandByCreatePro } from "@redux/brand/brand.thunk";
+import { getAllCategoryFilter } from "@redux/category/category.thunk";
+import { getProductAdmin } from "@redux/product/product.thunk";
 
 const { Option } = Select;
 

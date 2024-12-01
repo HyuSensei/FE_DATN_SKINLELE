@@ -1,13 +1,10 @@
 import React, { useState } from "react";
-import {
-  validateForm,
-  validateResetPasswordSchema,
-} from "../../validate/validate";
-import ErrorValidate from "../../components/Error/ErrorMessage";
+import { validateForm, validateResetPasswordSchema } from "@validate/validate";
+import ErrorValidate from "@components/Error/ErrorMessage";
 import { useDispatch, useSelector } from "react-redux";
-import { resetPassword } from "../../redux/auth/auth.thunk";
+import { resetPassword } from "@redux/auth/auth.thunk";
 import { message } from "antd";
-import { setEmailVerify } from "../../redux/auth/auth.slice";
+import { setEmailVerify } from "@redux/auth/auth.slice";
 
 const STYLE_INPUT =
   "mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 transition-colors duration-300";

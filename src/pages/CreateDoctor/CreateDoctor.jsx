@@ -15,10 +15,10 @@ import { IoCloudUpload } from "react-icons/io5";
 import {
   UPLOAD_SKINLELE_CLINIC_PRESET,
   uploadFile,
-} from "../../helpers/uploadCloudinary";
+} from "@helpers/uploadCloudinary";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { createDoctorByAdmin } from "../../redux/doctor/doctor.thunk";
+import { createDoctorByAdmin } from "@redux/doctor/doctor.thunk";
 
 const CreateDoctor = () => {
   const dispatch = useDispatch();

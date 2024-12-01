@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Table, Tag, Card, Select, Row, Input, Col, DatePicker } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import { bookingStatus } from "../../../const/status";
+import { bookingStatus } from "@const/status";
 import locale from "antd/es/date-picker/locale/vi_VN";
 const { RangePicker } = DatePicker;
 

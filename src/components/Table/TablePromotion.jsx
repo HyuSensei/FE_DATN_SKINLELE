@@ -6,9 +6,9 @@ import { useDispatch } from "react-redux";
 import {
   deletePromotion,
   getListPromotion,
-} from "../../redux/promotion/promotion.thunk";
+} from "@redux/promotion/promotion.thunk";
 import { useNavigate } from "react-router-dom";
-import { formatDateReview } from "../../helpers/formatDate";
+import { formatDateReview } from "@helpers/formatDate";
 
 const TablePromotion = ({
   promotions = [],

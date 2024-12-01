@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { getAllDoctorByAdmin } from "../../redux/doctor/doctor.thunk";
+import { getAllDoctorByAdmin } from "@redux/doctor/doctor.thunk";
 import { debounce } from "lodash";
 import { Button, Input } from "antd";
 import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
-import TableDoctor from "../../components/Table/TableDoctor";
+import TableDoctor from "@components/Table/TableDoctor";
 import { useNavigate } from "react-router-dom";
 
 const ManageDoctor = () => {

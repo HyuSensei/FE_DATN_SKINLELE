@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Breadcrumb, Checkbox, Select, Collapse } from "antd";
-import useScreen from "../../hook/useScreen";
-import ProductList from "../../components/Product/ProductList";
+import useScreen from "@hook/useScreen";
+import ProductList from "@components/Product/ProductList";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { getProductByCategory } from "../../redux/product/product.thunk";
+import { getProductByCategory } from "@redux/product/product.thunk";
 import { debounce } from "lodash";
-import bannerCategory from "../../assets/images/skinlele-banner-category.webp";
+import bannerCategory from "@assets/images/skinlele-banner-category.webp";
 
 const { Option } = Select;
 

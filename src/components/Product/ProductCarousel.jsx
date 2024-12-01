@@ -1,12 +1,12 @@
 import React from "react";
 import Slider from "react-slick";
-import { defaultProduct } from "../../const/defaultProduct";
-import { formatPrice } from "../../helpers/formatPrice";
+import { defaultProduct } from "@const/defaultProduct";
+import { formatPrice } from "@helpers/formatPrice";
 import { Rate, Spin, Tag } from "antd";
-import { createAverageRate, createIcon } from "../../ultis/createIcon";
+import { createAverageRate } from "@utils/createIcon";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { motion } from "framer-motion";
-import ImageCarousel from "../ImageCarousel";
+import ImageCarousel from "@components/ImageCarousel";
 import { useNavigate } from "react-router-dom";
 
 const ProductCarousel = ({

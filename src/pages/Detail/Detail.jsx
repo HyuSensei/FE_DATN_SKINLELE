@@ -18,7 +18,7 @@ import {
   FireOutlined,
 } from "@ant-design/icons";
 import { LiaShoppingBasketSolid } from "react-icons/lia";
-import { createAverageRate } from "../../ultis/createIcon";
+import { createAverageRate } from "@utils/createIcon";
 import { FaCheckCircle, FaShippingFast } from "react-icons/fa";
 import { MdOutlineSwapHorizontalCircle } from "react-icons/md";
 import {
@@ -26,14 +26,14 @@ import {
   IoPricetagOutline,
   IoNotifications,
 } from "react-icons/io5";
-import RateList from "../../components/RateList";
+import RateList from "@components/RateList";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { getDetailProduct } from "../../redux/product/product.thunk";
+import { getDetailProduct } from "@redux/product/product.thunk";
 import isEmpty from "lodash/isEmpty";
-import { formatPrice } from "../../helpers/formatPrice";
+import { formatPrice } from "@helpers/formatPrice";
 import { GiDiamondTrophy } from "react-icons/gi";
-import { addToCart } from "../../redux/cart/cart.slice";
+import { addToCart } from "@redux/cart/cart.slice";
 import confetti from "canvas-confetti";
 
 const Detail = () => {

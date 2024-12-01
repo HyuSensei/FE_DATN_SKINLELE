@@ -11,15 +11,15 @@ import {
 import { GrEdit } from "react-icons/gr";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { PiSpinnerBall } from "react-icons/pi";
-import { formatPrice } from "../../helpers/formatPrice";
-import ModalEditProduct from "../Modal/ModalEditProduct";
+import { formatPrice } from "@helpers/formatPrice";
+import ModalEditProduct from "@components/Modal/ModalEditProduct";
 import { useDispatch } from "react-redux";
 import {
   deleteProduct,
   getProductAdmin,
-} from "../../redux/product/product.thunk";
-import { deleteFile } from "../../helpers/uploadCloudinary";
-import { formatDateReview } from "../../helpers/formatDate";
+} from "@redux/product/product.thunk";
+import { deleteFile } from "@helpers/uploadCloudinary";
+import { formatDateReview } from "@helpers/formatDate";
 
 const getColorTag = (tag) => {
   switch (tag) {

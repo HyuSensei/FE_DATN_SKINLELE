@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "../../axios/axios";
+import axios from "@axios/axios";
 import { message } from "antd";
 
 export const getUserList = createAsyncThunk(

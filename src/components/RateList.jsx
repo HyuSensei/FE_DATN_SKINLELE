@@ -11,7 +11,7 @@ import {
   Pagination,
   Image,
 } from "antd";
-import { createAverageRate, createIcon, SingleStar } from "../ultis/createIcon";
+import { createAverageRate, createIcon, SingleStar } from "@utils/createIcon";
 import {
   CameraOutlined,
   CommentOutlined,
@@ -19,14 +19,14 @@ import {
   HighlightOutlined,
 } from "@ant-design/icons";
 import { useCallback, useState, useEffect } from "react";
-import ModalRate from "./Modal/ModalRate";
+import ModalRate from "@components/Modal/ModalRate";
 import { useDispatch, useSelector } from "react-redux";
 import isEmpty from "lodash/isEmpty";
-import { getReviewProduct } from "../redux/review/review.thunk";
-import { formatDateReview } from "../helpers/formatDate";
+import { getReviewProduct } from "@redux/review/review.thunk";
+import { formatDateReview } from "@helpers/formatDate";
 import { FaQuoteLeft, FaQuoteRight } from "react-icons/fa6";
 import { MdVerified, MdDateRange } from "react-icons/md";
-import emptyReview from "../assets/images/review-empty.png";
+import emptyReview from "@assets/images/review-empty.png";
 
 const RateList = ({ product }) => {
   const dispatch = useDispatch();

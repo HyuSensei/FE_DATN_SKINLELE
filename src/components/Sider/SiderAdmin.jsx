@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Layout, Menu } from "antd";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import useScreen from "../../hook/useScreen";
+import useScreen from "@hook/useScreen";
 import {
   DashboardOutlined,
   ShoppingOutlined,
@@ -118,7 +118,7 @@ const MENU_CLINIC_ITEMS = [
     key: "2",
     icon: <BiClinic />,
     label: "Phòng khám",
-    path: "/admin/clinics/create",
+    path: "/admin/clinics-info",
   },
   {
     key: "3",

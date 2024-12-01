@@ -1,10 +1,14 @@
 import React, { useMemo } from "react";
 import { Table, Rate, Image, Tooltip, Pagination, Popconfirm, Switch, message } from "antd";
-import { createIcon } from "../../ultis/createIcon";
+import { createIcon } from "@utils/createIcon";
 import { MdOutlineDeleteOutline } from "react-icons/md";
-import { useDispatch } from 'react-redux'
-import { deleteReview, getReviewList, updateReview } from "../../redux/review/review.thunk";
-import { deleteFile } from "../../helpers/uploadCloudinary";
+import { useDispatch } from "react-redux";
+import {
+  deleteReview,
+  getReviewList,
+  updateReview,
+} from "@redux/review/review.thunk";
+import { deleteFile } from "@helpers/uploadCloudinary";
 
 const TableReview = ({
   reviews = [],

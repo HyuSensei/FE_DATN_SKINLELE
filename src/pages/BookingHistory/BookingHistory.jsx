@@ -14,7 +14,7 @@ import {
   MedicineBoxOutlined,
   StarFilled,
 } from "@ant-design/icons";
-import CustomButton from "../../components/CustomButton/CustomButton";
+import CustomButton from "@components/CustomButton/CustomButton";
 
 const BookingHistory = () => {
   const [activeStatus, setActiveStatus] = useState("all");

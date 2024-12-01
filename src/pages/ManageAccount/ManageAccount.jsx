@@ -2,11 +2,11 @@ import React, { useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
 import debounce from "lodash/debounce";
 import { useEffect } from "react";
-import { getAllAccountAdmin } from "../../redux/auth/auth.thunk";
+import { getAllAccountAdmin } from "@redux/auth/auth.thunk";
 import { Button, Input, Select } from "antd";
 import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
-import TableAccount from "../../components/Table/TableAccount";
-import ModelAccountAction from "../../components/Modal/ModelAccountAction";
+import TableAccount from "@components/Table/TableAccount";
+import ModelAccountAction from "@components/Modal/ModelAccountAction";
 
 const ManageAccount = () => {
   const dispatch = useDispatch();

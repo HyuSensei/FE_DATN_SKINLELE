@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Avatar, Typography } from "antd";
+import { Card, Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 
 const UserInfo = ({ user }) => (

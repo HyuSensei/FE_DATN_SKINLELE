@@ -11,10 +11,10 @@ import {
   Tooltip,
 } from "antd";
 import { EyeOutlined, StarOutlined } from "@ant-design/icons";
-import { formatPrice } from "../../helpers/formatPrice";
-import { formatDateReview } from "../../helpers/formatDate";
-import ModalRate from "../Modal/ModalRate";
-import ModalOrderDetail from "../Modal/ModalOrderDetail";
+import { formatPrice } from "@helpers/formatPrice";
+import { formatDateReview } from "@helpers/formatDate";
+import ModalRate from "@components/Modal/ModalRate";
+import ModalOrderDetail from "@components/Modal/ModalOrderDetail";
 import isEmpty from "lodash/isEmpty";
 
 const { Title, Text } = Typography;

@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, DatePicker } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import TablePromotion from "../../components/Table/TablePromotion";
-import { getListPromotion } from "../../redux/promotion/promotion.thunk";
+import TablePromotion from "@components/Table/TablePromotion";
+import { getListPromotion } from "@redux/promotion/promotion.thunk";
 import locale from "antd/es/date-picker/locale/vi_VN";
 import { useNavigate } from "react-router-dom";
 

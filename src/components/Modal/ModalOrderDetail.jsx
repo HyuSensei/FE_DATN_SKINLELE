@@ -21,8 +21,8 @@ import {
   CarOutlined,
   CheckCircleOutlined,
 } from "@ant-design/icons";
-import { formatPrice } from "../../helpers/formatPrice";
-import { formatDateReview } from "../../helpers/formatDate";
+import { formatPrice } from "@helpers/formatPrice";
+import { formatDateReview } from "@helpers/formatDate";
 import { isEmpty } from "lodash";
 
 const { Title, Text } = Typography;

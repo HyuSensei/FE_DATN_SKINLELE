@@ -2,8 +2,8 @@ import React, { useCallback, useState, useMemo } from 'react';
 import { Input, Popover, Spin } from 'antd';
 import { SearchOutlined } from "@ant-design/icons";
 import debounce from "lodash/debounce";
-import { formatPrice } from "../../helpers/formatPrice";
-import { getProductSearch } from '../../redux/product/product.thunk';
+import { formatPrice } from "@helpers/formatPrice";
+import { getProductSearch } from "@redux/product/product.thunk";
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 

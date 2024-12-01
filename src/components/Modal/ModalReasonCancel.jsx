@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Modal, Radio, Input, Space, message } from "antd";
-import { getOrderHistory, updateStatusOrderByUser } from "../../redux/order/order.thunk";
+import { getOrderHistory, updateStatusOrderByUser } from "@redux/order/order.thunk";
 
 const cancellationReasons = [
     "Tôi muốn thay đổi địa chỉ giao hàng",

@@ -2,10 +2,10 @@ import React, { useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
 import debounce from "lodash/debounce";
 import { useEffect } from "react";
-import { getAllClinicAdmin } from "../../redux/clinic/clinic.thunk";
+import { getAllClinicAdmin } from "@redux/clinic/clinic.thunk";
 import { Button, Input } from "antd";
 import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
-import TableClinic from "../../components/Table/TableClinic";
+import TableClinic from "@components/Table/TableClinic";
 import { useNavigate } from "react-router-dom";
 
 const ManageClinic = () => {
@@ -93,15 +93,6 @@ const ManageClinic = () => {
           onChange={(e) => handleFilterChange("search", e.target.value)}
           allowClear
         />
-        <Button
-          onClick={() => navigate("/admin/clinics/create")}
-          size="middle"
-          type="primary"
-          icon={<PlusOutlined />}
-          className="bg-indigo-600 hover:bg-indigo-700"
-        >
-          Thêm phòng khám
-        </Button>
       </div>
       <TableClinic
         {...{

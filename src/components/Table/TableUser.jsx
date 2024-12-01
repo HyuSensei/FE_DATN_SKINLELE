@@ -2,10 +2,10 @@ import React, { useMemo } from "react";
 import { Table, Avatar, Tag, Tooltip, Pagination, Switch, message, Popconfirm } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteUser, getUserList, updateUser } from "../../redux/user/user.thunk";
-import { setUsers } from "../../redux/user/user.slice";
+import { deleteUser, getUserList, updateUser } from "@redux/user/user.thunk";
+import { setUsers } from "@redux/user/user.slice";
 import { MdOutlineDeleteOutline } from "react-icons/md";
-import { deleteFile } from "../../helpers/uploadCloudinary";
+import { deleteFile } from "@helpers/uploadCloudinary";
 
 const TableUser = ({
   users = [],

@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Breadcrumb, Card } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import AccountForm from "../../components/Account/AccountForm";
-import OrderTabs from "../../components/Account/OrderTabs";
-import UserInfo from "../../components/Account/UserInfo";
-import AccountMenu from "../../components/Account/AccountMenu";
+import AccountForm from "@components/Account/AccountForm";
+import OrderTabs from "@components/Account/OrderTabs";
+import UserInfo from "@components/Account/UserInfo";
+import AccountMenu from "@components/Account/AccountMenu";
 import { useNavigate } from "react-router-dom";
-import { logoutUser } from "../../redux/auth/auth.slice";
-import { clearCart } from "../../redux/cart/cart.slice";
+import { logoutUser } from "@redux/auth/auth.slice";
+import { clearCart } from "@redux/cart/cart.slice";
 
 const CONTENT_TYPES = {
   ACCOUNT: "account",

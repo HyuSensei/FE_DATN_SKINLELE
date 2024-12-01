@@ -2,10 +2,10 @@ import React, { useMemo, useState } from "react";
 import { Table, Tooltip, Pagination, Tag, Popconfirm, message } from "antd";
 import { GrEdit } from "react-icons/gr";
 import { MdOutlineDeleteOutline } from "react-icons/md";
-import ModalCategoryAction from "../Modal/ModalCategoryAction";
+import ModalCategoryAction from "@components/Modal/ModalCategoryAction";
 import { useDispatch } from "react-redux";
-import { deleteCategory } from "../../redux/category/category.thunk";
-import { setCategories } from "../../redux/category/category.slice";
+import { deleteCategory } from "@redux/category/category.thunk";
+import { setCategories } from "@redux/category/category.slice";
 
 const TableCategory = ({
   categories = [],

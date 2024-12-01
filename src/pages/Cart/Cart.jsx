@@ -9,18 +9,18 @@ import {
   Image,
 } from "antd";
 import { MdOutlineDeleteOutline } from "react-icons/md";
-import ProductList from "../../components/Product/ProductList";
-import ModalCheckout from "../../components/Modal/ModalCheckout";
+import ProductList from "@components/Product/ProductList";
+import ModalCheckout from "@components/Modal/ModalCheckout";
 import { useDispatch, useSelector } from "react-redux";
 import {
   incrementQuantity,
   decrementQuantity,
   removeFromCart,
-} from "../../redux/cart/cart.slice";
-import { formatPrice } from "../../helpers/formatPrice";
+} from "@redux/cart/cart.slice";
+import { formatPrice } from "@helpers/formatPrice";
 import { isEmpty } from "lodash";
-import { getAllProductOther } from "../../redux/product/product.thunk";
-import cartEmpty from "../../assets/images/skinlele-empty-cart.png";
+import { getAllProductOther } from "@redux/product/product.thunk";
+import cartEmpty from "@assets/images/skinlele-empty-cart.png";
 
 const { Text } = Typography;
 

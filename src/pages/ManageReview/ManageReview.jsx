@@ -3,9 +3,9 @@ import { Input, Select, DatePicker, Card, Row, Col } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
-import TableReview from "../../components/Table/TableReview";
+import TableReview from "@components/Table/TableReview";
 import locale from "antd/es/date-picker/locale/vi_VN";
-import { getReviewList } from "../../redux/review/review.thunk";
+import { getReviewList } from "@redux/review/review.thunk";
 import { FaStar } from "react-icons/fa6";
 
 const { RangePicker } = DatePicker;

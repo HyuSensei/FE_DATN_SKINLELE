@@ -13,7 +13,7 @@ import { GiRoundStar } from "react-icons/gi";
 import { MdVerified } from "react-icons/md";
 import ClinicAbout from "./ClinicAbout/ClinicAbout";
 import ClinicReview from "./ClinicReview/ClinicReview";
-import CustomButton from "../../components/CustomButton/CustomButton";
+import CustomButton from "@components/CustomButton/CustomButton";
 
 // Mock Data
 const clinicData = {

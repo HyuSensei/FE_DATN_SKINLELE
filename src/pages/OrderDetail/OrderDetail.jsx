@@ -3,9 +3,9 @@ import { Card, Descriptions, Table, Tag, Typography, Divider, Space, Button, Spi
 import { ShopOutlined, UserOutlined, PhoneOutlined, EnvironmentOutlined, PrinterOutlined, CalendarOutlined, SlackOutlined, CreditCardOutlined, SolutionOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getOrderDetail } from '../../redux/order/order.thunk';
-import isEmpty from 'lodash/isEmpty';
-import { formatPrice } from '../../helpers/formatPrice';
+import { getOrderDetail } from "@redux/order/order.thunk";
+import isEmpty from "lodash/isEmpty";
+import { formatPrice } from "@helpers/formatPrice";
 
 const { Title } = Typography;
 

@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { getAllBookingByAdmin } from "../../redux/booking/booking.thunk";
+import { getAllBookingByAdmin } from "@redux/booking/booking.thunk";
 import { DatePicker, Input, Select } from "antd";
-import { bookingStatus } from "../../const/status";
+import { bookingStatus } from "@const/status";
 import { SearchOutlined } from "@ant-design/icons";
 import { debounce } from "lodash";
-import TableBooking from "../../components/Table/TableBooking";
+import TableBooking from "@components/Table/TableBooking";
 const { RangePicker } = DatePicker;
 
 const ManageBooking = () => {

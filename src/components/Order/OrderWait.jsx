@@ -14,12 +14,12 @@ import {
   EyeOutlined,
   HighlightOutlined,
 } from "@ant-design/icons";
-import { formatPrice } from "../../helpers/formatPrice";
-import { formatDateReview } from "../../helpers/formatDate";
-import ModalEditShip from "../Modal/ModalEditShip";
-import ModalOrderDetail from "../Modal/ModalOrderDetail";
+import { formatPrice } from "@helpers/formatPrice";
+import { formatDateReview } from "@helpers/formatDate";
+import ModalEditShip from "@components/Modal/ModalEditShip";
+import ModalOrderDetail from "@components/Modal/ModalOrderDetail";
 import isEmpty from "lodash/isEmpty";
-import ModalReansonCancel from "../Modal/ModalReasonCancel";
+import ModalReansonCancel from "@components/Modal/ModalReasonCancel";
 
 const { Title, Text } = Typography;
 

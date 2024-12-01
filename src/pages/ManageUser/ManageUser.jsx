@@ -3,8 +3,8 @@ import { Input, Select, Card, Row, Col } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
-import TableUser from "../../components/Table/TableUser";
-import { getUserList } from "../../redux/user/user.thunk";
+import TableUser from "@components/Table/TableUser";
+import { getUserList } from "@redux/user/user.thunk";
 
 const ManageUser = () => {
   const dispatch = useDispatch();

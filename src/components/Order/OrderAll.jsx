@@ -13,12 +13,15 @@ import {
   message,
 } from "antd";
 import { EyeOutlined, ShoppingCartOutlined, StarOutlined } from "@ant-design/icons";
-import { formatPrice } from "../../helpers/formatPrice";
-import ModalOrderDetail from "../Modal/ModalOrderDetail";
+import { formatPrice } from "@helpers/formatPrice";
+import ModalOrderDetail from "@components/Modal/ModalOrderDetail";
 import isEmpty from "lodash/isEmpty";
-import ModalRate from "../Modal/ModalRate";
-import ModalReansonCancel from '../Modal/ModalReasonCancel'
-import { getOrderHistory, updateStatusOrderByUser } from "../../redux/order/order.thunk";
+import ModalRate from "@components/Modal/ModalRate";
+import ModalReansonCancel from "@components/Modal/ModalReasonCancel";
+import {
+  getOrderHistory,
+  updateStatusOrderByUser,
+} from "@redux/order/order.thunk";
 import { useDispatch } from "react-redux";
 
 const { Title, Text } = Typography;

@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { validateForm, validateLoginSchema } from "../../validate/validate";
-import ErrorValidate from "../../components/Error/ErrorMessage";
+import { validateForm, validateLoginSchema } from "@validate/validate";
+import ErrorValidate from "@components/Error/ErrorMessage";
 import { useDispatch } from "react-redux";
 import { message } from "antd";
-import { loginUser, sendOtp } from "../../redux/auth/auth.thunk";
-import { set } from "../../storage/storage";
-import { setEmailVerify } from "../../redux/auth/auth.slice";
+import { loginUser, sendOtp } from "@redux/auth/auth.thunk";
+import { set } from "@storage/storage";
+import { setEmailVerify } from "@redux/auth/auth.slice";
 import Cookies from "js-cookie";
 
 const STYLE_INPUT =

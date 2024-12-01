@@ -1,6 +1,6 @@
 import React from "react";
 import ProductCarousel from "./ProductCarousel";
-import emptyProductList from "../../assets/images/skinlele-flashsale.webp";
+import emptyProductList from "@assets/images/skinlele-flashsale.webp";
 
 const ProductSale = ({ products = defaultProduct, isLoading, title }) => {
   if (products.length === 0) return null;

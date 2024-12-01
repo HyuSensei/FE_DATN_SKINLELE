@@ -5,17 +5,18 @@ import {
   LoadingOutlined,
   HeartFilled,
 } from "@ant-design/icons";
-import { uploadFile, deleteFile, UPLOAD_SKINLELE_PRESET } from "../../helpers/uploadCloudinary";
-import { validateForm, validateReviewSchema } from "../../validate/validate";
-import ErrorValidate from "../../components/Error/ErrorMessage";
-import { useDispatch, useSelector } from "react-redux";
 import {
-  createReview,
-  getReviewProduct,
-} from "../../redux/review/review.thunk";
+  uploadFile,
+  deleteFile,
+  UPLOAD_SKINLELE_PRESET,
+} from "@helpers/uploadCloudinary";
+import { validateForm, validateReviewSchema } from "@validate/validate";
+import ErrorValidate from "@components/Error/ErrorMessage";
+import { useDispatch, useSelector } from "react-redux";
+import { createReview, getReviewProduct } from "@redux/review/review.thunk";
 import { useNavigate } from "react-router-dom";
-import { getOrderHistory } from "../../redux/order/order.thunk";
-import { createIcon } from "../../ultis/createIcon";
+import { getOrderHistory } from "@redux/order/order.thunk";
+import { createIcon } from "@utils/createIcon";
 import { IoMdCloseCircle } from "react-icons/io";
 
 const ModalRate = ({

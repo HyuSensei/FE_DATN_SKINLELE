@@ -2,9 +2,9 @@ import React, { useMemo, useState } from "react";
 import { Table, Tooltip, Pagination, Popconfirm, message } from "antd";
 import { GrEdit } from "react-icons/gr";
 import { MdOutlineDeleteOutline } from "react-icons/md";
-import ModalBrandAction from "../Modal/ModalBrandAction";
+import ModalBrandAction from "@components/Modal/ModalBrandAction";
 import { useDispatch } from "react-redux";
-import { deleteBrand, getBrandList } from "../../redux/brand/brand.thunk";
+import { deleteBrand, getBrandList } from "@redux/brand/brand.thunk";
 
 const TableBrand = ({
   brands = [],

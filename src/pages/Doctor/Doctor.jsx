@@ -8,7 +8,7 @@ import {
 } from "@ant-design/icons";
 import DoctorSchedule from "./DoctorSchedule/DoctorSchedule";
 import DoctorReview from "./DoctorReview/DoctorReview";
-import CustomButton from "../../components/CustomButton/CustomButton";
+import CustomButton from "@components/CustomButton/CustomButton";
 import { MdVerified } from "react-icons/md";
 
 const mockDoctor = {

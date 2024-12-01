@@ -2,14 +2,14 @@ import React, { lazy, Suspense } from "react";
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 
-const PageTitle = lazy(() => import("../components/Layout/PageTitle"));
-const LayoutBooking = lazy(() => import("../components/Layout/LayoutBooking"));
+const PageTitle = lazy(() => import("@components/Layout/PageTitle"));
+const LayoutBooking = lazy(() => import("@components/Layout/LayoutBooking"));
 
-const HomeBooking = lazy(() => import("../pages/HomeBooking"));
-const DoctorOwner = lazy(() => import("../pages/DoctorOwner"));
-const Doctor = lazy(() => import("../pages/Doctor"));
-const Clinic = lazy(() => import("../pages/Clinic"));
-const BookingHistory = lazy(() => import("../pages/BookingHistory"));
+const HomeBooking = lazy(() => import("@pages/HomeBooking"));
+const DoctorOwner = lazy(() => import("@pages/DoctorOwner"));
+const Doctor = lazy(() => import("@pages/Doctor"));
+const Clinic = lazy(() => import("@pages/Clinic"));
+const BookingHistory = lazy(() => import("@pages/BookingHistory"));
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticatedDoctor } = useSelector((state) => state.auth);

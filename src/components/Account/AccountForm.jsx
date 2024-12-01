@@ -6,10 +6,10 @@ import {
   uploadFile,
   deleteFile,
   UPLOAD_SKINLELE_PRESET,
-} from "../../helpers/uploadCloudinary";
-import ErrorMessage from "../Error/ErrorMessage";
-import { getAccountUser, updateAccount } from "../../redux/auth/auth.thunk";
-import { setUserInfo } from "../../redux/auth/auth.slice";
+} from "@helpers/uploadCloudinary";
+import ErrorMessage from "@components/Error/ErrorMessage";
+import { updateAccount } from "@redux/auth/auth.thunk";
+import { setUserInfo } from "@redux/auth/auth.slice";
 import { isEmpty } from "lodash";
 
 const AccountForm = () => {

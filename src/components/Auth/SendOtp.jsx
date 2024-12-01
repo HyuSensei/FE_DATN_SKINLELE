@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { validateForm, validateSendOtpSchema } from "../../validate/validate";
-import ErrorValidate from "../../components/Error/ErrorMessage";
+import { validateForm, validateSendOtpSchema } from "@validate/validate";
+import ErrorValidate from "@components/Error/ErrorMessage";
 import { useDispatch } from "react-redux";
-import { sendOtp } from "../../redux/auth/auth.thunk";
-import { setEmailVerify } from "../../redux/auth/auth.slice";
+import { sendOtp } from "@redux/auth/auth.thunk";
+import { setEmailVerify } from "@redux/auth/auth.slice";
 import { message } from "antd";
 
 const SendOtp = ({ setStep, setIsReset }) => {

@@ -1,6 +1,6 @@
 import React from "react";
-import HeaderBooking from "../Header/HeaderBooking";
-import FooterBooking from "../Footer/FooterBooking";
+import HeaderBooking from "@components/Header/HeaderBooking";
+import FooterBooking from "@components/Footer/FooterBooking";
 
 const LayoutBooking = ({ children }) => {
   return (

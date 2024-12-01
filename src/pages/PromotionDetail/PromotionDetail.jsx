@@ -4,8 +4,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   getPromotionDetail,
   updatePromotion,
-} from "../../redux/promotion/promotion.thunk";
-import { getAllProductPromitionAdd } from "../../redux/product/product.thunk";
+} from "@redux/promotion/promotion.thunk";
+import { getAllProductPromitionAdd } from "@redux/product/product.thunk";
 import {
   Empty,
   Spin,
@@ -26,8 +26,8 @@ import { isEmpty } from "lodash";
 import moment from "moment";
 import locale from "antd/es/date-picker/locale/vi_VN";
 import { PiSpinnerBall } from "react-icons/pi";
-import { formatPrice } from "../../helpers/formatPrice";
-import { formatDateReview } from "../../helpers/formatDate";
+import { formatPrice } from "@helpers/formatPrice";
+import { formatDateReview } from "@helpers/formatDate";
 
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;

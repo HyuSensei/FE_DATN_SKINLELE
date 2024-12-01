@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAccountAdmin } from "../../redux/auth/auth.thunk";
-import Loading from "../../components/Loading/Loading";
+import { getAccountAdmin } from "@redux/auth/auth.thunk";
+import Loading from "@components/Loading/Loading";
 import { useLocation } from "react-router-dom";
-import { get } from "../../storage/storage";
+import { get } from "@storage/storage";
 
 const AuthAdminWrapper = ({ children }) => {
   const dispatch = useDispatch();

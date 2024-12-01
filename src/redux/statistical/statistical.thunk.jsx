@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "../../axios/axios";
+import axios from "@axios/axios";
 
 export const getStatisticalAdmin = createAsyncThunk(
   "statistical/getStatisticAdmin",

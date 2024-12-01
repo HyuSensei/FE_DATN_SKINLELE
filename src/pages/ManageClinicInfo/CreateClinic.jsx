@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   Form,
   Input,
@@ -18,10 +24,15 @@ import dayjs from "dayjs";
 import {
   UPLOAD_SKINLELE_CLINIC_PRESET,
   uploadFile,
-} from "../../helpers/uploadCloudinary";
+} from "@helpers/uploadCloudinary";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { createClinicByAdmin } from "../../redux/clinic/clinic.thunk";
+import { createClinicByAdmin } from "@redux/clinic/clinic.thunk";
+import FroalaEditor from "react-froala-wysiwyg";
+import "froala-editor/js/froala_editor.pkgd.min.js";
+import "froala-editor/css/froala_style.min.css";
+import "froala-editor/css/froala_editor.pkgd.min.css";
+import "froala-editor/js/plugins/image.min.js";
 
 const WEEKDAYS = [
   { label: "Thứ 2", value: "Thứ 2" },
@@ -40,6 +51,7 @@ const CreateClinic = () => {
   const [specialties, setSpecialties] = useState([]);
   const [logoImage, setLogoImage] = useState([]);
   const [images, setImages] = useState([]);
+  const [banners, setBanners] = useState([]);
   const [inputVisible, setInputVisible] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(false);
@@ -60,28 +72,32 @@ const CreateClinic = () => {
     });
   }, []);
 
-  const handleSpecialtyClose = (removedTag) => {
-    const newSpecialties = specialties.filter((tag) => tag !== removedTag);
-    setSpecialties(newSpecialties);
-    form.setFieldsValue({ specialties: newSpecialties });
-  };
+  const handleSpecialtyClose = useCallback(
+    (removedTag) => {
+      const newSpecialties = specialties.filter((tag) => tag !== removedTag);
+      setSpecialties(newSpecialties);
+      form.setFieldsValue({ specialties: newSpecialties });
+    },
+    [specialties, form]
+  );
 
-  const showSpecialtyInput = () => {
+  const showSpecialtyInput = useCallback(() => {
     setInputVisible(true);
-    setTimeout(() => inputRef.current?.focus(), 0);
-  };
+  }, []);
 
-  const handleSpecialtyInputChange = (e) => setInputValue(e.target.value);
+  const handleSpecialtyInputChange = useCallback((e) => {
+    setInputValue(e.target.value);
+  }, []);
 
-  const handleSpecialtyInputConfirm = () => {
-    if (inputValue && !specialties.includes(inputValue)) {
-      const newSpecialties = [...specialties, inputValue];
+  const handleSpecialtyInputConfirm = useCallback(() => {
+    if (inputValue.trim() && !specialties.includes(inputValue.trim())) {
+      const newSpecialties = [...specialties, inputValue.trim()];
       setSpecialties(newSpecialties);
       form.setFieldsValue({ specialties: newSpecialties });
     }
     setInputVisible(false);
     setInputValue("");
-  };
+  }, [inputValue, specialties, form]);
 
   const validateTimeRange = (rule, value, callback, dayValue, field) => {
     const dayData = form.getFieldValue(["workingHours", dayValue]) || {};
@@ -140,6 +156,20 @@ const CreateClinic = () => {
           return null;
         })
       );
+      const uploadedBanners = await Promise.all(
+        banners.map(async (file) => {
+          if (file.originFileObj) {
+            const result = await uploadFile({
+              file: file.originFileObj,
+              type: UPLOAD_SKINLELE_CLINIC_PRESET,
+            });
+            if (result && result.secure_url && result.public_id) {
+              return { url: result.secure_url, publicId: result.public_id };
+            }
+          }
+          return null;
+        })
+      );
 
       const workingHours = WEEKDAYS.map((day) => {
         const dayData = values.workingHours?.[day.value] || {};
@@ -162,6 +192,10 @@ const CreateClinic = () => {
           url: uploadLogoImage.secure_url,
           publicId: uploadLogoImage.public_id,
         },
+        banners: uploadedBanners.map((img) => ({
+          url: img.url,
+          publicId: img.publicId,
+        })),
         images: uploadedImages.map((img) => ({
           url: img.url,
           publicId: img.publicId,
@@ -170,7 +204,7 @@ const CreateClinic = () => {
       const res = await dispatch(createClinicByAdmin(payload)).unwrap();
       if (res.success) {
         message.success(res.message);
-        navigate("/admin/clinics");
+        form.resetFields();
       }
     } catch (error) {
       console.error(error);
@@ -178,6 +212,24 @@ const CreateClinic = () => {
       setLoading(false);
     }
   };
+
+  const renderTags = useMemo(
+    () => (
+      <div className="flex flex-wrap gap-2">
+        {specialties.map((specialty) => (
+          <Tag
+            key={specialty}
+            closable
+            onClose={() => handleSpecialtyClose(specialty)}
+            className="py-1 px-3 rounded-full bg-blue-50 text-blue-600 border-blue-200"
+          >
+            {specialty}
+          </Tag>
+        ))}
+      </div>
+    ),
+    [specialties, handleSpecialtyClose]
+  );
 
   return (
     <Form
@@ -190,7 +242,7 @@ const CreateClinic = () => {
       {/* Basic Info Card - Same as before */}
       <Card title="Thông tin cơ bản" className="mb-6 shadow-md">
         <Row gutter={16}>
-          <Col xs={24} md={12}>
+          <Col xs={24} md={8}>
             <Form.Item
               name="name"
               label="Tên phòng khám"
@@ -205,16 +257,12 @@ const CreateClinic = () => {
               />
             </Form.Item>
           </Col>
-          <Col xs={24} md={12}>
+          <Col xs={24} md={8}>
             <Form.Item
               name="phone"
               label="Số điện thoại"
               rules={[
                 { required: true, message: "Vui lòng nhập số điện thoại" },
-                {
-                  pattern: /^[0-9]{10}$/,
-                  message: "Số điện thoại không hợp lệ",
-                },
               ]}
             >
               <Input
@@ -224,10 +272,7 @@ const CreateClinic = () => {
               />
             </Form.Item>
           </Col>
-        </Row>
-
-        <Row gutter={16}>
-          <Col xs={24} md={12}>
+          <Col xs={24} md={8}>
             <Form.Item
               name="email"
               label="Email"
@@ -243,20 +288,39 @@ const CreateClinic = () => {
               />
             </Form.Item>
           </Col>
-          <Col xs={24} md={12}>
-            <Form.Item
-              name="address"
-              label="Địa chỉ"
-              rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
-            >
-              <Input
-                placeholder="Số nhà, đường, phường/xã..."
-                className="rounded-lg"
-                size="large"
-              />
-            </Form.Item>
-          </Col>
         </Row>
+
+        <Form.Item
+          name="address"
+          label="Địa chỉ"
+          rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
+        >
+          <Form.Item noStyle shouldUpdate>
+            {({ getFieldValue, setFieldsValue }) => (
+              <FroalaEditor
+                tag="textarea"
+                config={{
+                  placeholderText: "Số nhà, đường, phường/xã...",
+                  imageUpload: false,
+                  imageUploadToBase64: false,
+                  imageAllowedTypes: ["jpeg", "jpg", "png", "gif"],
+                  height: 200,
+                  charCounterCount: false,
+                  toolbarSticky: true,
+                  toolbarStickyOffset: 50,
+                  attribution: false,
+                  language: "vi",
+                }}
+                model={getFieldValue("address") || ""}
+                onModelChange={(value) =>
+                  setFieldsValue({
+                    address: value,
+                  })
+                }
+              />
+            )}
+          </Form.Item>
+        </Form.Item>
       </Card>
 
       {/* Working Hours Card - Updated with validation */}
@@ -341,7 +405,7 @@ const CreateClinic = () => {
       {/* Images Card - Same as before */}
       <Card title="Hình ảnh" className="mb-6 shadow-md">
         <Row gutter={16}>
-          <Col xs={24} md={12}>
+          <Col xs={24} md={8}>
             <Form.Item
               name="logo"
               label="Logo phòng khám"
@@ -364,12 +428,25 @@ const CreateClinic = () => {
               </Upload>
             </Form.Item>
           </Col>
-          <Col xs={24} md={12}>
+          <Col xs={24} md={8}>
             <Form.Item
               name="images"
               label="Ảnh phòng khám"
               rules={[
-                { required: true, message: "Vui lòng tải lên ít nhất 1 ảnh" },
+                {
+                  required: true,
+                  message: "Vui lòng tải lên ảnh lên",
+                },
+                {
+                  validator: (_, fileList) => {
+                    if (fileList.length < 4) {
+                      return Promise.reject(
+                        new Error("Vui lòng tải lên đủ 4 ảnh")
+                      );
+                    }
+                    return Promise.resolve();
+                  },
+                },
               ]}
             >
               <Upload
@@ -390,6 +467,35 @@ const CreateClinic = () => {
               </Upload>
             </Form.Item>
           </Col>
+          <Col xs={24} md={8}>
+            <Form.Item
+              name="banners"
+              label="Banner"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng tải lên ảnh banner",
+                },
+              ]}
+            >
+              <Upload
+                accept="image/*"
+                onChange={({ fileList }) => setBanners(fileList)}
+                fileList={banners}
+                listType="picture-card"
+                beforeUpload={() => false}
+                maxCount={4}
+                multiple
+              >
+                {banners.length < 4 && (
+                  <div className="flex flex-col items-center">
+                    <IoCloudUpload className="w-6 h-6" />
+                    <div className="mt-2">Tải ảnh</div>
+                  </div>
+                )}
+              </Upload>
+            </Form.Item>
+          </Col>
         </Row>
       </Card>
 
@@ -400,11 +506,31 @@ const CreateClinic = () => {
           label="Mô tả phòng khám"
           rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
         >
-          <Input.TextArea
-            rows={4}
-            placeholder="Giới thiệu về phòng khám, trang thiết bị, đội ngũ..."
-            className="rounded-lg"
-          />
+          <Form.Item noStyle shouldUpdate>
+            {({ getFieldValue, setFieldsValue }) => (
+              <FroalaEditor
+                tag="textarea"
+                config={{
+                  placeholderText: "Mô tả phòng khám...",
+                  imageUpload: false,
+                  imageUploadToBase64: false,
+                  imageAllowedTypes: ["jpeg", "jpg", "png", "gif"],
+                  height: 200,
+                  charCounterCount: false,
+                  toolbarSticky: true,
+                  toolbarStickyOffset: 50,
+                  attribution: false,
+                  language: "vi",
+                }}
+                model={getFieldValue("description") || ""}
+                onModelChange={(value) =>
+                  setFieldsValue({
+                    description: value,
+                  })
+                }
+              />
+            )}
+          </Form.Item>
         </Form.Item>
 
         <Form.Item
@@ -413,27 +539,17 @@ const CreateClinic = () => {
           rules={[
             { required: true, message: "Vui lòng thêm ít nhất 1 chuyên khoa" },
           ]}
+          className="w-full"
         >
           <div className="space-y-4">
-            <div className="flex flex-wrap gap-2">
-              {specialties.map((specialty) => (
-                <Tag
-                  key={specialty}
-                  closable
-                  onClose={() => handleSpecialtyClose(specialty)}
-                  className="py-1 px-3 rounded-full bg-blue-50 text-blue-600 border-blue-200"
-                >
-                  {specialty}
-                </Tag>
-              ))}
-            </div>
+            {renderTags}
 
             {inputVisible ? (
               <Input
+                size="large"
                 ref={inputRef}
                 type="text"
-                size="middle"
-                className="w-full max-w-xs rounded-full"
+                className="w-full rounded-full"
                 value={inputValue}
                 onChange={handleSpecialtyInputChange}
                 onBlur={handleSpecialtyInputConfirm}

@@ -1,37 +1,35 @@
 import React, { lazy, Suspense } from "react";
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
-import Loading from "../components/Loading/Loading";
-import LoadingClinic from "../components/Loading/LoadingClinic";
+import Loading from "@components/Loading/Loading";
+import LoadingClinic from "@components/Loading/LoadingClinic";
 
-const PageTitle = lazy(() => import("../components/Layout/PageTitle"));
-const LayoutAdmin = lazy(() => import("../components/Layout/LayoutAdmin"));
-const AuthAdminWrapper = lazy(() =>
-  import("../components/Auth/AuthAdminWapper")
-);
+const PageTitle = lazy(() => import("@components/Layout/PageTitle"));
+const LayoutAdmin = lazy(() => import("@components/Layout/LayoutAdmin"));
+const AuthAdminWrapper = lazy(() => import("@components/Auth/AuthAdminWapper"));
 
 // Lazy load all page components
-const LoginAdmin = lazy(() => import("../pages/LoginAdmin"));
-const Dashboard = lazy(() => import("../pages/DashBoard"));
-const ManageProduct = lazy(() => import("../pages/ManageProduct"));
-const CreateProduct = lazy(() => import("../pages/CreateProduct"));
-const ManageCategory = lazy(() => import("../pages/ManageCategory"));
-const ManageBrand = lazy(() => import("../pages/ManageBrand"));
-const ManageOrder = lazy(() => import("../pages/ManageOrder"));
-const ManageUser = lazy(() => import("../pages/ManageUser"));
-const ManageReview = lazy(() => import("../pages/ManageReview"));
-const SettingAdmin = lazy(() => import("../pages/SettingAdmin"));
-const ManagePromotion = lazy(() => import("../pages/ManagePromotion"));
-const OrderDetail = lazy(() => import("../pages/OrderDetail"));
-const CreatePromotion = lazy(() => import("../pages/CreatePromotion"));
-const PromotionDetail = lazy(() => import("../pages/PromotionDetail"));
-const DashBoardClinic = lazy(() => import("../pages/DashBoardClinic"));
-const ManageAccount = lazy(() => import("../pages/ManageAccount"));
-const ManageDoctor = lazy(() => import("../pages/ManageDoctor"));
-const ManageBooking = lazy(() => import("../pages/ManageBooking"));
-const ManageClinic = lazy(() => import("../pages/ManageClinic"));
-const CreateClinic = lazy(() => import("../pages/CreateClinic"));
-const CreateDoctor = lazy(() => import("../pages/CreateDoctor"));
+const LoginAdmin = lazy(() => import("@pages/LoginAdmin"));
+const Dashboard = lazy(() => import("@pages/DashBoard"));
+const ManageProduct = lazy(() => import("@pages/ManageProduct"));
+const CreateProduct = lazy(() => import("@pages/CreateProduct"));
+const ManageCategory = lazy(() => import("@pages/ManageCategory"));
+const ManageBrand = lazy(() => import("@pages/ManageBrand"));
+const ManageOrder = lazy(() => import("@pages/ManageOrder"));
+const ManageUser = lazy(() => import("@pages/ManageUser"));
+const ManageReview = lazy(() => import("@pages/ManageReview"));
+const SettingAdmin = lazy(() => import("@pages/SettingAdmin"));
+const ManagePromotion = lazy(() => import("@pages/ManagePromotion"));
+const OrderDetail = lazy(() => import("@pages/OrderDetail"));
+const CreatePromotion = lazy(() => import("@pages/CreatePromotion"));
+const PromotionDetail = lazy(() => import("@pages/PromotionDetail"));
+const DashBoardClinic = lazy(() => import("@pages/DashBoardClinic"));
+const ManageAccount = lazy(() => import("@pages/ManageAccount"));
+const ManageDoctor = lazy(() => import("@pages/ManageDoctor"));
+const ManageBooking = lazy(() => import("@pages/ManageBooking"));
+const ManageClinic = lazy(() => import("@pages/ManageClinic"));
+const ManageClinicInfo = lazy(() => import("@pages/ManageClinicInfo"));
+const CreateDoctor = lazy(() => import("@pages/CreateDoctor"));
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticatedAdmin, isLoading } = useSelector(
@@ -45,11 +43,18 @@ const ProtectedRoute = ({ children }) => {
 };
 
 const AuthRoute = ({ children }) => {
-  const { isAuthenticatedAdmin, isLoading } = useSelector(
+  const { isAuthenticatedAdmin, isLoading, adminInfo } = useSelector(
     (state) => state.auth
   );
   return isAuthenticatedAdmin && !isLoading ? (
-    <Navigate to="/admin/dashboard" replace />
+    <Navigate
+      to={
+        adminInfo.role === "ADMIN"
+          ? "/admin/dashboard"
+          : "/admin/dashboard-clinic"
+      }
+      replace
+    />
   ) : (
     children
   );
@@ -219,10 +224,10 @@ const adminRoutes = [
     isProtected: true,
   },
   {
-    path: "/admin/clinics/create",
-    element: CreateClinic,
+    path: "/admin/clinics-info",
+    element: ManageClinicInfo,
     title: "Admin - Tạo Thông Tin Phòng khám",
-    layoutTitle: "Tạo thông tin phòng khám",
+    layoutTitle: "",
     isProtected: true,
   },
   {

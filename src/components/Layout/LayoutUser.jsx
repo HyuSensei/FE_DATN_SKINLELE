@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import HeaderUser from "../Header/HeaderUser";
-import FooterUser from "../Footer/FooterUser";
+import HeaderUser from "@components/Header/HeaderUser";
+import FooterUser from "@components/Footer/FooterUser";
 
 const LayoutUser = ({ children }) => {
   const location = useLocation();

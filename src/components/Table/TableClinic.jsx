@@ -13,8 +13,8 @@ import { useDispatch } from "react-redux";
 import {
   removeClinicByAdmin,
   updateClinicByAdmin,
-} from "../../redux/clinic/clinic.thunk";
-import { deleteFile } from "../../helpers/uploadCloudinary";
+} from "@redux/clinic/clinic.thunk";
+import { deleteFile } from "@helpers/uploadCloudinary";
 
 const TableClinic = ({
   clinics = [],

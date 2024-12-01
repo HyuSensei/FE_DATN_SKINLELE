@@ -1,5 +1,5 @@
 import axios from "axios";
-import { get } from "../storage/storage";
+import { get } from "@storage/storage";
 
 const API_URL = import.meta.env.VITE_APP_API_URl;
 const TIMEOUT = 5000;
@@ -17,12 +17,16 @@ const createAxiosInstance = () => {
   instance.interceptors.request.use((config) => {
     const accessTokenAdmin = get("ACCESS_TOKEN_ADMIN");
     const accessToken = get("ACCESS_TOKEN");
+    const accessTokenDoctor = get("ACCESS_TOKEN_DOCTOR");
 
     if (accessToken) {
       config.headers["X-User-Header"] = accessToken;
     }
     if (accessTokenAdmin) {
       config.headers["X-Admin-Header"] = accessTokenAdmin;
+    }
+    if (accessTokenDoctor) {
+      config.headers["X-Doctor-Header"] = accessTokenDoctor;
     }
     return config;
   });
@@ -55,16 +59,7 @@ const createAxiosInstance = () => {
 
 let axiosInstance = createAxiosInstance();
 
-export const refreshAxiosInstance = () => {
-  axiosInstance = createAxiosInstance();
-};
-
-export default axiosInstance;
-
-export const baseQuery = async (
-  { url, method = "GET", data, params },
-  { getState, extra }
-) => {
+export const baseQuery = async ({ url, method = "GET", data, params }) => {
   try {
     const response = await axiosInstance({
       url,
@@ -82,3 +77,10 @@ export const baseQuery = async (
     };
   }
 };
+
+export const refreshAxiosInstance = () => {
+  axiosInstance = createAxiosInstance();
+};
+
+export default axiosInstance;
+

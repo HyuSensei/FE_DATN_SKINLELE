@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import bannerCategory from "../../assets/images/skinele-notfound-page_1.gif";
+import bannerCategory from "@assets/images/skinele-notfound-page_1.gif";
 
 const NotFound = () => {
   const navigate = useNavigate();

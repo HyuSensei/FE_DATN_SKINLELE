@@ -5,7 +5,7 @@ import Slider from "react-slick";
 import { FaUserMd, FaClock, FaCalendarCheck, FaStar } from "react-icons/fa";
 import { MdHealthAndSafety, MdSupportAgent } from "react-icons/md";
 import { FaLocationDot } from "react-icons/fa6";
-import CustomButton from "../../components/CustomButton/CustomButton";
+import CustomButton from "@components/CustomButton/CustomButton";
 
 const HomeBooking = () => {
   const fadeInUp = {

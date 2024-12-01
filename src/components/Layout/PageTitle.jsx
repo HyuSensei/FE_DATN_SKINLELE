@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
-import { SocketActions } from "../../redux/socket/socket.slice";
+import { SocketActions } from "@redux/socket/socket.slice";
 
 const SOCKET_SERVER_URL = import.meta.env.VITE_APP_API_BASE_URL;
 

@@ -1,24 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Collapse, Modal } from "antd";
-import { formatPrice } from "../../helpers/formatPrice";
-import useScreen from "../../hook/useScreen";
+import { formatPrice } from "@helpers/formatPrice";
 import { useDispatch, useSelector } from "react-redux";
-import { getDistrict, getProvince, getWard } from "../../redux/ship/ship.thunk";
-import {
-  orderCod,
-  orderStripe,
-  orderVnpay,
-} from "../../redux/order/order.thunk";
+import { getDistrict, getProvince, getWard } from "@redux/ship/ship.thunk";
+import { orderCod, orderStripe, orderVnpay } from "@redux/order/order.thunk";
 import { useNavigate } from "react-router-dom";
-import { setOrderReturn } from "../../redux/order/order.slice";
+import { setOrderReturn } from "@redux/order/order.slice";
 import { loadStripe } from "@stripe/stripe-js";
-import {
-  clearCart,
-  removeProductAfterOrderSuccess,
-} from "../../redux/cart/cart.slice";
-import { validateForm, validateOrderSchema } from "../../validate/validate";
-import ErrorMessage from "../../components/Error/ErrorMessage";
-import { setDistrict, setWard } from "../../redux/ship/ship.slice";
+import { removeProductAfterOrderSuccess } from "@redux/cart/cart.slice";
+import { validateForm, validateOrderSchema } from "@validate/validate";
+import ErrorMessage from "@components/Error/ErrorMessage";
+import { setDistrict, setWard } from "@redux/ship/ship.slice";
 import { IoMdCloseCircle } from "react-icons/io";
 import isEmpty from "lodash/isEmpty";
 import { MdVerifiedUser } from "react-icons/md";

@@ -2,7 +2,7 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import UserRoutes from "./user";
 import AdminRoutes from "./admin";
-import NotFound from "../pages/NotFound/NotFound";
+import NotFound from "@pages/NotFound/NotFound";
 import BookingRoutes from "./booking";
 
 const Router = () => {

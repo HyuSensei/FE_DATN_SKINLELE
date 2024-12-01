@@ -19,11 +19,11 @@ import {
   HighlightOutlined,
   EyeOutlined
 } from "@ant-design/icons";
-import { formatPrice } from "../../helpers/formatPrice";
-import { formatDateReview } from "../../helpers/formatDate";
-import ModalOrderDetail from "../Modal/ModalOrderDetail";
+import { formatPrice } from "@helpers/formatPrice";
+import { formatDateReview } from "@helpers/formatDate";
+import ModalOrderDetail from "@components/Modal/ModalOrderDetail";
 import isEmpty from "lodash/isEmpty";
-import ModalEditShip from "../Modal/ModalEditShip";
+import ModalEditShip from "@components/Modal/ModalEditShip";
 
 const { Title, Text } = Typography;
 const { Step } = Steps;

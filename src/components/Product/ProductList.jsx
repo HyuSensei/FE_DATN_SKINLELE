@@ -2,11 +2,11 @@ import React from "react";
 import { List, Pagination, Rate, Spin, Tag } from "antd";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { formatPrice } from "../../helpers/formatPrice";
-import { defaultProduct } from "../../const/defaultProduct";
-import { createAverageRate } from "../../ultis/createIcon";
-import ImageCarousel from "../ImageCarousel";
-import emptyProductList from "../../assets/images/skinlele-product-list-empty.gif";
+import { formatPrice } from "@helpers/formatPrice";
+import { defaultProduct } from "@const/defaultProduct";
+import { createAverageRate } from "@utils/createIcon";
+import ImageCarousel from "@components/ImageCarousel";
+import emptyProductList from "@assets/images/skinlele-product-list-empty.gif";
 
 const ProductList = ({
   isLoading,

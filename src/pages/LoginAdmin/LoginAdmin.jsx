@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { FiMail, FiLock, FiArrowRight } from "react-icons/fi";
 import { useDispatch } from "react-redux";
-import { getAccountAdmin, loginAdmin } from "../../redux/auth/auth.thunk";
-import { set } from "../../storage/storage";
+import { getAccountAdmin, loginAdmin } from "@redux/auth/auth.thunk";
+import { set } from "@storage/storage";
 import { message } from "antd";
 import { useNavigate } from "react-router-dom";
 

@@ -1,5 +1,5 @@
 import React from "react";
-import Auth from "../../pages/Auth/Auth";
+import Auth from "@pages/Auth/Auth";
 import { Modal } from "antd";
 
 const ModalAuth = ({ open, onClose }) => {

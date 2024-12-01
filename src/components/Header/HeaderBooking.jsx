@@ -1,7 +1,7 @@
 import { Input, Layout, Dropdown } from "antd";
 import { FaBars, FaHandshake, FaSearch, FaUserCircle } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import logo from "../../assets/images/logo-booking.png";
+import logo from "@assets/images/logo-booking.png";
 import React, { useState } from "react";
 import { IoLogOut } from "react-icons/io5";
 import { PiCalendarCheckFill } from "react-icons/pi";

@@ -7,12 +7,9 @@ import {
   getCategoryAdmin,
   getCategoryList,
   updateCategory,
-} from "../../redux/category/category.thunk";
-import {
-  validateCategoryActionSchema,
-  validateForm,
-} from "../../validate/validate";
-import ErrorMessage from "../Error/ErrorMessage";
+} from "@redux/category/category.thunk";
+import { validateCategoryActionSchema, validateForm } from "@validate/validate";
+import ErrorMessage from "@components/Error/ErrorMessage";
 
 const ModalCategoryAction = ({
   open,

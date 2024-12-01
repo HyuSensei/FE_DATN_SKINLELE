@@ -9,13 +9,13 @@ import {
   CloseCircleOutlined,
 } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { getOrderHistory } from "../../redux/order/order.thunk";
-import OrderAll from "../Order/OrderAll";
-import OrderWait from "../Order/OrderWait";
-import OrderProcess from "../Order/OrderProcess";
-import OrderShip from "../Order/OrderShip";
-import OrderComplete from "../Order/OrderComplete";
-import OrderCancel from "../Order/OrderCancel";
+import { getOrderHistory } from "@redux/order/order.thunk";
+import OrderAll from "@components/Order/OrderAll";
+import OrderWait from "@components/Order/OrderWait";
+import OrderProcess from "@components/Order/OrderProcess";
+import OrderShip from "@components/Order/OrderShip";
+import OrderComplete from "@components/Order/OrderComplete";
+import OrderCancel from "@components/Order/OrderCancel";
 import { debounce } from "lodash";
 
 const OrderTabs = () => {
