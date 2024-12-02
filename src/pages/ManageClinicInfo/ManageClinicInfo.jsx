@@ -7,7 +7,7 @@ const ManageClinicInfo = () => {
 
   return (
     <>
-      {action === "info" && <ClinicInfo />}
+      {action === "info" && <ClinicInfo {...{ setAction }} />}
       {action === "create" && <CreateClinic />}
     </>
   );
