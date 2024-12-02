@@ -6,7 +6,7 @@ import UpdateClinic from "./UpdateClinic";
 
 const ManageClinicInfo = () => {
   const dispatch = useDispatch();
-  const [action, setAction] = useState("info");
+  const [action, setAction] = useState("create");
 
   return (
     <>
