@@ -44,6 +44,18 @@ const WEEKDAYS = [
   { label: "Chủ nhật", value: "Chủ nhật" },
 ];
 
+const config = {
+  imageUpload: false,
+  imageUploadToBase64: false,
+  imageAllowedTypes: ["jpeg", "jpg", "png", "gif"],
+  height: 200,
+  charCounterCount: false,
+  toolbarSticky: true,
+  toolbarStickyOffset: 50,
+  attribution: false,
+  language: "vi",
+};
+
 const CreateClinic = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -300,16 +312,8 @@ const CreateClinic = () => {
               <FroalaEditor
                 tag="textarea"
                 config={{
+                  ...config,
                   placeholderText: "Số nhà, đường, phường/xã...",
-                  imageUpload: false,
-                  imageUploadToBase64: false,
-                  imageAllowedTypes: ["jpeg", "jpg", "png", "gif"],
-                  height: 200,
-                  charCounterCount: false,
-                  toolbarSticky: true,
-                  toolbarStickyOffset: 50,
-                  attribution: false,
-                  language: "vi",
                 }}
                 model={getFieldValue("address") || ""}
                 onModelChange={(value) =>
@@ -511,16 +515,8 @@ const CreateClinic = () => {
               <FroalaEditor
                 tag="textarea"
                 config={{
+                  ...config,
                   placeholderText: "Mô tả phòng khám...",
-                  imageUpload: false,
-                  imageUploadToBase64: false,
-                  imageAllowedTypes: ["jpeg", "jpg", "png", "gif"],
-                  height: 200,
-                  charCounterCount: false,
-                  toolbarSticky: true,
-                  toolbarStickyOffset: 50,
-                  attribution: false,
-                  language: "vi",
                 }}
                 model={getFieldValue("description") || ""}
                 onModelChange={(value) =>

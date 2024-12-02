@@ -2,7 +2,6 @@ import React, { lazy, Suspense } from "react";
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 import Loading from "@components/Loading/Loading";
-import LoadingClinic from "@components/Loading/LoadingClinic";
 
 const PageTitle = lazy(() => import("@components/Layout/PageTitle"));
 const LayoutAdmin = lazy(() => import("@components/Layout/LayoutAdmin"));

@@ -39,6 +39,7 @@ const initialState = {
       url: "",
       publicId: "",
     },
+    clinic: null,
   },
   doctorInfo: {
     _id: "",

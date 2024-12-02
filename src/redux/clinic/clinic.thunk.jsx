@@ -38,6 +38,18 @@ export const updateClinicByAdmin = createAsyncThunk(
   }
 );
 
+export const updateClinicByOwner = createAsyncThunk(
+  "clinic/updateClinicByOwner",
+  async (payload, { rejectWithValue }) => {
+    try {
+      return await axios.post("/admin/clinics/owner", payload);
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 export const removeClinicByAdmin = createAsyncThunk(
   "clinic/removeClinicByAdmin",
   async (id, { rejectWithValue }) => {

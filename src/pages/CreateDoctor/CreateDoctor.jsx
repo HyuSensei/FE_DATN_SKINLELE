@@ -16,7 +16,7 @@ import {
   UPLOAD_SKINLELE_CLINIC_PRESET,
   uploadFile,
 } from "@helpers/uploadCloudinary";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { createDoctorByAdmin } from "@redux/doctor/doctor.thunk";
 
@@ -26,6 +26,7 @@ const CreateDoctor = () => {
   const [form] = Form.useForm();
   const [avatar, setAvatar] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { clinic } = useSelector((state) => state.auth.adminInfo);
 
   const handleSubmit = async (values) => {
     try {
@@ -147,12 +148,15 @@ const CreateDoctor = () => {
                 size="large"
                 className="rounded-lg"
                 placeholder="Chọn chuyên khoa"
-                options={[
-                  { value: "Da liễu", label: "Da liễu" },
-                  { value: "Thẩm mỹ", label: "Thẩm mỹ" },
-                  // Add more specialties
-                ]}
-              />
+              >
+                {clinic &&
+                  clinic.specialties.length > 0 &&
+                  clinic.specialties.map((item, index) => (
+                    <Select.Option value={item} key={index}>
+                      {item}
+                    </Select.Option>
+                  ))}
+              </Select>
             </Form.Item>
           </Col>
           <Col xs={24} md={12}>
