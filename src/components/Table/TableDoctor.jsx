@@ -1,5 +1,5 @@
 import { formatPrice } from "@/helpers/formatPrice";
-import { Pagination, Popconfirm, Switch, Table, Tag, Tooltip } from "antd";
+import { Popconfirm, Switch, Table, Tag, Tooltip } from "antd";
 import React, { useMemo, useState } from "react";
 import { GrEdit } from "react-icons/gr";
 import { MdOutlineDeleteOutline } from "react-icons/md";

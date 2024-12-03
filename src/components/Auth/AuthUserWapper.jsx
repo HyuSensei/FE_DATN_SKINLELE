@@ -13,22 +13,37 @@ const AuthUserWrapper = ({ children }) => {
   const { pathname } = useLocation();
   const token = urlParams.get("token");
 
-  const initAuth = () => {
-    const accessToken = get("ACCESS_TOKEN");
-    if (token) {
-      set("ACCESS_TOKEN", token);
-      window.location.href = "/";
-      dispatch(getAccountUser());
+  const initAuth = async () => {
+    try {
+      if (token) {
+        set("ACCESS_TOKEN", token);
+        await dispatch(getAccountUser()).unwrap();
+        window.history.replaceState({}, "", location.pathname);
+        return;
+      }
+
+      const accessToken = get("ACCESS_TOKEN");
+      if (accessToken && !isAuthenticated) {
+        await dispatch(getAccountUser()).unwrap();
+      }
+    } finally {
+      setIsInitialized(true);
     }
-    if (accessToken && !isAuthenticated) {
-      dispatch(getAccountUser());
-    }
-    setIsInitialized(true);
+    // const accessToken = get("ACCESS_TOKEN");
+    // if (token) {
+    //   set("ACCESS_TOKEN", token);
+    //   window.location.href = "/";
+    //   dispatch(getAccountUser());
+    // }
+    // if (accessToken && !isAuthenticated) {
+    //   dispatch(getAccountUser());
+    // }
+    // setIsInitialized(true);
   };
 
   useEffect(() => {
     initAuth();
-  }, [dispatch]);
+  }, [dispatch, token, isAuthenticated]);
 
   if ((!isInitialized || isLoading) && pathname !== "/auth") {
     return <Loading />;

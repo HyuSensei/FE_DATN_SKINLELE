@@ -6,7 +6,7 @@ export const getAllClinicAdmin = createAsyncThunk(
   async ({ page = 1, pageSize = 10, search = "" }, { rejectWithValue }) => {
     try {
       return await axios.get(
-        `/admin/clinics?${page}&pageSize=${pageSize}&search=${search}`
+        `/admin/clinics?page=${page}&pageSize=${pageSize}&search=${search}`
       );
     } catch (error) {
       return rejectWithValue(error.response.data);

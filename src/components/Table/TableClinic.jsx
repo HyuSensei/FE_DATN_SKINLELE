@@ -1,12 +1,4 @@
-import {
-  message,
-  Pagination,
-  Popconfirm,
-  Switch,
-  Table,
-  Tag,
-  Tooltip,
-} from "antd";
+import { message, Popconfirm, Switch, Table, Tag, Tooltip } from "antd";
 import React, { useMemo } from "react";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { useDispatch } from "react-redux";
@@ -81,7 +73,9 @@ const TableClinic = ({
         title: "Tên phòng khám",
         dataIndex: "name",
         key: "name",
-        render: (text) => <div className="text-sm font-bold">{text}</div>,
+        render: (text) => (
+          <div className="text-sm font-medium uppercase">{text}</div>
+        ),
       },
       {
         title: "Chuyên khoa",
@@ -91,7 +85,7 @@ const TableClinic = ({
           specialties?.map((specialty, idx) => (
             <Tag
               key={idx}
-              className="rounded-full bg-blue-100 text-[#6c9bbf] border-blue-200"
+              className="rounded-full bg-blue-100 text-[#6c9bbf] border-blue-200 my-1"
             >
               {specialty}
             </Tag>
@@ -102,7 +96,7 @@ const TableClinic = ({
         key: "info",
         render: (record) => (
           <div className="space-y-2">
-            <div>Địa chỉ: {record.address}</div>
+            <div dangerouslySetInnerHTML={{ __html: record.address }} />
             <div>Số điện thoại: {record.phone}</div>
             <div>Email: {record.email}</div>
           </div>
@@ -167,27 +161,20 @@ const TableClinic = ({
         columns={columns}
         dataSource={clinics}
         rowKey={(record) => record._id}
-        pagination={false}
         loading={loading}
         scroll={{ x: true }}
+        pagination={{
+          current: page,
+          pageSize: pageSize,
+          total: totalItems,
+          onChange: (page, pageSize) =>
+            setPaginate((prev) => ({
+              ...prev,
+              page,
+              pageSize,
+            })),
+        }}
       />
-      {clinics.length > 0 && (
-        <div className="mt-4 flex justify-end">
-          <Pagination
-            current={page}
-            pageSize={pageSize}
-            total={totalItems}
-            onChange={(newPage, newPageSize) =>
-              setPaginate((prev) => ({
-                ...prev,
-                page: newPage,
-                pageSize: newPageSize,
-              }))
-            }
-            showSizeChanger
-          />
-        </div>
-      )}
     </>
   );
 };

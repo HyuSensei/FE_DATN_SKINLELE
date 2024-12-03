@@ -98,7 +98,8 @@ const ManageClinic = () => {
         {...{
           clinics,
           page: paginate.page,
-          pageSize: paginate.page,
+          pageSize: paginate.pageSize,
+          totalItems: paginate.totalItems,
           setPaginate,
           loading,
           setStateByAction,
