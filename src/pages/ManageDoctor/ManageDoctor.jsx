@@ -21,7 +21,6 @@ const ManageDoctor = () => {
     name: "",
   });
   const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
 
   const fetchDoctor = async () => {
     try {

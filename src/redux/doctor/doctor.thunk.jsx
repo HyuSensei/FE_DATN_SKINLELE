@@ -6,7 +6,7 @@ export const getAllDoctorByAdmin = createAsyncThunk(
   async ({ page = 1, pageSize = 10, name = "" }, { rejectWithValue }) => {
     try {
       return await axios.get(
-        `/admin/doctors?${page}&pageSize=${pageSize}&name=${name}`
+        `/admin/doctors?page=${page}&pageSize=${pageSize}&name=${name}`
       );
     } catch (error) {
       return rejectWithValue(error.response.data);
