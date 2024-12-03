@@ -85,7 +85,8 @@ const ManageDoctor = () => {
         {...{
           doctors,
           page: paginate.page,
-          pageSize: paginate.page,
+          pageSize: paginate.pageSize,
+          totalItems: paginate.totalItems,
           setPaginate,
           loading,
         }}

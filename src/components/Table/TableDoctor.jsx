@@ -129,6 +129,7 @@ const TableDoctor = ({
         dataSource={doctors}
         rowKey={(record) => record._id}
         loading={loading}
+        scroll={{ x: true }}
         pagination={{
           current: page,
           pageSize: pageSize,
@@ -140,7 +141,6 @@ const TableDoctor = ({
               pageSize,
             })),
         }}
-        scroll={{ x: true }}
       />
     </>
   );

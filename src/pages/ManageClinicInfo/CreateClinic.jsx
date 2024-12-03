@@ -26,7 +26,6 @@ import {
   uploadFile,
 } from "@helpers/uploadCloudinary";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { createClinicByAdmin } from "@redux/clinic/clinic.thunk";
 import FroalaEditor from "react-froala-wysiwyg";
 import "froala-editor/js/froala_editor.pkgd.min.js";
@@ -58,7 +57,6 @@ const config = {
 
 const CreateClinic = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const [form] = Form.useForm();
   const [specialties, setSpecialties] = useState([]);
   const [logoImage, setLogoImage] = useState([]);
@@ -216,7 +214,7 @@ const CreateClinic = () => {
       const res = await dispatch(createClinicByAdmin(payload)).unwrap();
       if (res.success) {
         message.success(res.message);
-        form.resetFields();
+        window.location.reload();
       }
     } catch (error) {
       console.error(error);
