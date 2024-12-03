@@ -1,4 +1,5 @@
-import { Pagination, Switch, Table, Tag, Tooltip } from "antd";
+import { formatPrice } from "@/helpers/formatPrice";
+import { Pagination, Popconfirm, Switch, Table, Tag, Tooltip } from "antd";
 import React, { useMemo, useState } from "react";
 import { GrEdit } from "react-icons/gr";
 import { MdOutlineDeleteOutline } from "react-icons/md";
@@ -45,7 +46,7 @@ const TableDoctor = ({
         key: "specialty",
         width: 150,
         render: (specialty) => (
-          <Tag color="blue" className="text-sm">
+          <Tag color="blue" className="text-sm py-2 px-3 rounded-full">
             {specialty}
           </Tag>
         ),
@@ -62,11 +63,7 @@ const TableDoctor = ({
         dataIndex: "fees",
         key: "fees",
         width: 120,
-        render: (fee) =>
-          new Intl.NumberFormat("vi-VN", {
-            style: "currency",
-            currency: "VND",
-          }).format(fee),
+        render: (fee) => `${formatPrice(fee)} VND`,
       },
       {
         title: "Liên hệ",
@@ -95,20 +92,29 @@ const TableDoctor = ({
           <div className="flex items-center gap-3">
             <Tooltip title="Chỉnh sửa">
               <button
-                onClick={() => onEdit?.(record)}
-                className="text-gray-600 hover:text-blue-600 transition-colors"
+                onClick={() => onEdit()}
+                className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors"
               >
-                <GrEdit size={18} />
+                <GrEdit />
               </button>
             </Tooltip>
-            <Tooltip title="Xóa">
-              <button
-                onClick={() => onDelete?.(record._id)}
-                className="text-gray-600 hover:text-red-600 transition-colors"
-              >
-                <MdOutlineDeleteOutline size={20} />
-              </button>
-            </Tooltip>
+            <Popconfirm
+              className="max-w-40"
+              placement="topLeft"
+              title={"Xác nhận xóa bác sĩ"}
+              onConfirm={() => {
+                onDelete();
+              }}
+              okText="Xóa"
+              cancelText="Hủy"
+              destroyTooltipOnHide={true}
+            >
+              <Tooltip title="Xóa">
+                <button className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
+                  <MdOutlineDeleteOutline />
+                </button>
+              </Tooltip>
+            </Popconfirm>
           </div>
         ),
       },
@@ -117,36 +123,26 @@ const TableDoctor = ({
   );
 
   return (
-    <div className="bg-white rounded-lg shadow">
+    <>
       <Table
         columns={columns}
         dataSource={doctors}
         rowKey={(record) => record._id}
-        pagination={false}
         loading={loading}
-        scroll={{ x: 800 }}
-        className="border-t border-gray-200"
+        pagination={{
+          current: page,
+          pageSize: pageSize,
+          total: totalItems,
+          onChange: (page, pageSize) =>
+            setPaginate((prev) => ({
+              ...prev,
+              page,
+              pageSize,
+            })),
+        }}
+        scroll={{ x: true }}
       />
-      {doctors.length > 0 && (
-        <div className="px-6 py-4 border-t border-gray-200">
-          <Pagination
-            current={page}
-            pageSize={pageSize}
-            total={totalItems}
-            onChange={(newPage, newPageSize) =>
-              setPaginate((prev) => ({
-                ...prev,
-                page: newPage,
-                pageSize: newPageSize,
-              }))
-            }
-            showSizeChanger
-            showTotal={(total, range) => `${range[0]}-${range[1]} của ${total}`}
-            className="text-right"
-          />
-        </div>
-      )}
-    </div>
+    </>
   );
 };
 

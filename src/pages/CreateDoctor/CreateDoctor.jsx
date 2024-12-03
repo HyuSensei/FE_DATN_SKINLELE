@@ -19,6 +19,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { createDoctorByAdmin } from "@redux/doctor/doctor.thunk";
+import SkinLeLeEditor from "@/components/SkinLeLeEditor";
 
 const CreateDoctor = () => {
   const dispatch = useDispatch();
@@ -138,7 +139,7 @@ const CreateDoctor = () => {
       {/* Professional Info */}
       <Card title="Thông tin chuyên môn" className="mb-6 shadow-md">
         <Row gutter={16}>
-          <Col xs={24} md={12}>
+          <Col xs={24} md={8}>
             <Form.Item
               name="specialty"
               label="Chuyên khoa"
@@ -159,7 +160,7 @@ const CreateDoctor = () => {
               </Select>
             </Form.Item>
           </Col>
-          <Col xs={24} md={12}>
+          <Col xs={24} md={8}>
             <Form.Item
               name="experience"
               label="Số năm kinh nghiệm"
@@ -175,10 +176,10 @@ const CreateDoctor = () => {
               />
             </Form.Item>
           </Col>
-          <Col xs={24} md={12}>
+          <Col xs={24} md={8}>
             <Form.Item
               name="fees"
-              label="Phí tư vấn (VNĐ)"
+              label="Phí khám (VNĐ)"
               rules={[{ required: true, message: "Vui lòng nhập phí tư vấn" }]}
             >
               <InputNumber
@@ -193,35 +194,25 @@ const CreateDoctor = () => {
               />
             </Form.Item>
           </Col>
-          <Col xs={24} md={12}>
-            <Form.Item
-              name="isIndependent"
-              label="Loại bác sĩ"
-              rules={[{ required: true, message: "Vui lòng chọn loại bác sĩ" }]}
-            >
-              <Select
-                size="large"
-                className="rounded-lg"
-                placeholder="Chọn loại bác sĩ"
-                options={[
-                  { value: false, label: "Bác sĩ phòng khám" },
-                  { value: true, label: "Bác sĩ độc lập" },
-                ]}
-              />
-            </Form.Item>
-          </Col>
         </Row>
-
         <Form.Item
           name="about"
           label="Giới thiệu"
           rules={[{ required: true, message: "Vui lòng nhập giới thiệu" }]}
+          trigger="onModelChange"
+          validateTrigger="onModelChange"
         >
-          <Input.TextArea
-            rows={8}
-            placeholder="Giới thiệu về kinh nghiệm, chuyên môn..."
-            className="rounded-lg"
-          />
+          <Form.Item noStyle shouldUpdate>
+            {({ getFieldValue, setFieldsValue }) => (
+              <SkinLeLeEditor
+                model={getFieldValue("about")}
+                onChange={(value) => setFieldsValue({ about: value })}
+                config={{
+                  placeholderText: "Giới thiệu về kinh nghiệm, chuyên môn...",
+                }}
+              />
+            )}
+          </Form.Item>
         </Form.Item>
       </Card>
 

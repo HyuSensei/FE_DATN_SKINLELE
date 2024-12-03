@@ -122,7 +122,7 @@ const TableProductAlmostExpired = ({
           selectedProducts,
           paginate,
           setSelectedProducts,
-          setProducts
+          setProducts,
         }}
       />
       <Table
@@ -138,7 +138,12 @@ const TableProductAlmostExpired = ({
           current: paginate.page,
           pageSize: paginate.pageSize,
           total: paginate.totalItems,
-          onChange: (page, pageSize) => setPaginate({ page, pageSize }),
+          onChange: (page, pageSize) =>
+            setPaginate((prev) => ({
+              ...prev,
+              page,
+              pageSize,
+            })),
         }}
         scroll={{ x: true }}
       />

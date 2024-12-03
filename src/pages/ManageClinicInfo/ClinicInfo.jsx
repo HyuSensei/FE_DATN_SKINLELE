@@ -141,7 +141,7 @@ const ClinicInfo = ({ setAction }) => {
           {!clinic.banners.length ? (
             <Empty />
           ) : (
-            <Carousel autoplay>
+            <Carousel autoplay dots={false} arrows={true}>
               {clinic.banners.map((banner, index) => (
                 <div key={index} className="max-h-96">
                   <img

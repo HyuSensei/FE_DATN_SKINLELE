@@ -51,7 +51,7 @@ const HeaderBooking = () => {
 
   return (
     <AntHeader className="fixed top-0 left-0 right-0 z-50 p-0">
-      <div className="bg-white shadow-sm">
+      <div className="bg-white shadow-sm py-3">
         <div className="max-w-[1536px] mx-auto">
           <div className="flex h-16 items-center justify-between px-4 gap-4">
             {/* Logo Section */}
