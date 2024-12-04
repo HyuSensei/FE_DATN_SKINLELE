@@ -27,6 +27,7 @@ import {
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 import locale from "antd/locale/vi_VN";
+import { useGetStatisticalDoctorQuery } from "@/redux/doctor/doctor.query";
 
 const ManageStatistic = () => {
   const [year, setYear] = useState(new Date().getFullYear());
