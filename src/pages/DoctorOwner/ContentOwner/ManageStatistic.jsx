@@ -1,174 +1,155 @@
-import React from "react";
-import { Card, Row, Col, Statistic, Table, DatePicker } from "antd";
+import React, { useState } from "react";
+import {
+  Card,
+  Select,
+  DatePicker,
+  Spin,
+  Statistic,
+  Row,
+  Col,
+} from "antd";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 import {
   UserOutlined,
   CheckCircleOutlined,
-  ClockCircleOutlined,
   CloseCircleOutlined,
   StarOutlined,
-  DollarOutlined,
 } from "@ant-design/icons";
-
-const { RangePicker } = DatePicker;
+import dayjs from "dayjs";
+import "dayjs/locale/vi";
+import locale from "antd/locale/vi_VN";
 
 const ManageStatistic = () => {
-  // Mock data - thay thế bằng API data
-  const statistics = {
-    totalAppointments: 150,
-    completedAppointments: 120,
-    pendingAppointments: 20,
-    cancelledAppointments: 10,
-    totalRevenue: 75000000,
-    averageRating: 4.8,
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [month, setMonth] = useState(new Date().getMonth() + 1);
+
+  const { data, isLoading } = useGetStatisticalDoctorQuery({
+    year,
+    month,
+  });
+
+  const handleMonthChange = (date) => {
+    if (date) {
+      setMonth(date.month() + 1);
+      setYear(date.year());
+    }
   };
 
-  const recentAppointments = [
-    {
-      key: "1",
-      patientName: "Nguyễn Văn A",
-      date: "20/03/2024",
-      time: "09:00 - 09:30",
-      status: "completed",
-      amount: 500000,
-    },
-    {
-      key: "2",
-      patientName: "Trần Thị B",
-      date: "21/03/2024",
-      time: "10:00 - 10:30",
-      status: "pending",
-      amount: 500000,
-    },
-  ];
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-[50vh]">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
-  const columns = [
-    {
-      title: "Bệnh nhân",
-      dataIndex: "patientName",
-      key: "patientName",
-    },
-    {
-      title: "Ngày khám",
-      dataIndex: "date",
-      key: "date",
-    },
-    {
-      title: "Thời gian",
-      dataIndex: "time",
-      key: "time",
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
-      render: (status) => {
-        const statusConfig = {
-          completed: { color: "text-green-500", text: "Hoàn thành" },
-          pending: { color: "text-blue-500", text: "Đang chờ" },
-          cancelled: { color: "text-red-500", text: "Đã hủy" },
-        };
-        return (
-          <span className={statusConfig[status].color}>
-            {statusConfig[status].text}
-          </span>
-        );
-      },
-    },
-    {
-      title: "Phí khám",
-      dataIndex: "amount",
-      key: "amount",
-      render: (amount) => `${amount.toLocaleString("vi-VN")}đ`,
-    },
-  ];
+  const statistics = data?.data || {};
 
   return (
-    <div className="mt-4">
-      {/* Filter Section */}
-      <Card className="mb-6">
-        <div className="flex items-center justify-between">
-          <span className="text-lg font-medium">Thống kê lịch khám</span>
-          <RangePicker
-            placeholder={["Ngày bắt đầu", "Ngày kết thúc"]}
-            className="w-[300px]"
-          />
-        </div>
-      </Card>
+    <div className="p-4 space-y-6">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <h1 className="text-2xl font-bold">Thống kê lịch đặt dịch vụ</h1>
+        <DatePicker
+          locale={locale}
+          picker="month"
+          value={dayjs(`${year}-${month}`)}
+          onChange={handleMonthChange}
+          format="MM/YYYY"
+          allowClear={false}
+        />
+      </div>
 
-      {/* Statistics Cards */}
-      <Row gutter={[16, 16]} className="mb-6">
-        <Col xs={24} sm={12} lg={8}>
+      {/* Stats Overview */}
+      <Row gutter={[16, 16]}>
+        <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title={<span className="text-gray-600">Tổng số lịch khám</span>}
-              value={statistics.totalAppointments}
-              prefix={<UserOutlined className="text-blue-500" />}
+              title="Tổng lượt đặt"
+              value={statistics.totalStats?.totalBookings || 0}
+              prefix={<UserOutlined />}
             />
           </Card>
         </Col>
-        <Col xs={24} sm={12} lg={8}>
+        <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title={<span className="text-gray-600">Đã hoàn thành</span>}
-              value={statistics.completedAppointments}
-              prefix={<CheckCircleOutlined className="text-green-500" />}
+              title="Đã hoàn thành"
+              value={statistics.totalStats?.completed || 0}
+              prefix={<CheckCircleOutlined style={{ color: "#52c41a" }} />}
             />
           </Card>
         </Col>
-        <Col xs={24} sm={12} lg={8}>
+        <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title={<span className="text-gray-600">Đang chờ</span>}
-              value={statistics.pendingAppointments}
-              prefix={<ClockCircleOutlined className="text-blue-500" />}
+              title="Đã hủy"
+              value={statistics.totalStats?.cancelled || 0}
+              prefix={<CloseCircleOutlined style={{ color: "#ff4d4f" }} />}
             />
           </Card>
         </Col>
-        <Col xs={24} sm={12} lg={8}>
+        <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title={<span className="text-gray-600">Đã hủy</span>}
-              value={statistics.cancelledAppointments}
-              prefix={<CloseCircleOutlined className="text-red-500" />}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={8}>
-          <Card>
-            <Statistic
-              title={<span className="text-gray-600">Tổng doanh thu</span>}
-              value={statistics.totalRevenue}
-              prefix={<DollarOutlined className="text-green-500" />}
-              suffix="đ"
-              formatter={(value) => `${value.toLocaleString("vi-VN")}`}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={8}>
-          <Card>
-            <Statistic
-              title={<span className="text-gray-600">Đánh giá trung bình</span>}
-              value={statistics.averageRating}
-              prefix={<StarOutlined className="text-yellow-500" />}
+              title="Đánh giá trung bình"
+              value={statistics.averageRating || 0}
+              prefix={<StarOutlined style={{ color: "#faad14" }} />}
+              suffix={`/ 5 (${statistics.totalReviews || 0} đánh giá)`}
               precision={1}
-              suffix="/5"
             />
           </Card>
         </Col>
       </Row>
 
-      {/* Recent Appointments Table */}
-      <Card title="Lịch sử lịch khám gần đây">
-        <Table
-          scroll={{ x: false }}
-          columns={columns}
-          dataSource={recentAppointments}
-          pagination={{
-            pageSize: 10,
-            total: recentAppointments.length,
-            showTotal: (total) => `Tổng ${total} lịch khám`,
-          }}
-        />
+      {/* Chart */}
+      <Card className="mt-6">
+        <h3 className="text-lg font-semibold mb-4">
+          Biểu đồ thống kê theo ngày
+        </h3>
+        <ResponsiveContainer width="100%" height={400}>
+          <LineChart data={statistics.stats || []}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="day" tickFormatter={(day) => `Ngày ${day}`} />
+            <YAxis allowDecimals={false} />
+            <Tooltip
+              formatter={(value, name) => {
+                const labels = {
+                  pending: "Chờ xác nhận",
+                  confirmed: "Đã xác nhận",
+                  cancelled: "Đã hủy",
+                  completed: "Hoàn thành",
+                };
+                return [value, labels[name] || name];
+              }}
+              labelFormatter={(day) => `Ngày ${day}`}
+            />
+            <Legend
+              formatter={(value) => {
+                const labels = {
+                  pending: "Chờ xác nhận",
+                  confirmed: "Đã xác nhận",
+                  cancelled: "Đã hủy",
+                  completed: "Hoàn thành",
+                };
+                return labels[value] || value;
+              }}
+            />
+            <Line type="monotone" dataKey="pending" stroke="#faad14" />
+            <Line type="monotone" dataKey="confirmed" stroke="#1890ff" />
+            <Line type="monotone" dataKey="cancelled" stroke="#ff4d4f" />
+            <Line type="monotone" dataKey="completed" stroke="#52c41a" />
+          </LineChart>
+        </ResponsiveContainer>
       </Card>
     </div>
   );

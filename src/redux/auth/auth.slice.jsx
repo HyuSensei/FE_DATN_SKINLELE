@@ -50,11 +50,16 @@ const initialState = {
       url: "",
       publicId: "",
     },
+    phone: "",
     fees: 0,
+    specialty: "",
+    experience: 0,
     slug: "",
+    clinic: {},
+    schedule: [],
+    holidays: [],
   },
   openModelAuth: false,
-  openModelAuthDoctor: false,
 };
 
 export const authSlice = createSlice({
@@ -63,9 +68,6 @@ export const authSlice = createSlice({
   reducers: {
     setOpenModelAuth(state, action) {
       state.openModelAuth = action.payload;
-    },
-    setOpenModelAuthDoctor(state, action) {
-      state.openModelAuthDoctor = action.payload;
     },
     setEmailVerify(state, action) {
       state.emailVerify = action.payload;
@@ -83,6 +85,17 @@ export const authSlice = createSlice({
       remove("ACCESS_TOKEN_ADMIN");
       state.isAuthenticatedAdmin = false;
       state.adminInfo = {};
+    },
+    setIsAuthenticatedDoctor(state, action) {
+      state.isAuthenticatedDoctor = action.payload;
+    },
+    setDoctorInfo(state, action) {
+      state.doctorInfo = action.payload;
+    },
+    logoutDoctor(state, action) {
+      remove("ACCESS_TOKEN_DOCTOR");
+      state.isAuthenticatedDoctor = false;
+      state.doctorInfo = {};
     },
   },
   extraReducers: (builder) => {
@@ -237,6 +250,8 @@ export const {
   setUserInfo,
   logoutAdmin,
   setOpenModelAuth,
-  setOpenModelAuthDoctor,
+  setDoctorInfo,
+  setIsAuthenticatedDoctor,
+  logoutDoctor,
 } = authSlice.actions;
 export default authSlice.reducer;

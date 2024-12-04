@@ -13,7 +13,7 @@ import { GiRoundStar } from "react-icons/gi";
 import { MdVerified } from "react-icons/md";
 import ClinicAbout from "./ClinicAbout/ClinicAbout";
 import ClinicReview from "./ClinicReview/ClinicReview";
-import CustomButton from "@components/CustomButton/CustomButton";
+import CustumButton from "@components/CustumButton/CustumButton";
 
 // Mock Data
 const clinicData = {
@@ -167,7 +167,7 @@ const Clinic = () => {
                   </div>
                 </div>
               </div>
-              <CustomButton variant="primary"> Đặt lịch khám</CustomButton>
+              <CustumButton variant="primary"> Đặt lịch khám</CustumButton>
             </div>
           </div>
         </div>

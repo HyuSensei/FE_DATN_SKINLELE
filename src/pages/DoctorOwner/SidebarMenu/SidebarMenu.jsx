@@ -6,6 +6,9 @@ import { FaRegCalendarCheck, FaRegUser } from "react-icons/fa6";
 import { MdOutlineReviews } from "react-icons/md";
 import { Collapse } from "antd";
 import { IoSettingsOutline } from "react-icons/io5";
+import { IoIosLogOut } from "react-icons/io";
+import { useDispatch } from "react-redux";
+import { logoutDoctor } from "@/redux/auth/auth.slice";
 
 const MenuItem = ({ icon: Icon, text, isActive, onClick }) => (
   <motion.div
@@ -35,6 +38,12 @@ const MenuItem = ({ icon: Icon, text, isActive, onClick }) => (
 );
 
 const MenuContent = ({ activeMenu, onMenuSelect }) => {
+  const dispatch = useDispatch();
+  const handleLogout = () => {
+    dispatch(logoutDoctor());
+    window.location.reload();
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: -10 }}
@@ -73,6 +82,7 @@ const MenuContent = ({ activeMenu, onMenuSelect }) => {
         isActive={activeMenu === "schedules"}
         onClick={() => onMenuSelect("schedules")}
       />
+      <MenuItem icon={IoIosLogOut} text="Đăng xuất" onClick={handleLogout} />
     </motion.div>
   );
 };
@@ -116,7 +126,7 @@ const SidebarMenu = ({ activeMenu, onMenuSelect }) => {
         className="hidden lg:block w-80 rounded-xl bg-white border-2 shadow-md p-6"
       >
         <div className="border-b-2 border-gray-200 mb-2">
-          <div className="text-gray-800 flex items-center gap-3 px-2">
+          <div className="text-gray-800 flex items-center gap-3 px-2 pb-4">
             <FiGrid className="text-blue-500 text-2xl" />
             <span className="uppercase font-bold text-2xl">Dashboard</span>
           </div>

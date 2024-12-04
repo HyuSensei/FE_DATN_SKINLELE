@@ -8,7 +8,7 @@ import {
 } from "@ant-design/icons";
 import DoctorSchedule from "./DoctorSchedule/DoctorSchedule";
 import DoctorReview from "./DoctorReview/DoctorReview";
-import CustomButton from "@components/CustomButton/CustomButton";
+import CustumButton from "@components/CustumButton/CustumButton";
 import { MdVerified } from "react-icons/md";
 
 const mockDoctor = {
@@ -67,9 +67,9 @@ const Doctor = () => {
                   </span>
                 </div>
               </div>
-              <CustomButton variant="primary" className="mt-4 md:mt-0">
+              <CustumButton variant="primary" className="mt-4 md:mt-0">
                 Đặt lịch khám
-              </CustomButton>
+              </CustumButton>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">

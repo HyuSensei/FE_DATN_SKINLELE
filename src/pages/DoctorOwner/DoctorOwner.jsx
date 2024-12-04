@@ -50,10 +50,10 @@ const DoctorOwner = () => {
   }, [navigate]);
 
   return (
-    <div className="mt-16 p-4 md:p-6">
-      <div className="flex flex-col lg:flex-row max-w-[1900px] mx-auto h-full gap-6">
+    <div className="mt-24 p-4 md:p-6 min-h-screen">
+      <div className="flex flex-col lg:flex-row max-w-[1900px] mx-auto gap-6">
         {/* Sticky Sidebar */}
-        <div className="w-full lg:w-80 lg:sticky lg:top-[72px] h-full self-start">
+        <div className="w-full lg:w-80 lg:sticky lg:top-20">
           <SidebarMenu
             activeMenu={activeMenu}
             onMenuSelect={handleSelectedMenu}
@@ -61,7 +61,7 @@ const DoctorOwner = () => {
         </div>
 
         {/* Content Area */}
-        <div className="flex-1">
+        <div className="flex-1 min-w-0 order-2">
           <Card
             className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 shadow-lg border-2"
             bordered={false}

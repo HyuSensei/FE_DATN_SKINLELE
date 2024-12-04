@@ -164,3 +164,27 @@ export const removeAccountAdmin = createAsyncThunk(
   }
 );
 
+export const loginDoctor = createAsyncThunk(
+  "auth/loginDoctor",
+  async (payload, { rejectWithValue }) => {
+    try {
+      return await axios.post("/auth/login-doctor", payload);
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const getAccountDoctor = createAsyncThunk(
+  "auth/getAccountDoctor",
+  async (_, { rejectWithValue }) => {
+    try {
+      return await axios.get("/auth/account-doctor");
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+

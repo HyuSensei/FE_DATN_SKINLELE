@@ -1,12 +1,13 @@
 import React from "react";
 
-const CustomButton = ({
+const CustumButton = ({
   children,
   variant = "default",
   className = "",
   onClick,
   icon,
   loading = false,
+  type = "button",
 }) => {
   const baseStyle =
     "px-6 py-2.5 rounded-lg font-medium transition-all duration-300 text-sm relative overflow-hidden";
@@ -47,6 +48,7 @@ const CustomButton = ({
 
   return (
     <button
+      type={type}
       className={`
         ${baseStyle} 
         ${variants[variant]} 
@@ -83,4 +85,4 @@ const CustomButton = ({
   );
 };
 
-export default CustomButton;
+export default CustumButton;

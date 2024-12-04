@@ -1,24 +1,19 @@
+import LoadingClinic from "@/components/Loading/LoadingClinic";
 import React, { lazy, Suspense } from "react";
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 
 const PageTitle = lazy(() => import("@components/Layout/PageTitle"));
 const LayoutBooking = lazy(() => import("@components/Layout/LayoutBooking"));
+const AuthDoctorWapper = lazy(() =>
+  import("@components/Auth/AuthDoctorWapper")
+);
 
 const HomeBooking = lazy(() => import("@pages/HomeBooking"));
 const DoctorOwner = lazy(() => import("@pages/DoctorOwner"));
 const Doctor = lazy(() => import("@pages/Doctor"));
 const Clinic = lazy(() => import("@pages/Clinic"));
 const BookingHistory = lazy(() => import("@pages/BookingHistory"));
-
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticatedDoctor } = useSelector((state) => state.auth);
-  return !isAuthenticatedDoctor ? (
-    <Navigate to="/doctor-login" replace />
-  ) : (
-    children
-  );
-};
 
 const AuthRoute = ({ children }) => {
   const { isAuthenticatedDoctor } = useSelector((state) => state.auth);
@@ -32,24 +27,28 @@ const AuthRoute = ({ children }) => {
 const WrapBookingRoute = ({
   element: Element,
   title,
-  isProtected,
+  isDoctor,
   isAuthRoute,
 }) => (
-  <Suspense fallback={<></>}>
+  <Suspense fallback={<LoadingClinic />}>
     <PageTitle title={title}>
-      <LayoutBooking>
-        {isAuthRoute ? (
+      {isAuthRoute ? (
+        <LayoutBooking>
           <AuthRoute>
             <Element />
           </AuthRoute>
-        ) : isProtected ? (
-          <ProtectedRoute>
+        </LayoutBooking>
+      ) : isDoctor ? (
+        <AuthDoctorWapper>
+          <LayoutBooking>
             <Element />
-          </ProtectedRoute>
-        ) : (
+          </LayoutBooking>
+        </AuthDoctorWapper>
+      ) : (
+        <LayoutBooking>
           <Element />
-        )}
-      </LayoutBooking>
+        </LayoutBooking>
+      )}
     </PageTitle>
   </Suspense>
 );
@@ -64,6 +63,7 @@ const routes = [
     path: "/doctor-owner",
     element: DoctorOwner,
     title: "SkinLeLeClinic - Quản lý thông tin bác sĩ hợp tác",
+    isDoctor: true,
   },
   {
     path: "/doctor/:slug",
@@ -83,13 +83,13 @@ const routes = [
 ];
 
 const BookingRoutes = routes.map(
-  ({ path, element, title, isProtected, isAuthRoute }) => ({
+  ({ path, element, title, isDoctor, isAuthRoute }) => ({
     path,
     element: (
       <WrapBookingRoute
         element={element}
         title={title}
-        isProtected={isProtected}
+        isDoctor={isDoctor}
         isAuthRoute={isAuthRoute}
       />
     ),
