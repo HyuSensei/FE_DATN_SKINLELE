@@ -1,13 +1,13 @@
 import React, { useState } from "react";
+import { DatePicker, Spin, Empty, Card } from "antd";
 import {
-  Card,
-  Select,
-  DatePicker,
-  Spin,
-  Statistic,
-  Row,
-  Col,
-} from "antd";
+  CalendarOutlined,
+  CheckOutlined,
+  CloseOutlined,
+  ClockCircleOutlined,
+  DollarOutlined,
+  StarOutlined,
+} from "@ant-design/icons";
 import {
   LineChart,
   Line,
@@ -18,25 +18,40 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import {
-  UserOutlined,
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  StarOutlined,
-} from "@ant-design/icons";
 import dayjs from "dayjs";
-import "dayjs/locale/vi";
 import locale from "antd/locale/vi_VN";
 import { useGetStatisticalDoctorQuery } from "@/redux/doctor/doctor.query";
+import { formatPrice } from "@/helpers/formatPrice";
 
-const ManageStatistic = () => {
+// Helper to define card title and icon
+const CardInfo = ({ icon, color, title, value }) => (
+  <Card
+    bordered={false}
+    className="hover:shadow-lg transition-shadow duration-300"
+    style={{
+      background: `linear-gradient(135deg, ${color}22 0%, ${color}44 100%)`,
+      boxShadow: `0 8px 32px 0 rgba(31, 38, 135, 0.37)`,
+    }}
+  >
+    <div className="flex items-center space-x-2">
+      {icon}
+      <h3 className={`text-sm font-medium text-${color}-600`}>{title}</h3>
+    </div>
+    <p className={`mt-4 text-3xl font-bold text-${color}-900`}>{value}</p>
+  </Card>
+);
+
+export default function ManageStatistic({ activeMenu }) {
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth() + 1);
 
-  const { data, isLoading } = useGetStatisticalDoctorQuery({
-    year,
-    month,
-  });
+  const { data, isLoading, error } = useGetStatisticalDoctorQuery(
+    {
+      year,
+      month,
+    },
+    { skip: activeMenu !== "statistics" }
+  );
 
   const handleMonthChange = (date) => {
     if (date) {
@@ -53,13 +68,16 @@ const ManageStatistic = () => {
     );
   }
 
-  const statistics = data?.data || {};
+  if (error || !data) return <Empty description="Đã xảy ra lỗi" />;
+
+  const { averageRating, totalReviews, stats, totalStats } = data;
 
   return (
-    <div className="p-4 space-y-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <h1 className="text-2xl font-bold">Thống kê lịch đặt dịch vụ</h1>
+    <div className="space-y-6 mt-4">
+      <div className="flex justify-between items-center">
+        <div className="text-base font-medium text-gray-700">
+          Thống kê cho chi tiết các hoạt động đặt lịch của bác sĩ
+        </div>
         <DatePicker
           locale={locale}
           picker="month"
@@ -70,90 +88,115 @@ const ManageStatistic = () => {
         />
       </div>
 
-      {/* Stats Overview */}
-      <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title="Tổng lượt đặt"
-              value={statistics.totalStats?.totalBookings || 0}
-              prefix={<UserOutlined />}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title="Đã hoàn thành"
-              value={statistics.totalStats?.completed || 0}
-              prefix={<CheckCircleOutlined style={{ color: "#52c41a" }} />}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title="Đã hủy"
-              value={statistics.totalStats?.cancelled || 0}
-              prefix={<CloseCircleOutlined style={{ color: "#ff4d4f" }} />}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title="Đánh giá trung bình"
-              value={statistics.averageRating || 0}
-              prefix={<StarOutlined style={{ color: "#faad14" }} />}
-              suffix={`/ 5 (${statistics.totalReviews || 0} đánh giá)`}
-              precision={1}
-            />
-          </Card>
-        </Col>
-      </Row>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Card Component */}
+        {[
+          {
+            icon: <CalendarOutlined className="text-xl text-blue-600" />,
+            color: "#3063d5",
+            title: "Tổng lượt đặt",
+            value: totalStats.totalBookings,
+          },
+          {
+            icon: <CheckOutlined className="text-xl text-green-600" />,
+            color: "#30a978",
+            title: "Đã hoàn thành",
+            value: totalStats.completed,
+          },
+          {
+            icon: <CloseOutlined className="text-xl text-red-600" />,
+            color: "#c13338",
+            title: "Đã hủy",
+            value: totalStats.cancelled,
+          },
+          {
+            icon: <ClockCircleOutlined className="text-xl text-orange-600" />,
+            color: "#d96c2e",
+            title: "Đang chờ",
+            value: totalStats.pending,
+          },
+          {
+            icon: <DollarOutlined className="text-xl text-violet-600" />,
+            color: "#4d1d9e",
+            title: "Doanh thu",
+            value: `${formatPrice(totalStats.revenue)} VND`,
+          },
+          {
+            icon: <StarOutlined className="text-xl text-yellow-600" />,
+            color: "#733d12",
+            title: "Đánh giá trung bình",
+            value: `${averageRating.toFixed(1)} / 5 (${totalReviews} đánh giá)`,
+          },
+        ].map((card, index) => (
+          <CardInfo
+            key={index}
+            icon={card.icon}
+            color={card.color}
+            title={card.title}
+            value={card.value}
+          />
+        ))}
+      </div>
 
-      {/* Chart */}
-      <Card className="mt-6">
-        <h3 className="text-lg font-semibold mb-4">
-          Biểu đồ thống kê theo ngày
-        </h3>
-        <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={statistics.stats || []}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="day" tickFormatter={(day) => `Ngày ${day}`} />
-            <YAxis allowDecimals={false} />
-            <Tooltip
-              formatter={(value, name) => {
-                const labels = {
-                  pending: "Chờ xác nhận",
-                  confirmed: "Đã xác nhận",
-                  cancelled: "Đã hủy",
-                  completed: "Hoàn thành",
-                };
-                return [value, labels[name] || name];
-              }}
-              labelFormatter={(day) => `Ngày ${day}`}
-            />
-            <Legend
-              formatter={(value) => {
-                const labels = {
-                  pending: "Chờ xác nhận",
-                  confirmed: "Đã xác nhận",
-                  cancelled: "Đã hủy",
-                  completed: "Hoàn thành",
-                };
-                return labels[value] || value;
-              }}
-            />
-            <Line type="monotone" dataKey="pending" stroke="#faad14" />
-            <Line type="monotone" dataKey="confirmed" stroke="#1890ff" />
-            <Line type="monotone" dataKey="cancelled" stroke="#ff4d4f" />
-            <Line type="monotone" dataKey="completed" stroke="#52c41a" />
-          </LineChart>
-        </ResponsiveContainer>
+      <Card
+        title={
+          <div className="text-xl font-semibold flex items-center gap-2">
+            Thống kê lịch khám
+            <span className="px-4 py-1 rounded-lg bg-gradient-to-r from-blue-100 to-purple-100 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] border border-blue-200">
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text font-bold">
+                Tháng {month}
+              </span>
+            </span>
+          </div>
+        }
+      >
+        <div className="h-[400px] w-full">
+          <ResponsiveContainer width="100%">
+            <LineChart data={stats}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="day" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="totalBookings"
+                stroke="#6c5ce7"
+                dot={{ stroke: "#6c5ce7", strokeWidth: 4 }}
+                name="Tổng"
+              />
+              <Line
+                type="monotone"
+                dataKey="pending"
+                stroke="#fdcb6e"
+                dot={{ stroke: "#fdcb6e", strokeWidth: 4 }}
+                name="Đang chờ"
+              />
+              <Line
+                type="monotone"
+                dataKey="cancelled"
+                stroke="#d63031"
+                dot={{ stroke: "#d63031", strokeWidth: 4 }}
+                name="Đã hủy"
+              />
+              <Line
+                type="monotone"
+                dataKey="confirmed"
+                stroke="#0984e3"
+                dot={{ stroke: "#0984e3", strokeWidth: 4 }}
+                name="Đã xác nhận"
+              />
+              <Line
+                type="monotone"
+                dataKey="completed"
+                stroke="#8dd566"
+                dot={{ stroke: "#8dd566", strokeWidth: 4 }}
+                name="Đã hoàn thành"
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       </Card>
     </div>
   );
-};
-
-export default ManageStatistic;
+}

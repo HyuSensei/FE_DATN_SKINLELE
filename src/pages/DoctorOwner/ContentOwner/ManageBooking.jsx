@@ -1,75 +1,53 @@
-import React, { useState } from "react";
-import { Table, Tag, Card, Select, Row, Input, Col, DatePicker } from "antd";
+import React, { useEffect, useState } from "react";
+import {
+  Table,
+  Tag,
+  Card,
+  Select,
+  Input,
+  DatePicker,
+  Empty,
+} from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { bookingStatus } from "@const/status";
 import locale from "antd/es/date-picker/locale/vi_VN";
+import { useGetBookingsByDoctorQuery } from "@/redux/booking/booking.query";
 const { RangePicker } = DatePicker;
 
-const ManageBooking = () => {
-  const [filter, setFilter] = useState({
+const ManageBooking = ({ activeMenu }) => {
+  const [filters, setFilters] = useState({
     search: "",
     status: "",
     fromDate: "",
     toDate: "",
   });
 
-  const bookings = [
-    {
-      _id: "1",
-      customer: {
-        name: "John Doe",
-        phone: "0123456789",
-        email: "john@example.com",
-        dateOfBirth: "1990-01-01",
-        gender: "male",
-        address: "123 Street",
-      },
-      date: "2024-03-20",
-      startTime: "09:00",
-      endTime: "09:30",
-      status: "pending",
-      price: "500000",
-      note: "First visit",
-      statusHistory: [
-        {
-          status: "pending",
-          updatedBy: "user123",
-          updatedByModel: "User",
-        },
-      ],
-      createdAt: "2024-03-19T10:00:00Z",
-    },
-    {
-      _id: "2",
-      customer: {
-        name: "Jane Smith",
-        phone: "0987654321",
-        email: "jane@example.com",
-        dateOfBirth: "1992-05-15",
-        gender: "female",
-        address: "456 Avenue",
-      },
-      date: "2024-03-21",
-      startTime: "10:00",
-      endTime: "10:30",
-      status: "confirmed",
-      price: "500000",
-      note: "Follow-up",
-      statusHistory: [
-        {
-          status: "pending",
-          updatedBy: "user124",
-          updatedByModel: "User",
-        },
-        {
-          status: "confirmed",
-          updatedBy: "doctor123",
-          updatedByModel: "Doctor",
-        },
-      ],
-      createdAt: "2024-03-19T11:00:00Z",
-    },
-  ];
+  const [paginate, setPaginate] = useState({
+    page: 1,
+    pageSize: 10,
+    totalPage: 0,
+    totalItems: 0,
+  });
+
+  const { data, isLoading, error } = useGetBookingsByDoctorQuery({
+    page: paginate.page,
+    pageSize: paginate.pageSize,
+    ...filters,
+  });
+
+  useEffect(() => {
+    if (data && data.pagination) {
+      setPaginate((prev) => ({
+        ...prev,
+        ...data.pagination,
+      }));
+    }
+  }, [data]);
+
+  if (!data || error)
+    return <Empty description="Không tìm thấy thông tin lịch khám" />;
+
+  const { bookings } = data;
 
   const statusColors = {
     pending: "gold",
@@ -80,7 +58,7 @@ const ManageBooking = () => {
 
   const columns = [
     {
-      title: "Customer Information",
+      title: "Thông tin khách hàng",
       dataIndex: "customer",
       key: "customer",
       render: (customer) => (
@@ -92,7 +70,7 @@ const ManageBooking = () => {
       ),
     },
     {
-      title: "Appointment Time",
+      title: "Thời gian hẹn",
       dataIndex: "date",
       key: "date",
       render: (_, record) => (
@@ -105,7 +83,7 @@ const ManageBooking = () => {
       ),
     },
     {
-      title: "Status",
+      title: "Trạng thái",
       dataIndex: "status",
       key: "status",
       render: (status) => (
@@ -113,18 +91,18 @@ const ManageBooking = () => {
       ),
     },
     {
-      title: "Price",
+      title: "Giá khám",
       dataIndex: "price",
       key: "price",
       render: (price) => `${parseInt(price).toLocaleString("vi-VN")}đ`,
     },
     {
-      title: "Note",
+      title: "Ghi chú",
       dataIndex: "note",
       key: "note",
     },
     {
-      title: "Actions",
+      title: "Thao tác",
       key: "actions",
       render: (_, record) => (
         <Select defaultValue={"pending"} className="w-full">
@@ -169,12 +147,19 @@ const ManageBooking = () => {
           scroll={{ x: true }}
           columns={columns}
           dataSource={bookings}
-          rowKey="_id"
+          rowKey={(record) => record._id}
           pagination={{
-            pageSize: 10,
-            total: bookings.length,
-            showSizeChanger: true,
+            current: paginate.page,
+            pageSize: paginate.pageSize,
+            total: paginate.totalItems,
+            onChange: (page, pageSize) =>
+              setPaginate((prev) => ({
+                ...prev,
+                page,
+                pageSize,
+              })),
           }}
+          loading={isLoading}
         />
       </Card>
     </>

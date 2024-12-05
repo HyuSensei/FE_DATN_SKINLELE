@@ -15,7 +15,22 @@ export const doctorApi = createApi({
       }),
       transformResponse: (response) => response.data,
     }),
+    getAllReviews: builder.query({
+      query: ({ page = 1, pageSize = 10, rate = "", doctor }) => {
+        const queryStrings = new URLSearchParams({
+          page,
+          pageSize,
+          rate,
+        }).toString();
+        return {
+          url: `/doctors/reviews/${doctor}?${queryStrings}`,
+          method: "GET",
+        };
+      },
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
-export const { useGetStatisticalDoctorQuery } = doctorApi;
+export const { useGetStatisticalDoctorQuery, useGetAllReviewsQuery } =
+  doctorApi;

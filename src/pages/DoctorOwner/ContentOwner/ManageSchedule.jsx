@@ -1,290 +1,164 @@
-import React, { useState } from "react";
-import {
-  Card,
-  TimePicker,
-  Switch,
-  Button,
-  Form,
-  Select,
-  Alert,
-  Empty,
-  message,
-} from "antd";
-import {
-  SaveOutlined,
-  PlusOutlined,
-  DeleteOutlined,
-  EditOutlined,
-  CalendarOutlined,
-} from "@ant-design/icons";
+import { Badge, Form, Select, Tag } from "antd";
 import dayjs from "dayjs";
-
-const { Option } = Select;
+import "dayjs/locale/vi";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { ClockCircleOutlined } from "@ant-design/icons";
 
 const ManageSchedule = () => {
   const [form] = Form.useForm();
-  const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(false);
 
-  const daysOfWeek = [
-    "Thứ 2",
-    "Thứ 3",
-    "Thứ 4",
-    "Thứ 5",
-    "Thứ 6",
-    "Thứ 7",
-    "Chủ nhật",
-  ];
+  const [currentDate, setCurrentDate] = useState(dayjs().locale("vi"));
+  const { doctorInfo } = useSelector((state) => state.auth);
+  const { schedule = [], holidays = [] } = doctorInfo;
 
-  const durations = [15, 30, 45, 60];
+  const months = dayjs
+    .months()
+    .map((month) => month.charAt(0).toUpperCase() + month.slice(1));
+  const years = Array.from({ length: 21 }, (_, i) => dayjs().year() + i);
+  const daysOfWeek = dayjs.weekdaysShort();
+  const today = dayjs();
 
-  // Convert string time to dayjs object for form initialization
-  const convertTimeToDate = (timeStr) => {
-    return timeStr ? dayjs(timeStr, "HH:mm") : null;
+  const daysInMonth = currentDate.daysInMonth();
+  const startOfMonth = currentDate.startOf("month").day();
+  const monthDays = Array.from({ length: daysInMonth }, (_, i) =>
+    currentDate.date(i + 1).format("YYYY-MM-DD")
+  );
+
+  useEffect(() => {
+    dayjs.locale("vi");
+    setCurrentDate(dayjs().locale("vi"));
+  }, []);
+
+  const handleMonthChange = (value) => {
+    setCurrentDate(currentDate.month(value));
   };
 
-  const initialValues = {
-    schedule: [
-      {
-        dayOfWeek: "Thứ 2",
-        startTime: convertTimeToDate("08:00"),
-        endTime: convertTimeToDate("17:00"),
-        duration: 30,
-        breakTime: {
-          start: convertTimeToDate("12:00"),
-          end: convertTimeToDate("13:00"),
-        },
-        isActive: true,
-      },
-    ],
+  const handleYearChange = (value) => {
+    setCurrentDate(currentDate.year(value));
   };
 
-  const onFinish = async (values) => {
-    setLoading(true);
-    try {
-      // Convert dayjs objects back to string format before sending to API
-      const formattedSchedule = values.schedule.map((item) => ({
-        ...item,
-        startTime: item.startTime.format("HH:mm"),
-        endTime: item.endTime.format("HH:mm"),
-        breakTime: {
-          start: item.breakTime.start.format("HH:mm"),
-          end: item.breakTime.end.format("HH:mm"),
-        },
-      }));
-
-      console.log("Formatted schedule:", formattedSchedule);
-      message.success("Cập nhật lịch làm việc thành công!");
-      setIsEditing(false);
-    } catch (error) {
-      message.error("Có lỗi xảy ra khi cập nhật lịch làm việc!");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const workTimeValidation = (_, value) => {
-    if (!value) {
-      return Promise.reject("Vui lòng chọn thời gian!");
-    }
-    return Promise.resolve();
+  const isHoliday = (date) => {
+    return holidays.some(
+      (holiday) =>
+        dayjs(holiday).format("YYYY-MM-DD") === dayjs(date).format("YYYY-MM-DD")
+    );
   };
 
   return (
-    <div className="mt-4 shadow-lg">
-      <Card
-        extra={
-          !isEditing && (
-            <Button
-              type="primary"
-              icon={<EditOutlined />}
-              onClick={() => setIsEditing(true)}
-              className="bg-blue-500"
-            >
-              Chỉnh sửa lịch
-            </Button>
-          )
-        }
-        bordered={false}
-        className="shadow-sm"
-      >
-        <Alert
-          message="Lưu ý"
-          description="Vui lòng thiết lập lịch làm việc cho từng ngày trong tuần. Bạn có thể tắt trạng thái hoạt động cho những ngày không làm việc."
-          type="info"
-          showIcon
-          className="mb-6"
-        />
-
-        <Form
-          form={form}
-          layout="vertical"
-          initialValues={initialValues}
-          onFinish={onFinish}
-          disabled={!isEditing}
-        >
-          <Form.List name="schedule">
-            {(fields, { add, remove }) => (
-              <div className="space-y-4">
-                {fields.map((field, index) => (
-                  <Card
-                    key={field.key}
-                    className="bg-white shadow-sm"
-                    bordered={false}
-                  >
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <Form.Item
-                          label="Ngày làm việc"
-                          name={[field.name, "dayOfWeek"]}
-                          rules={[
-                            { required: true, message: "Vui lòng chọn ngày!" },
-                          ]}
-                        >
-                          <Select placeholder="Chọn ngày">
-                            {daysOfWeek.map((day) => (
-                              <Option key={day} value={day}>
-                                {day}
-                              </Option>
-                            ))}
-                          </Select>
-                        </Form.Item>
-
-                        <Form.Item label="Thời gian làm việc">
-                          <div className="flex gap-2">
-                            <Form.Item
-                              name={[field.name, "startTime"]}
-                              rules={[{ validator: workTimeValidation }]}
-                              noStyle
-                            >
-                              <TimePicker
-                                format="HH:mm"
-                                placeholder="Bắt đầu"
-                                className="flex-1"
-                              />
-                            </Form.Item>
-                            <span className="text-gray-400">-</span>
-                            <Form.Item
-                              name={[field.name, "endTime"]}
-                              rules={[{ validator: workTimeValidation }]}
-                              noStyle
-                            >
-                              <TimePicker
-                                format="HH:mm"
-                                placeholder="Kết thúc"
-                                className="flex-1"
-                              />
-                            </Form.Item>
-                          </div>
-                        </Form.Item>
-                      </div>
-
-                      <div>
-                        <Form.Item label="Thời gian nghỉ">
-                          <div className="flex gap-2">
-                            <Form.Item
-                              name={[field.name, "breakTime", "start"]}
-                              rules={[{ validator: workTimeValidation }]}
-                              noStyle
-                            >
-                              <TimePicker
-                                format="HH:mm"
-                                placeholder="Bắt đầu"
-                                className="flex-1"
-                              />
-                            </Form.Item>
-                            <span className="text-gray-400">-</span>
-                            <Form.Item
-                              name={[field.name, "breakTime", "end"]}
-                              rules={[{ validator: workTimeValidation }]}
-                              noStyle
-                            >
-                              <TimePicker
-                                format="HH:mm"
-                                placeholder="Kết thúc"
-                                className="flex-1"
-                              />
-                            </Form.Item>
-                          </div>
-                        </Form.Item>
-
-                        <Form.Item
-                          label="Thời lượng khám"
-                          name={[field.name, "duration"]}
-                          rules={[
-                            {
-                              required: true,
-                              message: "Vui lòng chọn thời lượng!",
-                            },
-                          ]}
-                        >
-                          <Select placeholder="Chọn thời lượng">
-                            {durations.map((duration) => (
-                              <Option key={duration} value={duration}>
-                                {duration} phút
-                              </Option>
-                            ))}
-                          </Select>
-                        </Form.Item>
-                      </div>
-
-                      <div className="flex justify-between items-center">
-                        <Form.Item
-                          label="Trạng thái"
-                          name={[field.name, "isActive"]}
-                          valuePropName="checked"
-                          className="mb-0"
-                        >
-                          <Switch />
-                        </Form.Item>
-
-                        {isEditing && fields.length > 1 && (
-                          <Button
-                            type="text"
-                            danger
-                            icon={<DeleteOutlined />}
-                            onClick={() => remove(field.name)}
-                          />
-                        )}
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-
-                {isEditing && fields.length < 7 && (
-                  <Button
-                    type="dashed"
-                    onClick={() => add()}
-                    block
-                    icon={<PlusOutlined />}
-                  >
-                    Thêm lịch làm việc
-                  </Button>
-                )}
-
-                {fields.length === 0 && (
-                  <Empty description="Chưa có lịch làm việc nào" />
+    <div className="space-y-6 mt-4">
+      {/* Weekly Schedule */}
+      <div className="bg-white rounded-xl p-6 shadow-sm">
+        <h3 className="text-xl font-bold text-gray-800 mb-4">
+          Lịch làm việc theo tuần
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {schedule.length > 0 &&
+            schedule.map((slot, index) => (
+              <div
+                key={index}
+                className="bg-[#f9fafc] rounded-lg p-4 space-y-2 shadow-md"
+              >
+                <div className="flex items-center justify-between">
+                  <Tag color="blue" className="text-base rounded-full">
+                    {slot.dayOfWeek}
+                  </Tag>
+                  <Badge
+                    status="success"
+                    text={
+                      <span className="text-[#5cb929]">Đang hoạt động</span>
+                    }
+                  />
+                </div>
+                <div className="flex items-center gap-2 text-gray-700">
+                  <ClockCircleOutlined className="text-blue-500" />
+                  <span>
+                    {slot.startTime} - {slot.endTime}
+                  </span>
+                </div>
+                {slot.breakTime && (
+                  <div className="bg-orange-50 rounded-lg p-2 text-sm">
+                    <span className="text-orange-600">
+                      Giờ nghỉ: {slot.breakTime.start} - {slot.breakTime.end}
+                    </span>
+                  </div>
                 )}
               </div>
-            )}
-          </Form.List>
+            ))}
+        </div>
+      </div>
 
-          {isEditing && (
-            <div className="flex justify-end mt-6 space-x-4">
-              <Button onClick={() => setIsEditing(false)}>Hủy</Button>
-              <Button
-                type="primary"
-                htmlType="submit"
-                icon={<SaveOutlined />}
-                loading={loading}
-                className="bg-blue-500"
-              >
-                Lưu thay đổi
-              </Button>
+      {/* Calendar Section */}
+      <div className="bg-white rounded-xl p-6 shadow-sm">
+        <h3 className="text-xl font-bold text-gray-800 mb-4">Ngày nghỉ</h3>
+        <div className="flex justify-between items-center mb-6 flex-wrap gap-2">
+          <Select
+            className="w-full lg:w-36"
+            size="middle"
+            value={currentDate.month()}
+            onChange={handleMonthChange}
+          >
+            {months.map((month, index) => (
+              <Select.Option key={index} value={index}>
+                {month}
+              </Select.Option>
+            ))}
+          </Select>
+          <Select
+            className="w-full lg:w-36"
+            size="middle"
+            value={currentDate.year()}
+            onChange={handleYearChange}
+          >
+            {years.map((year) => (
+              <Select.Option key={year} value={year}>
+                {year}
+              </Select.Option>
+            ))}
+          </Select>
+        </div>
+
+        <div className="grid grid-cols-7 gap-2 text-center font-medium text-gray-600 mb-4">
+          {daysOfWeek.map((day) => (
+            <div
+              key={day}
+              className="text-xs md:text-sm text-center py-2 rounded-full font-medium bg-[#b7dce7] text-white"
+            >
+              {day}
             </div>
-          )}
-        </Form>
-      </Card>
+          ))}
+        </div>
+        <div className="grid grid-cols-7 gap-2">
+          {Array.from({ length: startOfMonth }).map((_, i) => (
+            <div key={`empty-${i}`} className="h-14"></div>
+          ))}
+          {monthDays.map((date) => {
+            const isPast = dayjs(date).isBefore(today, "day");
+            const holiday = isHoliday(date);
+            return (
+              <div
+                key={date}
+                className={`h-14 flex flex-col items-center justify-center rounded-lg border-2 transition-all shadow-md cursor-pointer
+        ${
+          holiday
+            ? "border-red-300 bg-red-50 text-red-800"
+            : "border-gray-200 bg-gray-100 text-gray-800"
+        } ${isPast ? "opacity-50" : "hover:border-blue-500 hover:shadow-md"}`}
+              >
+                <span className="text-xs font-medium text-gray-500">
+                  {dayjs(date).format("ddd")}
+                </span>
+                <span className="text-lg font-semibold">
+                  {dayjs(date).date()}
+                </span>
+                {holiday && (
+                  <span className="text-xs font-medium text-red-600">Nghỉ</span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };

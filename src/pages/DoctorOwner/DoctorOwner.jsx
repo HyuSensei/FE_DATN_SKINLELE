@@ -10,7 +10,7 @@ import ManageSchedule from "./ContentOwner/ManageSchedule";
 
 const DoctorOwner = () => {
   const navigate = useNavigate();
-  const [activeMenu, setActiveMenu] = useState("statistics");
+  const [activeMenu, setActiveMenu] = useState("");
   const [title, setTitle] = useState("");
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -69,10 +69,12 @@ const DoctorOwner = () => {
             <div className="m-0 text-gray-800 flex items-center gap-2 uppercase text-2xl font-bold">
               {title}
             </div>
-            {activeMenu === "statistics" && <ManageStatistic />}
-            {activeMenu === "bookings" && <ManageBooking />}
+            {activeMenu === "statistics" && (
+              <ManageStatistic {...{ activeMenu }} />
+            )}
+            {activeMenu === "bookings" && <ManageBooking {...{ activeMenu }} />}
             {activeMenu === "profile" && <ManageProfile />}
-            {activeMenu === "reviews" && <ManageReview />}
+            {activeMenu === "reviews" && <ManageReview {...{ activeMenu }} />}
             {activeMenu === "schedules" && <ManageSchedule />}
           </Card>
         </div>

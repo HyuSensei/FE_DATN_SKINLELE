@@ -67,6 +67,7 @@ export const baseQuery = async ({ url, method = "GET", data, params }) => {
       data,
       params,
     });
+
     return { data: response };
   } catch (error) {
     return {
