@@ -15,7 +15,29 @@ export const clinicApi = createApi({
       }),
       transformResponse: (response) => response.data,
     }),
+    getClinicsByCustomer: builder.query({
+      query: ({ page, pageSize, search = "", specialty = "" }) => {
+        if (page && pageSize) {
+          const queryStrings = new URLSearchParams({
+            page,
+            pageSize,
+            search,
+            specialty,
+          });
+          return {
+            url: `/clinics/by-customer?${queryStrings}`,
+            method: "GET",
+          };
+        }
+        return {
+          url: `/clinics/by-customer`,
+          method: "GET",
+        };
+      },
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
-export const { useGetClinicDetailByAdminQuery } = clinicApi;
+export const { useGetClinicDetailByAdminQuery, useGetClinicsByCustomerQuery } =
+  clinicApi;

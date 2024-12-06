@@ -4,17 +4,27 @@ import { getAccountUser } from "@redux/auth/auth.thunk";
 import { get, set } from "@storage/storage";
 import Loading from "@components/Loading/Loading";
 import { useLocation } from "react-router-dom";
+import {
+  setIsAuthenticated,
+  setIsLoading,
+  setUserInfo,
+} from "@/redux/auth/auth.slice";
+import ModalAuth from "../Modal/ModalAuth";
+import LoadingClinic from "../Loading/LoadingClinic";
 
-const AuthUserWrapper = ({ children }) => {
+const AuthUserWrapper = ({ children, isModalAuth = false }) => {
   const dispatch = useDispatch();
   const { isLoading, isAuthenticated } = useSelector((state) => state.auth);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [open, setOpen] = useState(true);
+
   const urlParams = new URLSearchParams(window.location.search);
   const { pathname } = useLocation();
   const token = urlParams.get("token");
 
   const initAuth = async () => {
     try {
+      dispatch(setIsLoading(true));
       if (token) {
         set("ACCESS_TOKEN", token);
         await dispatch(getAccountUser()).unwrap();
@@ -24,21 +34,17 @@ const AuthUserWrapper = ({ children }) => {
 
       const accessToken = get("ACCESS_TOKEN");
       if (accessToken && !isAuthenticated) {
-        await dispatch(getAccountUser()).unwrap();
+        const res = await dispatch(getAccountUser()).unwrap();
+        if (res.success) {
+          dispatch(setIsAuthenticated(true));
+          dispatch(setUserInfo(res.data));
+          setOpen(false);
+        }
       }
     } finally {
       setIsInitialized(true);
+      dispatch(setIsLoading(false));
     }
-    // const accessToken = get("ACCESS_TOKEN");
-    // if (token) {
-    //   set("ACCESS_TOKEN", token);
-    //   window.location.href = "/";
-    //   dispatch(getAccountUser());
-    // }
-    // if (accessToken && !isAuthenticated) {
-    //   dispatch(getAccountUser());
-    // }
-    // setIsInitialized(true);
   };
 
   useEffect(() => {
@@ -46,10 +52,14 @@ const AuthUserWrapper = ({ children }) => {
   }, [dispatch, token, isAuthenticated]);
 
   if ((!isInitialized || isLoading) && pathname !== "/auth") {
-    return <Loading />;
+    return isModalAuth ? <LoadingClinic /> : <Loading />;
   }
 
-  return children;
+  return isAuthenticated || !isModalAuth ? (
+    children
+  ) : (
+    <ModalAuth {...{ open, onClose: () => setOpen(false) }} />
+  );
 };
 
 export default AuthUserWrapper;

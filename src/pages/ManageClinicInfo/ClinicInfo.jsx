@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Empty, Card, Descriptions, Tag, Timeline, Carousel } from "antd";
 import { IoMdMail, IoMdCall, IoMdCreate, IoMdAdd } from "react-icons/io";
 import { IoBusiness, IoLocationSharp } from "react-icons/io5";
-import CustumButton from "@components/CustumButton/CustumButton";
+import CustumButton from "@/components/CustumButton";
 import { useGetClinicDetailByAdminQuery } from "@/redux/clinic/clinic.query";
 import LoadingAdmin from "@/components/Loading/LoadingAdmin";
 import { MdDone } from "react-icons/md";

@@ -5,7 +5,8 @@ import Slider from "react-slick";
 import { FaUserMd, FaClock, FaCalendarCheck, FaStar } from "react-icons/fa";
 import { MdHealthAndSafety, MdSupportAgent } from "react-icons/md";
 import { FaLocationDot } from "react-icons/fa6";
-import CustumButton from "@components/CustumButton/CustumButton";
+import { useGetClinicsByCustomerQuery } from "@/redux/clinic/clinic.query";
+import { useGetDoctorsByCustomerQuery } from "@/redux/doctor/doctor.query";
 
 const HomeBooking = () => {
   const fadeInUp = {
@@ -19,88 +20,6 @@ const HomeBooking = () => {
     { number: "2.000 +", text: "BÁC SĨ" },
     { number: "300.000 +", text: "NGƯỜI ĐÃ SỬ DỤNG" },
     { number: "300 +", text: "PHÒNG KHÁM" },
-  ];
-
-  const clinics = [
-    {
-      name: "Phòng khám Da liễu Premium",
-      image:
-        "https://dichvuyduoc.net/wp-content/uploads/2024/05/phong-kham-da-lieu-mercy-bi-phat-vi-loat-vi-pham-y-te-2.jpg",
-      rating: 4.8,
-      reviews: 128,
-      specialties: ["Da liễu thẩm mỹ", "Trị mụn", "Laser"],
-      address: "123 Đường ABC, Quận 1, TP.HCM",
-    },
-    {
-      name: "Skincare Clinic Center",
-      image:
-        "https://cdn-healthcare.hellohealthgroup.com/2023/07/1689147368_64ae57e80ed444.10827502.jpg",
-      rating: 4.9,
-      reviews: 156,
-      specialties: ["Trẻ hóa da", "Điều trị nám", "Spa"],
-      address: "456 Đường XYZ, Quận 3, TP.HCM",
-    },
-    {
-      name: "Beauty Dermatology",
-      image:
-        "https://cdn-healthcare.hellohealthgroup.com/2022/11/1668051679_636c72df6c0111.96671518.jpg",
-      rating: 4.7,
-      reviews: 98,
-      specialties: ["Điều trị sẹo", "Căng da", "Skincare"],
-      address: "789 Đường DEF, Quận 2, TP.HCM",
-    },
-  ];
-
-  const doctors = [
-    {
-      name: "BS. Nguyễn Văn A",
-      image:
-        "https://cdn.bookingcare.vn/fo/w384/2019/12/31/155650-gs-ha-van-quyet.jpg",
-      specialty: "Da liễu thẩm mỹ",
-      experience: "15 năm kinh nghiệm",
-      rating: 4.9,
-      reviews: 234,
-    },
-    {
-      name: "BS. Trần Thị B",
-      image:
-        "https://cdn.bookingcare.vn/fo/w384/2022/12/14/104636-bs-truong-thi-tuyet-hoa.jpg",
-      specialty: "Điều trị nám & tàn nhang",
-      experience: "12 năm kinh nghiệm",
-      rating: 4.8,
-      reviews: 186,
-    },
-    {
-      name: "BS. Lê Văn C",
-      image: "https://cdn.bookingcare.vn/fo/w384/2021/10/07/145448-bs-lan.jpg",
-      specialty: "Trị liệu da chuyên sâu",
-      experience: "10 năm kinh nghiệm",
-      rating: 4.7,
-      reviews: 156,
-    },
-  ];
-
-  const services = [
-    {
-      icon: <MdHealthAndSafety color="#f4dd22" size={50} />,
-      title: "Điều trị mụn",
-      description: "Phương pháp điều trị mụn chuyên sâu, hiệu quả",
-    },
-    {
-      icon: <FaUserMd color="#f4dd22" size={50} />,
-      title: "Trị nám - tàn nhang",
-      description: "Công nghệ laser tiên tiến, an toàn",
-    },
-    {
-      icon: <FaClock color="#f4dd22" size={50} />,
-      title: "Trẻ hóa da",
-      description: "Liệu trình chăm sóc và trẻ hóa toàn diện",
-    },
-    {
-      icon: <MdSupportAgent color="#f4dd22" size={50} />,
-      title: "Tư vấn da liễu",
-      description: "Đội ngũ bác sĩ giàu kinh nghiệm tư vấn",
-    },
   ];
 
   const sliderSettings = {
@@ -126,6 +45,103 @@ const HomeBooking = () => {
     ],
   };
 
+  // const clinics = [
+  //   {
+  //     name: "Phòng khám Da liễu Premium",
+  //     image:
+  //       "https://dichvuyduoc.net/wp-content/uploads/2024/05/phong-kham-da-lieu-mercy-bi-phat-vi-loat-vi-pham-y-te-2.jpg",
+  //     rating: 4.8,
+  //     reviews: 128,
+  //     specialties: ["Da liễu thẩm mỹ", "Trị mụn", "Laser"],
+  //     address: "123 Đường ABC, Quận 1, TP.HCM",
+  //   },
+  //   {
+  //     name: "Skincare Clinic Center",
+  //     image:
+  //       "https://cdn-healthcare.hellohealthgroup.com/2023/07/1689147368_64ae57e80ed444.10827502.jpg",
+  //     rating: 4.9,
+  //     reviews: 156,
+  //     specialties: ["Trẻ hóa da", "Điều trị nám", "Spa"],
+  //     address: "456 Đường XYZ, Quận 3, TP.HCM",
+  //   },
+  //   {
+  //     name: "Beauty Dermatology",
+  //     image:
+  //       "https://cdn-healthcare.hellohealthgroup.com/2022/11/1668051679_636c72df6c0111.96671518.jpg",
+  //     rating: 4.7,
+  //     reviews: 98,
+  //     specialties: ["Điều trị sẹo", "Căng da", "Skincare"],
+  //     address: "789 Đường DEF, Quận 2, TP.HCM",
+  //   },
+  // ];
+
+  // const doctors = [
+  //   {
+  //     name: "BS. Nguyễn Văn A",
+  //     image:
+  //       "https://cdn.bookingcare.vn/fo/w384/2019/12/31/155650-gs-ha-van-quyet.jpg",
+  //     specialty: "Da liễu thẩm mỹ",
+  //     experience: "15 năm kinh nghiệm",
+  //     rating: 4.9,
+  //     reviews: 234,
+  //   },
+  //   {
+  //     name: "BS. Trần Thị B",
+  //     image:
+  //       "https://cdn.bookingcare.vn/fo/w384/2022/12/14/104636-bs-truong-thi-tuyet-hoa.jpg",
+  //     specialty: "Điều trị nám & tàn nhang",
+  //     experience: "12 năm kinh nghiệm",
+  //     rating: 4.8,
+  //     reviews: 186,
+  //   },
+  //   {
+  //     name: "BS. Lê Văn C",
+  //     image: "https://cdn.bookingcare.vn/fo/w384/2021/10/07/145448-bs-lan.jpg",
+  //     specialty: "Trị liệu da chuyên sâu",
+  //     experience: "10 năm kinh nghiệm",
+  //     rating: 4.7,
+  //     reviews: 156,
+  //   },
+  // ];
+
+  const services = [
+    {
+      icon: <MdHealthAndSafety color="#f4dd22" size={50} />,
+      title: "Điều trị mụn",
+      description: "Phương pháp điều trị mụn chuyên sâu, hiệu quả",
+    },
+    {
+      icon: <FaUserMd color="#f4dd22" size={50} />,
+      title: "Trị nám - tàn nhang",
+      description: "Công nghệ laser tiên tiến, an toàn",
+    },
+    {
+      icon: <FaClock color="#f4dd22" size={50} />,
+      title: "Trẻ hóa da",
+      description: "Liệu trình chăm sóc và trẻ hóa toàn diện",
+    },
+    {
+      icon: <MdSupportAgent color="#f4dd22" size={50} />,
+      title: "Tư vấn da liễu",
+      description: "Đội ngũ bác sĩ giàu kinh nghiệm tư vấn",
+    },
+  ];
+
+  const {
+    data: dataClinics,
+    isLoading: isLoadingClinics,
+    error: errorClinics,
+  } = useGetClinicsByCustomerQuery({});
+
+  const {
+    data: dataDoctors,
+    isLoading: isLoadingDoctors,
+    error: errorDoctors,
+  } = useGetDoctorsByCustomerQuery({});
+
+  const clinics = dataClinics?.data ? dataClinics.data.clinics : [];
+  const doctors = dataDoctors?.data ? dataDoctors.data.doctors : [];
+
   return (
     <>
       {/* Hero Section */}
@@ -142,7 +158,7 @@ const HomeBooking = () => {
           }}
         />
 
-        <div className="container mx-auto px-4 py-16">
+        <div className="container mx-auto px-4 py-20">
           <div className="relative grid grid-cols-1 gap-8 md:grid-cols-2">
             <motion.div
               className="flex flex-col justify-center text-white"
@@ -282,7 +298,7 @@ const HomeBooking = () => {
               {clinics.map((clinic, index) => (
                 <div key={index} className="px-4">
                   <motion.div
-                    className="bg-white rounded-xl shadow-lg overflow-hidden h-full"
+                    className="bg-white rounded-xl overflow-hidden h-full shadow-md"
                     whileHover={{ y: -5 }}
                   >
                     <div className="relative">

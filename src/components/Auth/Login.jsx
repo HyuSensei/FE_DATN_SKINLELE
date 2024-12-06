@@ -14,7 +14,7 @@ const STYLE_INPUT =
 const STYLE_LABEL = "block text-sm font-medium text-gray-700";
 const BE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 
-const Login = ({ setStep }) => {
+const Login = ({ setStep, isModel }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [input, setInput] = useState({
@@ -54,6 +54,9 @@ const Login = ({ setStep }) => {
         }
         set("ACCESS_TOKEN", data.accessToken);
         message.success("Đăng nhập thành công");
+        if (isModel) {
+          window.location.reload();
+        }
         navigate("/");
         return;
       }

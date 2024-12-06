@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Checkbox, Form, Input, message, Modal } from "antd";
-import CustumButton from "../CustumButton/CustomButton";
+import CustumButton from "../CustumButton";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { loginDoctor } from "@/redux/auth/auth.thunk";

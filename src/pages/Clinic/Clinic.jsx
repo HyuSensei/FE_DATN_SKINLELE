@@ -4,7 +4,6 @@ import {
   RiMapPinFill,
   RiPhoneFill,
   RiMailFill,
-  RiCalendarFill,
   RiUserStarFill,
   RiHeartFill,
 } from "react-icons/ri";
@@ -13,7 +12,7 @@ import { GiRoundStar } from "react-icons/gi";
 import { MdVerified } from "react-icons/md";
 import ClinicAbout from "./ClinicAbout/ClinicAbout";
 import ClinicReview from "./ClinicReview/ClinicReview";
-import CustumButton from "@components/CustumButton/CustumButton";
+import CustumButton from "@/components/CustumButton";
 
 // Mock Data
 const clinicData = {

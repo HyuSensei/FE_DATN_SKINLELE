@@ -29,7 +29,7 @@ const Auth = ({ isModel = false }) => {
   const renderStep = () => {
     switch (step) {
       case "login":
-        return <Login {...{ setStep }} />;
+        return <Login {...{ setStep, isModel }} />;
       case "register":
         return <Register {...{ setStep }} />;
       case "resetPassword":

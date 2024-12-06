@@ -1,3 +1,4 @@
+import AuthUserWrapper from "@/components/Auth/AuthUserWapper";
 import LoadingClinic from "@/components/Loading/LoadingClinic";
 import React, { lazy, Suspense } from "react";
 import { useSelector } from "react-redux";
@@ -15,29 +16,21 @@ const Doctor = lazy(() => import("@pages/Doctor"));
 const Clinic = lazy(() => import("@pages/Clinic"));
 const BookingHistory = lazy(() => import("@pages/BookingHistory"));
 
-const AuthRoute = ({ children }) => {
-  const { isAuthenticatedDoctor } = useSelector((state) => state.auth);
-  return isAuthenticatedDoctor ? (
-    <Navigate to="/home-booking" replace />
-  ) : (
-    children
-  );
-};
-
 const WrapBookingRoute = ({
   element: Element,
   title,
   isDoctor,
-  isAuthRoute,
+  isAuth,
+  isModalAuth = false,
 }) => (
   <Suspense fallback={<LoadingClinic />}>
     <PageTitle title={title}>
-      {isAuthRoute ? (
-        <LayoutBooking>
-          <AuthRoute>
+      {isAuth ? (
+        <AuthUserWrapper isModalAuth={isModalAuth}>
+          <LayoutBooking>
             <Element />
-          </AuthRoute>
-        </LayoutBooking>
+          </LayoutBooking>
+        </AuthUserWrapper>
       ) : isDoctor ? (
         <AuthDoctorWapper>
           <LayoutBooking>
@@ -58,6 +51,8 @@ const routes = [
     path: "/home-booking",
     element: HomeBooking,
     title: "SkinLeLeClinic - Phòng khám da liễu",
+    isModalAuth: true,
+    isAuth: true,
   },
   {
     path: "/doctor-owner",
@@ -83,14 +78,15 @@ const routes = [
 ];
 
 const BookingRoutes = routes.map(
-  ({ path, element, title, isDoctor, isAuthRoute }) => ({
+  ({ path, element, title, isDoctor, isAuth, isModalAuth }) => ({
     path,
     element: (
       <WrapBookingRoute
         element={element}
         title={title}
         isDoctor={isDoctor}
-        isAuthRoute={isAuthRoute}
+        isAuth={isAuth}
+        isModalAuth={isModalAuth}
       />
     ),
   })

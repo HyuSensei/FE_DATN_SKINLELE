@@ -29,8 +29,33 @@ export const doctorApi = createApi({
       },
       transformResponse: (response) => response.data,
     }),
+    getDoctorsByCustomer: builder.query({
+      query: ({ page, pageSize, search = "", specialty = "", clinic = "" }) => {
+        if (page && pageSize) {
+          const queryStrings = new URLSearchParams({
+            page,
+            pageSize,
+            search,
+            specialty,
+            clinic,
+          });
+          return {
+            url: `/doctors/by-customer?${queryStrings}`,
+            method: "GET",
+          };
+        }
+        return {
+          url: `/doctors/by-customer`,
+          method: "GET",
+        };
+      },
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
-export const { useGetStatisticalDoctorQuery, useGetAllReviewsQuery } =
-  doctorApi;
+export const {
+  useGetStatisticalDoctorQuery,
+  useGetAllReviewsQuery,
+  useGetDoctorsByCustomerQuery,
+} = doctorApi;

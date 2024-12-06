@@ -66,6 +66,12 @@ export const authSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
+    setIsLoading(state, action) {
+      state.isLoading = action.payload;
+    },
+    setIsAuthenticated(state, action) {
+      state.isAuthenticated = action.payload;
+    },
     setOpenModelAuth(state, action) {
       state.openModelAuth = action.payload;
     },
@@ -128,23 +134,6 @@ export const authSlice = createSlice({
         }
       })
       .addCase(registerUser.rejected, (state, action) => {
-        state.error = action.payload;
-        state.isLoading = false;
-      })
-
-      //Get Account Customer
-      .addCase(getAccountUser.pending, (state, action) => {
-        state.isLoading = true;
-      })
-      .addCase(getAccountUser.fulfilled, (state, action) => {
-        if (action.payload.success) {
-          state.isLoading = false;
-          state.userInfo = action.payload.data;
-          state.isAuthenticated = true;
-          state.error = {};
-        }
-      })
-      .addCase(getAccountUser.rejected, (state, action) => {
         state.error = action.payload;
         state.isLoading = false;
       })
@@ -253,5 +242,7 @@ export const {
   setDoctorInfo,
   setIsAuthenticatedDoctor,
   logoutDoctor,
+  setIsLoading,
+  setIsAuthenticated,
 } = authSlice.actions;
 export default authSlice.reducer;
