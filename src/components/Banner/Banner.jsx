@@ -2,31 +2,21 @@ import React, { useMemo, useCallback } from "react";
 import Slider from "react-slick";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import banner_1 from "@assets/images/skinlele-banner-1.webp";
-import banner_2 from "@assets/images/skinlele-banner-2.webp";
-import banner_3 from "@assets/images/skinlele-banner-3.webp";
-import banner_4 from "@assets/images/skinlele-banner-4.webp";
-import banner_5 from "@assets/images/skinlele-banner-5.webp";
-import banner_6 from "@assets/images/skinlele-banner-6.webp";
-import banner_7 from "@assets/images/skinlele-banner-7.webp";
-import banner_8 from "@assets/images/skinlele-banner-8.webp";
-import banner_9 from "@assets/images/skinlele-banner-9.webp";
-import banner_10 from "@assets/images/skinlele-banner-10.webp";
 
 const SLIDE_IMAGES = [
-  banner_1,
-  banner_2,
-  banner_3,
-  banner_4,
-  banner_5,
-  banner_6,
-  banner_7,
+  "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565403/upload-static-skinlele/iezgb3rrzscr5jslr0fv.webp",
+  "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565403/upload-static-skinlele/zuh6anhr71thwquivdge.webp",
+  "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565403/upload-static-skinlele/wamubzib8tca6bflqpnf.webp",
+  "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565403/upload-static-skinlele/hjycrlvb1d1gqmjhwzcs.webp",
+  "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565403/upload-static-skinlele/zt6wddkbv3nbiiqeg03a.webp",
+  "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565404/upload-static-skinlele/x3vcxgigd8he1fgr0nsm.webp",
+  "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565404/upload-static-skinlele/xbfnmdonmjlpw4p6e3xa.webp",
 ];
 
 const SIDE_IMAGES = [
-  // banner_10,
-  banner_8,
-  banner_9,
+  // https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565404/upload-static-skinlele/lvb1dpx05h0ovxza5uok.webp,
+  "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565404/upload-static-skinlele/oi2yqk6dt0lhbrbhjszt.webp",
+  "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565404/upload-static-skinlele/f2mqihxsuvctvs530egz.webp",
 ];
 
 const arrowStyles = {

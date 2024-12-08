@@ -12,7 +12,11 @@ import {
 import ModalAuth from "../Modal/ModalAuth";
 import LoadingClinic from "../Loading/LoadingClinic";
 
-const AuthUserWrapper = ({ children, isModalAuth = false }) => {
+const AuthUserWrapper = ({
+  children,
+  isModalAuth = false,
+  isAuthBooking = false,
+}) => {
   const dispatch = useDispatch();
   const { isLoading, isAuthenticated } = useSelector((state) => state.auth);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -52,7 +56,7 @@ const AuthUserWrapper = ({ children, isModalAuth = false }) => {
   }, [dispatch, token, isAuthenticated]);
 
   if ((!isInitialized || isLoading) && pathname !== "/auth") {
-    return isModalAuth ? <LoadingClinic /> : <Loading />;
+    return isModalAuth || isAuthBooking ? <LoadingClinic /> : <Loading />;
   }
 
   return isAuthenticated || !isModalAuth ? (

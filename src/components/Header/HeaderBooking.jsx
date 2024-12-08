@@ -1,14 +1,15 @@
 import { Input, Layout, Dropdown } from "antd";
 import { FaBars, FaHandshake, FaSearch, FaUserCircle } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import logo from "@assets/images/logo-booking.png";
 import React, { useState } from "react";
 import { IoLogOut } from "react-icons/io5";
 import { PiCalendarCheckFill } from "react-icons/pi";
+import { useNavigate } from "react-router-dom";
 
 const { Header: AntHeader } = Layout;
 
 const HeaderBooking = () => {
+  const navigate = useNavigate();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const authItems = [
@@ -56,6 +57,7 @@ const HeaderBooking = () => {
           <div className="flex h-16 items-center justify-between px-4 gap-4">
             {/* Logo Section */}
             <motion.div
+              onAbort={() => navigate("/home-booking")}
               className="flex items-center gap-2 min-w-[180px]"
               whileHover={{ scale: 1.02 }}
               initial={{ opacity: 0, y: -20 }}
@@ -64,7 +66,7 @@ const HeaderBooking = () => {
             >
               <div className="w-14 h-14 rounded-lg overflow-hidden">
                 <img
-                  src={logo}
+                  src="https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565402/upload-static-skinlele/kkbdfw5bzr6tlvfl5v3z.png"
                   alt="logo"
                   className="w-full h-full object-cover"
                 />

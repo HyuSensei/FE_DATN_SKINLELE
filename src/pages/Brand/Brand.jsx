@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { debounce } from "lodash";
 import { getProductByBrand } from "@redux/brand/brand.thunk";
-import bannerBrand from "@assets/images/skinlele-banner-brand.webp";
 
 const { Option } = Select;
 
@@ -138,7 +137,11 @@ const Brand = () => {
   return (
     <div className="space-y-4">
       <div className="w-full">
-        <img className="rounded-lg w-full h-auto" src={bannerBrand} alt="" />
+        <img
+          className="rounded-lg w-full h-auto"
+          src="https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565405/upload-static-skinlele/k68i4lhczt3qsm5cg5v8.webp"
+          alt=""
+        />
       </div>
       <div>
         <Breadcrumb

@@ -5,7 +5,6 @@ import ProductList from "@components/Product/ProductList";
 import { Breadcrumb, Checkbox, Select, Collapse } from "antd";
 import { getProductPromotion } from "@redux/product/product.thunk";
 import { debounce } from "lodash";
-import bannerPromtion from "@assets/images/skinlele-banner-promotion.webp";
 
 const Promotion = () => {
   const { isMobile } = useScreen();
@@ -152,7 +151,11 @@ const Promotion = () => {
   return (
     <div className="space-y-4">
       <div className="w-full">
-        <img className="rounded-lg w-full h-auto" src={bannerPromtion} alt="" />
+        <img
+          className="rounded-lg w-full h-auto"
+          src="https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565405/upload-static-skinlele/vgwudpamimynnti7oqzc.webp"
+          alt=""
+        />
       </div>
       <div>
         <Breadcrumb

@@ -26,7 +26,7 @@ const WrapBookingRoute = ({
   <Suspense fallback={<LoadingClinic />}>
     <PageTitle title={title}>
       {isAuth ? (
-        <AuthUserWrapper isModalAuth={isModalAuth}>
+        <AuthUserWrapper {...{ isModalAuth, isAuthBooking: isAuth }}>
           <LayoutBooking>
             <Element />
           </LayoutBooking>
@@ -51,7 +51,6 @@ const routes = [
     path: "/home-booking",
     element: HomeBooking,
     title: "SkinLeLeClinic - Phòng khám da liễu",
-    isModalAuth: true,
     isAuth: true,
   },
   {

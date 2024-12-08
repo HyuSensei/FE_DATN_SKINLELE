@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from "react";
 import Banner from "@components/Banner/Banner";
 import ProductCarousel from "@components/Product/ProductCarousel";
 import ProductSale from "@components/Product/ProductSale";
-import SilderList from "@components/Slider/SilderList";
+import SliderList from "@components/Slider/SliderList";
 import { sliderBrand, sliderPromotion } from "@const/dataDefault";
 import { useDispatch, useSelector } from "react-redux";
 import { getProductHome } from "@redux/product/product.thunk";
@@ -45,7 +45,7 @@ const Home = () => {
               />
             ))}
         </div>
-        <SilderList {...{ slides: sliderPromotion }} />
+        <SliderList {...{ slides: sliderPromotion }} />
         {NEW &&
           NEW.length >= 5 &&
           (!isMobile ? (
@@ -64,7 +64,7 @@ const Home = () => {
           ) : (
             <ProductList {...{ products: SALE, isLoading }} />
           ))}
-        <SilderList {...{ slides: sliderBrand }} />
+        <SliderList {...{ slides: sliderBrand }} />
       </div>
     </>
   );

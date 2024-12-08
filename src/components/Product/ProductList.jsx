@@ -6,7 +6,6 @@ import { formatPrice } from "@helpers/formatPrice";
 import { defaultProduct } from "@const/defaultProduct";
 import { createAverageRate } from "@utils/createIcon";
 import ImageCarousel from "@components/ImageCarousel";
-import emptyProductList from "@assets/images/skinlele-product-list-empty.gif";
 
 const ProductList = ({
   isLoading,
@@ -118,7 +117,11 @@ const ProductList = ({
     return (
       <div className="flex items-center justify-center">
         <div className="space-y-4">
-          <img className="w-80 m-auto" src={emptyProductList} alt="" />
+          <img
+            className="w-80 m-auto"
+            src="https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565406/upload-static-skinlele/uocoxyuf3dxizbculepk.gif"
+            alt=""
+          />
           <div className="text-sm md:text-base italic text-center">
             Quý khách có thể tham khảo các sản phẩm khác. SkinLeLe cảm ơn quý
             khách ❤️

@@ -4,6 +4,7 @@ import UserRoutes from "./user";
 import AdminRoutes from "./admin";
 import NotFound from "@pages/NotFound/NotFound";
 import BookingRoutes from "./booking";
+import PageTitle from "@/components/Layout/PageTitle";
 
 const Router = () => {
   return (
@@ -29,7 +30,14 @@ const Router = () => {
           element={route.element}
         />
       ))}
-      <Route path="*" element={<NotFound />} />
+      <Route
+        path="*"
+        element={
+          <PageTitle title={"Not Found"}>
+            <NotFound />
+          </PageTitle>
+        }
+      />
     </Routes>
   );
 };

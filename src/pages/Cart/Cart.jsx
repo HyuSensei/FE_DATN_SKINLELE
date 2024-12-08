@@ -20,7 +20,6 @@ import {
 import { formatPrice } from "@helpers/formatPrice";
 import { isEmpty } from "lodash";
 import { getAllProductOther } from "@redux/product/product.thunk";
-import cartEmpty from "@assets/images/skinlele-empty-cart.png";
 
 const { Text } = Typography;
 
@@ -128,7 +127,7 @@ const Cart = () => {
             <div>
               <img
                 className="w-64 m-auto flex items-center justify-center"
-                src={cartEmpty}
+                src="https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565405/upload-static-skinlele/krnhbofookzlgmrtduo1.png"
                 alt="Empty-Cart"
               />
               <Typography.Text className="text-base">

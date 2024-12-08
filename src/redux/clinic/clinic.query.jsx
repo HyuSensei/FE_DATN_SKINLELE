@@ -36,8 +36,18 @@ export const clinicApi = createApi({
       },
       transformResponse: (response) => response.data,
     }),
+    getClinicDetailBySlug: builder.query({
+      query: ({ slug }) => ({
+        url: `/clinics/${slug}`,
+        method: "GET",
+      }),
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
-export const { useGetClinicDetailByAdminQuery, useGetClinicsByCustomerQuery } =
-  clinicApi;
+export const {
+  useGetClinicDetailByAdminQuery,
+  useGetClinicsByCustomerQuery,
+  useGetClinicDetailBySlugQuery,
+} = clinicApi;

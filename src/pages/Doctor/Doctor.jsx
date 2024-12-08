@@ -1,42 +1,44 @@
 import React, { useState } from "react";
-import { Rate, Tabs, Tag, Avatar, Card } from "antd";
+import { Rate, Tabs, Tag, Avatar, Card, Empty } from "antd";
 import {
   UserOutlined,
   PhoneOutlined,
   MailOutlined,
   DollarOutlined,
 } from "@ant-design/icons";
-import DoctorSchedule from "./DoctorSchedule/DoctorSchedule";
-import DoctorReview from "./DoctorReview/DoctorReview";
+import DoctorSchedule from "./DoctorSchedule";
+import DoctorReview from "./DoctorReview";
 import CustumButton from "@/components/CustumButton";
 import { MdVerified } from "react-icons/md";
-
-const mockDoctor = {
-  name: "Bs.CK2 Nguyễn Thị Hương",
-  avatar: {
-    url: "https://cdn.bookingcare.vn/fo/w384/2021/10/07/145448-bs-lan.jpg",
-  },
-  specialty: "Da liễu thẩm mỹ",
-  experience: 8,
-  email: "huong.nguyen@skinlele.com",
-  phone: "0123 456 789",
-  about:
-    "Bác sĩ Nguyễn Thị Hương là bác sĩ chuyên khoa da liễu với hơn 8 năm kinh nghiệm trong lĩnh vực điều trị da và thẩm mỹ. Bác sĩ chuyên sâu về điều trị các bệnh lý da liễu và cung cấp các giải pháp chăm sóc da tiên tiến.",
-  fees: 850000,
-  rating: 4.8,
-  totalReviews: 124,
-  isActive: true,
-};
+import { useParams } from "react-router-dom";
+import { useGetDoctorDetailQuery } from "@/redux/doctor/doctor.query";
+import LoadingClinic from "@/components/Loading/LoadingClinic";
+import { formatPrice } from "@/helpers/formatPrice";
 
 const Doctor = () => {
+  const { slug } = useParams();
+
+  const {
+    data: doctor,
+    isLoading,
+    error,
+  } = useGetDoctorDetailQuery({ slug }, { skip: !slug });
+
+  if (error)
+    return <Empty description="Có lỗi xảy ra khi lấy thông tin bác sĩ" />;
+
+  if (isLoading) return <LoadingClinic />;
+
+  if (!doctor) return <Empty description="Không tìm thấy thông tin bác sĩ" />;
+
   return (
-    <div className="mx-auto lg:px-16 mt-24">
+    <div className="mx-auto lg:px-16 mt-28">
       <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
         <div className="flex flex-col md:flex-row gap-8">
           <div className="w-full md:w-1/4">
             <div className="relative">
               <Avatar
-                src={mockDoctor.avatar.url}
+                src={doctor.avatar.url}
                 size={240}
                 className="w-full rounded-xl shadow-md"
               />
@@ -48,22 +50,22 @@ const Doctor = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
               <div>
                 <h1 className="text-2xl md:text-3xl font-bold mb-2 text-gray-800 flex items-center gap-2">
-                  {mockDoctor.name} <MdVerified color="#5ad7ff" />
+                  {doctor.name} <MdVerified color="#5ad7ff" />
                 </h1>
                 <Tag
                   color="blue"
                   className="rounded-full mb-3 px-3 py-1 text-sm"
                 >
-                  {mockDoctor.specialty}
+                  {doctor.specialty}
                 </Tag>
                 <div className="flex items-center gap-2">
                   <Rate
                     disabled
-                    defaultValue={mockDoctor.rating}
+                    defaultValue={doctor.rating}
                     className="text-sm text-yellow-400"
                   />
                   <span className="text-gray-600">
-                    ({mockDoctor.totalReviews} đánh giá)
+                    ({doctor.totalReviews} đánh giá)
                   </span>
                 </div>
               </div>
@@ -79,7 +81,7 @@ const Doctor = () => {
                 </div>
                 <div>
                   <p className="text-gray-500 text-sm">Kinh nghiệm</p>
-                  <p className="font-medium">{mockDoctor.experience} năm</p>
+                  <p className="font-medium">{doctor.experience} năm</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -88,7 +90,7 @@ const Doctor = () => {
                 </div>
                 <div>
                   <p className="text-gray-500 text-sm">Điện thoại</p>
-                  <p className="font-medium">{mockDoctor.phone}</p>
+                  <p className="font-medium">{doctor.phone}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -97,7 +99,7 @@ const Doctor = () => {
                 </div>
                 <div>
                   <p className="text-gray-500 text-sm">Email</p>
-                  <p className="font-medium">{mockDoctor.email}</p>
+                  <p className="font-medium">{doctor.email}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -106,18 +108,17 @@ const Doctor = () => {
                 </div>
                 <div>
                   <p className="text-gray-500 text-sm">Phí khám</p>
-                  <p className="font-medium">
-                    {mockDoctor.fees.toLocaleString()} VNĐ
-                  </p>
+                  <p className="font-medium">{formatPrice(doctor.fees)} VNĐ</p>
                 </div>
               </div>
             </div>
 
             <div className="bg-gray-50 rounded-lg p-4">
               <h3 className="font-semibold mb-2 text-gray-800">Giới thiệu</h3>
-              <p className="text-gray-600 leading-relaxed">
-                {mockDoctor.about}
-              </p>
+              <p
+                className="text-gray-600 leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: doctor.about }}
+              />
             </div>
           </div>
         </div>
@@ -125,7 +126,6 @@ const Doctor = () => {
 
       <Card hoverable className="shadow-xl">
         <Tabs
-          defaultActiveKey="1"
           items={[
             {
               key: "1",

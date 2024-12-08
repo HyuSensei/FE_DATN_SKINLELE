@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import "dayjs/locale/vi";
-import { Select, List, Empty } from "antd";
+import { Select, List } from "antd";
 
 const DoctorSchedule = () => {
   const [currentDate, setCurrentDate] = useState(dayjs().locale("vi"));
@@ -56,7 +56,7 @@ const DoctorSchedule = () => {
   };
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-lg">
+    <>
       <div className="flex justify-between items-center mb-6 flex-wrap gap-2">
         <Select
           className="w-full lg:w-36"
@@ -177,7 +177,7 @@ const DoctorSchedule = () => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

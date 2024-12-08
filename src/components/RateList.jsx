@@ -26,7 +26,6 @@ import { getReviewProduct } from "@redux/review/review.thunk";
 import { formatDateReview } from "@helpers/formatDate";
 import { FaQuoteLeft, FaQuoteRight } from "react-icons/fa6";
 import { MdVerified, MdDateRange } from "react-icons/md";
-import emptyReview from "@assets/images/review-empty.png";
 
 const RateList = ({ product }) => {
   const dispatch = useDispatch();
@@ -218,8 +217,8 @@ const RateList = ({ product }) => {
                 <div className="space-y-2">
                   <img
                     className="w-40 lg:w-60 m-auto"
-                    src={emptyReview}
-                    alt=""
+                    src="https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565402/upload-static-skinlele/pfkfbe8v6aifvf3zfj5a.png"
+                    alt="empty-review"
                   />
                   <div className="text-sm md:text-base italic text-center">
                     Sản phẩm chưa có đánh giá !

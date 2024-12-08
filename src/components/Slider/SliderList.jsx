@@ -3,7 +3,7 @@ import Slider from "react-slick";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { motion } from "framer-motion";
 
-const SilderList = ({ slides, show = 3, auto = true, scroll = 1 }) => {
+const SliderList = ({ slides, show = 3, auto = true, scroll = 1 }) => {
   const CustomArrow = ({ direction, onClick }) => {
     return (
       <motion.div
@@ -78,4 +78,4 @@ const SilderList = ({ slides, show = 3, auto = true, scroll = 1 }) => {
   );
 };
 
-export default SilderList;
+export default SliderList;

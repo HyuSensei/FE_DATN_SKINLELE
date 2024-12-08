@@ -51,6 +51,15 @@ export const doctorApi = createApi({
       },
       transformResponse: (response) => response.data,
     }),
+    getDoctorDetail: builder.query({
+      query: ({ slug }) => {
+        return {
+          url: `/doctors/${slug}`,
+          method: "GET",
+        };
+      },
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
@@ -58,4 +67,5 @@ export const {
   useGetStatisticalDoctorQuery,
   useGetAllReviewsQuery,
   useGetDoctorsByCustomerQuery,
+  useGetDoctorDetailQuery,
 } = doctorApi;
