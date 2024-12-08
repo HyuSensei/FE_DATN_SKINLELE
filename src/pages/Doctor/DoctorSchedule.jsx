@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import "dayjs/locale/vi";
 import { Select, List } from "antd";
 
-const DoctorSchedule = () => {
+const DoctorSchedule = ({ doctor }) => {
   const [currentDate, setCurrentDate] = useState(dayjs().locale("vi"));
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);

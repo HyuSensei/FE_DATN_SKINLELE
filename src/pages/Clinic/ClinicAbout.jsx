@@ -149,7 +149,7 @@ const ClinicAbout = ({ clinic }) => {
             {doctors.length > 0 &&
               doctors.map((doctor) => (
                 <div
-                  key={doctor.id}
+                  key={doctor._id}
                   className="bg-white rounded-xl p-4 hover:bg-gray-50 transition-colors cursor-pointer border border-gray-100 hover:border-blue-200"
                 >
                   <div className="flex items-center gap-4 flex-wrap justify-center">

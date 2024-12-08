@@ -10,7 +10,7 @@ import DoctorSchedule from "./DoctorSchedule";
 import DoctorReview from "./DoctorReview";
 import CustumButton from "@/components/CustumButton";
 import { MdVerified } from "react-icons/md";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useGetDoctorDetailQuery } from "@/redux/doctor/doctor.query";
 import LoadingClinic from "@/components/Loading/LoadingClinic";
 import { formatPrice } from "@/helpers/formatPrice";
@@ -130,12 +130,12 @@ const Doctor = () => {
             {
               key: "1",
               label: "Lịch khám",
-              children: <DoctorSchedule />,
+              children: <DoctorSchedule {...{ doctor }} />,
             },
             {
               key: "2",
               label: "Đánh giá",
-              children: <DoctorReview />,
+              children: <DoctorReview {...{ doctor }} />,
             },
           ]}
         />

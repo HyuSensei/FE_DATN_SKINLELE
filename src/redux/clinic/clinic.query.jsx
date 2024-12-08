@@ -43,6 +43,30 @@ export const clinicApi = createApi({
       }),
       transformResponse: (response) => response.data,
     }),
+    getReviewsClinic: builder.query({
+      query: ({
+        page,
+        pageSize,
+        clinicId,
+        sortBy = "createdAt",
+        sortOrder = "desc",
+        rating = "",
+      }) => {
+        const queryStrings = new URLSearchParams({
+          page,
+          pageSize,
+          clinicId,
+          sortBy,
+          sortOrder,
+          rating,
+        });
+        return {
+          url: `/clinics/reviews?${queryStrings}`,
+          method: "GET",
+        };
+      },
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
@@ -50,4 +74,5 @@ export const {
   useGetClinicDetailByAdminQuery,
   useGetClinicsByCustomerQuery,
   useGetClinicDetailBySlugQuery,
+  useGetReviewsClinicQuery,
 } = clinicApi;

@@ -57,8 +57,8 @@ const HeaderBooking = () => {
           <div className="flex h-16 items-center justify-between px-4 gap-4">
             {/* Logo Section */}
             <motion.div
-              onAbort={() => navigate("/home-booking")}
-              className="flex items-center gap-2 min-w-[180px]"
+              onClick={() => navigate("/home-booking")}
+              className="flex items-center gap-2 min-w-[180px] cursor-pointer"
               whileHover={{ scale: 1.02 }}
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}

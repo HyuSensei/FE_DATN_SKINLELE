@@ -167,7 +167,7 @@ const Clinic = () => {
               label: (
                 <span className="flex items-center gap-2 px-2">Đánh giá</span>
               ),
-              children: <ClinicReview />,
+              children: <ClinicReview {...{ clinic }} />,
             },
           ]}
         />

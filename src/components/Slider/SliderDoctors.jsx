@@ -4,9 +4,11 @@ import {
   MdOutlineArrowBackIos,
   MdOutlineArrowForwardIos,
 } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 
 const SliderDoctors = ({ doctors = [], isLoading, settings = {} }) => {
+  const navigate = useNavigate();
   const NextArrow = ({ onClick }) => (
     <button
       onClick={onClick}
@@ -82,7 +84,10 @@ const SliderDoctors = ({ doctors = [], isLoading, settings = {} }) => {
                     ({doctor.reviews} đánh giá)
                   </span>
                 </div>
-                <button className="mt-2 bg-gradient-to-r from-[#6c9bbf] via-[#6c9bbf] to-[#58b8d8] w-full py-2 rounded-full text-base font-medium text-white hover:opacity-90 transition-opacity duration-300">
+                <button
+                  onClick={() => navigate(`/doctor/${doctor.slug}`)}
+                  className="mt-2 bg-gradient-to-r from-[#6c9bbf] via-[#6c9bbf] to-[#58b8d8] w-full py-2 rounded-full text-base font-medium text-white hover:opacity-90 transition-opacity duration-300"
+                >
                   Đặt lịch khám
                 </button>
               </Card>
