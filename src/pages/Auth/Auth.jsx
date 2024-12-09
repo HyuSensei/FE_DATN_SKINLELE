@@ -7,7 +7,7 @@ import Verify from "@components/Auth/Verify";
 import { Card, message } from "antd";
 import { useNavigate } from "react-router-dom";
 
-const Auth = ({ isModel = false }) => {
+const Auth = ({ isModel = false, onClose }) => {
   const [step, setStep] = useState("login");
   const [isReset, setIsReset] = useState(false);
   const navigate = useNavigate();
@@ -29,7 +29,7 @@ const Auth = ({ isModel = false }) => {
   const renderStep = () => {
     switch (step) {
       case "login":
-        return <Login {...{ setStep, isModel }} />;
+        return <Login {...{ setStep, isModel, onClose }} />;
       case "register":
         return <Register {...{ setStep }} />;
       case "resetPassword":

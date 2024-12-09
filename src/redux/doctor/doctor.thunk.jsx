@@ -50,3 +50,15 @@ export const removeDoctorByAdmin = createAsyncThunk(
   }
 );
 
+export const createScheduleByDoctor = createAsyncThunk(
+  "doctor/createScheduleByDoctor",
+  async (payload, { rejectWithValue }) => {
+    try {
+      return await axios.post(`/doctors/schedule`, payload);
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+

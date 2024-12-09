@@ -1,16 +1,22 @@
-import { Badge, Form, Select, Tag } from "antd";
+import { Badge, Empty, Select, Tag } from "antd";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { ClockCircleOutlined } from "@ant-design/icons";
+import CustumButton from "@/components/CustumButton";
+import ScheduleCreate from "./Action/ScheduleCreate";
+import { MdDone, MdOutlineEdit } from "react-icons/md";
+import ScheduleUpdate from "./Action/ScheduleUpdate";
 
 const ManageSchedule = () => {
-  const [form] = Form.useForm();
-
   const [currentDate, setCurrentDate] = useState(dayjs().locale("vi"));
   const { doctorInfo } = useSelector((state) => state.auth);
   const { schedule = [], holidays = [] } = doctorInfo;
+  const [action, setAction] = useState({
+    create: false,
+    update: false,
+  });
 
   const months = dayjs
     .months()
@@ -30,19 +36,50 @@ const ManageSchedule = () => {
     setCurrentDate(dayjs().locale("vi"));
   }, []);
 
-  const handleMonthChange = (value) => {
-    setCurrentDate(currentDate.month(value));
-  };
-
-  const handleYearChange = (value) => {
-    setCurrentDate(currentDate.year(value));
-  };
+  const handleMonthChange = (value) => setCurrentDate(currentDate.month(value));
+  const handleYearChange = (value) => setCurrentDate(currentDate.year(value));
 
   const isHoliday = (date) => {
     return holidays.some(
       (holiday) =>
         dayjs(holiday).format("YYYY-MM-DD") === dayjs(date).format("YYYY-MM-DD")
     );
+  };
+
+  const handleChangeAction = (key, value) => {
+    setAction((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const renderScheduleContent = () => {
+    return schedule.map((slot, index) => (
+      <div
+        key={index}
+        className="bg-[#f9fafc] rounded-lg p-4 space-y-2 shadow-md"
+      >
+        <div className="flex items-center justify-between">
+          <Tag color="blue" className="text-base rounded-full">
+            {slot.dayOfWeek}
+          </Tag>
+          <Badge
+            status="success"
+            text={<span className="text-[#5cb929]">Đang hoạt động</span>}
+          />
+        </div>
+        <div className="flex items-center gap-2 text-gray-700">
+          <ClockCircleOutlined className="text-blue-500" />
+          <span>
+            {slot.startTime} - {slot.endTime}
+          </span>
+        </div>
+        {slot.breakTime && (
+          <div className="bg-orange-50 rounded-lg p-2 text-sm">
+            <span className="text-orange-600">
+              Giờ nghỉ: {slot.breakTime.start} - {slot.breakTime.end}
+            </span>
+          </div>
+        )}
+      </div>
+    ));
   };
 
   return (
@@ -52,40 +89,49 @@ const ManageSchedule = () => {
         <h3 className="text-xl font-bold text-gray-800 mb-4">
           Lịch làm việc theo tuần
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {schedule.length > 0 &&
-            schedule.map((slot, index) => (
-              <div
-                key={index}
-                className="bg-[#f9fafc] rounded-lg p-4 space-y-2 shadow-md"
-              >
-                <div className="flex items-center justify-between">
-                  <Tag color="blue" className="text-base rounded-full">
-                    {slot.dayOfWeek}
-                  </Tag>
-                  <Badge
-                    status="success"
-                    text={
-                      <span className="text-[#5cb929]">Đang hoạt động</span>
-                    }
-                  />
-                </div>
-                <div className="flex items-center gap-2 text-gray-700">
-                  <ClockCircleOutlined className="text-blue-500" />
-                  <span>
-                    {slot.startTime} - {slot.endTime}
-                  </span>
-                </div>
-                {slot.breakTime && (
-                  <div className="bg-orange-50 rounded-lg p-2 text-sm">
-                    <span className="text-orange-600">
-                      Giờ nghỉ: {slot.breakTime.start} - {slot.breakTime.end}
-                    </span>
-                  </div>
-                )}
+        {schedule.length > 0 && (
+          <>
+            {!action.update ? (
+              <div className="flex items-center justify-end">
+                <CustumButton
+                  icon={<MdOutlineEdit />}
+                  onClick={() => handleChangeAction("update", true)}
+                  variant="primary"
+                  className="mb-4"
+                >
+                  Chỉnh sửa
+                </CustumButton>
               </div>
-            ))}
-        </div>
+            ) : (
+              <ScheduleUpdate handleChangeAction={handleChangeAction} />
+            )}
+          </>
+        )}
+
+        {!schedule.length && (
+          <>
+            {!action.create ? (
+              <>
+                <Empty description="Vui lòng thiết lập lịch làm việc" />
+                <CustumButton
+                  onClick={() => handleChangeAction("create", true)}
+                  variant="primary"
+                  className="m-auto mt-4"
+                >
+                  Tạo lịch làm việc
+                </CustumButton>
+              </>
+            ) : (
+              <ScheduleCreate {...{ handleChangeAction }} />
+            )}
+          </>
+        )}
+
+        {!action.update && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {renderScheduleContent()}
+          </div>
+        )}
       </div>
 
       {/* Calendar Section */}

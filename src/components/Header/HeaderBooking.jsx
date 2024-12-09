@@ -1,29 +1,45 @@
-import { Input, Layout, Dropdown } from "antd";
+import { Input, Layout, Dropdown, Avatar, Badge } from "antd";
 import { FaBars, FaHandshake, FaSearch, FaUserCircle } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { IoLogOut } from "react-icons/io5";
 import { PiCalendarCheckFill } from "react-icons/pi";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import ModalAuth from "../Modal/ModalAuth";
+import { logoutUser } from "@/redux/auth/auth.slice";
 
 const { Header: AntHeader } = Layout;
 
 const HeaderBooking = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const { isAuthenticated, userInfo } = useSelector((state) => state.auth);
+  const [openAuth, setOpenAuth] = useState(false);
 
   const authItems = [
     {
       label: "Quay lại SkinLeLe",
       key: "doctor",
+      onClick: () => {
+        navigate("/");
+      },
     },
     {
       label: "Đăng nhập",
       key: "login",
+      onClick: () => {
+        setOpenAuth(true);
+      },
     },
     {
       label: "Đăng xuất",
       key: "logout",
+      onClick: () => {
+        dispatch(logoutUser());
+        navigate("/home-booking");
+      },
     },
   ];
 
@@ -52,6 +68,7 @@ const HeaderBooking = () => {
 
   return (
     <AntHeader className="fixed top-0 left-0 right-0 z-50 p-0">
+      <ModalAuth {...{ open: openAuth, onClose: () => setOpenAuth(false) }} />
       <div className="bg-white shadow-sm py-3">
         <div className="max-w-[1536px] mx-auto">
           <div className="flex h-16 items-center justify-between px-4 gap-4">
@@ -103,13 +120,25 @@ const HeaderBooking = () => {
               </CustumButton>
 
               <Dropdown
-                menu={{ items: authItems }}
+                menu={{
+                  items: isAuthenticated
+                    ? [authItems[0], authItems[2]]
+                    : [authItems[0], authItems[1]],
+                }}
                 placement="bottomRight"
                 trigger={["click"]}
               >
-                <div className="p-1.5 bg-gray-50 rounded-lg cursor-pointer">
-                  <FaUserCircle className="w-6 h-6 text-[#1677ff]" />
-                </div>
+                {isAuthenticated ? (
+                  <Avatar
+                    src={userInfo.avatar.url}
+                    size={40}
+                    className="cursor-pointer border-2 border-cyan-300"
+                  />
+                ) : (
+                  <div className="p-1.5 bg-gray-50 rounded-lg cursor-pointer">
+                    <FaUserCircle className="w-6 h-6 text-[#1677ff]" />
+                  </div>
+                )}
               </Dropdown>
             </div>
 

@@ -161,8 +161,8 @@ export default function ManageStatistic({ activeMenu }) {
               <Line
                 type="monotone"
                 dataKey="totalBookings"
-                stroke="#6c5ce7"
-                dot={{ stroke: "#6c5ce7", strokeWidth: 4 }}
+                stroke="#2464ec"
+                dot={{ stroke: "#2464ec", strokeWidth: 4 }}
                 name="Tổng"
               />
               <Line

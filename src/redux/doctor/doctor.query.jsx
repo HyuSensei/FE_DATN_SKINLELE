@@ -60,6 +60,15 @@ export const doctorApi = createApi({
       },
       transformResponse: (response) => response.data,
     }),
+    getScheduleBookingDoctor: builder.query({
+      query: ({ date = "", doctorId }) => {
+        return {
+          url: `/doctors/schedule/${doctorId}?date=${date}`,
+          method: "GET",
+        };
+      },
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
@@ -68,4 +77,5 @@ export const {
   useGetAllReviewsQuery,
   useGetDoctorsByCustomerQuery,
   useGetDoctorDetailQuery,
+  useGetScheduleBookingDoctorQuery,
 } = doctorApi;

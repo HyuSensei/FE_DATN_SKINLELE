@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import "dayjs/locale/vi";
 import { Select, List } from "antd";
+import { useGetScheduleBookingDoctorQuery } from "@/redux/doctor/doctor.query";
 
 const DoctorSchedule = ({ doctor }) => {
   const [currentDate, setCurrentDate] = useState(dayjs().locale("vi"));
@@ -34,6 +35,7 @@ const DoctorSchedule = ({ doctor }) => {
     "Tháng 11",
     "Tháng 12",
   ];
+
   const years = Array.from({ length: 21 }, (_, i) => dayjs().year() + i);
   const daysOfWeek = Array.from({ length: 7 }, (_, i) =>
     dayjs().day(i).format("ddd")
@@ -44,6 +46,13 @@ const DoctorSchedule = ({ doctor }) => {
   const startOfMonth = currentDate.startOf("month").day();
   const monthDays = Array.from({ length: daysInMonth }, (_, i) =>
     currentDate.date(i + 1).format("YYYY-MM-DD")
+  );
+
+  const { data, isLoading, error } = useGetScheduleBookingDoctorQuery(
+    {
+      doctorId: doctor._id,
+    },
+    { skip: !doctor }
   );
 
   useEffect(() => {

@@ -78,3 +78,27 @@ export const menuDefaut = [
 export const ADMIN = "ADMIN";
 export const SUPPORT = "SUPPORT";
 export const DOCTOR = "DOCTOR";
+
+export const WEEKDAYS = [
+  "Thứ 2",
+  "Thứ 3",
+  "Thứ 4",
+  "Thứ 5",
+  "Thứ 6",
+  "Thứ 7",
+  "Chủ nhật",
+];
+
+export const DEFAULT_TIME = {
+  start: "08:00",
+  end: "17:00",
+  breakStart: "12:00",
+  breakEnd: "13:00",
+};
+
+export const DURATION_OPTIONS = [
+  { label: "15 phút", value: 15 },
+  { label: "30 phút", value: 30 },
+  { label: "45 phút", value: 45 },
+  { label: "60 phút", value: 60 },
+];
