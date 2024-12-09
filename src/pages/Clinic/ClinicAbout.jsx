@@ -1,6 +1,7 @@
-import LoadingClinic from "@/components/Loading/LoadingClinic";
+import EmptyData from "@/components/Error/EmptyData";
+import LoadingContent from "@/components/Loading/LoaingContent";
 import { useGetDoctorsByCustomerQuery } from "@/redux/doctor/doctor.query";
-import { Avatar, Button, Empty } from "antd";
+import { Avatar, Button } from "antd";
 import React, { useEffect, useState } from "react";
 import { BsFillCheckCircleFill } from "react-icons/bs";
 import { MdOutlineVerified } from "react-icons/md";
@@ -42,14 +43,14 @@ const ClinicAbout = ({ clinic }) => {
   });
 
   if (errorDoctor) {
-    return <Empty description="Có lỗi xảy ra khi lấy danh sách bác sĩ" />;
+    return <EmptyData description="Có lỗi xảy ra khi lấy danh sách bác sĩ" />;
   }
 
-  if (isLoadingDoctor) return <LoadingClinic />;
+  if (isLoadingDoctor) return <LoadingContent />;
 
   if (!data) {
     return (
-      <Empty description="Không tìm thấy thông tin bác sĩ trong phòng khám" />
+      <EmptyData description="Không tìm thấy thông tin bác sĩ trong phòng khám" />
     );
   }
 

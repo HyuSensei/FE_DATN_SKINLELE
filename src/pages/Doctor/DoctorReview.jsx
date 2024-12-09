@@ -2,7 +2,8 @@ import { Avatar, Card, Empty, Rate } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import React, { useEffect, useState } from "react";
 import { useGetAllReviewsQuery } from "@/redux/doctor/doctor.query";
-import LoadingClinic from "@/components/Loading/LoadingClinic";
+import LoadingContent from "@/components/Loading/LoaingContent";
+import EmptyData from "@/components/Error/EmptyData";
 
 const DoctorReview = ({ doctor }) => {
   const [params, setParams] = useState({
@@ -26,13 +27,13 @@ const DoctorReview = ({ doctor }) => {
   }, [data]);
 
   if (error) {
-    return <Empty description="Có lỗi xảy ra khi lấy danh sách đánh giá" />;
+    return <EmptyData description="Có lỗi xảy ra khi lấy danh sách đánh giá" />;
   }
 
-  if (isLoading) return <LoadingClinic />;
+  if (isLoading) return <LoadingContent />;
 
   if (!data) {
-    return <Empty description="Không có danh sách đánh giá" />;
+    return <EmptyData description="Không có danh sách đánh giá" />;
   }
 
   const { reviews, stats } = data;

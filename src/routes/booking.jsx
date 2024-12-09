@@ -1,8 +1,6 @@
 import AuthUserWrapper from "@/components/Auth/AuthUserWapper";
 import LoadingClinic from "@/components/Loading/LoadingClinic";
 import React, { lazy, Suspense } from "react";
-import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
 
 const PageTitle = lazy(() => import("@components/Layout/PageTitle"));
 const LayoutBooking = lazy(() => import("@components/Layout/LayoutBooking"));

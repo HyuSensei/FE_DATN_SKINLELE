@@ -20,11 +20,24 @@ const DoctorSchedule = ({ doctor }) => {
     { startTime: "15:30", endTime: "16:00", isAvailable: true },
   ];
 
-  const months = dayjs
-    .months()
-    .map((month) => month.charAt(0).toUpperCase() + month.slice(1));
+  const months = [
+    "Tháng 1",
+    "Tháng 2",
+    "Tháng 3",
+    "Tháng 4",
+    "Tháng 5",
+    "Tháng 6",
+    "Tháng 7",
+    "Tháng 8",
+    "Tháng 9",
+    "Tháng 10",
+    "Tháng 11",
+    "Tháng 12",
+  ];
   const years = Array.from({ length: 21 }, (_, i) => dayjs().year() + i);
-  const daysOfWeek = dayjs.weekdaysShort();
+  const daysOfWeek = Array.from({ length: 7 }, (_, i) =>
+    dayjs().day(i).format("ddd")
+  );
   const today = dayjs();
 
   const daysInMonth = currentDate.daysInMonth();

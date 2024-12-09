@@ -12,8 +12,8 @@ import CustumButton from "@/components/CustumButton";
 import { MdVerified } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetDoctorDetailQuery } from "@/redux/doctor/doctor.query";
-import LoadingClinic from "@/components/Loading/LoadingClinic";
 import { formatPrice } from "@/helpers/formatPrice";
+import LoadingContent from "@/components/Loading/LoaingContent";
 
 const Doctor = () => {
   const { slug } = useParams();
@@ -25,11 +25,19 @@ const Doctor = () => {
   } = useGetDoctorDetailQuery({ slug }, { skip: !slug });
 
   if (error)
-    return <Empty description="Có lỗi xảy ra khi lấy thông tin bác sĩ" />;
+    return (
+      <Empty
+        className="mt-40"
+        description="Có lỗi xảy ra khi lấy thông tin bác sĩ"
+      />
+    );
 
-  if (isLoading) return <LoadingClinic />;
+  if (isLoading) return <LoadingContent />;
 
-  if (!doctor) return <Empty description="Không tìm thấy thông tin bác sĩ" />;
+  if (!doctor)
+    return (
+      <Empty className="mt-40" description="Không tìm thấy thông tin bác sĩ" />
+    );
 
   return (
     <div className="mx-auto lg:px-16 mt-28">

@@ -15,7 +15,7 @@ import ClinicReview from "./ClinicReview";
 import CustumButton from "@/components/CustumButton";
 import { useParams } from "react-router-dom";
 import { useGetClinicDetailBySlugQuery } from "@/redux/clinic/clinic.query";
-import LoadingClinic from "@/components/Loading/LoadingClinic";
+import LoadingContent from "@/components/Loading/LoaingContent";
 
 const Clinic = () => {
   const { slug } = useParams();
@@ -35,7 +35,7 @@ const Clinic = () => {
     );
   }
 
-  if (isLoadingClinic) return <LoadingClinic />;
+  if (isLoadingClinic) return <LoadingContent />;
 
   if (!clinic) {
     return (

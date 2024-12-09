@@ -1,4 +1,5 @@
-import LoadingClinic from "@/components/Loading/LoadingClinic";
+import EmptyData from "@/components/Error/EmptyData";
+import LoadingContent from "@/components/Loading/LoaingContent";
 import { useGetReviewsClinicQuery } from "@/redux/clinic/clinic.query";
 import { Avatar, Button, Card, Empty, Progress, Rate } from "antd";
 import React, { useEffect, useState } from "react";
@@ -27,13 +28,13 @@ const ClinicReview = ({ clinic }) => {
   }, [data]);
 
   if (error) {
-    return <Empty description="Có lỗi xảy ra khi lấy danh sách đánh giá" />;
+    return <EmptyData description="Có lỗi xảy ra khi lấy danh sách đánh giá" />;
   }
 
-  if (isLoading) return <LoadingClinic />;
+  if (isLoading) return <LoadingContent />;
 
   if (!data) {
-    return <Empty description="Không có danh sách đánh giá" />;
+    return <EmptyData description="Không có danh sách đánh giá" />;
   }
 
   const { reviews, hasMore, statistics } = data;

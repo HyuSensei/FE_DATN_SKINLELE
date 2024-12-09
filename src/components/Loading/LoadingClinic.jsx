@@ -1,38 +1,48 @@
-import React from "react";
+import { LoadingOutlined } from "@ant-design/icons";
+import { Spin } from "antd";
 import { motion } from "framer-motion";
 
 const LoadingClinic = () => {
+  const spinIcon = <LoadingOutlined style={{ fontSize: 36 }} spin />;
+
   return (
-    <div className="flex justify-center items-center h-screen bg-sky-50">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="fixed inset-0 flex items-center justify-center bg-black/5 backdrop-blur-sm z-50"
+    >
       <motion.div
-        className="flex flex-col items-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        className="py-8 px-12 bg-white rounded-xl shadow-lg border border-gray-100"
       >
-        <motion.div
-          className="w-16 h-16 mb-2"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="#A4DEC6"
+        <div className="flex flex-col items-center gap-6">
+          <Spin indicator={spinIcon} />
+          <motion.div
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-gray-600 font-medium"
           >
-            <path d="M12 2C6.47 2 2 6.47 2 12C2 17.53 6.47 22 12 22C17.53 22 22 17.53 22 12C22 6.47 17.53 2 12 2ZM16.5 16.5C15.37 17.63 13.89 18.25 12.35 18.25C10.81 18.25 9.33 17.63 8.2 16.5C7.07 15.37 6.45 13.89 6.45 12.35C6.45 10.81 7.07 9.33 8.2 8.2C9.33 7.07 10.81 6.45 12.35 6.45C13.89 6.45 15.37 7.07 16.5 8.2C17.63 9.33 18.25 10.81 18.25 12.35C18.25 13.89 17.63 15.37 16.5 16.5Z" />
-          </svg>
-        </motion.div>
-        <motion.div
-          className="text-[#A4DEC6] font-semibold text-xl"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          Đang tải...
-        </motion.div>
+            Đang tải...
+          </motion.div>
+          <motion.div className="w-32 h-1 bg-gray-100 rounded-full overflow-hidden relative">
+            <motion.div
+              className="absolute inset-0 bg-blue-500/30"
+              animate={{
+                x: ["-100%", "100%"],
+              }}
+              transition={{
+                repeat: Infinity,
+                duration: 1.5,
+                ease: "linear",
+              }}
+            />
+          </motion.div>
+        </div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 };
 
