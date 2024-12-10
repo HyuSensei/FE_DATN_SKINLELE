@@ -46,7 +46,7 @@ const ModelEditDoctor = ({
 
   return (
     <Modal
-      title="Cập nhật thông tin bác sĩ"
+      title={`Cập nhật thông tin bác sĩ (${doctor?.name})`}
       open={open}
       onCancel={() => {
         onClose();

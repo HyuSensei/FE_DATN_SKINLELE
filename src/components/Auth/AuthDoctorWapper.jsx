@@ -18,7 +18,7 @@ const AuthDoctorWapper = ({ children }) => {
 
   const initAuth = async () => {
     try {
-      if (accessTokenDoctor && !isAuthenticatedDoctor) {
+      if (accessTokenDoctor) {
         const res = await dispatch(getAccountDoctor()).unwrap();
         if (res.success) {
           dispatch(setIsAuthenticatedDoctor(true));

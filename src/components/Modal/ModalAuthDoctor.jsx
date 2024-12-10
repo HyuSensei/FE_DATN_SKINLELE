@@ -28,19 +28,17 @@ const ModalAuthDoctor = ({ open, onClose }) => {
 
   const handleSubmit = async (values) => {
     try {
-      console.log(values);
       setLoading(true);
       const res = await dispatch(loginDoctor(values)).unwrap();
       if (res.success) {
-        dispatch(setIsAuthenticatedDoctor(true));
-        dispatch(setDoctorInfo(res.data));
         set("ACCESS_TOKEN_DOCTOR", res.data.accessToken);
         if (values.remmeber) {
           Cookies.set("emailDoctor", values.email, { expires: 30 });
           Cookies.set("passwordDoctor", values.password, { expires: 30 });
         }
+        dispatch(setIsAuthenticatedDoctor(true));
         message.success(res.message);
-        navigate("/doctor-owner");
+        onClose();
       }
     } catch (error) {
       console.log(error);
