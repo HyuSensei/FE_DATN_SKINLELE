@@ -1,40 +1,27 @@
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import "dayjs/locale/vi";
-import { Select, List } from "antd";
+import { Select, List, Empty } from "antd";
 import { useGetScheduleBookingDoctorQuery } from "@/redux/doctor/doctor.query";
+import { monthsDefault } from "@/const/dataDefault";
+import LoadingContent from "@/components/Loading/LoaingContent";
+
+// Mock data for time slots
+const mockTimeSlots = [
+  { startTime: "09:00", endTime: "09:30", isAvailable: true },
+  { startTime: "09:30", endTime: "10:00", isAvailable: true },
+  { startTime: "10:00", endTime: "10:30", isAvailable: false },
+  { startTime: "10:30", endTime: "11:00", isAvailable: true },
+  { startTime: "14:00", endTime: "14:30", isAvailable: true },
+  { startTime: "14:30", endTime: "15:00", isAvailable: true },
+  { startTime: "15:00", endTime: "15:30", isAvailable: false },
+  { startTime: "15:30", endTime: "16:00", isAvailable: true },
+];
 
 const DoctorSchedule = ({ doctor }) => {
   const [currentDate, setCurrentDate] = useState(dayjs().locale("vi"));
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
-
-  // Mock data for time slots
-  const mockTimeSlots = [
-    { startTime: "09:00", endTime: "09:30", isAvailable: true },
-    { startTime: "09:30", endTime: "10:00", isAvailable: true },
-    { startTime: "10:00", endTime: "10:30", isAvailable: false },
-    { startTime: "10:30", endTime: "11:00", isAvailable: true },
-    { startTime: "14:00", endTime: "14:30", isAvailable: true },
-    { startTime: "14:30", endTime: "15:00", isAvailable: true },
-    { startTime: "15:00", endTime: "15:30", isAvailable: false },
-    { startTime: "15:30", endTime: "16:00", isAvailable: true },
-  ];
-
-  const months = [
-    "Tháng 1",
-    "Tháng 2",
-    "Tháng 3",
-    "Tháng 4",
-    "Tháng 5",
-    "Tháng 6",
-    "Tháng 7",
-    "Tháng 8",
-    "Tháng 9",
-    "Tháng 10",
-    "Tháng 11",
-    "Tháng 12",
-  ];
 
   const years = Array.from({ length: 21 }, (_, i) => dayjs().year() + i);
   const daysOfWeek = Array.from({ length: 7 }, (_, i) =>
@@ -48,6 +35,11 @@ const DoctorSchedule = ({ doctor }) => {
     currentDate.date(i + 1).format("YYYY-MM-DD")
   );
 
+  useEffect(() => {
+    dayjs.locale("vi");
+    setCurrentDate(dayjs().locale("vi"));
+  }, []);
+
   const { data, isLoading, error } = useGetScheduleBookingDoctorQuery(
     {
       doctorId: doctor._id,
@@ -55,10 +47,11 @@ const DoctorSchedule = ({ doctor }) => {
     { skip: !doctor }
   );
 
-  useEffect(() => {
-    dayjs.locale("vi");
-    setCurrentDate(dayjs().locale("vi"));
-  }, []);
+  if (error || !data) {
+    return <Empty description="Có lỗi xả ra khi lấy thông tin lịch khám" />;
+  }
+
+  if (isLoading) return <LoadingContent />;
 
   const handleMonthChange = (value) => {
     setCurrentDate(currentDate.month(value));
@@ -77,6 +70,8 @@ const DoctorSchedule = ({ doctor }) => {
     setSelectedTime(null);
   };
 
+  const timeSlots = data.timeSlots;
+
   return (
     <>
       <div className="flex justify-between items-center mb-6 flex-wrap gap-2">
@@ -86,7 +81,7 @@ const DoctorSchedule = ({ doctor }) => {
           value={currentDate.month()}
           onChange={handleMonthChange}
         >
-          {months.map((month, index) => (
+          {monthsDefault.map((month, index) => (
             <Select.Option key={index} value={index}>
               {month}
             </Select.Option>
