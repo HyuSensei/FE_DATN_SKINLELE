@@ -61,6 +61,27 @@ const ManageDoctor = () => {
     debouncedFilter(key, value);
   };
 
+  const setStateByAction = ({ id, data, action = "update" }) => {
+    const actions = {
+      update: () => {
+        setDoctors((prev) => {
+          const index = prev.findIndex((item) => item._id === id);
+          if (index !== -1) {
+            const updatedDoctors = [...prev];
+            updatedDoctors[index] = data;
+            return updatedDoctors;
+          }
+          return prev;
+        });
+      },
+      remove: () => {
+        setDoctors((prev) => prev.filter((item) => item._id !== id));
+      },
+    };
+
+    actions[action]?.();
+  };
+
   return (
     <div className="mt-4">
       <div className="mb-4 bg-white p-4 rounded-md shadow-lg flex gap-4 items-center">
@@ -89,6 +110,7 @@ const ManageDoctor = () => {
           totalItems: paginate.totalItems,
           setPaginate,
           loading,
+          setStateByAction,
         }}
       />
     </div>

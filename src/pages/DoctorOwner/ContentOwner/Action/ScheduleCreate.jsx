@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { createScheduleByDoctor } from "@/redux/doctor/doctor.thunk";
 import { DEFAULT_TIME, DURATION_OPTIONS, WEEKDAYS } from "@/const/dataDefault";
 import { setDoctorInfo } from "@/redux/auth/auth.slice";
+import { useScroll } from "@/components/context/ScrollProvider";
 
 const validateTimeRange = (form, fieldName, index, type) => {
   return async (_, value) => {
@@ -106,6 +107,7 @@ const ScheduleCreate = ({ handleChangeAction }) => {
   const [loading, setLoading] = useState(false);
   const { doctorInfo } = useSelector((state) => state.auth);
   const { _id, clinic } = doctorInfo;
+  const { scrollToTop } = useScroll();
 
   const handleSubmit = async (values) => {
     try {
@@ -133,6 +135,7 @@ const ScheduleCreate = ({ handleChangeAction }) => {
         message.success(res.message);
         dispatch(setDoctorInfo({ ...doctorInfo, schedule: res.data.schedule }));
         handleChangeAction("create", false);
+        scrollToTop();
       }
     } catch (error) {
       console.log(error);

@@ -1,9 +1,11 @@
 import { formatPrice } from "@/helpers/formatPrice";
-import { Popconfirm, Switch, Table, Tag, Tooltip } from "antd";
+import { updateDoctorByAdmin } from "@/redux/doctor/doctor.thunk";
+import { message, Popconfirm, Switch, Table, Tag, Tooltip } from "antd";
 import React, { useMemo, useState } from "react";
 import { GrEdit } from "react-icons/gr";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { useDispatch } from "react-redux";
+import ModelEditDoctor from "../Modal/ModalEditDoctor";
 
 const TableDoctor = ({
   doctors = [],
@@ -12,12 +14,23 @@ const TableDoctor = ({
   pageSize,
   totalItems,
   setPaginate,
+  setStateByAction,
 }) => {
   const dispatch = useDispatch();
+  const [open, setOpen] = useState(false);
+  const [doctor, setDoctor] = useState(null);
 
-  const onStatusChange = () => {};
+  const onStatusChange = async ({ id, isActive }) => {
+    const res = await dispatch(
+      updateDoctorByAdmin({ id, data: { isActive } })
+    ).unwrap();
+    if (res.success) {
+      message.success(res.message);
+      setStateByAction({ action: "update", id, data: res.data });
+    }
+  };
+
   const onDelete = () => {};
-  const onEdit = () => {};
 
   const columns = useMemo(
     () => [
@@ -72,33 +85,30 @@ const TableDoctor = ({
         width: 130,
       },
       {
-        title: "Trạng thái",
-        dataIndex: "isActive",
-        key: "isActive",
-        width: 100,
-        render: (isActive, record) => (
-          <Switch
-            checked={isActive}
-            onChange={(checked) => onStatusChange?.(record._id, checked)}
-            className={`${isActive ? "bg-blue-600" : "bg-gray-200"}`}
-          />
-        ),
-      },
-      {
         title: "Thao tác",
         key: "action",
         width: 100,
         render: (_, record) => (
           <div className="flex items-center gap-3">
+            <Switch
+              checked={record.isActive}
+              onChange={() =>
+                onStatusChange({ id: record._id, isActive: !record.isActive })
+              }
+              className={`${record.isActive ? "bg-blue-600" : "bg-gray-200"}`}
+            />
             <Tooltip title="Chỉnh sửa">
               <button
-                onClick={() => onEdit()}
+                onClick={() => {
+                  setDoctor(record);
+                  setOpen(true);
+                }}
                 className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors"
               >
                 <GrEdit />
               </button>
             </Tooltip>
-            <Popconfirm
+            {/* <Popconfirm
               className="max-w-40"
               placement="topLeft"
               title={"Xác nhận xóa bác sĩ"}
@@ -114,16 +124,27 @@ const TableDoctor = ({
                   <MdOutlineDeleteOutline />
                 </button>
               </Tooltip>
-            </Popconfirm>
+            </Popconfirm> */}
           </div>
         ),
       },
     ],
-    [onEdit, onDelete, onStatusChange]
+    [onDelete, onStatusChange]
   );
 
   return (
     <>
+      <ModelEditDoctor
+        {...{
+          open,
+          onClose: () => {
+            setOpen(false);
+            setDoctor(null);
+          },
+          doctor,
+          setStateByAction,
+        }}
+      />
       <Table
         columns={columns}
         dataSource={doctors}

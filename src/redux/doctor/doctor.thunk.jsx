@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "@axios/axios";
+import { message } from "antd";
 
 export const getAllDoctorByAdmin = createAsyncThunk(
   "doctor/getAllDoctorByAdmin",
@@ -55,6 +56,18 @@ export const createScheduleByDoctor = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       return await axios.post(`/doctors/schedule`, payload);
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const updateScheduleByDoctor = createAsyncThunk(
+  "doctor/updateScheduleByDoctor",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      return await axios.put(`/doctors/schedule/${id}`, data);
     } catch (error) {
       message.error(error.response.data.message);
       return rejectWithValue(error.response.data);

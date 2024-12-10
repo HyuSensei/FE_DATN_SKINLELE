@@ -1,18 +1,29 @@
-import { Badge, Empty, Select, Tag } from "antd";
+import { Card, Empty, Select, Tag, Tooltip } from "antd";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { ClockCircleOutlined } from "@ant-design/icons";
+import { useDispatch, useSelector } from "react-redux";
 import CustumButton from "@/components/CustumButton";
 import ScheduleCreate from "./Action/ScheduleCreate";
-import { MdDone, MdOutlineEdit } from "react-icons/md";
+import { MdOutlineEdit } from "react-icons/md";
 import ScheduleUpdate from "./Action/ScheduleUpdate";
+import {
+  IoTimeOutline,
+  IoCalendarOutline,
+  IoWarningOutline,
+  IoCafeOutline,
+  IoCheckmarkCircleOutline,
+  IoCloseCircleOutline,
+} from "react-icons/io5";
+import { updateScheduleByDoctor } from "@/redux/doctor/doctor.thunk";
+import { setDoctorInfo } from "@/redux/auth/auth.slice";
+import moment from "moment";
 
 const ManageSchedule = () => {
-  const [currentDate, setCurrentDate] = useState(dayjs().locale("vi"));
+  const dispatch = useDispatch();
   const { doctorInfo } = useSelector((state) => state.auth);
   const { schedule = [], holidays = [] } = doctorInfo;
+  const [currentDate, setCurrentDate] = useState(dayjs().locale("vi"));
   const [action, setAction] = useState({
     create: false,
     update: false,
@@ -51,35 +62,95 @@ const ManageSchedule = () => {
   };
 
   const renderScheduleContent = () => {
-    return schedule.map((slot, index) => (
-      <div
-        key={index}
-        className="bg-[#f9fafc] rounded-lg p-4 space-y-2 shadow-md"
-      >
-        <div className="flex items-center justify-between">
-          <Tag color="blue" className="text-base rounded-full">
-            {slot.dayOfWeek}
-          </Tag>
-          <Badge
-            status="success"
-            text={<span className="text-[#5cb929]">Đang hoạt động</span>}
-          />
-        </div>
-        <div className="flex items-center gap-2 text-gray-700">
-          <ClockCircleOutlined className="text-blue-500" />
-          <span>
-            {slot.startTime} - {slot.endTime}
-          </span>
-        </div>
-        {slot.breakTime && (
-          <div className="bg-orange-50 rounded-lg p-2 text-sm">
-            <span className="text-orange-600">
-              Giờ nghỉ: {slot.breakTime.start} - {slot.breakTime.end}
-            </span>
-          </div>
-        )}
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {schedule.map((slot, index) => (
+          <Card key={index} className="hover:scale-95 shadow-md cursor-pointer">
+            <div className="flex items-center justify-between mb-4">
+              <Tag className="px-4 py-1.5 rounded-full text-sm font-medium border-0 bg-blue-50 text-blue-600">
+                {slot.dayOfWeek}
+              </Tag>
+              <div className="flex items-center gap-2">
+                {slot.isActive ? (
+                  <IoCheckmarkCircleOutline className="w-5 h-5 text-green-500" />
+                ) : (
+                  <IoCloseCircleOutline className="w-5 h-5 text-gray-400" />
+                )}
+                <span
+                  className={`text-sm ${
+                    slot.isActive ? "text-green-600" : "text-gray-500"
+                  }`}
+                >
+                  {slot.isActive ? "Đang hoạt động" : "Không hoạt động"}
+                </span>
+              </div>
+            </div>
+
+            {/* Time Info */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-gray-700">
+                <IoTimeOutline className="w-5 h-5 text-blue-500" />
+                <span className="text-sm">Thời gian làm việc:</span>
+              </div>
+              <div className="ml-6 p-2 bg-blue-50 rounded-lg flex items-center justify-between">
+                <span className="text-blue-700 font-medium">
+                  {slot.startTime} - {slot.endTime}
+                </span>
+                <Tooltip title="Thời gian khám mỗi ca">
+                  <div className="flex items-center gap-1 text-sm text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full">
+                    <IoCalendarOutline className="w-4 h-4" />
+                    <span>{slot.duration} phút</span>
+                  </div>
+                </Tooltip>
+              </div>
+
+              {/* Break Time */}
+              {slot.breakTime && (
+                <div className="mt-3">
+                  <div className="flex items-center gap-2 text-gray-700 mb-2">
+                    <IoCafeOutline className="w-5 h-5 text-orange-500" />
+                    <span className="text-sm">Giờ nghỉ:</span>
+                  </div>
+                  <div className="ml-6 p-2 bg-orange-50 rounded-lg">
+                    <span className="text-orange-700">
+                      {slot.breakTime.start} - {slot.breakTime.end}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Status Indicator */}
+            {!slot.isActive && (
+              <div className="mt-3 flex items-center gap-2 text-gray-500 bg-gray-100 rounded-lg p-2">
+                <IoWarningOutline className="w-4 h-4" />
+                <span className="text-sm">Không có lịch khám</span>
+              </div>
+            )}
+          </Card>
+        ))}
       </div>
-    ));
+    );
+  };
+
+  const handleUpdateHolidays = async (date) => {
+    const newHolidays = holidays.some((h) =>
+      moment(h).startOf("day").isSame(moment(date).startOf("day"))
+    )
+      ? holidays.filter(
+          (h) => !moment(h).startOf("day").isSame(moment(date).startOf("day"))
+        )
+      : [...holidays, date];
+
+    const res = await dispatch(
+      updateScheduleByDoctor({
+        id: doctorInfo._id,
+        data: { holidays: newHolidays },
+      })
+    ).unwrap();
+
+    if (res.success)
+      dispatch(setDoctorInfo({ ...doctorInfo, holidays: res.data.holidays }));
   };
 
   return (
@@ -127,11 +198,7 @@ const ManageSchedule = () => {
           </>
         )}
 
-        {!action.update && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {renderScheduleContent()}
-          </div>
-        )}
+        {!action.update && renderScheduleContent()}
       </div>
 
       {/* Calendar Section */}
@@ -183,6 +250,7 @@ const ManageSchedule = () => {
             const holiday = isHoliday(date);
             return (
               <div
+                onClick={() => handleUpdateHolidays(date)}
                 key={date}
                 className={`h-14 flex flex-col items-center justify-center rounded-lg border-2 transition-all shadow-md cursor-pointer
         ${
@@ -197,9 +265,6 @@ const ManageSchedule = () => {
                 <span className="text-lg font-semibold">
                   {dayjs(date).date()}
                 </span>
-                {holiday && (
-                  <span className="text-xs font-medium text-red-600">Nghỉ</span>
-                )}
               </div>
             );
           })}

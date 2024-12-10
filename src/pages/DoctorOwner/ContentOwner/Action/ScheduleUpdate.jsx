@@ -14,6 +14,9 @@ import dayjs from "dayjs";
 import CustumButton from "@/components/CustumButton";
 import { useDispatch, useSelector } from "react-redux";
 import { DURATION_OPTIONS, WEEKDAYS } from "@/const/dataDefault";
+import { updateScheduleByDoctor } from "@/redux/doctor/doctor.thunk";
+import { setDoctorInfo } from "@/redux/auth/auth.slice";
+import { useScroll } from "@/components/context/ScrollProvider";
 
 const validateTimeRange = (form, fieldName, index, type) => {
   return async (_, value) => {
@@ -88,7 +91,7 @@ const ScheduleUpdate = ({ handleChangeAction }) => {
   const dispatch = useDispatch();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-
+  const { scrollToTop } = useScroll();
   const { doctorInfo } = useSelector((state) => state.auth);
   const { schedule = [] } = doctorInfo;
 
@@ -128,6 +131,21 @@ const ScheduleUpdate = ({ handleChangeAction }) => {
             }
           : null,
       }));
+
+      const payload = {
+        id: doctorInfo._id,
+        data: {
+          schedule: formattedSchedule,
+        },
+      };
+
+      const res = await dispatch(updateScheduleByDoctor(payload)).unwrap();
+      if (res.success) {
+        message.success(res.message);
+        dispatch(setDoctorInfo({ ...doctorInfo, schedule: res.data.schedule }));
+        handleChangeAction("update", false);
+        scrollToTop();
+      }
     } catch (error) {
       console.log(error);
     } finally {
@@ -260,6 +278,7 @@ const ScheduleUpdate = ({ handleChangeAction }) => {
           onClick={() => {
             form.resetFields();
             handleChangeAction("update", false);
+            scrollToTop();
           }}
           variant="default"
         >
