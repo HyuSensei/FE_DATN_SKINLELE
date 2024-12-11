@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Form,
   TimePicker,
@@ -15,6 +15,7 @@ import dayjs from "dayjs";
 import { useDispatch } from "react-redux";
 import { updateClinicByOwner } from "@/redux/clinic/clinic.thunk";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { useScroll } from "@/components/context/ScrollProvider";
 
 const WEEKDAYS = [
   { label: "Thứ 2", value: "Thứ 2" },
@@ -27,11 +28,12 @@ const WEEKDAYS = [
 ];
 
 const EditSchedule = ({ workingHours = [], handleChangeEdit, refetch }) => {
+  const { scrollToTop } = useScroll();
   const dispatch = useDispatch();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const initialWorkingHours = workingHours.reduce((acc, day) => {
       acc[day.dayOfWeek] = {
         startTime: day.isOpen ? dayjs(day.startTime, "HH:mm") : null,
@@ -98,6 +100,7 @@ const EditSchedule = ({ workingHours = [], handleChangeEdit, refetch }) => {
         message.success(res.message);
         handleChangeEdit("schedule", false);
         refetch();
+        scrollToTop();
       }
     } catch (error) {
       message.error("Có lỗi xảy ra khi cập nhật lịch làm việc");

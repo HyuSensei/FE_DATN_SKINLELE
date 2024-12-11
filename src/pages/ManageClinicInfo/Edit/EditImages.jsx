@@ -10,8 +10,10 @@ import {
 import { useDispatch } from "react-redux";
 import { updateClinicByOwner } from "@/redux/clinic/clinic.thunk";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { useScroll } from "@/components/context/ScrollProvider";
 
 const EditImages = ({ images = [], handleChangeEdit, refetch }) => {
+  const { scrollToTop } = useScroll();
   const dispatch = useDispatch();
   const [form] = Form.useForm();
   const [imagesUpload, setImagesUpload] = useState(
@@ -69,6 +71,7 @@ const EditImages = ({ images = [], handleChangeEdit, refetch }) => {
         message.success(res.message);
         handleChangeEdit("images", false);
         refetch();
+        scrollToTop();
       }
     } catch (error) {
       console.log(error);

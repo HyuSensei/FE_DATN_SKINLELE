@@ -10,6 +10,7 @@ import { MdSave } from "react-icons/md";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useDispatch } from "react-redux";
 import { updateClinicByOwner } from "@/redux/clinic/clinic.thunk";
+import { useScroll } from "@/components/context/ScrollProvider";
 
 const config = {
   imageUpload: false,
@@ -24,6 +25,7 @@ const config = {
 };
 
 const EditInfo = ({ clinic, handleChangeEdit, refetch }) => {
+  const { scrollToTop } = useScroll();
   const dispatch = useDispatch();
   const [form] = Form.useForm();
   const [specialties, setSpecialties] = useState(clinic.specialties || []);
@@ -64,6 +66,7 @@ const EditInfo = ({ clinic, handleChangeEdit, refetch }) => {
         form.resetFields();
         handleChangeEdit("info", false);
         refetch();
+        scrollToTop();
       }
     } catch (error) {
       console.error(error);

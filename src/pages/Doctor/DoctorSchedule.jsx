@@ -7,7 +7,7 @@ import { monthsDefault } from "@/const/dataDefault";
 import LoadingContent from "@/components/Loading/LoaingContent";
 import ConfirmBooking from "./ConfirmBooking";
 
-const DoctorSchedule = ({ doctor }) => {
+const DoctorSchedule = ({ doctor, refetch }) => {
   const [selectedDate, setSelectedDate] = useState(dayjs().locale("vi"));
   const [selectedTime, setSelectedTime] = useState(null);
 
@@ -23,7 +23,7 @@ const DoctorSchedule = ({ doctor }) => {
     selectedDate.date(i + 1).format("YYYY-MM-DD")
   );
 
-  if (!doctor) return null
+  if (!doctor) return null;
 
   useEffect(() => {
     dayjs.locale("vi");
@@ -32,7 +32,7 @@ const DoctorSchedule = ({ doctor }) => {
   const { data, isLoading, error } = useGetScheduleBookingDoctorQuery(
     {
       doctorId: doctor._id,
-      date: selectedDate.format("YYYY-MM-DD")
+      date: selectedDate.format("YYYY-MM-DD"),
     },
     { skip: !doctor }
   );
@@ -66,6 +66,11 @@ const DoctorSchedule = ({ doctor }) => {
       "YYYY-MM-DD HH:mm"
     );
     return slotDateTime.isBefore(dayjs());
+  };
+
+  const handleClearTime = () => {
+    setSelectedDate(dayjs().locale("vi"));
+    setSelectedTime(null);
   };
 
   return (
@@ -120,30 +125,39 @@ const DoctorSchedule = ({ doctor }) => {
               onClick={() => !isPast && handleDateSelect(date)}
               disabled={isPast}
               className={`
-                h-14 flex flex-col items-center justify-center rounded-lg transition-all
-                ${isSelected
-                  ? "bg-blue-500 text-white shadow-lg ring-2 ring-blue-300"
-                  : "bg-white hover:bg-blue-50 border border-gray-200"
+                h-14 flex flex-col items-center justify-center rounded-lg transition-all shadow-md
+                ${
+                  isSelected
+                    ? "bg-blue-500 text-white shadow-lg ring-2 ring-blue-300"
+                    : "bg-white hover:bg-blue-50 border border-gray-200"
                 }
-                ${isPast ? "opacity-50 cursor-not-allowed bg-slate-500 text-white" : ""}
+                ${
+                  isPast
+                    ? "opacity-50 cursor-not-allowed bg-slate-500 text-white"
+                    : ""
+                }
               `}
             >
-              <span className={`text-xs ${isSelected ? "text-blue-100" : "text-gray-500"}`}>
+              <span
+                className={`text-xs ${
+                  isSelected ? "text-blue-100" : "text-gray-500"
+                }`}
+              >
                 {dayjs(date).format("ddd")}
               </span>
-              <span className="text-lg font-medium">
-                {dayjs(date).date()}
-              </span>
+              <span className="text-lg font-medium">{dayjs(date).date()}</span>
             </button>
           );
         })}
       </div>
-      {
-        !timeSlots.length && <Empty description="Chưa có thông tin lịch khám!" className="mt-10" />
-      }
+      {!timeSlots.length && (
+        <Empty description="Chưa có thông tin lịch khám!" className="mt-10" />
+      )}
       {timeSlots.length > 0 && (
         <div className="mt-6">
-          <h3 className="text-lg font-medium text-gray-800 mb-4">Chọn giờ khám</h3>
+          <h3 className="text-lg font-medium text-gray-800 mb-4">
+            Chọn giờ khám
+          </h3>
           <List
             grid={{ gutter: 16, xs: 2, sm: 3, md: 4, lg: 5, xl: 6, xxl: 6 }}
             dataSource={timeSlots}
@@ -157,15 +171,17 @@ const DoctorSchedule = ({ doctor }) => {
                     onClick={() => !isDisabled && setSelectedTime(slot)}
                     disabled={isDisabled}
                     className={`
-                      w-full py-3 px-3 rounded-lg transition-all text-base font-medium
-                      ${isSelected
-                        ? "bg-blue-500 text-white ring-2 ring-blue-300"
-                        : "bg-white border border-gray-200 hover:bg-blue-50"
+                      w-full py-3 px-3 rounded-lg transition-all text-sm font-medium shadow-md
+                      ${
+                        isSelected
+                          ? "bg-blue-500 text-white ring-2 ring-blue-300"
+                          : "bg-white border border-gray-200 hover:bg-blue-50"
                       }
                       ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}
                     `}
                   >
-                    {isDisabled ? " 🟠" : "🟢"} {slot.startTime} - {slot.endTime}
+                    {isDisabled ? " 🟠" : "🟢"} {slot.startTime} -{" "}
+                    {slot.endTime}
                   </button>
                 </List.Item>
               );
@@ -174,7 +190,11 @@ const DoctorSchedule = ({ doctor }) => {
         </div>
       )}
 
-      {selectedTime && <ConfirmBooking {...{ selectedTime, selectedDate, doctor }} />}
+      {selectedTime && (
+        <ConfirmBooking
+          {...{ selectedTime, selectedDate, doctor, handleClearTime, refetch }}
+        />
+      )}
     </div>
   );
 };

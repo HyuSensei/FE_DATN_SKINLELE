@@ -8,7 +8,7 @@ import {
   ClockCircleOutlined,
   StarOutlined,
   MedicineBoxOutlined,
-  ArrowRightOutlined
+  ArrowRightOutlined,
 } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import DoctorSchedule from "./DoctorSchedule";
@@ -29,20 +29,23 @@ const Doctor = () => {
     data: doctor,
     isLoading,
     error,
+    refetch,
   } = useGetDoctorDetailQuery({ slug }, { skip: !slug });
 
-  if (error) return (
-    <Empty
-      className="mt-40"
-      description="Có lỗi xảy ra khi lấy thông tin bác sĩ"
-    />
-  );
+  if (error)
+    return (
+      <Empty
+        className="mt-40"
+        description="Có lỗi xảy ra khi lấy thông tin bác sĩ"
+      />
+    );
 
   if (isLoading) return <LoadingContent />;
 
-  if (!doctor) return (
-    <Empty className="mt-40" description="Không tìm thấy thông tin bác sĩ" />
-  );
+  if (!doctor)
+    return (
+      <Empty className="mt-40" description="Không tìm thấy thông tin bác sĩ" />
+    );
 
   const { clinic } = doctor;
 
@@ -70,7 +73,11 @@ const Doctor = () => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Đánh giá</p>
-                    <Rate disabled defaultValue={doctor.rating} className="text-sm" />
+                    <Rate
+                      disabled
+                      defaultValue={doctor.rating}
+                      className="text-sm"
+                    />
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -84,7 +91,6 @@ const Doctor = () => {
                 </div>
               </div>
             </div>
-           
           </div>
 
           {/* Right Column - Main Content */}
@@ -93,7 +99,7 @@ const Doctor = () => {
               <div>
                 <div className="flex items-center gap-3 mb-2">
                   <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-                    {doctor.name}
+                    BS. {doctor.name}
                   </h1>
                   <MdVerified className="text-blue-500 text-2xl" />
                 </div>
@@ -123,7 +129,9 @@ const Doctor = () => {
                 <div className="flex-1">
                   <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                      <h2 className="text-xl font-bold text-gray-800 mb-2">{clinic.name}</h2>
+                      <h2 className="text-xl font-bold text-gray-800 mb-2">
+                        {clinic.name}
+                      </h2>
                       <div className="flex flex-wrap gap-4 text-gray-500 text-sm mb-2">
                         <span className="flex items-center gap-2">
                           <PhoneOutlined /> {clinic.phone}
@@ -133,7 +141,7 @@ const Doctor = () => {
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-gray-500 text-sm">
-                        <RiMapPinFill />
+                        <RiMapPinFill size={25} />
                         <p
                           dangerouslySetInnerHTML={{
                             __html: clinic.address,
@@ -143,7 +151,7 @@ const Doctor = () => {
                     </div>
                     <Link
                       to={`/clinic/${clinic.slug}`}
-                      className="inline-flex items-center gap-2 text-blue-500 hover:text-blue-600 font-medium"
+                      className="inline-flex items-center gap-2 text-blue-500 hover:text-blue-600 font-medium min-w-[200px]"
                     >
                       Xem chi tiết phòng khám
                       <ArrowRightOutlined />
@@ -198,13 +206,17 @@ const Doctor = () => {
                 </div>
                 <div>
                   <p className="text-gray-500 text-sm">Phí khám</p>
-                  <p className="font-medium text-lg">{formatPrice(doctor.fees)} VNĐ</p>
+                  <p className="font-medium text-lg">
+                    {formatPrice(doctor.fees)} VNĐ
+                  </p>
                 </div>
               </div>
             </div>
 
             <div className="bg-gray-50 rounded-lg p-6 mb-8">
-              <h3 className="text-xl font-semibold mb-4 text-gray-800">Giới thiệu</h3>
+              <h3 className="text-xl font-semibold mb-4 text-gray-800">
+                Giới thiệu
+              </h3>
               <div
                 className="prose prose-blue max-w-none text-gray-600"
                 dangerouslySetInnerHTML={{ __html: doctor.about }}
@@ -224,7 +236,7 @@ const Doctor = () => {
                         Lịch khám
                       </span>
                     ),
-                    children: <DoctorSchedule doctor={doctor} />,
+                    children: <DoctorSchedule {...{ doctor, refetch }} />,
                   },
                   {
                     key: "2",

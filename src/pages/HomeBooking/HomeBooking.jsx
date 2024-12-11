@@ -295,9 +295,7 @@ const HomeBooking = () => {
           </h2>
           {(!isLoadingDoctors && !doctors.length) ||
             (errorDoctors && <Empty description="Chưa có thông tin bác" />)}
-          {doctors.length > 0 && (
-            <SliderDoctors {...{ doctors, isLoading: isLoadingDoctors }} />
-          )}
+          <SliderDoctors {...{ doctors, isLoading: isLoadingDoctors }} />
         </div>
       </div>
 
@@ -310,9 +308,7 @@ const HomeBooking = () => {
           <div className="px-4">
             {(!isLoadingClinics && !clinics.length) ||
               (errorClinics && <Empty description="Chưa có phòng khám nào" />)}
-            {clinics.length > 0 && (
-              <SliderClinics {...{ clinics, isLoading: isLoadingClinics }} />
-            )}
+            <SliderClinics {...{ clinics, isLoading: isLoadingClinics }} />
           </div>
         </div>
       </div>

@@ -61,6 +61,7 @@ const routes = [
     path: "/doctor/:slug",
     element: Doctor,
     title: "SkinLeLeClinic - Thông tin chi tiết bác sĩ",
+    isAuth: true,
   },
   {
     path: "/clinic/:slug",
@@ -71,6 +72,7 @@ const routes = [
     path: "/booking-history",
     element: BookingHistory,
     title: "SkinLeLeClinic - Lịch sử đặt khám",
+    isAuth: true,
   },
 ];
 

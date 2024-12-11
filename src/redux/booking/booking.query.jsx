@@ -32,7 +32,21 @@ export const bookingApi = createApi({
       },
       transformResponse: (response) => response.data,
     }),
+    getBookingsByCustomer: builder.query({
+      query: ({ status = "", page = 1, pageSize = 10 }) => {
+        const queryParams = new URLSearchParams({
+          status,
+          page,
+          pageSize,
+        }).toString();
+        return {
+          url: `/bookings/customer?${queryParams}`,
+          method: "GET",
+        };
+      },
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
-export const { useGetBookingsByDoctorQuery } = bookingApi;
+export const { useGetBookingsByDoctorQuery , useGetBookingsByCustomerQuery} = bookingApi;
