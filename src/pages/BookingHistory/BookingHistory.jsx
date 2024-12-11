@@ -14,7 +14,7 @@ import {
   MedicineBoxOutlined,
   StarFilled,
 } from "@ant-design/icons";
-import CustumButton from "@/components/CustumButton";
+import CustomButton from "@/components/CustomButton";
 
 const BookingHistory = () => {
   const [activeStatus, setActiveStatus] = useState("all");
@@ -219,21 +219,21 @@ const BookingHistory = () => {
               <Divider style={{ margin: "20px 0" }} />
               <div className="flex justify-end gap-2">
                 {booking.status === "completed" && (
-                  <CustumButton variant="primary" icon={<StarFilled />}>
+                  <CustomButton variant="primary" icon={<StarFilled />}>
                     Đánh giá bác sĩ
-                  </CustumButton>
+                  </CustomButton>
                 )}
                 {booking.status === "pending" && (
                   <>
-                    <CustumButton
+                    <CustomButton
                       variant="dangerFilled"
                       icon={<CloseCircleOutlined />}
                     >
                       Hủy lịch
-                    </CustumButton>
-                    <CustumButton variant="primary" icon={<EditOutlined />}>
+                    </CustomButton>
+                    <CustomButton variant="primary" icon={<EditOutlined />}>
                       Cập nhật thông tin
-                    </CustumButton>
+                    </CustomButton>
                   </>
                 )}
               </div>

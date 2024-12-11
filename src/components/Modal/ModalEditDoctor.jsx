@@ -2,7 +2,7 @@ import { Form, Input, message, Modal } from "antd";
 import { isEmpty } from "lodash";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import CustumButton from "../CustumButton";
+import CustomButton from "../CustomButton";
 import { updateDoctorByAdmin } from "@/redux/doctor/doctor.thunk";
 
 const ModelEditDoctor = ({
@@ -107,7 +107,7 @@ const ModelEditDoctor = ({
           </Form.Item>
         </div>
         <div className="flex items-center justify-end gap-2">
-          <CustumButton
+          <CustomButton
             onClick={() => {
               onClose();
               form.resetFields();
@@ -115,10 +115,10 @@ const ModelEditDoctor = ({
             variant="default"
           >
             Đóng
-          </CustumButton>
-          <CustumButton loading={isLoading} variant="primary" type="submit">
+          </CustomButton>
+          <CustomButton loading={isLoading} variant="primary" type="submit">
             Cập nhật
-          </CustumButton>
+          </CustomButton>
         </div>
       </Form>
     </Modal>

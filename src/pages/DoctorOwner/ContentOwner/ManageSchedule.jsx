@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/vi";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import CustumButton from "@/components/CustumButton";
+import CustomButton from "@/components/CustomButton";
 import ScheduleCreate from "./Action/ScheduleCreate";
 import { MdOutlineEdit } from "react-icons/md";
 import ScheduleUpdate from "./Action/ScheduleUpdate";
@@ -164,14 +164,14 @@ const ManageSchedule = () => {
           <>
             {!action.update ? (
               <div className="flex items-center justify-end">
-                <CustumButton
+                <CustomButton
                   icon={<MdOutlineEdit />}
                   onClick={() => handleChangeAction("update", true)}
                   variant="primary"
                   className="mb-4"
                 >
                   Chỉnh sửa
-                </CustumButton>
+                </CustomButton>
               </div>
             ) : (
               <ScheduleUpdate handleChangeAction={handleChangeAction} />
@@ -184,13 +184,13 @@ const ManageSchedule = () => {
             {!action.create ? (
               <>
                 <Empty description="Vui lòng thiết lập lịch làm việc" />
-                <CustumButton
+                <CustomButton
                   onClick={() => handleChangeAction("create", true)}
                   variant="primary"
                   className="m-auto mt-4"
                 >
                   Tạo lịch làm việc
-                </CustumButton>
+                </CustomButton>
               </>
             ) : (
               <ScheduleCreate {...{ handleChangeAction }} />

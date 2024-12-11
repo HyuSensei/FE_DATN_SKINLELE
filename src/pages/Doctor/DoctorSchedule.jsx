@@ -5,22 +5,10 @@ import { Select, List, Empty } from "antd";
 import { useGetScheduleBookingDoctorQuery } from "@/redux/doctor/doctor.query";
 import { monthsDefault } from "@/const/dataDefault";
 import LoadingContent from "@/components/Loading/LoaingContent";
-
-// Mock data for time slots
-const mockTimeSlots = [
-  { startTime: "09:00", endTime: "09:30", isAvailable: true },
-  { startTime: "09:30", endTime: "10:00", isAvailable: true },
-  { startTime: "10:00", endTime: "10:30", isAvailable: false },
-  { startTime: "10:30", endTime: "11:00", isAvailable: true },
-  { startTime: "14:00", endTime: "14:30", isAvailable: true },
-  { startTime: "14:30", endTime: "15:00", isAvailable: true },
-  { startTime: "15:00", endTime: "15:30", isAvailable: false },
-  { startTime: "15:30", endTime: "16:00", isAvailable: true },
-];
+import ConfirmBooking from "./ConfirmBooking";
 
 const DoctorSchedule = ({ doctor }) => {
-  const [currentDate, setCurrentDate] = useState(dayjs().locale("vi"));
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(dayjs().locale("vi"));
   const [selectedTime, setSelectedTime] = useState(null);
 
   const years = Array.from({ length: 21 }, (_, i) => dayjs().year() + i);
@@ -29,56 +17,63 @@ const DoctorSchedule = ({ doctor }) => {
   );
   const today = dayjs();
 
-  const daysInMonth = currentDate.daysInMonth();
-  const startOfMonth = currentDate.startOf("month").day();
+  const daysInMonth = selectedDate.daysInMonth();
+  const startOfMonth = selectedDate.startOf("month").day();
   const monthDays = Array.from({ length: daysInMonth }, (_, i) =>
-    currentDate.date(i + 1).format("YYYY-MM-DD")
+    selectedDate.date(i + 1).format("YYYY-MM-DD")
   );
+
+  if (!doctor) return null
 
   useEffect(() => {
     dayjs.locale("vi");
-    setCurrentDate(dayjs().locale("vi"));
   }, []);
 
   const { data, isLoading, error } = useGetScheduleBookingDoctorQuery(
     {
       doctorId: doctor._id,
+      date: selectedDate.format("YYYY-MM-DD")
     },
     { skip: !doctor }
   );
 
-  if (error || !data) {
-    return <Empty description="Có lỗi xả ra khi lấy thông tin lịch khám" />;
-  }
+  if (error) return <Empty description="Chưa có thông tin lịch khám!" />;
 
   if (isLoading) return <LoadingContent />;
 
+  if (!data) return <Empty description="Chưa có thông tin lịch khám!" />;
+
   const handleMonthChange = (value) => {
-    setCurrentDate(currentDate.month(value));
-    setSelectedDate(null);
+    setSelectedDate(selectedDate.month(value));
     setSelectedTime(null);
   };
 
   const handleYearChange = (value) => {
-    setCurrentDate(currentDate.year(value));
-    setSelectedDate(null);
+    setSelectedDate(selectedDate.year(value));
     setSelectedTime(null);
   };
 
   const handleDateSelect = (date) => {
-    setSelectedDate(date);
+    setSelectedDate(dayjs(date));
     setSelectedTime(null);
   };
 
-  const timeSlots = data.timeSlots;
+  const timeSlots = data.timeSlots || [];
+
+  const isPastSlot = (slot) => {
+    const slotDateTime = dayjs(
+      `${selectedDate.format("YYYY-MM-DD")} ${slot.startTime}`,
+      "YYYY-MM-DD HH:mm"
+    );
+    return slotDateTime.isBefore(dayjs());
+  };
 
   return (
-    <>
+    <div className="p-4">
       <div className="flex justify-between items-center mb-6 flex-wrap gap-2">
         <Select
           className="w-full lg:w-36"
-          size="middle"
-          value={currentDate.month()}
+          value={selectedDate.month()}
           onChange={handleMonthChange}
         >
           {monthsDefault.map((month, index) => (
@@ -89,8 +84,7 @@ const DoctorSchedule = ({ doctor }) => {
         </Select>
         <Select
           className="w-full lg:w-36"
-          size="middle"
-          value={currentDate.year()}
+          value={selectedDate.year()}
           onChange={handleYearChange}
         >
           {years.map((year) => (
@@ -101,11 +95,11 @@ const DoctorSchedule = ({ doctor }) => {
         </Select>
       </div>
 
-      <div className="grid grid-cols-7 gap-2 text-center font-medium text-gray-600 mb-4">
+      <div className="grid grid-cols-7 gap-2 text-center mb-4">
         {daysOfWeek.map((day) => (
           <div
             key={day}
-            className="text-xs md:text-sm text-center py-2 rounded-full font-medium bg-[#b7dce7] text-white"
+            className="text-xs md:text-sm py-2 rounded-lg bg-blue-50 text-blue-600 font-medium"
           >
             {day}
           </div>
@@ -114,87 +108,74 @@ const DoctorSchedule = ({ doctor }) => {
 
       <div className="grid grid-cols-7 gap-2">
         {Array.from({ length: startOfMonth }).map((_, i) => (
-          <div key={`empty-${i}`} className="h-14"></div>
+          <div key={`empty-${i}`} className="h-14" />
         ))}
         {monthDays.map((date) => {
           const isPast = dayjs(date).isBefore(today, "day");
+          const isSelected = selectedDate.format("YYYY-MM-DD") === date;
+
           return (
             <button
               key={date}
               onClick={() => !isPast && handleDateSelect(date)}
               disabled={isPast}
               className={`
-                h-14 flex flex-col items-center justify-center rounded-lg border-2 transition-all shadow-md 
-                ${
-                  selectedDate === date
-                    ? "border-blue-600 bg-blue-500 text-white shadow-lg"
-                    : "border-gray-200 bg-gray-100 text-gray-800 hover:border-blue-400 hover:bg-gray-200"
+                h-14 flex flex-col items-center justify-center rounded-lg transition-all
+                ${isSelected
+                  ? "bg-blue-500 text-white shadow-lg ring-2 ring-blue-300"
+                  : "bg-white hover:bg-blue-50 border border-gray-200"
                 }
-                ${isPast ? "opacity-50 cursor-not-allowed" : ""}
+                ${isPast ? "opacity-50 cursor-not-allowed bg-slate-500 text-white" : ""}
               `}
             >
-              <span
-                className={`text-xs font-medium ${
-                  selectedDate === date ? "text-white" : "text-gray-500"
-                }`}
-              >
+              <span className={`text-xs ${isSelected ? "text-blue-100" : "text-gray-500"}`}>
                 {dayjs(date).format("ddd")}
               </span>
-              <span className="text-lg font-semibold">
+              <span className="text-lg font-medium">
                 {dayjs(date).date()}
               </span>
             </button>
           );
         })}
       </div>
-
-      {selectedDate && (
+      {
+        !timeSlots.length && <Empty description="Chưa có thông tin lịch khám!" className="mt-10" />
+      }
+      {timeSlots.length > 0 && (
         <div className="mt-6">
-          <h3 className="text-lg font-semibold mb-4">Chọn giờ khám</h3>
+          <h3 className="text-lg font-medium text-gray-800 mb-4">Chọn giờ khám</h3>
           <List
-            grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 4, xxl: 4 }}
-            dataSource={mockTimeSlots}
-            renderItem={(slot) => (
-              <List.Item>
-                <button
-                  onClick={() => slot.isAvailable && setSelectedTime(slot)}
-                  disabled={!slot.isAvailable}
-                  className={`
-                    w-full py-3 px-4 rounded-lg border-2 transition-all
-                    ${
-                      selectedTime === slot
-                        ? "border-blue-600 bg-blue-500 text-white"
-                        : slot.isAvailable
-                        ? "border-gray-200 hover:border-blue-400"
-                        : "bg-gray-100 border-gray-200 opacity-50 cursor-not-allowed"
-                    }
-                  `}
-                >
-                  {slot.startTime} - {slot.endTime}
-                </button>
-              </List.Item>
-            )}
+            grid={{ gutter: 16, xs: 2, sm: 3, md: 4, lg: 5, xl: 6, xxl: 6 }}
+            dataSource={timeSlots}
+            renderItem={(slot) => {
+              const isDisabled = isPastSlot(slot);
+              const isSelected = selectedTime?.startTime === slot.startTime;
+
+              return (
+                <List.Item>
+                  <button
+                    onClick={() => !isDisabled && setSelectedTime(slot)}
+                    disabled={isDisabled}
+                    className={`
+                      w-full py-3 px-3 rounded-lg transition-all text-base font-medium
+                      ${isSelected
+                        ? "bg-blue-500 text-white ring-2 ring-blue-300"
+                        : "bg-white border border-gray-200 hover:bg-blue-50"
+                      }
+                      ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}
+                    `}
+                  >
+                    {isDisabled ? " 🟠" : "🟢"} {slot.startTime} - {slot.endTime}
+                  </button>
+                </List.Item>
+              );
+            }}
           />
         </div>
       )}
 
-      {selectedDate && selectedTime && (
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <div className="flex justify-between items-center flex-wrap gap-4">
-            <div>
-              <h4 className="font-semibold">Thời gian đã chọn</h4>
-              <p className="text-gray-600">
-                {selectedTime.startTime} - {selectedTime.endTime},{" "}
-                {dayjs(selectedDate).format("DD/MM/YYYY")}
-              </p>
-            </div>
-            <button className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-              Xác nhận lịch
-            </button>
-          </div>
-        </div>
-      )}
-    </>
+      {selectedTime && <ConfirmBooking {...{ selectedTime, selectedDate, doctor }} />}
+    </div>
   );
 };
 

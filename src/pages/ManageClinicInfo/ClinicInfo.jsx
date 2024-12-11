@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Empty, Card, Descriptions, Tag, Timeline, Carousel } from "antd";
 import { IoMdMail, IoMdCall, IoMdCreate, IoMdAdd } from "react-icons/io";
 import { IoBusiness, IoLocationSharp } from "react-icons/io5";
-import CustumButton from "@/components/CustumButton";
+import CustomButton from "@/components/CustomButton";
 import { useGetClinicDetailByAdminQuery } from "@/redux/clinic/clinic.query";
 import LoadingAdmin from "@/components/Loading/LoadingAdmin";
 import { MdDone } from "react-icons/md";
@@ -44,13 +44,13 @@ const ClinicInfo = ({ setAction }) => {
           description={
             <div className="text-center">
               <p className="text-gray-500 mb-4">Chưa có thông tin phòng khám</p>
-              <CustumButton
+              <CustomButton
                 variant="primary"
                 icon={<IoMdAdd />}
                 onClick={() => setAction("create")}
               >
                 Tạo thông tin phòng khám
-              </CustumButton>
+              </CustomButton>
             </div>
           }
         />
@@ -59,14 +59,14 @@ const ClinicInfo = ({ setAction }) => {
   }
 
   const EditButton = ({ onClick }) => (
-    <CustumButton
+    <CustomButton
       variant="primary"
       icon={<IoMdCreate />}
       onClick={onClick}
       size="middle"
     >
       Chỉnh sửa
-    </CustumButton>
+    </CustomButton>
   );
 
   return (
@@ -86,7 +86,7 @@ const ClinicInfo = ({ setAction }) => {
         </div>
         <div className="flex gap-2 items-center">
           {isEdit.edit ? (
-            <CustumButton
+            <CustomButton
               variant="default"
               icon={<MdDone />}
               onClick={(prev) =>
@@ -101,9 +101,9 @@ const ClinicInfo = ({ setAction }) => {
               }
             >
               Xong
-            </CustumButton>
+            </CustomButton>
           ) : (
-            <CustumButton
+            <CustomButton
               variant="primary"
               icon={<IoMdCreate />}
               onClick={() => {
@@ -114,7 +114,7 @@ const ClinicInfo = ({ setAction }) => {
               }}
             >
               Chỉnh sửa thông tin
-            </CustumButton>
+            </CustomButton>
           )}
         </div>
       </div>

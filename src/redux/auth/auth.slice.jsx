@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
   getAccountAdmin,
-  getAccountUser,
   loginAdmin,
   loginUser,
   registerUser,

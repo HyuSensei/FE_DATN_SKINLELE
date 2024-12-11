@@ -43,7 +43,7 @@ const HeaderBooking = () => {
     },
   ];
 
-  const CustumButton = ({ icon, children, variant = "default" }) => {
+  const CustomButton = ({ icon, children, variant = "default" }) => {
     const variants = {
       default: "bg-gray-50",
       primary: "bg-amber-400/20 text-[#fccc11]",
@@ -105,19 +105,19 @@ const HeaderBooking = () => {
 
             {/* Actions Section */}
             <div className="hidden md:flex items-center gap-3">
-              <CustumButton
+              <CustomButton
                 icon={<PiCalendarCheckFill className="w-5 h-5" />}
                 variant="secondary"
               >
                 Lịch khám
-              </CustumButton>
+              </CustomButton>
 
-              <CustumButton
+              <CustomButton
                 icon={<FaHandshake className="w-5 h-5" />}
                 variant="primary"
               >
                 Hợp tác
-              </CustumButton>
+              </CustomButton>
 
               <Dropdown
                 menu={{

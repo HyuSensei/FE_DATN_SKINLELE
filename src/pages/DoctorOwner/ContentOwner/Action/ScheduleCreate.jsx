@@ -11,7 +11,7 @@ import {
 } from "antd";
 import locale from "antd/es/date-picker/locale/vi_VN";
 import dayjs from "dayjs";
-import CustumButton from "@/components/CustumButton";
+import CustomButton from "@/components/CustomButton";
 import { useDispatch, useSelector } from "react-redux";
 import { createScheduleByDoctor } from "@/redux/doctor/doctor.thunk";
 import { DEFAULT_TIME, DURATION_OPTIONS, WEEKDAYS } from "@/const/dataDefault";
@@ -268,14 +268,14 @@ const ScheduleCreate = ({ handleChangeAction }) => {
       </Form.List>
 
       <div className="mt-6">
-        <CustumButton
+        <CustomButton
           loading={loading}
           variant="primary"
           type="submit"
           className="w-full text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none rounded-full"
         >
           Tạo lịch làm việc
-        </CustumButton>
+        </CustomButton>
       </div>
     </Form>
   );

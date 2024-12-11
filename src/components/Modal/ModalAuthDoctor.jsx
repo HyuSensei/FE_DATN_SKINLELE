@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Checkbox, Form, Input, message, Modal } from "antd";
-import CustumButton from "../CustumButton";
+import CustomButton from "../CustomButton";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { loginDoctor } from "@/redux/auth/auth.thunk";
@@ -77,14 +77,14 @@ const ModalAuthDoctor = ({ open, onClose }) => {
         <Form.Item name="remember" valuePropName="checked">
           <Checkbox className="pr-2">Ghi nhớ đăng nhập</Checkbox>
         </Form.Item>
-        <CustumButton
+        <CustomButton
           type="submit"
           variant="primary"
           className="w-full"
           loading={loading}
         >
           Đăng nhập
-        </CustumButton>
+        </CustomButton>
       </Form>
     </Modal>
   );

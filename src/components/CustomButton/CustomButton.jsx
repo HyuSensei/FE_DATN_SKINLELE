@@ -1,6 +1,6 @@
 import React from "react";
 
-const CustumButton = ({
+const CustomButton = ({
   children,
   variant = "default",
   className = "",
@@ -85,4 +85,4 @@ const CustumButton = ({
   );
 };
 
-export default CustumButton;
+export default CustomButton;

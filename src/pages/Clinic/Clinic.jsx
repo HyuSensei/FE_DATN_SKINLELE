@@ -12,7 +12,7 @@ import { GiRoundStar } from "react-icons/gi";
 import { MdVerified } from "react-icons/md";
 import ClinicAbout from "./ClinicAbout";
 import ClinicReview from "./ClinicReview";
-import CustumButton from "@/components/CustumButton";
+import CustomButton from "@/components/CustomButton";
 import { useParams } from "react-router-dom";
 import { useGetClinicDetailBySlugQuery } from "@/redux/clinic/clinic.query";
 import LoadingContent from "@/components/Loading/LoaingContent";
@@ -49,7 +49,7 @@ const Clinic = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="relative h-[300px] sm:h-[350px] md:h-[400px] overflow-hidden bg-gradient-to-r from-sky-100 via-cyan-200 to-sky-100">
+      <div className="relative h-[350px] sm:h-[350px] md:h-[450px] overflow-hidden bg-gradient-to-r from-sky-100 via-cyan-200 to-sky-100">
         <div className="absolute inset-0 bg-black/30"></div>
         {/* <img
           src={clinic.banners[0].url}
@@ -88,7 +88,7 @@ const Clinic = () => {
                   </div>
                 </div>
               </div>
-              <CustumButton variant="primary"> Đặt lịch khám</CustumButton>
+              <CustomButton variant="primary"> Đặt lịch khám</CustomButton>
             </div>
           </div>
         </div>
@@ -153,7 +153,6 @@ const Clinic = () => {
         <Tabs
           defaultActiveKey="1"
           size="large"
-          className="bg-white rounded-xl shadow-sm p-6"
           items={[
             {
               key: "1",

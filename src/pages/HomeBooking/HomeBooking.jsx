@@ -193,7 +193,6 @@ const HomeBooking = () => {
               ease: "easeInOut",
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-purple-400/20" />
         </motion.div>
 
         <div className="container relative mx-auto px-4">
@@ -205,13 +204,13 @@ const HomeBooking = () => {
               transition={{ duration: 0.6 }}
             >
               <motion.h2
-                className="text-4xl md:text-5xl font-bold text-white mb-6 mt-20"
+                className="text-4xl md:text-5xl font-bold text-white mb-6 mt-20 "
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
               >
                 <span className="text-2xl animate-bounce inline-block">✨</span>
-                Bắt đầu hành trình chăm sóc làn da của bạn
+                <span>Bắt đầu hành trình chăm sóc làn da của bạn</span>
               </motion.h2>
 
               <motion.p

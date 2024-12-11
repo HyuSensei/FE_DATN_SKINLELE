@@ -11,7 +11,7 @@ import {
 } from "antd";
 import locale from "antd/es/date-picker/locale/vi_VN";
 import dayjs from "dayjs";
-import CustumButton from "@/components/CustumButton";
+import CustomButton from "@/components/CustomButton";
 import { useDispatch, useSelector } from "react-redux";
 import { DURATION_OPTIONS, WEEKDAYS } from "@/const/dataDefault";
 import { updateScheduleByDoctor } from "@/redux/doctor/doctor.thunk";
@@ -274,7 +274,7 @@ const ScheduleUpdate = ({ handleChangeAction }) => {
       </Form.List>
 
       <div className="mt-6 flex gap-4 items-center justify-end">
-        <CustumButton
+        <CustomButton
           onClick={() => {
             form.resetFields();
             handleChangeAction("update", false);
@@ -283,10 +283,10 @@ const ScheduleUpdate = ({ handleChangeAction }) => {
           variant="default"
         >
           Xong
-        </CustumButton>
-        <CustumButton loading={loading} variant="primary" type="submit">
+        </CustomButton>
+        <CustomButton loading={loading} variant="primary" type="submit">
           Cập nhật lịch làm việc
-        </CustumButton>
+        </CustomButton>
       </div>
     </Form>
   );

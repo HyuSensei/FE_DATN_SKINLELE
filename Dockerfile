@@ -2,18 +2,14 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-COPY package.json ./
-COPY package-lock.json ./
+# Cài đặt các dependencies
+COPY package.json .
+COPY package-lock.json .
+RUN npm ci
 
-RUN npm install
-
+# Copy source code
 COPY . .
 
-RUN npm run build
+EXPOSE 5173
 
-RUN npm install -g serve
-
-CMD ["serve", "-s", "dist"]
-
-# Expose cổng 3000
-EXPOSE 3000
+CMD ["npm", "run", "dev"]
