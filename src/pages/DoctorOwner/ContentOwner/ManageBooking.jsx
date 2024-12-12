@@ -1,17 +1,14 @@
-import React, { useEffect, useState } from "react";
-import {
-  Table,
-  Tag,
-  Card,
-  Select,
-  Input,
-  DatePicker,
-  Empty,
-} from "antd";
+import React, { useCallback, useEffect, useState } from "react";
+import { Table, Tag, Card, Select, Input, DatePicker, Empty } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { bookingStatus } from "@const/status";
 import locale from "antd/es/date-picker/locale/vi_VN";
 import { useGetBookingsByDoctorQuery } from "@/redux/booking/booking.query";
+import { getStatusBooking } from "@/helpers/getStatus";
+import { formatPrice } from "@/helpers/formatPrice";
+import moment from "@utils/monentTz";
+import { debounce } from "lodash";
+
 const { RangePicker } = DatePicker;
 
 const ManageBooking = ({ activeMenu }) => {
@@ -44,17 +41,9 @@ const ManageBooking = ({ activeMenu }) => {
     }
   }, [data]);
 
-  if (!data || error)
-    return <Empty description="Không tìm thấy thông tin lịch khám" />;
+  if (error) return <Empty description="Không tìm thấy thông tin lịch khám" />;
 
-  const { bookings } = data;
-
-  const statusColors = {
-    pending: "gold",
-    confirmed: "green",
-    cancelled: "red",
-    completed: "blue",
-  };
+  const { bookings } = data || [];
 
   const columns = [
     {
@@ -74,12 +63,12 @@ const ManageBooking = ({ activeMenu }) => {
       dataIndex: "date",
       key: "date",
       render: (_, record) => (
-        <div>
-          <div>{record.date}</div>
+        <>
+          <div>{moment(record.date).format("DD MMMM, YYYY")}</div>
           <div className="text-gray-500">
             {record.startTime} - {record.endTime}
           </div>
-        </div>
+        </>
       ),
     },
     {
@@ -87,19 +76,22 @@ const ManageBooking = ({ activeMenu }) => {
       dataIndex: "status",
       key: "status",
       render: (status) => (
-        <Tag color={statusColors[status]}>{status.toUpperCase()}</Tag>
+        <Tag color={getStatusBooking(status).color}>
+          {getStatusBooking(status).label.toUpperCase()}
+        </Tag>
       ),
     },
     {
       title: "Giá khám",
       dataIndex: "price",
       key: "price",
-      render: (price) => `${parseInt(price).toLocaleString("vi-VN")}đ`,
+      render: (price) => `${formatPrice(price)} VND`,
     },
     {
       title: "Ghi chú",
       dataIndex: "note",
       key: "note",
+      render: (note) => `${note ? note : "KHÔNG CÓ"}`,
     },
     {
       title: "Thao tác",
@@ -117,6 +109,20 @@ const ManageBooking = ({ activeMenu }) => {
     },
   ];
 
+  const debouncedSearch = useCallback(
+    debounce((key, value) => {
+      setFilters((prev) => ({
+        ...prev,
+        [key]: value,
+      }));
+    }, 1000),
+    []
+  );
+
+  const handleFilterChange = (value, key) => {
+    debouncedSearch(key, value);
+  };
+
   return (
     <>
       <Card className="my-4 bg-white rounded-md shadow-lg">
@@ -126,11 +132,13 @@ const ManageBooking = ({ activeMenu }) => {
             placeholder="Tìm kiếm..."
             prefix={<SearchOutlined className="text-gray-400" />}
             allowClear
+            onChange={(e) => handleFilterChange(e.target.value, "search")}
           />
           <Select
             placeholder="Trạng thái"
             allowClear
             className="w-full lg:w-56"
+            onChange={(value) => handleFilterChange(value, "status")}
           >
             {bookingStatus.length > 0 &&
               bookingStatus.map((item, index) => (
@@ -139,7 +147,22 @@ const ManageBooking = ({ activeMenu }) => {
                 </Select.Option>
               ))}
           </Select>
-          <RangePicker className="w-full lg:flex-1" locale={locale} />
+          <RangePicker
+            className="w-full lg:flex-1"
+            locale={locale}
+            onChange={(_, dateStrings) => {
+              setFilters((prev) => ({
+                ...prev,
+                fromDate: dateStrings[0],
+                toDate: dateStrings[1],
+              }));
+              setPaginate((prev) => ({
+                ...prev,
+                page: 1,
+                pageSize: 10,
+              }));
+            }}
+          />
         </div>
       </Card>
       <Card className="mt-6 shadow-lg" title="Danh sách lịch khám">

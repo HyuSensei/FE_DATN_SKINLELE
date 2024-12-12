@@ -1,4 +1,4 @@
-import { Input, Layout, Dropdown, Avatar, Badge } from "antd";
+import { Input, Layout, Dropdown, Avatar } from "antd";
 import { FaBars, FaHandshake, FaSearch, FaUserCircle } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
@@ -7,7 +7,7 @@ import { PiCalendarCheckFill } from "react-icons/pi";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import ModalAuth from "../Modal/ModalAuth";
-import { logoutUser } from "@/redux/auth/auth.slice";
+import { logoutUser, setOpenModelAuth } from "@/redux/auth/auth.slice";
 
 const { Header: AntHeader } = Layout;
 
@@ -43,7 +43,7 @@ const HeaderBooking = () => {
     },
   ];
 
-  const CustomButton = ({ icon, children, variant = "default" }) => {
+  const CustomButton = ({ icon, children, variant = "default", onClick }) => {
     const variants = {
       default: "bg-gray-50",
       primary: "bg-amber-400/20 text-[#fccc11]",
@@ -52,6 +52,7 @@ const HeaderBooking = () => {
 
     return (
       <motion.button
+        onClick={onClick}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         className={`
@@ -98,7 +99,7 @@ const HeaderBooking = () => {
               <Input
                 size="large"
                 prefix={<FaSearch className="text-gray-400" />}
-                placeholder="Tìm kiếm dịch vụ, bác sĩ..."
+                placeholder="Tìm kiếm phòng khám, bác sĩ..."
                 className="rounded-lg"
               />
             </div>
@@ -108,6 +109,13 @@ const HeaderBooking = () => {
               <CustomButton
                 icon={<PiCalendarCheckFill className="w-5 h-5" />}
                 variant="secondary"
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    dispatch(setOpenModelAuth(true));
+                    return;
+                  }
+                  navigate("/booking-history");
+                }}
               >
                 Lịch khám
               </CustomButton>
@@ -185,15 +193,31 @@ const HeaderBooking = () => {
                 />
 
                 <div className="space-y-1">
-                  {authItems.map((item) => (
-                    <div
-                      key={item.key}
-                      className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer"
-                    >
-                      {item.icon}
-                      <span className="font-medium text-sm">{item.label}</span>
-                    </div>
-                  ))}
+                  {isAuthenticated
+                    ? [authItems[0], authItems[2]].map((item) => (
+                        <div
+                          key={item.key}
+                          className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer"
+                          onClick={item.onClick}
+                        >
+                          {item.icon}
+                          <span className="font-medium text-sm">
+                            {item.label}
+                          </span>
+                        </div>
+                      ))
+                    : [authItems[0], authItems[1]].map((item) => (
+                        <div
+                          key={item.key}
+                          className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer"
+                          onClick={item.onClick}
+                        >
+                          {item.icon}
+                          <span className="font-medium text-sm">
+                            {item.label}
+                          </span>
+                        </div>
+                      ))}
                 </div>
               </div>
             </div>

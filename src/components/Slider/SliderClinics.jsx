@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 import { FaLocationDot } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 
-const SliderClinics = ({ clinics = [], isLoading, settings = {} }) => {
+const SliderClinics = ({ clinics = [], isLoading = false, settings = {} }) => {
   const navigate = useNavigate();
   const NextArrow = ({ onClick }) => (
     <button
@@ -144,7 +144,7 @@ const SliderClinics = ({ clinics = [], isLoading, settings = {} }) => {
                   <div className="mt-auto">
                     <button
                       onClick={() => navigate(`/clinic/${clinic.slug}`)}
-                      className="w-full py-3 px-6 rounded-full font-medium text-white bg-gradient-to-r from-[#6c9bbf] via-[#6c9bbf] to-[#58b8d8] hover:shadow-lg hover:opacity-90 transition-all duration-300 transform hover:scale-[1.02]"
+                      className="mt-6 w-full py-2.5 px-4 bg-gradient-to-r from-blue-500 to-cyan-400 text-white rounded-xl font-medium hover:from-blue-600 hover:to-cyan-500 active:scale-[0.98] transition-all duration-300 shadow-md hover:shadow-lg"
                     >
                       Xem chi tiết
                     </button>

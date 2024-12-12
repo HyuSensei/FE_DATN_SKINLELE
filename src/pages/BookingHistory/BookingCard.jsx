@@ -17,11 +17,9 @@ import {
   MoneyCollectOutlined,
 } from "@ant-design/icons";
 import CustomButton from "@/components/CustomButton";
-import moment from "moment/moment";
-import "moment/locale/vi";
+import moment from "@utils/monentTz";
 import { formatPrice } from "@/helpers/formatPrice";
-
-moment.locale("vi");
+import { TbCalendarCancel } from "react-icons/tb";
 
 const BookingCard = ({ booking }) => {
   const statusConfig = {
@@ -250,8 +248,8 @@ const BookingCard = ({ booking }) => {
               {booking.status === "pending" && (
                 <>
                   <CustomButton
-                    variant="dangerFilled"
-                    icon={<CloseCircleOutlined />}
+                    variant="danger"
+                    icon={<TbCalendarCancel size={20} />}
                     className="shadow-sm"
                   >
                     Hủy lịch

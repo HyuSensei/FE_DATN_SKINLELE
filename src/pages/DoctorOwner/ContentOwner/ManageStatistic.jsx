@@ -163,35 +163,35 @@ export default function ManageStatistic({ activeMenu }) {
                 dataKey="totalBookings"
                 stroke="#2464ec"
                 dot={{ stroke: "#2464ec", strokeWidth: 4 }}
-                name="Tổng"
+                name="🚀 Tổng"
               />
               <Line
                 type="monotone"
                 dataKey="pending"
                 stroke="#fdcb6e"
                 dot={{ stroke: "#fdcb6e", strokeWidth: 4 }}
-                name="Đang chờ"
+                name="🕒 Đang chờ"
               />
               <Line
                 type="monotone"
                 dataKey="cancelled"
                 stroke="#d63031"
                 dot={{ stroke: "#d63031", strokeWidth: 4 }}
-                name="Đã hủy"
+                name="❌ Đã hủy"
               />
               <Line
                 type="monotone"
                 dataKey="confirmed"
                 stroke="#0984e3"
                 dot={{ stroke: "#0984e3", strokeWidth: 4 }}
-                name="Đã xác nhận"
+                name="📝 Đã xác nhận"
               />
               <Line
                 type="monotone"
                 dataKey="completed"
                 stroke="#8dd566"
                 dot={{ stroke: "#8dd566", strokeWidth: 4 }}
-                name="Đã hoàn thành"
+                name="✔️ Đã hoàn thành"
               />
             </LineChart>
           </ResponsiveContainer>

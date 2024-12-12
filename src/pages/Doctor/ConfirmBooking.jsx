@@ -8,12 +8,14 @@ import CustomButton from "@/components/CustomButton";
 import locale from "antd/es/date-picker/locale/vi_VN";
 import { createBooking } from "@/redux/booking/booking.thunk";
 import { useScroll } from "@/components/context/ScrollProvider";
+import { MdOutlineBookmarks } from "react-icons/md";
 
 const ConfirmBooking = ({
   selectedTime,
   selectedDate,
   doctor,
   handleClearTime,
+  handleTimeSlotAction,
 }) => {
   const { scrollToTop } = useScroll();
   const [form] = Form.useForm();
@@ -46,10 +48,10 @@ const ConfirmBooking = ({
       const res = await dispatch(createBooking(payload)).unwrap();
       if (res.success) {
         message.success(res.message);
+        scrollToTop();
         handleClearTime();
         form.resetFields();
-        refetch()
-        scrollToTop();
+        handleTimeSlotAction({ ...selectedTime });
       }
     } catch (error) {
       console.log(error);
@@ -144,7 +146,7 @@ const ConfirmBooking = ({
             >
               <Select
                 placeholder="Chọn giới tính"
-                suffixIcon={
+                prefix={
                   <BsGenderAmbiguous className="text-gray-400" size={16} />
                 }
                 className="h-11"
@@ -156,30 +158,36 @@ const ConfirmBooking = ({
               />
             </Form.Item>
           </div>
-          <Form.Item
-            label="Ngày sinh"
-            name="dateOfBirth"
-            rules={[{ required: true, message: "Vui lòng chọn ngày sinh!" }]}
-          >
-            <DatePicker
-              locale={locale}
-              placeholder="Chọn ngày sinh"
-              suffixIcon={
-                <BsCalendarDate className="text-gray-400" size={16} />
-              }
-              className="w-full h-11"
-              format="DD/MM/YYYY"
-            />
-          </Form.Item>
-          <Form.Item
-            label="Địa chỉ"
-            name="address"
-            className="md:col-span-2"
-            rules={[{ required: true, message: "Vui lòng nhập địa chỉ!" }]}
-          >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+            <Form.Item
+              label="Ngày sinh"
+              name="dateOfBirth"
+              rules={[{ required: true, message: "Vui lòng chọn ngày sinh!" }]}
+            >
+              <DatePicker
+                locale={locale}
+                placeholder="Chọn ngày sinh"
+                prefix={<BsCalendarDate className="text-gray-400" size={16} />}
+                className="h-11 w-full"
+                format="DD/MM/YYYY"
+              />
+            </Form.Item>
+            <Form.Item
+              label="Địa chỉ"
+              name="address"
+              rules={[{ required: true, message: "Vui lòng nhập địa chỉ!" }]}
+            >
+              <Input
+                prefix={<FaMapMarkerAlt className="text-gray-400 mr-2" />}
+                placeholder="Nhập địa chỉ..."
+                className="h-11"
+              />
+            </Form.Item>
+          </div>
+          <Form.Item label="Ghi chú" name="note">
             <Input.TextArea
-              prefix={<FaMapMarkerAlt className="text-gray-400 mr-2" />}
-              placeholder="Nhập địa chỉ..."
+              prefix={<MdOutlineBookmarks className="text-gray-400 mr-2" />}
+              placeholder="Nhập ghi chú..."
               rows={4}
               className="resize-none"
             />

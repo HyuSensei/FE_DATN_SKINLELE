@@ -10,6 +10,7 @@ import {
 import { formatPrice } from "@/helpers/formatPrice";
 import { isEmpty } from "lodash";
 import { useSelector } from "react-redux";
+import EditInfor from "./Action/EditInfor";
 
 const ManageProfile = () => {
   const { doctorInfo } = useSelector((state) => state.auth);
@@ -28,7 +29,7 @@ const ManageProfile = () => {
   return (
     <div className="space-y-6 mt-4">
       {/* Profile Info */}
-      <Card className="shadow-sm">
+      {/* <Card className="shadow-sm">
         <div className="flex flex-col md:flex-row gap-6">
           <img
             src={avatar.url}
@@ -58,16 +59,18 @@ const ManageProfile = () => {
             </div>
           </div>
         </div>
-      </Card>
+      </Card> */}
 
       {/* About */}
-      <Card className="shadow-sm">
+      {/* <Card className="shadow-sm">
         <h3 className="text-xl font-bold text-gray-800 mb-4">Giới thiệu</h3>
         <div
           className="text-gray-600 leading-relaxed"
           dangerouslySetInnerHTML={{ __html: about }}
         />
-      </Card>
+      </Card> */}
+
+      <EditInfor />
 
       {/* Clinic Info */}
       {!isEmpty(clinic) && (

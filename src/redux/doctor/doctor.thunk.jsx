@@ -75,3 +75,15 @@ export const updateScheduleByDoctor = createAsyncThunk(
   }
 );
 
+export const updateDoctorInfor = createAsyncThunk(
+  "doctor/updateDoctorInfor",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      return await axios.put(`/doctors/${id}`, data);
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+

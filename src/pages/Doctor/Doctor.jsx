@@ -236,7 +236,7 @@ const Doctor = () => {
                         Lịch khám
                       </span>
                     ),
-                    children: <DoctorSchedule {...{ doctor, refetch }} />,
+                    children: <DoctorSchedule {...{ doctor }} />,
                   },
                   {
                     key: "2",

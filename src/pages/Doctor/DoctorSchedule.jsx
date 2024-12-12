@@ -7,7 +7,7 @@ import { monthsDefault } from "@/const/dataDefault";
 import LoadingContent from "@/components/Loading/LoaingContent";
 import ConfirmBooking from "./ConfirmBooking";
 
-const DoctorSchedule = ({ doctor, refetch }) => {
+const DoctorSchedule = ({ doctor }) => {
   const [selectedDate, setSelectedDate] = useState(dayjs().locale("vi"));
   const [selectedTime, setSelectedTime] = useState(null);
 
@@ -22,6 +22,7 @@ const DoctorSchedule = ({ doctor, refetch }) => {
   const monthDays = Array.from({ length: daysInMonth }, (_, i) =>
     selectedDate.date(i + 1).format("YYYY-MM-DD")
   );
+  const [timeSlots, setTimeSlots] = useState([]);
 
   if (!doctor) return null;
 
@@ -36,6 +37,12 @@ const DoctorSchedule = ({ doctor, refetch }) => {
     },
     { skip: !doctor }
   );
+
+  useEffect(() => {
+    if (data) {
+      setTimeSlots(data.timeSlots);
+    }
+  }, [data]);
 
   if (error) return <Empty description="Chưa có thông tin lịch khám!" />;
 
@@ -58,8 +65,6 @@ const DoctorSchedule = ({ doctor, refetch }) => {
     setSelectedTime(null);
   };
 
-  const timeSlots = data.timeSlots || [];
-
   const isPastSlot = (slot) => {
     const slotDateTime = dayjs(
       `${selectedDate.format("YYYY-MM-DD")} ${slot.startTime}`,
@@ -71,6 +76,14 @@ const DoctorSchedule = ({ doctor, refetch }) => {
   const handleClearTime = () => {
     setSelectedDate(dayjs().locale("vi"));
     setSelectedTime(null);
+  };
+
+  const handleTimeSlotAction = ({ startTime, endTime }) => {
+    setTimeSlots(
+      timeSlots.filter(
+        (item) => item.startTime !== startTime || item.endTime !== endTime
+      )
+    );
   };
 
   return (
@@ -131,11 +144,7 @@ const DoctorSchedule = ({ doctor, refetch }) => {
                     ? "bg-blue-500 text-white shadow-lg ring-2 ring-blue-300"
                     : "bg-white hover:bg-blue-50 border border-gray-200"
                 }
-                ${
-                  isPast
-                    ? "opacity-50 cursor-not-allowed bg-slate-500 text-white"
-                    : ""
-                }
+                ${isPast ? "opacity-50 cursor-not-allowed bg-slate-500" : ""}
               `}
             >
               <span
@@ -151,7 +160,10 @@ const DoctorSchedule = ({ doctor, refetch }) => {
         })}
       </div>
       {!timeSlots.length && (
-        <Empty description="Chưa có thông tin lịch khám!" className="mt-10" />
+        <Empty
+          description="Chưa có thông tin lịch khám hoặc lịch khám đã quá vui lòng thử lại sau !"
+          className="mt-10"
+        />
       )}
       {timeSlots.length > 0 && (
         <div className="mt-6">
@@ -192,7 +204,13 @@ const DoctorSchedule = ({ doctor, refetch }) => {
 
       {selectedTime && (
         <ConfirmBooking
-          {...{ selectedTime, selectedDate, doctor, handleClearTime, refetch }}
+          {...{
+            selectedTime,
+            selectedDate,
+            doctor,
+            handleClearTime,
+            handleTimeSlotAction,
+          }}
         />
       )}
     </div>
