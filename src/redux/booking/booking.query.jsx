@@ -46,7 +46,32 @@ export const bookingApi = createApi({
       },
       transformResponse: (response) => response.data,
     }),
+    getBookingByClinic: builder.query({
+      query: ({
+        status = "",
+        page = 1,
+        pageSize = 10,
+        search = "",
+        fromDate = "",
+        toDate = "",
+      }) => {
+        const queryParams = new URLSearchParams({
+          status,
+          page,
+          pageSize,
+          search,
+          fromDate,
+          toDate,
+        }).toString();
+        return {
+          url: `/admin/clinics/bookings/?${queryParams}`,
+          method: "GET",
+        };
+      },
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
-export const { useGetBookingsByDoctorQuery , useGetBookingsByCustomerQuery} = bookingApi;
+export const { useGetBookingsByDoctorQuery, useGetBookingsByCustomerQuery, useGetBookingByClinicQuery } =
+  bookingApi;

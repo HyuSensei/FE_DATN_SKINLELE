@@ -1,7 +1,12 @@
 import React from "react";
+import StatisticalOverView from "./StatisticalOverView";
 
 const DashBoardClinic = () => {
-  return <div>DashBoardClinic</div>;
+  return (
+    <div>
+      <StatisticalOverView />
+    </div>
+  );
 };
 
 export default DashBoardClinic;

@@ -39,7 +39,7 @@ const Home = () => {
               <ProductCarousel
                 {...{ title: "Sản phẩm nổi bật", products: HOT, isLoading }}
               />
-            ) : (
+          ) : (
               <ProductList
                 {...{ title: "Sản phẩm nổi bật", products: HOT, isLoading }}
               />

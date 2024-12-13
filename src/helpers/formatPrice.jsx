@@ -1,4 +1,14 @@
-export const formatPrice = (price) => {
+export const formatPrice = (price, short = false) => {
+  if (short) {
+    if (price >= 1_000_000_000) {
+      return `${(price / 1_000_000_000).toFixed(1)}B`;
+    }
+    if (price >= 1_000_000) {
+      return `${(price / 1_000_000).toFixed(1)}M`;
+    }
+    return new Intl.NumberFormat("vi-VN").format(price);
+  }
+
   if (price < 1_000_000_000) {
     return new Intl.NumberFormat("vi-VN", {
       currency: "VND",

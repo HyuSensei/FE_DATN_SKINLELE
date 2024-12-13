@@ -1,6 +1,7 @@
 import React from "react";
 import { Form, Input, Select, Button, Upload } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
+import CustomButton from "@/components/CustomButton";
 
 const { Option } = Select;
 
@@ -13,10 +14,11 @@ const SettingAdmin = () => {
 
   return (
     <Form
+      requiredMark={false}
       form={form}
       onFinish={handleSubmit}
       layout="vertical"
-      className="py-4"
+      className="py-4 min-w-96 max-w-xl mx-auto"
     >
       <Form.Item
         name="avatar"
@@ -39,93 +41,63 @@ const SettingAdmin = () => {
           </div>
         </Upload>
       </Form.Item>
-
-      <div className="flex items-center gap-4 flex-wrap">
-        <Form.Item
-          name="fullName"
-          label="Họ và tên"
-          className="w-full lg:flex-1"
-          rules={[
-            { required: true, message: "Vui lòng nhập họ và tên" },
-            { min: 3, message: "Họ và tên phải có ít nhất 3 ký tự" },
-          ]}
-        >
-          <Input
-            size="large"
-            placeholder="Nhập họ tên..."
-            className="w-full mt-1 shadow-lg"
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="role"
-          label="Chọn vai trò"
-          className="w-full lg:flex-1"
-        >
-          <Select
-            size="large"
-            placeholder="Chọn vai trò"
-            className="w-full mt-1"
-            disabled
-          >
-            <Option value="ADMIN">Admin</Option>
-            <Option value="SUPPORT">Support</Option>
-          </Select>
-        </Form.Item>
-      </div>
-
-      <div className="flex items-center gap-4 flex-wrap">
-        <Form.Item
-          name="password"
-          label="Mật khẩu"
-          className="w-full lg:flex-1"
-          rules={[
-            { required: true, message: "Vui lòng nhập mật khẩu" },
-            { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự" },
-          ]}
-        >
-          <Input.Password
-            size="large"
-            placeholder="Nhập mật khẩu..."
-            className="w-full mt-1 shadow-lg"
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="confirmPassword"
-          label="Nhập mật khẩu mới"
-          className="w-full lg:flex-1"
-          dependencies={["password"]}
-          rules={[
-            { required: true, message: "Vui lòng nhập lại mật khẩu" },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue("password") === value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(
-                  new Error("Mật khẩu nhập lại không khớp")
-                );
-              },
-            }),
-          ]}
-        >
-          <Input.Password
-            size="large"
-            placeholder="Nhập mật khẩu mới..."
-            className="w-full mt-1 shadow-lg"
-          />
-        </Form.Item>
-      </div>
-
-      <Button
-        type="primary"
-        htmlType="submit"
-        size="large"
-        className="bg-indigo-600 hover:bg-indigo-700 w-full mt-4"
+      <Form.Item
+        name="fullName"
+        label="Họ và tên"
+        className="w-full lg:flex-1"
+        rules={[
+          { required: true, message: "Vui lòng nhập họ và tên" },
+          { min: 3, message: "Họ và tên phải có ít nhất 3 ký tự" },
+        ]}
       >
-        Cập nhật
-      </Button>
+        <Input
+          size="large"
+          placeholder="Nhập họ tên..."
+          className="w-full mt-1 shadow-lg"
+        />
+      </Form.Item>
+      <Form.Item
+        name="password"
+        label="Mật khẩu"
+        className="w-full lg:flex-1"
+        rules={[
+          { required: true, message: "Vui lòng nhập mật khẩu" },
+          { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự" },
+        ]}
+      >
+        <Input.Password
+          size="large"
+          placeholder="Nhập mật khẩu..."
+          className="w-full mt-1 shadow-lg"
+        />
+      </Form.Item>
+
+      <Form.Item
+        name="confirmPassword"
+        label="Nhập mật khẩu mới"
+        className="w-full lg:flex-1"
+        dependencies={["password"]}
+        rules={[
+          { required: true, message: "Vui lòng nhập lại mật khẩu" },
+          ({ getFieldValue }) => ({
+            validator(_, value) {
+              if (!value || getFieldValue("password") === value) {
+                return Promise.resolve();
+              }
+              return Promise.reject(new Error("Mật khẩu nhập lại không khớp"));
+            },
+          }),
+        ]}
+      >
+        <Input.Password
+          size="large"
+          placeholder="Nhập mật khẩu mới..."
+          className="w-full mt-1 shadow-lg"
+        />
+      </Form.Item>
+      <CustomButton variant="primary" type="submit" className="w-full">
+        Cập nhật tài khoản
+      </CustomButton>
     </Form>
   );
 };

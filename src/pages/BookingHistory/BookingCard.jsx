@@ -93,11 +93,7 @@ const BookingCard = ({ booking }) => {
               {moment(booking.date).format("DD MMMM, YYYY")}
             </Tag>
           </div>
-          <Tag
-            icon={<MoneyCollectOutlined />}
-            color="orange"
-            className="m-0 py-1.5 px-3 text-base"
-          >
+          <Tag color="orange" className="m-0 py-1.5 px-3 text-base">
             Giá khám: {formatPrice(booking.price)} VND
           </Tag>
         </div>

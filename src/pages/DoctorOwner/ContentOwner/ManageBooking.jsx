@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Table, Tag, Card, Select, Input, DatePicker, Empty } from "antd";
+import { Table, Tag, Card, Select, Input, DatePicker, Empty, message } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { bookingStatus } from "@const/status";
 import locale from "antd/es/date-picker/locale/vi_VN";
@@ -8,10 +8,20 @@ import { getStatusBooking } from "@/helpers/getStatus";
 import { formatPrice } from "@/helpers/formatPrice";
 import moment from "@utils/monentTz";
 import { debounce } from "lodash";
+import { useDispatch } from "react-redux";
+import { updateStatusBooking } from "@/redux/booking/booking.thunk";
 
 const { RangePicker } = DatePicker;
 
-const ManageBooking = ({ activeMenu }) => {
+const statusTransitionRules = {
+  pending: ["confirmed", "cancelled"],
+  confirmed: ["completed", "cancelled"],
+  cancelled: ["pending"],
+  completed: [],
+};
+
+const ManageBooking = () => {
+  const dispatch = useDispatch();
   const [filters, setFilters] = useState({
     search: "",
     status: "",
@@ -26,7 +36,7 @@ const ManageBooking = ({ activeMenu }) => {
     totalItems: 0,
   });
 
-  const { data, isLoading, error } = useGetBookingsByDoctorQuery({
+  const { data, isLoading, error, refetch } = useGetBookingsByDoctorQuery({
     page: paginate.page,
     pageSize: paginate.pageSize,
     ...filters,
@@ -44,6 +54,17 @@ const ManageBooking = ({ activeMenu }) => {
   if (error) return <Empty description="Không tìm thấy thông tin lịch khám" />;
 
   const { bookings } = data || [];
+
+  const getAvailableStatuses = (currentStatus) => {
+    const allowedNextStatuses = statusTransitionRules[currentStatus] || [];
+
+    return bookingStatus.map((status) => ({
+      ...status,
+      disabled:
+        !allowedNextStatuses.includes(status.value) &&
+        status.value !== currentStatus,
+    }));
+  };
 
   const columns = [
     {
@@ -96,15 +117,28 @@ const ManageBooking = ({ activeMenu }) => {
     {
       title: "Thao tác",
       key: "actions",
-      render: (_, record) => (
-        <Select defaultValue={"pending"} className="w-full">
-          {bookingStatus.map((item, index) => (
-            <Select.Option key={index} value={item.value}>
-              {item.name}
-            </Select.Option>
-          ))}
-        </Select>
-      ),
+      render: (_, record) => {
+        const availableStatuses = getAvailableStatuses(record.status);
+        return (
+          <Select
+            value={record.status}
+            className="w-full"
+            onChange={(value) =>
+              handleChangeStatus({ booking: record, status: value })
+            }
+          >
+            {availableStatuses.map((status, index) => (
+              <Select.Option
+                key={index}
+                value={status.value}
+                disabled={status.disabled}
+              >
+                {status.name}
+              </Select.Option>
+            ))}
+          </Select>
+        );
+      },
       width: 150,
     },
   ];
@@ -121,6 +155,19 @@ const ManageBooking = ({ activeMenu }) => {
 
   const handleFilterChange = (value, key) => {
     debouncedSearch(key, value);
+  };
+
+  const handleChangeStatus = async ({ booking, status }) => {
+    const res = await dispatch(
+      updateStatusBooking({
+        id: booking._id,
+        data: { status, model: "Doctor" },
+      })
+    ).unwrap();
+    if (res.success) {
+      message.success(res.message);
+      refetch();
+    }
   };
 
   return (

@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import { Layout, Button, Avatar, Dropdown, Badge, Input } from "antd";
 import {
-  MenuUnfoldOutlined,
-  MenuFoldOutlined,
-  UserOutlined,
   BellOutlined,
   SearchOutlined,
   SettingOutlined,
@@ -13,6 +10,7 @@ import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logoutAdmin } from "@redux/auth/auth.slice";
+import { BsFillMenuButtonFill, BsFillMenuButtonWideFill } from "react-icons/bs";
 
 const { Header } = Layout;
 
@@ -58,7 +56,9 @@ const HeaderAdmin = ({ collapsed, setCollapsed }) => {
       <div className="flex items-center">
         <Button
           type="text"
-          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+          icon={
+            collapsed ? <BsFillMenuButtonWideFill /> : <BsFillMenuButtonFill />
+          }
           onClick={toggle}
           className="text-lg w-16 h-16"
         />
