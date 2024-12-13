@@ -20,7 +20,7 @@ const LayoutBooking = ({ children }) => {
   }, [location.pathname]);
 
   return (
-    <div className="site-layout flex flex-col overflow-x-hidden">
+    <div className="site-layout flex flex-col overflow-x-hidden min-h-screen">
       <ModalAuth {...{ open: openModelAuth, onClose: () => dispatch(setOpenModelAuth(false)) }} />
       <HeaderBooking />
       <div className="min-h-screen">{children}</div>

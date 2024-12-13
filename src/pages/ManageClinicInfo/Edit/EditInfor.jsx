@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Form, Input, Tag, Card, Row, Col, Button, message } from "antd";
-import { IoAdd } from "react-icons/io5";
+import { Form, Input, Tag, Card, Row, Col, Button, message, Upload } from "antd";
+import { IoAdd, IoCloudUpload } from "react-icons/io5";
 import FroalaEditor from "react-froala-wysiwyg";
 import "froala-editor/js/froala_editor.pkgd.min.js";
 import "froala-editor/css/froala_style.min.css";
@@ -11,6 +11,7 @@ import { IoMdArrowRoundBack } from "react-icons/io";
 import { useDispatch } from "react-redux";
 import { updateClinicByOwner } from "@/redux/clinic/clinic.thunk";
 import { useScroll } from "@/components/context/ScrollProvider";
+import { deleteFile, UPLOAD_SKINLELE_CLINIC_PRESET, uploadFile } from "@/helpers/uploadCloudinary";
 
 const config = {
   imageUpload: false,
@@ -32,6 +33,12 @@ const EditInfo = ({ clinic, handleChangeEdit, refetch }) => {
   const [inputVisible, setInputVisible] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(false);
+  const [logo, setLogo] = useState([
+    {
+      url: clinic.logo.url,
+      publicId: clinic.logo.publicId
+    },
+  ]);
 
   const handleSpecialtyClose = (removedTag) => {
     const newSpecialties = specialties.filter((tag) => tag !== removedTag);
@@ -60,7 +67,23 @@ const EditInfo = ({ clinic, handleChangeEdit, refetch }) => {
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
-      const res = await dispatch(updateClinicByOwner({ ...values })).unwrap();
+      let payload = {};
+
+      if (logo[0]?.originFileObj) {
+        const result = await uploadFile({
+          file: logo[0].originFileObj,
+          type: UPLOAD_SKINLELE_CLINIC_PRESET,
+        });
+        await deleteFile(clinic.logo.publicId);
+        payload = {
+          ...values,
+          logo: { url: result.secure_url, publicId: result.public_id },
+        };
+      } else {
+        payload = { ...values };
+      }
+
+      const res = await dispatch(updateClinicByOwner(payload)).unwrap();
       if (res.success) {
         message.success(res.message);
         form.resetFields();
@@ -77,6 +100,7 @@ const EditInfo = ({ clinic, handleChangeEdit, refetch }) => {
 
   return (
     <Form
+      requiredMark={false}
       form={form}
       layout="vertical"
       initialValues={{
@@ -90,6 +114,27 @@ const EditInfo = ({ clinic, handleChangeEdit, refetch }) => {
       onFinish={handleSubmit}
     >
       <Card title="Thông tin cơ bản" className="mb-6 shadow-md">
+        <Form.Item
+          name="logo"
+          label="Logo phòng khám"
+          rules={[{ required: true, message: "Vui lòng tải lên ảnh lên" }]}
+        >
+          <Upload
+            accept="image/*"
+            onChange={({ fileList }) => setLogo(fileList)}
+            fileList={logo}
+            listType="picture-circle"
+            beforeUpload={() => false}
+            maxCount={1}
+          >
+            {logo.length === 0 && (
+              <div className="flex flex-col items-center">
+                <IoCloudUpload className="w-6 h-6" />
+                <div className="mt-2">Tải ảnh</div>
+              </div>
+            )}
+          </Upload>
+        </Form.Item>
         <Row gutter={16}>
           <Col xs={24} md={8}>
             <Form.Item

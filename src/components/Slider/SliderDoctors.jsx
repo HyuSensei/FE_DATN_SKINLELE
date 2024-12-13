@@ -7,7 +7,6 @@ import {
 } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import Slider from "react-slick";
-import { FaBriefcaseMedical } from "react-icons/fa";
 
 const SliderDoctors = ({ doctors = [], isLoading = false, settings = {} }) => {
   const navigate = useNavigate();
@@ -98,7 +97,6 @@ const SliderDoctors = ({ doctors = [], isLoading = false, settings = {} }) => {
                   </h3>
 
                   <div className="flex items-center justify-center gap-2 mt-2 text-blue-600 font-medium">
-                    <FaBriefcaseMedical className="w-4 h-4" />
                     <span className="text-sm">{doctor.specialty}</span>
                   </div>
 

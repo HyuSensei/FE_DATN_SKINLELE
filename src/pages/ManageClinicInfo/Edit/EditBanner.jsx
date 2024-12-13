@@ -84,6 +84,7 @@ const EditBanner = ({ banners = [], handleChangeEdit, refetch }) => {
   return (
     <Card title="Cập nhật banner phòng khám" className="shadow-lg rounded-xl">
       <Form
+        requiredMark={false}
         form={form}
         onFinish={handleSubmit}
         layout="vertical"

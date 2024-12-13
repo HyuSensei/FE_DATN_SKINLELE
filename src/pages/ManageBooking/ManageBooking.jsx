@@ -91,7 +91,7 @@ const ManageBooking = () => {
         {...{
           bookings,
           page: paginate.page,
-          pageSize: paginate.page,
+          pageSize: paginate.pageSize,
           setPaginate,
           loading,
         }}

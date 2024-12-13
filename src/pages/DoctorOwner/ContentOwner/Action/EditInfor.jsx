@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   Form,
   Input,
-  Button,
   Upload,
   Row,
   Col,
@@ -21,22 +20,37 @@ import { useDispatch, useSelector } from "react-redux";
 import SkinLeLeEditor from "@/components/SkinLeLeEditor";
 import CustomButton from "@/components/CustomButton";
 import { updateDoctorInfor } from "@/redux/doctor/doctor.thunk";
+import { useScroll } from "@/components/context/ScrollProvider";
 
-const EditInfor = () => {
+const EditInfor = ({ setIsEdit }) => {
   const dispatch = useDispatch();
   const [form] = Form.useForm();
   const [avatar, setAvatar] = useState([]);
   const [loading, setLoading] = useState(false);
   const { doctorInfo } = useSelector((state) => state.auth);
   const { clinic = {} } = doctorInfo;
+  const { scrollToTop } = useScroll()
 
   useEffect(() => {
     if (doctorInfo) {
+      form.setFieldsValue({
+        name: doctorInfo.name,
+        email: doctorInfo.email,
+        avatar: {
+          url: doctorInfo.avatar.url,
+          publicId: doctorInfo.avatar.publicId,
+        },
+        about: doctorInfo.about,
+        fees: doctorInfo.fees,
+        specialty: doctorInfo.specialty,
+        phone: doctorInfo.phone,
+        experience: doctorInfo.experience,
+      });
       setAvatar([
         { url: doctorInfo.avatar.url, publicId: doctorInfo.avatar.publicId },
       ]);
     }
-  }, [doctorInfo]);
+  }, [doctorInfo, form]);
 
   const handleSubmit = async (values) => {
     try {
@@ -52,6 +66,7 @@ const EditInfor = () => {
         payload = {
           ...values,
           avatar: { url: result.secure_url, publicId: result.public_id },
+          isAdmin: false
         };
       } else {
         payload = { ...values };
@@ -63,6 +78,8 @@ const EditInfor = () => {
 
       if (res.success) {
         message.success(res.message);
+        scrollToTop()
+        setIsEdit(false)
       }
     } catch (error) {
       console.error(error);
@@ -79,17 +96,7 @@ const EditInfor = () => {
       onFinish={handleSubmit}
       requiredMark={false}
       initialValues={{
-        name: doctorInfo.name,
-        email: doctorInfo.email,
-        avatar: {
-          url: doctorInfo.avatar.url,
-          publicId: doctorInfo.avatar.publicId,
-        },
         about: doctorInfo.about,
-        fees: doctorInfo.fees,
-        specialty: doctorInfo.specialty,
-        phone: doctorInfo.phone,
-        experience: doctorInfo.experience,
       }}
     >
       {/* Basic Info */}
@@ -142,7 +149,7 @@ const EditInfor = () => {
           </Col>
           <Col xs={24} md={12}>
             <Form.Item
-              name="currentPassword"
+              name="password"
               label="Mật khẩu hiện tại"
               dependencies={["newPassword"]}
               rules={[
@@ -172,11 +179,11 @@ const EditInfor = () => {
             <Form.Item
               name="newPassword"
               label="Mật khẩu mới"
-              dependencies={["currentPassword"]}
+              dependencies={["password"]}
               rules={[
                 ({ getFieldValue }) => ({
                   validator(_, value) {
-                    const currentPassword = getFieldValue("currentPassword");
+                    const currentPassword = getFieldValue("password");
 
                     if (!value && !currentPassword) {
                       return Promise.resolve();
@@ -233,7 +240,7 @@ const EditInfor = () => {
                 className="rounded-lg"
                 placeholder="Chọn chuyên khoa"
               >
-                {clinic &&
+                {clinic && clinic.specialties &&
                   clinic.specialties.length > 0 &&
                   clinic.specialties.map((item, index) => (
                     <Select.Option value={item} key={index}>
@@ -292,7 +299,7 @@ const EditInfor = () => {
       </Card>
 
       <div className="flex items-center justify-end gap-2">
-        <CustomButton variant="default">Xong</CustomButton>
+        <CustomButton variant="default" onClick={() => setIsEdit(false)}>Xong</CustomButton>
         <CustomButton loading={loading} type="submit" variant="primary">
           Cập nhật thông tin
         </CustomButton>
