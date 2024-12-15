@@ -7,7 +7,7 @@ import SiderAdmin from "@components/Sider/SiderAdmin";
 
 const { Content, Footer } = Layout;
 
-const LayoutAdmin = ({ children, title }) => {
+const LayoutAdmin = ({ children, title, className = "bg-white" }) => {
   const [collapsed, setCollapsed] = useState(false);
   const { isMobile } = useScreen();
 
@@ -24,7 +24,9 @@ const LayoutAdmin = ({ children, title }) => {
       <SiderAdmin {...{ collapsed, setCollapsed }} />
       <Layout className="site-layout">
         <HeaderAdmin {...{ collapsed, setCollapsed }} />
-        <Content className="m-2 p-2 md:m-4 md:p-4 bg-white rounded-lg shadow-md">
+        <Content
+          className={`m-2 p-2 md:m-4 md:p-4 rounded-lg shadow-md ${className}`}
+        >
           <motion.div
             className="w-full"
             initial={{ opacity: 0, y: 20 }}

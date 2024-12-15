@@ -130,7 +130,7 @@ const ClinicInfo = ({ setAction }) => {
         />
       ) : (
         <Card
-          title="Banner"
+          title="Ảnh nền phòng khám"
           className="shadow-sm"
           extra={
             isEdit.edit && (

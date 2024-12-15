@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { createDoctorByAdmin } from "@redux/doctor/doctor.thunk";
 import SkinLeLeEditor from "@/components/SkinLeLeEditor";
+import { DURATION_OPTIONS } from "@/const/dataDefault";
 
 const CreateDoctor = () => {
   const dispatch = useDispatch();
@@ -139,7 +140,7 @@ const CreateDoctor = () => {
       {/* Professional Info */}
       <Card title="Thông tin chuyên môn" className="mb-6 shadow-md">
         <Row gutter={16}>
-          <Col xs={24} md={8}>
+          <Col xs={24} md={6}>
             <Form.Item
               name="specialty"
               label="Chuyên khoa"
@@ -160,7 +161,7 @@ const CreateDoctor = () => {
               </Select>
             </Form.Item>
           </Col>
-          <Col xs={24} md={8}>
+          <Col xs={24} md={6}>
             <Form.Item
               name="experience"
               label="Số năm kinh nghiệm"
@@ -176,10 +177,10 @@ const CreateDoctor = () => {
               />
             </Form.Item>
           </Col>
-          <Col xs={24} md={8}>
+          <Col xs={24} md={6}>
             <Form.Item
               name="fees"
-              label="Phí khám (VNĐ)"
+              label="Phí khám (VND)"
               rules={[{ required: true, message: "Vui lòng nhập phí tư vấn" }]}
             >
               <InputNumber
@@ -191,6 +192,25 @@ const CreateDoctor = () => {
                 parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
                 className="w-full rounded-lg"
                 size="large"
+                placeholder="VD: 100000"
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={6}>
+            <Form.Item
+              name="duration"
+              label="Thời gian khám"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn thời gian khám",
+                },
+              ]}
+            >
+              <Select
+                size="large"
+                options={DURATION_OPTIONS}
+                placeholder="Chọn thời gian khám"
               />
             </Form.Item>
           </Col>

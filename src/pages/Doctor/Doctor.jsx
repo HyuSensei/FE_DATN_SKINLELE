@@ -5,7 +5,6 @@ import {
   PhoneOutlined,
   MailOutlined,
   DollarOutlined,
-  ClockCircleOutlined,
   StarOutlined,
   MedicineBoxOutlined,
   ArrowRightOutlined,
@@ -141,7 +140,7 @@ const Doctor = () => {
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-gray-500 text-sm">
-                        <RiMapPinFill size={25} />
+                        <RiMapPinFill />
                         <p
                           dangerouslySetInnerHTML={{
                             __html: clinic.address,
@@ -231,20 +230,14 @@ const Doctor = () => {
                   {
                     key: "1",
                     label: (
-                      <span className="flex items-center gap-2">
-                        <ClockCircleOutlined />
-                        Lịch khám
-                      </span>
+                      <span className="flex items-center gap-2">Lịch khám</span>
                     ),
                     children: <DoctorSchedule {...{ doctor }} />,
                   },
                   {
                     key: "2",
                     label: (
-                      <span className="flex items-center gap-2">
-                        <StarOutlined />
-                        Đánh giá
-                      </span>
+                      <span className="flex items-center gap-2">Đánh giá</span>
                     ),
                     children: <DoctorReview doctor={doctor} />,
                   },

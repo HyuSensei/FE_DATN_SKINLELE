@@ -73,9 +73,9 @@ export default function ManageStatistic({ activeMenu }) {
   const { averageRating, totalReviews, stats, totalStats } = data;
 
   return (
-    <div className="space-y-6 mt-4">
-      <div className="flex justify-between items-center">
-        <div className="text-base font-medium text-gray-700">
+    <div className="min-h-screen">
+      <div className="flex justify-between items-center flex-wrap space-y-6 mb-6">
+        <div className="text-sm text-gray-500">
           Thống kê cho chi tiết các hoạt động đặt lịch của bác sĩ
         </div>
         <DatePicker
@@ -138,10 +138,12 @@ export default function ManageStatistic({ activeMenu }) {
         ))}
       </div>
 
+      <div className="text-xl mt-12 font-bold text-gray-700 mb-6 uppercase">
+        Thống Kê Lịch Khám
+      </div>
       <Card
         title={
           <div className="text-xl font-semibold flex items-center gap-2">
-            Thống kê lịch khám
             <span className="px-4 py-1 rounded-lg bg-gradient-to-r from-blue-100 to-purple-100 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] border border-blue-200">
               <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text font-bold">
                 Tháng {month}
@@ -149,6 +151,7 @@ export default function ManageStatistic({ activeMenu }) {
             </span>
           </div>
         }
+        bordered={false}
       >
         <div className="h-[400px] w-full">
           <ResponsiveContainer width="100%">

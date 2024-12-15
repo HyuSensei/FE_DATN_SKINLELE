@@ -1,21 +1,12 @@
-import React, { useEffect, useState } from "react";
-import {
-  Form,
-  TimePicker,
-  Card,
-  Row,
-  Col,
-  Checkbox,
-  Button,
-  message,
-} from "antd";
-import { MdSave } from "react-icons/md";
+import React, { useEffect, useState, useMemo } from "react";
+import { Form, TimePicker, Card, Checkbox, message } from "antd";
 import locale from "antd/es/date-picker/locale/vi_VN";
 import dayjs from "dayjs";
 import { useDispatch } from "react-redux";
 import { updateClinicByOwner } from "@/redux/clinic/clinic.thunk";
-import { IoMdArrowRoundBack } from "react-icons/io";
+import { IoMdArrowRoundBack, IoMdSave } from "react-icons/io";
 import { useScroll } from "@/components/context/ScrollProvider";
+import CustomButton from "@/components/CustomButton";
 
 const WEEKDAYS = [
   { label: "Thứ 2", value: "Thứ 2" },
@@ -33,11 +24,19 @@ const EditSchedule = ({ workingHours = [], handleChangeEdit, refetch }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
+  const weekdays = useMemo(() => WEEKDAYS, []);
+
   useEffect(() => {
     const initialWorkingHours = workingHours.reduce((acc, day) => {
       acc[day.dayOfWeek] = {
         startTime: day.isOpen ? dayjs(day.startTime, "HH:mm") : null,
         endTime: day.isOpen ? dayjs(day.endTime, "HH:mm") : null,
+        breakTimeStart: day.breakTime?.start
+          ? dayjs(day.breakTime.start, "HH:mm")
+          : null,
+        breakTimeEnd: day.breakTime?.end
+          ? dayjs(day.breakTime.end, "HH:mm")
+          : null,
         isClosed: !day.isOpen,
       };
       return acc;
@@ -46,29 +45,59 @@ const EditSchedule = ({ workingHours = [], handleChangeEdit, refetch }) => {
     form.setFieldsValue({
       workingHours: initialWorkingHours,
     });
-  }, [workingHours]);
+  }, [workingHours, form]);
 
-  const validateTimeRange = (rule, value, callback, dayValue, field) => {
+  const validateTime = (
+    rule,
+    value,
+    callback,
+    dayValue,
+    field,
+    isBreakTime = false
+  ) => {
     const dayData = form.getFieldValue(["workingHours", dayValue]) || {};
     const isClosed = dayData.isClosed;
 
-    if (isClosed) return Promise.resolve();
+    if (isClosed || !value) return Promise.resolve();
 
-    if (!value) {
-      return Promise.reject(
-        `Vui lòng chọn ${field === "startTime" ? "giờ mở cửa" : "giờ đóng cửa"}`
-      );
+    if (
+      field === "startTime" &&
+      dayData.endTime &&
+      value.isAfter(dayData.endTime)
+    ) {
+      return Promise.reject("Giờ mở cửa phải trước giờ đóng cửa");
     }
 
-    if (field === "startTime" && dayData.endTime) {
-      if (value.isAfter(dayData.endTime)) {
-        return Promise.reject("Giờ mở cửa phải trước giờ đóng cửa");
+    if (
+      field === "endTime" &&
+      dayData.startTime &&
+      value.isBefore(dayData.startTime)
+    ) {
+      return Promise.reject("Giờ đóng cửa phải sau giờ mở cửa");
+    }
+
+    if (isBreakTime) {
+      const breakTimeStart = dayData.breakTimeStart;
+      const breakTimeEnd = dayData.breakTimeEnd;
+      const startTime = dayData.startTime;
+      const endTime = dayData.endTime;
+
+      if (field === "breakTimeStart") {
+        if (startTime && value.isBefore(startTime)) {
+          return Promise.reject("Giờ nghỉ phải sau giờ mở cửa");
+        }
+        if (breakTimeEnd && value.isAfter(breakTimeEnd)) {
+          return Promise.reject("Giờ nghỉ phải trước giờ kết thúc nghỉ");
+        }
       }
-    }
 
-    if (field === "endTime" && dayData.startTime) {
-      if (value.isBefore(dayData.startTime)) {
-        return Promise.reject("Giờ đóng cửa phải sau giờ mở cửa");
+      if (field === "breakTimeEnd") {
+        if (endTime && value.isAfter(endTime)) {
+          return Promise.reject("Giờ nghỉ phải trước giờ đóng cửa");
+        }
+        if (breakTimeStart && value.isBefore(breakTimeStart)) {
+          return Promise.reject("Giờ kết thúc nghỉ phải sau giờ bắt đầu nghỉ");
+        }
       }
     }
 
@@ -78,9 +107,9 @@ const EditSchedule = ({ workingHours = [], handleChangeEdit, refetch }) => {
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
-      const formattedSchedule = WEEKDAYS.map((day) => {
+      const formattedSchedule = weekdays.map((day) => {
         const dayData = values.workingHours?.[day.value] || {};
-        return {
+        const schedule = {
           dayOfWeek: day.value,
           isOpen: !dayData.isClosed,
           startTime: dayData.startTime
@@ -90,6 +119,15 @@ const EditSchedule = ({ workingHours = [], handleChangeEdit, refetch }) => {
             ? dayjs(dayData.endTime).format("HH:mm")
             : "17:00",
         };
+
+        if (dayData.breakTimeStart && dayData.breakTimeEnd) {
+          schedule.breakTime = {
+            start: dayjs(dayData.breakTimeStart).format("HH:mm"),
+            end: dayjs(dayData.breakTimeEnd).format("HH:mm"),
+          };
+        }
+
+        return schedule;
       });
 
       const res = await dispatch(
@@ -112,109 +150,160 @@ const EditSchedule = ({ workingHours = [], handleChangeEdit, refetch }) => {
   return (
     <Card title="Cập nhật lịch làm việc" className="shadow-lg rounded-xl">
       <Form
+        requiredMark={false}
         form={form}
         onFinish={handleSubmit}
         layout="vertical"
         className="space-y-4"
       >
-        {WEEKDAYS.map((day) => (
+        {weekdays.map((day) => (
           <div
             key={day.value}
             className="p-4 border rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
           >
             <Form.Item noStyle>
-              <Row gutter={16} align="middle">
-                <Col xs={24} md={6}>
-                  <Form.Item
-                    name={["workingHours", day.value, "isClosed"]}
-                    valuePropName="checked"
-                  >
-                    <Checkbox className="font-medium text-gray-700">
-                      {day.label} (Ngày nghỉ)
-                    </Checkbox>
-                  </Form.Item>
-                </Col>
+              <Checkbox
+                name={["workingHours", day.value, "isClosed"]}
+                className="font-medium text-gray-700 mb-4"
+              >
+                <span className="px-4 py-1 rounded-lg bg-gradient-to-r from-blue-100 to-purple-100 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] border border-blue-200">
+                  <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text font-bold">
+                    {day.label}
+                  </span>
+                </span>{" "}
+                (Ngày nghỉ)
+              </Checkbox>
+              <div className="flex flex-col sm:flex-row gap-4 mb-4">
+                <Form.Item
+                  label="Giờ mở cửa"
+                  name={["workingHours", day.value, "startTime"]}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn giờ mở cửa",
+                    },
+                    {
+                      validator: (rule, value) =>
+                        validateTime(rule, value, null, day.value, "startTime"),
+                    },
+                  ]}
+                  className="flex-1 mb-0"
+                >
+                  <TimePicker
+                    locale={locale}
+                    format="HH:mm"
+                    className="w-full"
+                    minuteStep={15}
+                    placeholder="Chọn giờ"
+                  />
+                </Form.Item>
 
-                <Col xs={24} md={9}>
-                  <Form.Item
-                    label={<span className="text-gray-600">Giờ mở cửa</span>}
-                    name={["workingHours", day.value, "startTime"]}
-                    rules={[
-                      {
-                        validator: (rule, value) =>
-                          validateTimeRange(
-                            rule,
-                            value,
-                            null,
-                            day.value,
-                            "startTime"
-                          ),
-                      },
-                    ]}
-                  >
-                    <TimePicker
-                      locale={locale}
-                      format="HH:mm"
-                      className="w-full"
-                      minuteStep={15}
-                      placeholder="Chọn giờ"
-                    />
-                  </Form.Item>
-                </Col>
+                <Form.Item
+                  label="Giờ đóng cửa"
+                  name={["workingHours", day.value, "endTime"]}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn giờ đóng cửa",
+                    },
+                    {
+                      validator: (rule, value) =>
+                        validateTime(rule, value, null, day.value, "endTime"),
+                    },
+                  ]}
+                  className="flex-1 mb-0"
+                >
+                  <TimePicker
+                    locale={locale}
+                    format="HH:mm"
+                    className="w-full"
+                    minuteStep={15}
+                    placeholder="Chọn giờ"
+                  />
+                </Form.Item>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Form.Item
+                  label="Bắt đầu giờ nghỉ"
+                  name={["workingHours", day.value, "breakTimeStart"]}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn giờ bắt đầu nghỉ",
+                    },
+                    {
+                      validator: (rule, value) =>
+                        validateTime(
+                          rule,
+                          value,
+                          null,
+                          day.value,
+                          "breakTimeStart",
+                          true
+                        ),
+                    },
+                  ]}
+                  className="flex-1 mb-0"
+                >
+                  <TimePicker
+                    locale={locale}
+                    format="HH:mm"
+                    className="w-full"
+                    minuteStep={15}
+                    placeholder="Chọn giờ"
+                  />
+                </Form.Item>
 
-                <Col xs={24} md={9}>
-                  <Form.Item
-                    label={<span className="text-gray-600">Giờ đóng cửa</span>}
-                    name={["workingHours", day.value, "endTime"]}
-                    rules={[
-                      {
-                        validator: (rule, value) =>
-                          validateTimeRange(
-                            rule,
-                            value,
-                            null,
-                            day.value,
-                            "endTime"
-                          ),
-                      },
-                    ]}
-                  >
-                    <TimePicker
-                      locale={locale}
-                      format="HH:mm"
-                      className="w-full"
-                      minuteStep={15}
-                      placeholder="Chọn giờ"
-                    />
-                  </Form.Item>
-                </Col>
-              </Row>
+                <Form.Item
+                  label="Kết thúc giờ nghỉ"
+                  name={["workingHours", day.value, "breakTimeEnd"]}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn giờ kết thúc nghỉ",
+                    },
+                    {
+                      validator: (rule, value) =>
+                        validateTime(
+                          rule,
+                          value,
+                          null,
+                          day.value,
+                          "breakTimeEnd",
+                          true
+                        ),
+                    },
+                  ]}
+                  className="flex-1 mb-0"
+                >
+                  <TimePicker
+                    locale={locale}
+                    format="HH:mm"
+                    className="w-full"
+                    minuteStep={15}
+                    placeholder="Chọn giờ"
+                  />
+                </Form.Item>
+              </div>
             </Form.Item>
           </div>
         ))}
-
-        <div className="flex justify-end gap-4">
-          <Button
-            icon={<IoMdArrowRoundBack className="text-lg" />}
-            onClick={() => {
-              handleChangeEdit("schedule", false);
-              form.resetFields();
-            }}
+        <div className="flex justify-between mt-6">
+          <CustomButton
+            icon={<IoMdArrowRoundBack />}
+            onClick={() => handleChangeEdit("schedule", false)}
+            disabled={loading}
           >
             Đóng
-          </Button>
-          <Button
-            type="primary"
-            htmlType="submit"
+          </CustomButton>
+          <CustomButton
+            variant="primary"
+            icon={<IoMdSave />}
+            type="submit"
             loading={loading}
-            icon={<MdSave className="text-lg" />}
-            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white 
-            shadow-md hover:shadow-lg hover:shadow-blue-200/50 transition-all duration-200
-            disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:shadow-none
-            flex items-center gap-2"
           >
-            {loading ? "Đang lưu..." : "Lưu thay đổi"}
-          </Button>
+            Cập nhật
+          </CustomButton>
         </div>
       </Form>
     </Card>

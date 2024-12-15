@@ -32,6 +32,7 @@ import "froala-editor/js/froala_editor.pkgd.min.js";
 import "froala-editor/css/froala_style.min.css";
 import "froala-editor/css/froala_editor.pkgd.min.css";
 import "froala-editor/js/plugins/image.min.js";
+import ScheduleSection from "./ScheduleSection";
 
 const WEEKDAYS = [
   { label: "Thứ 2", value: "Thứ 2" },
@@ -109,39 +110,6 @@ const CreateClinic = () => {
     setInputValue("");
   }, [inputValue, specialties, form]);
 
-  const validateTimeRange = (rule, value, callback, dayValue, field) => {
-    const dayData = form.getFieldValue(["workingHours", dayValue]) || {};
-    const isClosed = dayData.isClosed;
-
-    if (isClosed) {
-      return Promise.resolve();
-    }
-
-    if (!value) {
-      return Promise.reject(
-        new Error(
-          `Vui lòng chọn ${
-            field === "startTime" ? "giờ mở cửa" : "giờ đóng cửa"
-          }`
-        )
-      );
-    }
-
-    if (field === "startTime" && dayData.endTime) {
-      if (value.isAfter(dayData.endTime)) {
-        return Promise.reject(new Error("Giờ mở cửa phải trước giờ đóng cửa"));
-      }
-    }
-
-    if (field === "endTime" && dayData.startTime) {
-      if (value.isBefore(dayData.startTime)) {
-        return Promise.reject(new Error("Giờ đóng cửa phải sau giờ mở cửa"));
-      }
-    }
-
-    return Promise.resolve();
-  };
-
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
@@ -192,6 +160,10 @@ const CreateClinic = () => {
           endTime: dayData.endTime
             ? dayjs(dayData.endTime).format("HH:mm")
             : "17:00",
+          breakTime: {
+            start: dayjs(dayData.breakTimeStart).format("HH:mm"),
+            end: dayjs(dayData.breakTimeEnd).format("HH:mm"),
+          },
         };
       });
 
@@ -243,12 +215,12 @@ const CreateClinic = () => {
 
   return (
     <Form
-      className="mt-4"
       form={form}
       layout="vertical"
       onFinish={handleSubmit}
       requiredMark={false}
     >
+      <div className="font-bold text-2xl mb-4">Tạo thông tin phòng khám</div>
       {/* Basic Info Card - Same as before */}
       <Card title="Thông tin cơ bản" className="mb-6 shadow-md">
         <Row gutter={16}>
@@ -261,9 +233,9 @@ const CreateClinic = () => {
               ]}
             >
               <Input
-                placeholder="VD: Phòng khám Da liễu"
+                placeholder="Nhập tên phòng khám"
                 className="rounded-lg"
-                size="large"
+                size="middle"
               />
             </Form.Item>
           </Col>
@@ -276,9 +248,9 @@ const CreateClinic = () => {
               ]}
             >
               <Input
-                placeholder="0123456789"
+                placeholder="Nhập số điện thoại"
                 className="rounded-lg"
-                size="large"
+                size="middle"
               />
             </Form.Item>
           </Col>
@@ -292,9 +264,9 @@ const CreateClinic = () => {
               ]}
             >
               <Input
-                placeholder="email@example.com"
+                placeholder="Nhập email"
                 className="rounded-lg"
-                size="large"
+                size="middle"
               />
             </Form.Item>
           </Col>
@@ -327,81 +299,7 @@ const CreateClinic = () => {
 
       {/* Working Hours Card - Updated with validation */}
       <Card title="Lịch làm việc" className="mb-6 shadow-md">
-        {WEEKDAYS.map((day) => (
-          <div
-            key={day.value}
-            className="mb-4 p-4 border rounded-lg bg-gray-50"
-          >
-            <Form.Item noStyle>
-              <Row gutter={16} align="middle">
-                <Col xs={24} md={6} className="mb-4 md:mb-0">
-                  <Form.Item
-                    name={["workingHours", day.value, "isClosed"]}
-                    valuePropName="checked"
-                  >
-                    <Checkbox className="font-medium">
-                      {day.label} (Ngày nghỉ)
-                    </Checkbox>
-                  </Form.Item>
-                </Col>
-
-                <Col xs={24} md={9}>
-                  <Form.Item
-                    label="Giờ mở cửa"
-                    name={["workingHours", day.value, "startTime"]}
-                    rules={[
-                      {
-                        validator: (rule, value) =>
-                          validateTimeRange(
-                            rule,
-                            value,
-                            null,
-                            day.value,
-                            "startTime"
-                          ),
-                      },
-                    ]}
-                  >
-                    <TimePicker
-                      locale={locale}
-                      format="HH:mm"
-                      size="large"
-                      className="w-full"
-                      minuteStep={15}
-                    />
-                  </Form.Item>
-                </Col>
-
-                <Col xs={24} md={9}>
-                  <Form.Item
-                    label="Giờ đóng cửa"
-                    name={["workingHours", day.value, "endTime"]}
-                    rules={[
-                      {
-                        validator: (rule, value) =>
-                          validateTimeRange(
-                            rule,
-                            value,
-                            null,
-                            day.value,
-                            "endTime"
-                          ),
-                      },
-                    ]}
-                  >
-                    <TimePicker
-                      locale={locale}
-                      format="HH:mm"
-                      size="large"
-                      className="w-full"
-                      minuteStep={15}
-                    />
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Form.Item>
-          </div>
-        ))}
+        <ScheduleSection />
       </Card>
 
       {/* Images Card - Same as before */}
@@ -441,7 +339,7 @@ const CreateClinic = () => {
                 },
                 {
                   validator: (_, fileList) => {
-                    if (fileList.length < 4) {
+                    if (fileList?.length < 4) {
                       return Promise.reject(
                         new Error("Vui lòng tải lên đủ 4 ảnh")
                       );

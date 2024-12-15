@@ -55,7 +55,12 @@ const ModelAccountAction = ({
       footer={null}
       width={600}
     >
-      <Form form={form} onFinish={handleSubmit} layout="vertical">
+      <Form
+        form={form}
+        onFinish={handleSubmit}
+        layout="vertical"
+        requiredMark={false}
+      >
         <div className="flex gap-4 items-center">
           <Form.Item
             className="flex-1"

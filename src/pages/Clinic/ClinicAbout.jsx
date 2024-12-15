@@ -141,7 +141,6 @@ const ClinicAbout = ({ clinic }) => {
           </div>
         </div>
 
-        {/* Đội ngũ bác sĩ */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6">
           <h3 className="text-xl font-bold text-gray-800 mb-4">
             Đội ngũ bác sĩ
@@ -162,7 +161,7 @@ const ClinicAbout = ({ clinic }) => {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <h4 className="font-semibold text-gray-800">
-                          {doctor.name}
+                          BS. {doctor.name}
                         </h4>
                         {doctor.isActive && (
                           <MdOutlineVerified color="#5ad7ff" size={18} />

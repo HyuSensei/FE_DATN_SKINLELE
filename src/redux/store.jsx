@@ -3,6 +3,7 @@ import reducer from "./reducer";
 import { clinicApi } from "./clinic/clinic.query";
 import { doctorApi } from "./doctor/doctor.query";
 import { bookingApi } from "./booking/booking.query";
+import { statisticalApi } from "./statistical/statistical.query";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     [clinicApi.reducerPath]: clinicApi.reducer,
     [doctorApi.reducerPath]: doctorApi.reducer,
     [bookingApi.reducerPath]: bookingApi.reducer,
+    [statisticalApi.reducerPath]: statisticalApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -17,6 +19,7 @@ export const store = configureStore({
     }).concat(
       doctorApi.middleware,
       clinicApi.middleware,
-      bookingApi.middleware
+      bookingApi.middleware,
+      statisticalApi.middleware
     ),
 });

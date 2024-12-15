@@ -82,7 +82,7 @@ const EditBanner = ({ banners = [], handleChangeEdit, refetch }) => {
   };
 
   return (
-    <Card title="Cập nhật banner phòng khám" className="shadow-lg rounded-xl">
+    <Card title="Cập nhật ảnh nền phòng khám" className="shadow-lg rounded-xl">
       <Form
         requiredMark={false}
         form={form}
