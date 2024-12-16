@@ -89,6 +89,16 @@ export const WEEKDAYS = [
   "Chủ nhật",
 ];
 
+export const WEEKDAY_MAP = {
+  0: "Chủ nhật",
+  1: "Thứ 2",
+  2: "Thứ 3",
+  3: "Thứ 4",
+  4: "Thứ 5",
+  5: "Thứ 6",
+  6: "Thứ 7",
+};
+
 export const DEFAULT_TIME = {
   start: "08:00",
   end: "17:00",

@@ -7,6 +7,8 @@ import {
   ClockCircleOutlined,
   DollarOutlined,
   StarOutlined,
+  PercentageOutlined,
+  LineChartOutlined,
 } from "@ant-design/icons";
 import {
   LineChart,
@@ -23,22 +25,102 @@ import locale from "antd/locale/vi_VN";
 import { useGetStatisticalDoctorQuery } from "@/redux/doctor/doctor.query";
 import { formatPrice } from "@/helpers/formatPrice";
 
-// Helper to define card title and icon
-const CardInfo = ({ icon, color, title, value }) => (
+// Stat Card Component - Improved layout
+const StatCard = ({ icon, title, value, subValue, color }) => (
   <Card
     bordered={false}
-    className="hover:shadow-lg transition-shadow duration-300"
-    style={{
-      background: `linear-gradient(135deg, ${color}22 0%, ${color}44 100%)`,
-      boxShadow: `0 8px 32px 0 rgba(31, 38, 135, 0.37)`,
+    className="h-full transition-all duration-300 hover:shadow-lg group"
+    bodyStyle={{
+      height: "100%",
+      padding: "24px",
+      background: `linear-gradient(135deg, ${color}08 0%, ${color}16 100%)`,
     }}
   >
-    <div className="flex items-center space-x-2">
-      {icon}
-      <h3 className={`text-sm font-medium text-${color}-600`}>{title}</h3>
+    <div className="flex flex-col h-full">
+      <div className={`p-2 rounded-lg bg-${color}-50 w-fit`}>{icon}</div>
+      <div className="flex flex-col justify-between flex-grow mt-4">
+        <div>
+          <h3 className="text-sm font-medium text-gray-600">{title}</h3>
+          <p className="mt-2 text-2xl font-bold text-gray-900">{value}</p>
+        </div>
+        {subValue && <p className="mt-2 text-sm text-gray-500">{subValue}</p>}
+      </div>
     </div>
-    <p className={`mt-4 text-3xl font-bold text-${color}-900`}>{value}</p>
   </Card>
+);
+
+const StatisticsChart = ({ data }) => (
+  <div className="mt-6 bg-white rounded-lg shadow-lg p-6">
+    <h3 className="text-lg font-semibold mb-4">Thống kê theo ngày</h3>
+    <div className="h-[400px] w-full">
+      <ResponsiveContainer>
+        <LineChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+          <XAxis
+            dataKey="day"
+            stroke="#64748b"
+            fontSize={12}
+            tickLine={false}
+          />
+          <YAxis
+            stroke="#64748b"
+            fontSize={12}
+            tickLine={false}
+            axisLine={false}
+          />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "rgba(255, 255, 255, 0.98)",
+              border: "none",
+              borderRadius: "8px",
+              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+            }}
+          />
+          <Legend />
+          <Line
+            type="monotone"
+            dataKey="totalSales"
+            stroke="#2464ec"
+            strokeWidth={2}
+            dot={{ stroke: "#2464ec", strokeWidth: 2, r: 4 }}
+            name="Doanh số"
+          />
+          <Line
+            type="monotone"
+            dataKey="revenue"
+            stroke="#10b981"
+            strokeWidth={2}
+            dot={{ stroke: "#10b981", strokeWidth: 2, r: 4 }}
+            name="Doanh thu thực"
+          />
+          <Line
+            type="monotone"
+            dataKey="completed"
+            stroke="#8b5cf6"
+            strokeWidth={2}
+            dot={{ stroke: "#8b5cf6", strokeWidth: 2, r: 4 }}
+            name="Hoàn thành"
+          />
+          <Line
+            type="monotone"
+            dataKey="pending"
+            stroke="#f59e0b"
+            strokeWidth={2}
+            dot={{ stroke: "#f59e0b", strokeWidth: 2, r: 4 }}
+            name="Chờ xử lý"
+          />
+          <Line
+            type="monotone"
+            dataKey="cancelled"
+            stroke="#ef4444"
+            strokeWidth={2}
+            dot={{ stroke: "#ef4444", strokeWidth: 2, r: 4 }}
+            name="Đã hủy"
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  </div>
 );
 
 export default function ManageStatistic({ activeMenu }) {
@@ -53,13 +135,6 @@ export default function ManageStatistic({ activeMenu }) {
     { skip: activeMenu !== "statistics" }
   );
 
-  const handleMonthChange = (date) => {
-    if (date) {
-      setMonth(date.month() + 1);
-      setYear(date.year());
-    }
-  };
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-[50vh]">
@@ -68,138 +143,117 @@ export default function ManageStatistic({ activeMenu }) {
     );
   }
 
-  if (error || !data) return <Empty description="Đã xảy ra lỗi" />;
+  if (error || !data) {
+    return (
+      <div className="flex justify-center items-center h-[50vh]">
+        <Empty description="Đã có lỗi xảy ra" className="text-gray-500" />
+      </div>
+    );
+  }
 
   const { averageRating, totalReviews, stats, totalStats } = data;
 
+  // Group stats for better layout
+  const statGroups = [
+    // Top row - Key metrics
+    [
+      {
+        icon: <DollarOutlined className="text-emerald-600 text-xl" />,
+        title: "Doanh thu thực",
+        value: `${formatPrice(totalStats.revenue, true)} VND`,
+        subValue: `${totalStats.revenueRate} Tỷ lệ chuyển đổi`,
+        color: "emerald",
+      },
+      {
+        icon: <LineChartOutlined className="text-violet-600 text-xl" />,
+        title: "Doanh số",
+        value: `${formatPrice(totalStats.totalSales, true)} VND`,
+        color: "violet",
+      },
+    ],
+    // Middle row - Booking stats
+    [
+      {
+        icon: <CalendarOutlined className="text-blue-600 text-xl" />,
+        title: "Tổng lịch hẹn",
+        value: totalStats.totalBookings,
+        subValue: `${totalStats.conversionRate} Tỷ lệ hoàn thành`,
+        color: "blue",
+      },
+      {
+        icon: <CheckOutlined className="text-green-600 text-xl" />,
+        title: "Hoàn thành",
+        value: totalStats.completed,
+        color: "green",
+      },
+    ],
+    // Bottom row - Additional metrics
+    [
+      {
+        icon: <ClockCircleOutlined className="text-amber-600 text-xl" />,
+        title: "Chờ xử lý",
+        value: totalStats.pending + totalStats.confirmed,
+        subValue: `${totalStats.pending} chờ và ${totalStats.confirmed} xác nhận`,
+        color: "amber",
+      },
+      {
+        icon: <CloseOutlined className="text-red-600 text-xl" />,
+        title: "Đã hủy",
+        value: totalStats.cancelled,
+        color: "red",
+      },
+    ],
+    // Last row - Performance metrics
+    [
+      {
+        icon: <PercentageOutlined className="text-purple-600 text-xl" />,
+        title: "Tỷ lệ chuyển đổi",
+        value: totalStats.conversionRate,
+        color: "purple",
+      },
+      {
+        icon: <StarOutlined className="text-yellow-600 text-xl" />,
+        title: "Đánh giá",
+        value: `${averageRating} /5`,
+        subValue: `${totalReviews} lượt đánh giá`,
+        color: "yellow",
+      },
+    ],
+  ];
+
   return (
     <div className="min-h-screen">
-      <div className="flex justify-between items-center flex-wrap space-y-6 mb-6">
-        <div className="text-sm text-gray-500">
-          Thống kê cho chi tiết các hoạt động đặt lịch của bác sĩ
-        </div>
+      <div className="mb-6 flex justify-between items-center">
+        <p className="text-sm text-gray-500 mt-1">
+          Chi tiết hoạt động đặt lịch và doanh thu trong tháng
+        </p>
         <DatePicker
           locale={locale}
           picker="month"
           value={dayjs(`${year}-${month}`)}
-          onChange={handleMonthChange}
+          onChange={(date) => {
+            if (date) {
+              setMonth(date.month() + 1);
+              setYear(date.year());
+            }
+          }}
           format="MM/YYYY"
           allowClear={false}
+          className="border-2 hover:border-blue-500 transition-colors"
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Card Component */}
-        {[
-          {
-            icon: <CalendarOutlined className="text-xl text-blue-600" />,
-            color: "#3063d5",
-            title: "Tổng lượt đặt",
-            value: totalStats.totalBookings,
-          },
-          {
-            icon: <CheckOutlined className="text-xl text-green-600" />,
-            color: "#30a978",
-            title: "Đã hoàn thành",
-            value: totalStats.completed,
-          },
-          {
-            icon: <CloseOutlined className="text-xl text-red-600" />,
-            color: "#c13338",
-            title: "Đã hủy",
-            value: totalStats.cancelled,
-          },
-          {
-            icon: <ClockCircleOutlined className="text-xl text-orange-600" />,
-            color: "#d96c2e",
-            title: "Đang chờ",
-            value: totalStats.pending,
-          },
-          {
-            icon: <DollarOutlined className="text-xl text-violet-600" />,
-            color: "#4d1d9e",
-            title: "Doanh thu",
-            value: `${formatPrice(totalStats.revenue)} VND`,
-          },
-          {
-            icon: <StarOutlined className="text-xl text-yellow-600" />,
-            color: "#733d12",
-            title: "Đánh giá trung bình",
-            value: `${averageRating.toFixed(1)} / 5 (${totalReviews} đánh giá)`,
-          },
-        ].map((card, index) => (
-          <CardInfo
-            key={index}
-            icon={card.icon}
-            color={card.color}
-            title={card.title}
-            value={card.value}
-          />
+      <div className="grid gap-6">
+        {statGroups.map((group, groupIndex) => (
+          <div key={groupIndex} className="grid md:grid-cols-2 gap-6">
+            {group.map((stat, statIndex) => (
+              <StatCard key={`${groupIndex}-${statIndex}`} {...stat} />
+            ))}
+          </div>
         ))}
       </div>
 
-      <div className="text-xl mt-12 font-bold text-gray-700 mb-6 uppercase">
-        Thống Kê Lịch Khám
-      </div>
-      <Card
-        title={
-          <div className="text-xl font-semibold flex items-center gap-2">
-            <span className="px-4 py-1 rounded-lg bg-gradient-to-r from-blue-100 to-purple-100 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] border border-blue-200">
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text font-bold">
-                Tháng {month}
-              </span>
-            </span>
-          </div>
-        }
-        bordered={false}
-      >
-        <div className="h-[400px] w-full">
-          <ResponsiveContainer width="100%">
-            <LineChart data={stats}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="day" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="totalBookings"
-                stroke="#2464ec"
-                dot={{ stroke: "#2464ec", strokeWidth: 4 }}
-                name="🚀 Tổng"
-              />
-              <Line
-                type="monotone"
-                dataKey="pending"
-                stroke="#fdcb6e"
-                dot={{ stroke: "#fdcb6e", strokeWidth: 4 }}
-                name="🕒 Đang chờ"
-              />
-              <Line
-                type="monotone"
-                dataKey="cancelled"
-                stroke="#d63031"
-                dot={{ stroke: "#d63031", strokeWidth: 4 }}
-                name="❌ Đã hủy"
-              />
-              <Line
-                type="monotone"
-                dataKey="confirmed"
-                stroke="#0984e3"
-                dot={{ stroke: "#0984e3", strokeWidth: 4 }}
-                name="📝 Đã xác nhận"
-              />
-              <Line
-                type="monotone"
-                dataKey="completed"
-                stroke="#8dd566"
-                dot={{ stroke: "#8dd566", strokeWidth: 4 }}
-                name="✔️ Đã hoàn thành"
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </Card>
+      <StatisticsChart data={stats} />
     </div>
   );
 }

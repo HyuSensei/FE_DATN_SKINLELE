@@ -63,7 +63,7 @@ export const doctorApi = createApi({
     getScheduleBookingDoctor: builder.query({
       query: ({ date = "", doctorId }) => {
         return {
-          url: `/doctors/schedule/${doctorId}?date=${date}`,
+          url: `/doctors/schedule-booking/${doctorId}?date=${date}`,
           method: "GET",
         };
       },
