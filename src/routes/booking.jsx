@@ -54,7 +54,7 @@ const routes = [
   {
     path: "/doctor-owner",
     element: DoctorOwner,
-    title: "SkinLeLeClinic - Quản lý thông tin bác sĩ hợp tác",
+    title: "SkinLeLeClinic - Quản lý thông tin bác sĩ phòng khám",
     isDoctor: true,
   },
   {

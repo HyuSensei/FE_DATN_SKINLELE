@@ -21,6 +21,7 @@ import SkinLeLeEditor from "@/components/SkinLeLeEditor";
 import CustomButton from "@/components/CustomButton";
 import { updateDoctorInfor } from "@/redux/doctor/doctor.thunk";
 import { useScroll } from "@/components/context/ScrollProvider";
+import { DURATION_OPTIONS } from "@/const/dataDefault";
 
 const EditInfor = ({ setIsEdit }) => {
   const dispatch = useDispatch();
@@ -40,6 +41,7 @@ const EditInfor = ({ setIsEdit }) => {
           url: doctorInfo.avatar.url,
           publicId: doctorInfo.avatar.publicId,
         },
+        duration: doctorInfo.duration,
         about: doctorInfo.about,
         fees: doctorInfo.fees,
         specialty: doctorInfo.specialty,
@@ -229,7 +231,7 @@ const EditInfor = ({ setIsEdit }) => {
       {/* Professional Info */}
       <Card title="Thông tin chuyên môn" className="mb-6 shadow-md">
         <Row gutter={16}>
-          <Col xs={24} md={8}>
+          <Col xs={24} md={6}>
             <Form.Item
               name="specialty"
               label="Chuyên khoa"
@@ -250,7 +252,7 @@ const EditInfor = ({ setIsEdit }) => {
               </Select>
             </Form.Item>
           </Col>
-          <Col xs={24} md={8}>
+          <Col xs={24} md={6}>
             <Form.Item
               name="experience"
               label="Số năm kinh nghiệm"
@@ -261,7 +263,7 @@ const EditInfor = ({ setIsEdit }) => {
               <InputNumber min={0} className="w-full rounded-lg" size="large" />
             </Form.Item>
           </Col>
-          <Col xs={24} md={8}>
+          <Col xs={24} md={6}>
             <Form.Item
               name="fees"
               label="Phí khám"
@@ -276,6 +278,25 @@ const EditInfor = ({ setIsEdit }) => {
                 parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
                 className="w-full rounded-lg"
                 size="large"
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={6}>
+            <Form.Item
+              name="duration"
+              label="Thời gian khám"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn thời gian khám",
+                },
+              ]}
+            >
+              <Select
+               value={doctorInfo.duration}
+                size="large"
+                options={DURATION_OPTIONS}
+                placeholder="Chọn thời gian khám"
               />
             </Form.Item>
           </Col>

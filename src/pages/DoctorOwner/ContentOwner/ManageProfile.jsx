@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import EditInfor from "./Action/EditInfor";
 import CustomButton from "@/components/CustomButton";
 import { GoShieldLock } from "react-icons/go";
+import { GiDuration } from "react-icons/gi";
 
 const ManageProfile = () => {
   const { doctorInfo } = useSelector((state) => state.auth);
@@ -26,6 +27,7 @@ const ManageProfile = () => {
     specialty,
     phone,
     experience,
+    duration,
     clinic = {},
   } = doctorInfo;
 
@@ -45,12 +47,15 @@ const ManageProfile = () => {
                 <div className="flex-1">
                   <h2 className="text-2xl font-bold text-gray-800">{name}</h2>
                   <Badge color="blue" text={specialty} className="mt-2" />
-                  <div className="flex flex-wrap gap-2 mt-3">
+                  <div className="flex flex-wrap gap-2 mt-3 w-full text-base">
                     <Tag icon={<ClockCircleOutlined />} color="blue">
                       {experience} năm kinh nghiệm
                     </Tag>
                     <Tag icon={<DollarOutlined />} color="green">
                       {formatPrice(fees)} VND
+                    </Tag>
+                    <Tag  color="yellow">
+                     Thời gian: {duration} phút
                     </Tag>
                   </div>
                   <div className="mt-4 space-y-2">

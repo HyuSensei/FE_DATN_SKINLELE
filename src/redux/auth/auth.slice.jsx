@@ -55,6 +55,7 @@ const initialState = {
     experience: 0,
     slug: "",
     clinic: {},
+    duration:0,
     schedule: [],
     holidays: [],
   },

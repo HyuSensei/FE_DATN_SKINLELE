@@ -77,9 +77,8 @@ const ManageSchedule = () => {
                   <IoCloseCircleOutline className="w-5 h-5 text-gray-400" />
                 )}
                 <span
-                  className={`text-sm ${
-                    slot.isActive ? "text-green-600" : "text-gray-500"
-                  }`}
+                  className={`text-sm ${slot.isActive ? "text-green-600" : "text-gray-500"
+                    }`}
                 >
                   {slot.isActive ? "Đang hoạt động" : "Không hoạt động"}
                 </span>
@@ -138,8 +137,8 @@ const ManageSchedule = () => {
       moment(h).startOf("day").isSame(moment(date).startOf("day"))
     )
       ? holidays.filter(
-          (h) => !moment(h).startOf("day").isSame(moment(date).startOf("day"))
-        )
+        (h) => !moment(h).startOf("day").isSame(moment(date).startOf("day"))
+      )
       : [...holidays, date];
 
     const res = await dispatch(
@@ -231,16 +230,18 @@ const ManageSchedule = () => {
           </Select>
         </div>
 
-        <div className="grid grid-cols-7 gap-2 text-center font-medium text-gray-600 mb-4">
+
+        <div className="grid grid-cols-7 gap-2 text-center mb-4">
           {daysOfWeek.map((day) => (
             <div
               key={day}
-              className="text-xs md:text-sm text-center py-2 rounded-full font-medium bg-[#b7dce7] text-white"
+              className="text-xs md:text-sm py-2 rounded-lg bg-blue-50 text-blue-600 font-medium"
             >
               {day}
             </div>
           ))}
         </div>
+
         <div className="grid grid-cols-7 gap-2">
           {Array.from({ length: startOfMonth }).map((_, i) => (
             <div key={`empty-${i}`} className="h-14"></div>
@@ -253,11 +254,10 @@ const ManageSchedule = () => {
                 onClick={() => handleUpdateHolidays(date)}
                 key={date}
                 className={`h-14 flex flex-col items-center justify-center rounded-lg border-2 transition-all shadow-md cursor-pointer
-        ${
-          holiday
-            ? "border-red-300 bg-red-50 text-red-800"
-            : "border-gray-200 bg-gray-100 text-gray-800"
-        } ${isPast ? "opacity-50" : "hover:border-blue-500 hover:shadow-md"}`}
+        ${holiday
+                    ? "border-red-300 bg-red-50 text-red-800"
+                    : "bg-white hover:bg-blue-50 border border-gray-200"
+                  } ${isPast ? "opacity-50" : "hover:border-rose-400 hover:bg-rose-100 hover:shadow-md"}`}
               >
                 <span className="text-xs font-medium text-gray-500">
                   {dayjs(date).format("ddd")}

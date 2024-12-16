@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Empty, Card, Descriptions, Tag, Timeline, Carousel } from "antd";
+import React, { useEffect, useState } from "react";
+import { Empty, Card, Descriptions, Tag, Timeline, Carousel, Select } from "antd";
 import { IoMdMail, IoMdCall, IoMdCreate, IoMdAdd } from "react-icons/io";
 import { IoBusiness, IoLocationSharp } from "react-icons/io5";
 import CustomButton from "@/components/CustomButton";
@@ -10,8 +10,14 @@ import EditBanner from "./Edit/EditBanner";
 import EditInfo from "./Edit/EditInfor";
 import EditImages from "./Edit/EditImages";
 import EditSchedule from "./Edit/EditSchedule";
+import dayjs from "dayjs";
+import "dayjs/locale/vi";
+import { updateClinicByOwner } from "@/redux/clinic/clinic.thunk";
+import { useDispatch } from "react-redux";
+import moment from "@utils/monentTz";
 
 const ClinicInfo = ({ setAction }) => {
+  const dispatch = useDispatch()
   const {
     data: clinic,
     isLoading,
@@ -25,6 +31,37 @@ const ClinicInfo = ({ setAction }) => {
     schedule: false,
     images: false,
   });
+  const [currentDate, setCurrentDate] = useState(dayjs().locale("vi"));
+
+  useEffect(() => {
+    dayjs.locale("vi");
+    setCurrentDate(dayjs().locale("vi"));
+  }, []);
+
+  const months = dayjs
+    .months()
+    .map((month) => month.charAt(0).toUpperCase() + month.slice(1));
+  const years = Array.from({ length: 21 }, (_, i) => dayjs().year() + i);
+  const daysOfWeek = dayjs.weekdaysShort();
+  const today = dayjs();
+
+  const daysInMonth = currentDate.daysInMonth();
+  const startOfMonth = currentDate.startOf("month").day();
+  const monthDays = Array.from({ length: daysInMonth }, (_, i) =>
+    currentDate.date(i + 1).format("YYYY-MM-DD")
+  );
+
+  const handleMonthChange = (value) => setCurrentDate(currentDate.month(value));
+  const handleYearChange = (value) => setCurrentDate(currentDate.year(value));
+
+  const holidays = clinic ? clinic.holidays : []
+
+  const isHoliday = (date) => {
+    return holidays.some(
+      (holiday) =>
+        dayjs(holiday).format("YYYY-MM-DD") === dayjs(date).format("YYYY-MM-DD")
+    );
+  };
 
   const handleChangeEdit = (key, value) => {
     setIsEdit((prev) => ({
@@ -68,6 +105,25 @@ const ClinicInfo = ({ setAction }) => {
       Chỉnh sửa
     </CustomButton>
   );
+
+  const handleUpdateHolidays = async (date) => {
+    const newHolidays = holidays.some((h) =>
+      moment(h).startOf("day").isSame(moment(date).startOf("day"))
+    )
+      ? holidays.filter(
+        (h) => !moment(h).startOf("day").isSame(moment(date).startOf("day"))
+      )
+      : [...holidays, date];
+
+    const res = await dispatch(
+      updateClinicByOwner({ holidays: newHolidays })
+    ).unwrap();
+
+    if (res.success) {
+      refetch()
+    }
+
+  };
 
   return (
     <div className="p-6 space-y-6">
@@ -141,7 +197,7 @@ const ClinicInfo = ({ setAction }) => {
           {!clinic.banners.length ? (
             <Empty />
           ) : (
-            <Carousel autoplay dots={false} arrows={true}>
+            <Carousel autoplay dots={false} arrows>
               {clinic.banners.map((banner, index) => (
                 <div key={index} className="max-h-96">
                   <img
@@ -257,6 +313,76 @@ const ClinicInfo = ({ setAction }) => {
               ),
             }))}
           />
+          {/* Calendar Section */}
+          <div className="mb-4">
+            <h3 className="text-lg font-medium">Ngày nghỉ</h3>
+            <div className="text-sm text-gray-400">💡Thông tin ngày nghỉ được đánh dấu đỏ</div>
+          </div>
+          <div className="flex justify-between items-center mb-6 flex-wrap gap-2">
+            <Select
+              className="w-full lg:w-36"
+              size="middle"
+              value={currentDate.month()}
+              onChange={handleMonthChange}
+            >
+              {months.map((month, index) => (
+                <Select.Option key={index} value={index}>
+                  {month}
+                </Select.Option>
+              ))}
+            </Select>
+            <Select
+              className="w-full lg:w-36"
+              size="middle"
+              value={currentDate.year()}
+              onChange={handleYearChange}
+            >
+              {years.map((year) => (
+                <Select.Option key={year} value={year}>
+                  {year}
+                </Select.Option>
+              ))}
+            </Select>
+          </div>
+
+          <div className="grid grid-cols-7 gap-2 text-center mb-4">
+            {daysOfWeek.map((day) => (
+              <div
+                key={day}
+                className="text-xs md:text-sm py-2 rounded-lg bg-blue-50 text-blue-600 font-medium"
+              >
+                {day}
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-7 gap-2">
+            {Array.from({ length: startOfMonth }).map((_, i) => (
+              <div key={`empty-${i}`} className="h-14"></div>
+            ))}
+            {monthDays.map((date) => {
+              const isPast = dayjs(date).isBefore(today, "day");
+              const holiday = isHoliday(date);
+              return (
+                <div
+                  onClick={() => handleUpdateHolidays(date)}
+                  key={date}
+                  className={`h-14 flex flex-col items-center justify-center rounded-lg border-2 transition-all shadow-md cursor-pointer
+                    ${holiday
+                      ? "border-red-300 bg-red-50 text-red-800"
+                      : "bg-white hover:bg-blue-50 border border-gray-200"
+                    } ${isPast ? "opacity-50" : "hover:border-rose-400 hover:bg-rose-100 hover:shadow-md"}`}
+                >
+                  <span className="text-xs font-medium text-gray-500">
+                    {dayjs(date).format("ddd")}
+                  </span>
+                  <span className="text-lg font-semibold">
+                    {dayjs(date).date()}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </Card>
       )}
       {/* Gallery */}

@@ -11,6 +11,7 @@ import { useDispatch } from "react-redux";
 import { updateClinicByOwner } from "@/redux/clinic/clinic.thunk";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useScroll } from "@/components/context/ScrollProvider";
+import CustomButton from "@/components/CustomButton";
 
 const EditBanner = ({ banners = [], handleChangeEdit, refetch }) => {
   const { scrollToTop } = useScroll();
@@ -120,28 +121,18 @@ const EditBanner = ({ banners = [], handleChangeEdit, refetch }) => {
         </Form.Item>
 
         <div className="flex gap-3 justify-end pt-4 border-t">
-          <Button
-            icon={<IoMdArrowRoundBack className="text-lg" />}
+          <CustomButton icon={<IoMdArrowRoundBack className="text-lg" />}
             onClick={() => {
               setBannersUpload([]);
               handleChangeEdit("banners", false);
-            }}
-          >
-            Đóng
-          </Button>
-
-          <Button
-            type="primary"
-            htmlType="submit"
-            loading={loading}
+            }}>Đóng</CustomButton>
+          <CustomButton
             icon={<MdSave className="text-lg" />}
-            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white 
-            shadow-md hover:shadow-lg hover:shadow-blue-200/50 transition-all duration-200
-            disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:shadow-none
-            flex items-center gap-2"
+            type="submit"
+            variant="primary"
           >
             {loading ? "Đang lưu..." : "Lưu thay đổi"}
-          </Button>
+          </CustomButton>
         </div>
       </Form>
     </Card>
