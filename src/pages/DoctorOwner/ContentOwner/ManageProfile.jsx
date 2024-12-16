@@ -3,8 +3,6 @@ import { Tag, Badge, Card } from "antd";
 import {
   PhoneOutlined,
   MailOutlined,
-  ClockCircleOutlined,
-  DollarOutlined,
   EnvironmentOutlined,
 } from "@ant-design/icons";
 import { formatPrice } from "@/helpers/formatPrice";
@@ -13,11 +11,10 @@ import { useSelector } from "react-redux";
 import EditInfor from "./Action/EditInfor";
 import CustomButton from "@/components/CustomButton";
 import { GoShieldLock } from "react-icons/go";
-import { GiDuration } from "react-icons/gi";
 
 const ManageProfile = () => {
   const { doctorInfo } = useSelector((state) => state.auth);
-  const [isEdit, setIsEdit] = useState(false)
+  const [isEdit, setIsEdit] = useState(false);
   const {
     name,
     email,
@@ -34,59 +31,62 @@ const ManageProfile = () => {
   return (
     <div className="space-y-6 mt-4">
       {/* Profile Info */}
-      {
-        !isEdit ? (
-          <>
-            <Card className="shadow-sm">
-              <div className="flex flex-col md:flex-row gap-6">
-                <img
-                  src={avatar.url}
-                  alt={name}
-                  className="w-32 h-32 rounded-full object-cover shadow-md border-4 border-[#e6f0ff]"
-                />
-                <div className="flex-1">
-                  <h2 className="text-2xl font-bold text-gray-800">{name}</h2>
-                  <Badge color="blue" text={specialty} className="mt-2" />
-                  <div className="flex flex-wrap gap-2 mt-3 w-full text-base">
-                    <Tag icon={<ClockCircleOutlined />} color="blue">
-                      {experience} năm kinh nghiệm
-                    </Tag>
-                    <Tag icon={<DollarOutlined />} color="green">
-                      {formatPrice(fees)} VND
-                    </Tag>
-                    <Tag  color="yellow">
-                     Thời gian: {duration} phút
-                    </Tag>
+      {!isEdit ? (
+        <>
+          <Card className="shadow-sm">
+            <div className="flex flex-col md:flex-row gap-6">
+              <img
+                src={avatar.url}
+                alt={name}
+                className="w-32 h-32 rounded-full object-cover shadow-md border-4 border-[#e6f0ff]"
+              />
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold text-gray-800">{name}</h2>
+                <Badge color="blue" text={specialty} className="mt-2" />
+                <div className="flex flex-wrap gap-2 mt-3 w-full">
+                  <Tag color="blue" className="text-sm rounded-full p-2">
+                    {experience} năm kinh nghiệm
+                  </Tag>
+                  <Tag color="green" className="text-sm rounded-full p-2">
+                    Giá khám: {formatPrice(fees)} VND
+                  </Tag>
+                  <Tag color="yellow" className="text-sm rounded-full p-2">
+                    Thời gian: {duration} phút
+                  </Tag>
+                </div>
+                <div className="mt-4 space-y-2">
+                  <div className="flex items-center gap-3 text-gray-700">
+                    <PhoneOutlined className="text-blue-500" />
+                    <span>{phone}</span>
                   </div>
-                  <div className="mt-4 space-y-2">
-                    <div className="flex items-center gap-3 text-gray-700">
-                      <PhoneOutlined className="text-blue-500" />
-                      <span>{phone}</span>
-                    </div>
-                    <div className="flex items-center gap-3 text-gray-700">
-                      <MailOutlined className="text-blue-500" />
-                      <span>{email}</span>
-                    </div>
+                  <div className="flex items-center gap-3 text-gray-700">
+                    <MailOutlined className="text-blue-500" />
+                    <span>{email}</span>
                   </div>
                 </div>
               </div>
-              <div className="flex justify-end">
-                <CustomButton onClick={() => setIsEdit(true)} icon={<GoShieldLock size={20} />}>Chỉnh sửa và bảo mật</CustomButton>
-              </div>
-            </Card>
-            {/* About */}
-            <Card className="shadow-sm">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">Giới thiệu</h3>
-              <div
-                className="text-gray-600 leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: about }}
-              />
-            </Card>
-          </>
-        ) : (
-          <EditInfor {...{ setIsEdit }} />
-        )
-      }
+            </div>
+            <div className="flex justify-end">
+              <CustomButton
+                onClick={() => setIsEdit(true)}
+                icon={<GoShieldLock size={20} />}
+              >
+                Chỉnh sửa và bảo mật
+              </CustomButton>
+            </div>
+          </Card>
+          {/* About */}
+          <Card className="shadow-sm">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">Giới thiệu</h3>
+            <div
+              className="text-gray-600 leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: about }}
+            />
+          </Card>
+        </>
+      ) : (
+        <EditInfor {...{ setIsEdit }} />
+      )}
 
       {/* Clinic Info */}
       {!isEmpty(clinic) && (

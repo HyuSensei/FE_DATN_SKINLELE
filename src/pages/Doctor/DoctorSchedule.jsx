@@ -160,7 +160,10 @@ const DoctorSchedule = ({ doctor }) => {
         })}
       </div>
       {!timeSlots.length && (
-        <Empty description={data.message} className="mt-10" />
+        <Empty
+          description={data.message || "Chưa có thông tin lịch khám !"}
+          className="mt-10"
+        />
       )}
       {timeSlots.length > 0 && (
         <div className="mt-6">

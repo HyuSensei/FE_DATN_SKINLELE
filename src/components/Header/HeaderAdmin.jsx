@@ -52,7 +52,7 @@ const HeaderAdmin = ({ collapsed, setCollapsed }) => {
   ];
 
   return (
-    <Header className="bg-white p-0 flex justify-between items-center shadow-md px-8">
+    <Header className="bg-white flex justify-between items-center shadow-md px-8">
       <div className="flex items-center">
         <Button
           type="text"

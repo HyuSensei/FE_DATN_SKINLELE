@@ -6,20 +6,19 @@ import React, { useEffect, useState } from "react";
 import { RiHeartFill, RiStarFill } from "react-icons/ri";
 
 const ClinicReview = ({ clinic }) => {
-  const [params, setParams] = useState({
+  const [paginate, setPaginate] = useState({
     page: 1,
     pageSize: 10,
   });
-  const [hover, setHover] = useState(false);
 
   const { data, isLoading, error } = useGetReviewsClinicQuery(
-    { ...params, clinicId: clinic?._id },
+    { ...paginate, clinicId: clinic?._id },
     { skip: !clinic }
   );
 
   useEffect(() => {
     if (data) {
-      setParams((prev) => ({
+      setPaginate((prev) => ({
         ...prev,
         page: data.pagination.page,
         pageSize: data.pagination.pageSize,
@@ -33,41 +32,36 @@ const ClinicReview = ({ clinic }) => {
 
   if (isLoading) return <LoadingContent />;
 
-  if (!data) {
+  if (!data && !isLoading) {
     return <EmptyData description="Không có danh sách đánh giá" />;
   }
 
-  const { reviews, hasMore, statistics } = data;
+  const { reviews, hasMore, stats } = data;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-6">
       <div className="lg:col-span-2">
         {/* Rating Summary */}
-        <Card
-          hoverable
-          className="mb-8 transition-shadow duration-300"
-          onMouseEnter={() => setHover(true)}
-          onMouseLeave={() => setHover(false)}
-        >
+        <Card hoverable className="mb-8 transition-shadow duration-300">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-8">
             <div className="text-center">
               <div className="text-5xl font-bold text-gray-800 mb-2">
-                {Number(statistics.averageRating).toFixed(1)}
+                {Number(stats.averageRating).toFixed(1)}
               </div>
               <Rate
                 disabled
                 allowHalf
-                value={statistics.averageRating}
+                value={stats.averageRating}
                 className="text-2xl"
               />
               <div className="text-gray-500 mt-2">
-                {statistics.totalReviews} đánh giá
+                {stats.totalReviews} đánh giá
               </div>
             </div>
 
             <div className="flex-1 w-full">
               <div className="space-y-4">
-                {Object.entries(statistics.ratingDistribution)
+                {Object.entries(stats.ratingDistribution)
                   .reverse()
                   .map(([rating, count]) => (
                     <div key={rating} className="flex items-center gap-4">
@@ -77,7 +71,7 @@ const ClinicReview = ({ clinic }) => {
                       <div className="flex-1">
                         <Progress
                           percent={
-                            (count / Math.max(statistics.totalReviews, 1)) * 100
+                            (count / Math.max(stats.totalReviews, 1)) * 100
                           }
                           showInfo={false}
                           strokeColor={{
@@ -86,7 +80,6 @@ const ClinicReview = ({ clinic }) => {
                           }}
                           trailColor="#f3f4f6"
                           size={10}
-                          className={`${hover ? "transform duration-300" : ""}`}
                         />
                       </div>
                       <div className="w-12 text-right text-gray-500">

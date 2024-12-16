@@ -50,7 +50,7 @@ const MenuContent = ({ activeMenu, onMenuSelect }) => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.3 }}
-      className="flex flex-col gap-2 py-3"
+      className="flex flex-col gap-2 py-3 h-full"
     >
       <MenuItem
         icon={RiDashboard3Line}

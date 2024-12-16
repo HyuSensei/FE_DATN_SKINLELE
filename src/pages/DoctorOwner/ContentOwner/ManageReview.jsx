@@ -1,217 +1,247 @@
-import React, { useState } from "react";
-import { Card, Rate, Input, Statistic, Select, Table } from "antd";
-import { StarFilled, MessageOutlined } from "@ant-design/icons";
-import { useDispatch, useSelector } from "react-redux";
-import { useGetAllReviewsQuery } from "@/redux/doctor/doctor.query";
+import React, { useCallback, useEffect, useState } from "react";
+import { Input, Select, Table, Avatar, Rate, Tag, Tooltip } from "antd";
+import {
+  StarFilled,
+  MessageOutlined,
+  UserOutlined,
+  CalendarOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
+import { useSelector } from "react-redux";
+import { useGetAllReviewsByDoctorQuery } from "@/redux/doctor/doctor.query";
+import { debounce } from "lodash";
+import dayjs from "dayjs";
+
+const StatCard = ({ icon: Icon, title, value, subtitle, gradient }) => (
+  <div className={`relative overflow-hidden rounded-2xl p-6 ${gradient}`}>
+    <div className="absolute top-0 right-0 w-32 h-32 transform translate-x-16 -translate-y-8">
+      <Icon className="w-full h-full opacity-10 text-white" />
+    </div>
+    <div className="relative z-10">
+      <p className="text-xl font-medium text-white/80">{title}</p>
+      <h3 className="text-3xl font-bold text-white mt-2 mb-1">{value}</h3>
+      {subtitle && <p className="text-sm text-white/70">{subtitle}</p>}
+    </div>
+  </div>
+);
+
+const RatingBar = ({ rating, count, total, maxWidth = 100 }) => (
+  <div className="flex items-center gap-3 group">
+    <div className="flex items-center gap-1 min-w-[50px]">
+      <span className="text-white font-medium text-base">{rating}</span>
+      <StarFilled className="text-yellow-400 text-xl" />
+    </div>
+    <div className="flex-1 relative h-3 rounded-full bg-gray-100 overflow-hidden">
+      <div
+        className="absolute left-0 top-0 h-full rounded-full transition-all duration-500 group-hover:opacity-90"
+        style={{
+          width: `${(count / total) * maxWidth}%`,
+          background: `linear-gradient(90deg, rgb(251, 191, 36) ${
+            rating * 20
+          }%, rgb(251, 146, 60))`,
+        }}
+      />
+    </div>
+    <span className="text-base font-medium text-white min-w-[40px]">
+      {count || 0}
+    </span>
+  </div>
+);
 
 const ManageReview = () => {
-  const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
-  const [rate, setRate] = useState("");
   const { _id } = useSelector((state) => state.auth.doctorInfo);
   const [paginate, setPaginate] = useState({
     page: 1,
     pageSize: 10,
-    totalPage: 0,
     totalItems: 0,
   });
-
-  const { data, isLoading, error } = useGetAllReviewsQuery({
-    doctor: _id,
-    page: paginate.page,
-    pageSize: paginate.pageSize,
-    rate,
+  const [filters, setFilters] = useState({
+    search: "",
+    rate: "",
   });
 
-  // Mock data - thay thế bằng API data
-  const reviewStats = {
-    totalReviews: 125,
-    averageRating: 4.8,
-    ratingCounts: {
-      5: 80,
-      4: 30,
-      3: 10,
-      2: 3,
-      1: 2,
+  const { data, isLoading } = useGetAllReviewsByDoctorQuery(
+    {
+      doctor: _id,
+      page: paginate.page,
+      pageSize: paginate.pageSize,
+      ...filters,
     },
-  };
+    { skip: !_id }
+  );
 
-  const reviews = [
-    {
-      id: 1,
-      user: {
-        name: "Nguyễn Văn A",
-        avatar: null,
-      },
-      booking: {
-        date: "2024-03-15",
-      },
-      rate: 5,
-      content:
-        "Bác sĩ rất tận tâm và chuyên nghiệp. Tư vấn chi tiết và rõ ràng về tình trạng bệnh. Chắc chắn sẽ quay lại khám trong những lần tới.",
-      createdAt: "2024-03-16T08:00:00Z",
-    },
-    {
-      id: 2,
-      user: {
-        name: "Trần Thị B",
-        avatar: null,
-      },
-      booking: {
-        date: "2024-03-14",
-      },
-      rate: 4,
-      content:
-        "Được tư vấn rất chi tiết về tình trạng bệnh. Bác sĩ nhiệt tình và thân thiện.",
-      createdAt: "2024-03-15T09:00:00Z",
-    },
-  ];
+  useEffect(() => {
+    if (data?.data?.pagination) {
+      setPaginate((prev) => ({
+        ...prev,
+        ...data.data.pagination,
+      }));
+    }
+  }, [data]);
+
+  const { stats = {}, reviews = [] } = data?.data || {};
+  const {
+    totalReviews = 0,
+    averageRating = 0,
+    ratingDistribution = {},
+  } = stats;
 
   const columns = [
     {
       title: "STT",
       key: "index",
-      width: 60,
-      render: (_, __, index) => (page - 1) * pageSize + index + 1,
+      width: 80,
+      align: "center",
+      render: (_, __, index) => (
+        <span className="text-gray-600 font-medium">
+          {(paginate.page - 1) * paginate.pageSize + index + 1}
+        </span>
+      ),
     },
     {
       title: "Thông tin khách hàng",
       key: "user",
-      render: (record) => <></>,
+      render: (record) => (
+        <div className="flex items-center gap-4">
+          <Avatar
+            src={record.user?.avatar?.url}
+            icon={<UserOutlined />}
+            size={45}
+            className="border-2 border-white shadow-md"
+          />
+          <div>
+            <div className="font-semibold text-gray-800">
+              {record.user?.name}
+            </div>
+            <div className="text-sm text-gray-500 mt-0.5">
+              {record.user?.email}
+            </div>
+          </div>
+        </div>
+      ),
     },
     {
       title: "Đánh giá",
-      key: "rate",
-      render: (record) => <></>,
+      key: "review",
+      render: (record) => (
+        <div className="space-y-2">
+          <Rate disabled value={record.rate} className="text-lg" />
+          <div className="text-gray-600 bg-gray-50 p-3 rounded-lg border border-gray-100">
+            {record.content}
+          </div>
+        </div>
+      ),
     },
     {
       title: "Ngày khám",
-      key: "dataBooking",
-      render: (record) => <></>,
-    },
-    {
-      title: "Thao tác",
-      key: "action",
-      render: (record) => <></>,
+      key: "date",
+      width: 180,
+      render: (record) => (
+        <Tooltip
+          title={dayjs(record.booking?.date).format("HH:mm - DD/MM/YYYY")}
+        >
+          <Tag
+            icon={<CalendarOutlined className="mr-1" />}
+            className="px-3 py-1.5 rounded-full text-blue-600 bg-blue-50 border-blue-100"
+          >
+            {dayjs(record.booking?.date).format("DD/MM/YYYY")}
+          </Tag>
+        </Tooltip>
+      ),
     },
   ];
 
-  return (
-    <div className="mt-4">
-      {/* Header Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <Card
-          bordered={false}
-          className="shadow-sm"
-          style={{
-            background: `linear-gradient(135deg, #b7dce722 0%, #b7dce744 100%)`,
-            boxShadow: `0 8px 32px 0 rgba(31, 38, 135, 0.37)`,
-          }}
-        >
-          <Statistic
-            title={<span className="text-gray-600 text-sm">Tổng đánh giá</span>}
-            value={reviewStats.totalReviews}
-            prefix={<MessageOutlined className="text-blue-500" />}
-          />
-        </Card>
+  const debouncedSearch = useCallback(
+    debounce((key, value) => {
+      setFilters((prev) => ({ ...prev, [key]: value }));
+      setPaginate((prev) => ({ ...prev, page: 1 }));
+    }, 500),
+    []
+  );
 
-        <Card
-          bordered={false}
-          className="shadow-sm"
-          style={{
-            background: `linear-gradient(135deg, #fff2c622 0%, #fff2c644 100%)`,
-            boxShadow: `0 8px 32px 0 rgba(31, 38, 135, 0.37)`,
-          }}
-        >
-          <Statistic
-            title={
-              <span className="text-gray-600 text-sm">Điểm trung bình</span>
-            }
-            value={reviewStats.averageRating}
-            prefix={<StarFilled className="text-yellow-400" />}
-            suffix="/5"
-            precision={1}
-          />
-        </Card>
+  return (
+    <div className="space-y-8 mt-6 px-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <StatCard
+          icon={MessageOutlined}
+          title="Tổng đánh giá"
+          value={totalReviews}
+          gradient="bg-gradient-to-r from-blue-500 to-blue-600"
+        />
+        <StatCard
+          icon={StarFilled}
+          title="Điểm trung bình"
+          value={`${averageRating.toFixed(1)}/5`}
+          gradient="bg-gradient-to-r from-orange-500 to-pink-500"
+        />
+        <div className="lg:col-span-1 md:col-span-2 col-span-1">
+          <div className="rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 p-6">
+            <h3 className="text-lg font-semibold text-white mb-4">
+              Phân bố đánh giá
+            </h3>
+            <div className="space-y-3">
+              {[5, 4, 3, 2, 1].map((rating) => (
+                <RatingBar
+                  key={rating}
+                  rating={rating}
+                  count={ratingDistribution[rating]}
+                  total={totalReviews}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
-      <Card
-        bordered={false}
-        className="shadow-sm mb-8"
-        style={{
-          background: `linear-gradient(135deg, #e8f4dc22 0%, #e8f4dc44 100%)`,
-          boxShadow: `0 8px 32px 0 rgba(31, 38, 135, 0.37)`,
-        }}
-      >
-        <div className="space-y-3">
-          <p className="text-gray-600 text-sm">Phân bố đánh giá</p>
-          {[5, 4, 3, 2, 1].map((rating) => (
-            <div key={rating} className="flex items-center gap-3">
-              <div className="flex items-center gap-1 min-w-[50px]">
-                <span className="text-sm text-gray-600">{rating}</span>
-                <StarFilled className="text-yellow-400 text-sm" />
-              </div>
-              <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-blue-500"
-                  style={{
-                    width: `${
-                      (reviewStats.ratingCounts[rating] /
-                        reviewStats.totalReviews) *
-                      100
-                    }%`,
-                    opacity: 0.2 + rating * 0.16, // Gradient opacity based on rating
-                  }}
-                />
-              </div>
-              <span className="text-sm text-gray-500 min-w-[30px]">
-                {reviewStats.ratingCounts[rating]}
-              </span>
-            </div>
-          ))}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
+        <div className="p-6 border-b border-gray-100">
+          <div className="flex flex-wrap gap-4">
+            <Input
+              placeholder="Tìm kiếm theo tên bệnh nhân..."
+              prefix={<SearchOutlined className="text-gray-400" />}
+              className="flex-1 min-w-[300px]"
+              size="large"
+              allowClear
+              onChange={(e) => debouncedSearch("search", e.target.value)}
+            />
+            <Select
+              placeholder="Lọc theo đánh giá"
+              className="min-w-[200px]"
+              size="large"
+              allowClear
+              onChange={(value) => debouncedSearch("rate", value)}
+            >
+              {[5, 4, 3, 2, 1].map((num) => (
+                <Select.Option key={num} value={num}>
+                  <div className="flex items-center gap-2">
+                    <Rate disabled value={num} className="text-sm" />
+                    <span className="text-gray-500">
+                      ({ratingDistribution[num] || 0})
+                    </span>
+                  </div>
+                </Select.Option>
+              ))}
+            </Select>
+          </div>
         </div>
-      </Card>
 
-      {/* Filters */}
-      <Card bordered={false} className="mb-6 shadow-sm">
-        <div className="flex flex-wrap gap-4">
-          <Input.Search
-            placeholder="Tìm kiếm theo tên bệnh nhân..."
-            className="flex-1"
-            allowClear
-          />
-          <Select
-            defaultValue="all"
-            className="min-w-[150px]"
-            onChange={(value) => setFilter(value)}
-          >
-            <Select.Option value="all">Tất cả đánh giá</Select.Option>
-            <Select.Option value="5">5 sao</Select.Option>
-            <Select.Option value="4">4 sao</Select.Option>
-            <Select.Option value="3">3 sao</Select.Option>
-            <Select.Option value="2">2 sao</Select.Option>
-            <Select.Option value="1">1 sao</Select.Option>
-          </Select>
-        </div>
-      </Card>
-      <Table
-        columns={columns}
-        dataSource={[]}
-        rowKey={(record) => record._id}
-        loading={isLoading}
-        scroll={{ x: true }}
-        pagination={{
-          current: paginate.page,
-          pageSize: paginate.pageSize,
-          total: paginate.totalItems,
-          onChange: (page, pageSize) =>
-            setPaginate((prev) => ({
-              ...prev,
-              page,
-              pageSize,
-            })),
-        }}
-      />
+        <Table
+          columns={columns}
+          dataSource={reviews}
+          rowKey="_id"
+          loading={isLoading}
+          scroll={{ x: 800 }}
+          pagination={{
+            current: paginate.page,
+            pageSize: paginate.pageSize,
+            total: paginate.totalItems,
+            onChange: (page, pageSize) =>
+              setPaginate((prev) => ({ ...prev, page, pageSize })),
+            className: "px-6 py-4",
+          }}
+          className="rounded-2xl overflow-hidden"
+        />
+      </div>
     </div>
   );
 };

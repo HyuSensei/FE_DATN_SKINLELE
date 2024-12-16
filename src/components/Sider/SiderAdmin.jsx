@@ -142,17 +142,21 @@ const MENU_CLINIC_ITEMS = [
 
 const { Sider } = Layout;
 
-const Logo = ({ collapsed }) => (
+const Logo = ({ collapsed, adminInfo }) => (
   <div className="bg-white px-4 py-2 border-r">
     <motion.div
-      className="cursor-pointer text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 font-extrabold text-2xl m-0 text-center"
+      className="cursor-pointer text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 font-extrabold text-2xl m-0 text-center py-4"
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
       initial={LOGO_ANIMATION.initial}
       animate={LOGO_ANIMATION.animate}
       transition={LOGO_TRANSITION}
     >
-      {collapsed ? "SL" : "SkinLeLe"}
+      {collapsed
+        ? "SLC"
+        : adminInfo?.role === "ADMIN"
+        ? "SkinLeLe"
+        : "SkinLeLeClinic"}
     </motion.div>
   </div>
 );
@@ -166,7 +170,13 @@ const SiderAdmin = ({ collapsed, setCollapsed }) => {
     setCollapsed(isMobile);
   }, [isMobile, setCollapsed]);
 
-  const handleLogoClick = () => navigate("/admin/dashboard");
+  const handleLogoClick = () => {
+    if (adminInfo?.role === "ADMIN") {
+      navigate("/admin/dashboard");
+    } else {
+      navigate("/admin/dashboard-clinic");
+    }
+  };
 
   const handleMenuClick = ({ key }) => {
     const selectedItem = findMenuItemByKey(
@@ -192,7 +202,7 @@ const SiderAdmin = ({ collapsed, setCollapsed }) => {
   return (
     <Sider trigger={null} collapsible collapsed={collapsed}>
       <div onClick={handleLogoClick}>
-        <Logo collapsed={collapsed} />
+        <Logo collapsed={collapsed} adminInfo={adminInfo} />
       </div>
       <Menu
         onClick={handleMenuClick}

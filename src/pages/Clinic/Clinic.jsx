@@ -72,17 +72,17 @@ const Clinic = () => {
 
                   <div className="flex items-center gap-8 text-sm mt-4 md:text-base">
                     <div className="flex items-center justify-center md:justify-start gap-2">
-                      <GiRoundStar color="#fbcb18" />
+                      <GiRoundStar color="#fbcb18" size={20} />
                       <span>{clinic.statistics.averageRating}</span>
                     </div>
                     <div className="flex items-center justify-center md:justify-start gap-2">
-                      <RiUserStarFill color="#fcf8d2" />
+                      <RiUserStarFill color="#fcf8d2" size={20} />
                       <span className="whitespace-nowrap">
                         {clinic.statistics.reviewCount} đánh giá
                       </span>
                     </div>
                     <div className="flex items-center justify-center md:justify-start gap-2">
-                      <MdVerified color="#5ad7ff" />
+                      <MdVerified color="#5ad7ff" size={20} />
                       <span className="whitespace-nowrap">Đã xác thực</span>
                     </div>
                   </div>
