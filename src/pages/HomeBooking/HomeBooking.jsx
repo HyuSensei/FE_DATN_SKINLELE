@@ -261,58 +261,6 @@ const HomeBooking = () => {
         </div>
       </div>
 
-      {/* Services Section */}
-      <div className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12 uppercase">
-            Dịch vụ phòng khám
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {services.map((service, index) => (
-              <motion.div
-                key={index}
-                className="p-6 bg-gradient-to-t from-[#ebe8fb] to-fuchsia-50 rounded-lg shadow-lg hover:shadow-xl transition-shadow"
-                whileHover={{ y: -5 }}
-              >
-                <div className="flex flex-col items-center text-center">
-                  {service.icon}
-                  <h3 className="mt-4 text-xl font-semibold">
-                    {service.title}
-                  </h3>
-                  <p className="mt-2 text-gray-600">{service.description}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Featured Doctors Section */}
-      <div className="py-16 bg-gradient-to-r from-slate-50 via-fuchsia-50 to-slate-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12 uppercase">
-            Bác Sĩ Nổi Bật
-          </h2>
-          {(!isLoadingDoctors && !doctors.length) ||
-            (errorDoctors && <Empty description="Chưa có thông tin bác" />)}
-          <SliderDoctors {...{ doctors, isLoading: isLoadingDoctors }} />
-        </div>
-      </div>
-
-      {/* Featured Clinics Section */}
-      <div className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12 uppercase">
-            Phòng Khám Nổi Bật
-          </h2>
-          <div className="px-4">
-            {(!isLoadingClinics && !clinics.length) ||
-              (errorClinics && <Empty description="Chưa có phòng khám nào" />)}
-            <SliderClinics {...{ clinics, isLoading: isLoadingClinics }} />
-          </div>
-        </div>
-      </div>
-
       {/* Booking Steps Section */}
       <div className="py-16 bg-gradient-to-r from-sky-100 via-slate-50 to-slate-50">
         <div className="container mx-auto px-4">
@@ -358,6 +306,57 @@ const HomeBooking = () => {
                 Nhận xác nhận và reminder trước ngày khám
               </p>
             </motion.div>
+          </div>
+        </div>
+      </div>
+
+      {/* Featured Doctors Section */}
+      <div className="py-16 bg-gradient-to-r from-slate-50 via-fuchsia-50 to-slate-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12 uppercase">
+            Bác Sĩ Nổi Bật
+          </h2>
+          {(!isLoadingDoctors && !doctors.length) ||
+            (errorDoctors && <Empty description="Chưa có thông tin bác" />)}
+          <SliderDoctors {...{ doctors, isLoading: isLoadingDoctors }} />
+        </div>
+      </div>
+
+      {/* Featured Clinics Section */}
+      <div className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12 uppercase">
+            Phòng Khám Nổi Bật
+          </h2>
+          <div className="px-4">
+            {(!isLoadingClinics && !clinics.length) ||
+              (errorClinics && <Empty description="Chưa có phòng khám nào" />)}
+            <SliderClinics {...{ clinics, isLoading: isLoadingClinics }} />
+          </div>
+        </div>
+      </div>
+      {/* Services Section */}
+      <div className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12 uppercase">
+            Dịch vụ phòng khám
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {services.map((service, index) => (
+              <motion.div
+                key={index}
+                className="p-6 bg-gradient-to-t from-[#ebe8fb] to-fuchsia-50 rounded-lg shadow-lg hover:shadow-xl transition-shadow"
+                whileHover={{ y: -5 }}
+              >
+                <div className="flex flex-col items-center text-center">
+                  {service.icon}
+                  <h3 className="mt-4 text-xl font-semibold">
+                    {service.title}
+                  </h3>
+                  <p className="mt-2 text-gray-600">{service.description}</p>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </div>

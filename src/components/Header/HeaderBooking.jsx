@@ -1,9 +1,8 @@
 import { Input, Layout, Dropdown, Avatar } from "antd";
-import { FaBars, FaHandshake, FaSearch, FaUserCircle } from "react-icons/fa";
+import { FaBars, FaSearch, FaUserCircle } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { IoLogOut } from "react-icons/io5";
-import { PiCalendarCheckFill } from "react-icons/pi";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import ModalAuth from "../Modal/ModalAuth";
@@ -18,20 +17,25 @@ const HeaderBooking = () => {
   const { isAuthenticated, userInfo } = useSelector((state) => state.auth);
   const [openAuth, setOpenAuth] = useState(false);
 
+  const menuItems = [
+    { label: "Phòng khám", path: "/clinics" },
+    { label: "Bác sĩ", path: "/doctors" },
+    { label: "Đặt lịch khám", path: "/booking" },
+    { label: "Lịch khám", path: "/booking-history" },
+    { label: "Hợp tác", path: "/partnership" },
+    { label: "Giới thiệu", path: "/about" },
+  ];
+
   const authItems = [
     {
       label: "Quay lại SkinLeLe",
       key: "doctor",
-      onClick: () => {
-        navigate("/");
-      },
+      onClick: () => navigate("/"),
     },
     {
       label: "Đăng nhập",
       key: "login",
-      onClick: () => {
-        setOpenAuth(true);
-      },
+      onClick: () => setOpenAuth(true),
     },
     {
       label: "Đăng xuất",
@@ -43,46 +47,19 @@ const HeaderBooking = () => {
     },
   ];
 
-  const CustomButton = ({ icon, children, variant = "default", onClick }) => {
-    const variants = {
-      default: "bg-gray-50",
-      primary: "bg-amber-400/20 text-[#fccc11]",
-      secondary: "text-[#1677ff] bg-[#1677ff]/10",
-    };
-
-    return (
-      <motion.button
-        onClick={onClick}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        className={`
-          flex items-center gap-2 px-4 py-2 rounded-full
-          font-medium transition-all duration-200 text-sm
-          ${variants[variant]}
-        `}
-      >
-        {icon}
-        <span>{children}</span>
-      </motion.button>
-    );
-  };
-
   return (
-    <AntHeader className="fixed top-0 left-0 right-0 z-50 p-0">
-      <ModalAuth {...{ open: openAuth, onClose: () => setOpenAuth(false) }} />
-      <div className="bg-white shadow-sm py-3">
+    <AntHeader className="fixed top-0 left-0 right-0 z-50 p-0 bg-white">
+      <ModalAuth open={openAuth} onClose={() => setOpenAuth(false)} />
+      <div className="shadow-lg">
         <div className="max-w-[1536px] mx-auto">
-          <div className="flex h-16 items-center justify-between px-4 gap-4">
-            {/* Logo Section */}
+          <div className="flex items-center justify-between gap-8 px-6">
+            {/* Logo */}
             <motion.div
               onClick={() => navigate("/home-booking")}
-              className="flex items-center gap-2 min-w-[180px] cursor-pointer"
+              className="flex items-center gap-3 cursor-pointer"
               whileHover={{ scale: 1.02 }}
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
             >
-              <div className="w-14 h-14 rounded-lg overflow-hidden">
+              <div className="w-16 h-16 rounded-lg overflow-hidden">
                 <img
                   src="https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565402/upload-static-skinlele/kkbdfw5bzr6tlvfl5v3z.png"
                   alt="logo"
@@ -94,38 +71,40 @@ const HeaderBooking = () => {
               </div>
             </motion.div>
 
-            {/* Search Section */}
-            <div className="hidden lg:flex flex-1 max-w-xl">
-              <Input
-                size="large"
-                prefix={<FaSearch className="text-gray-400" />}
-                placeholder="Tìm kiếm phòng khám, bác sĩ..."
-                className="rounded-lg"
-              />
-            </div>
+            {/* Navigation Menu */}
+            <nav className="hidden lg:flex flex-1 items-center justify-center">
+              <ul className="flex items-center gap-8">
+                {menuItems.map((item, index) => (
+                  <motion.li key={index}>
+                    <button
+                      onClick={() => {
+                        if (!isAuthenticated && item.path === "/booking-history") {
+                          dispatch(setOpenModelAuth(true));
+                          return;
+                        }
+                        navigate(item.path);
+                      }}
 
-            {/* Actions Section */}
-            <div className="hidden md:flex items-center gap-3">
-              <CustomButton
-                icon={<PiCalendarCheckFill className="w-5 h-5" />}
-                variant="secondary"
-                onClick={() => {
-                  if (!isAuthenticated) {
-                    dispatch(setOpenModelAuth(true));
-                    return;
-                  }
-                  navigate("/booking-history");
-                }}
-              >
-                Lịch khám
-              </CustomButton>
+                      className="relative px-2 py-1.5 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors group"
+                    >
+                      {item.label}
+                      <span className="absolute inset-x-0 bottom-0 h-0.5 bg-blue-600 scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                    </button>
+                  </motion.li>
+                ))}
+              </ul>
+            </nav>
 
-              <CustomButton
-                icon={<FaHandshake className="w-5 h-5" />}
-                variant="primary"
-              >
-                Hợp tác
-              </CustomButton>
+            {/* Actions */}
+            <div className="hidden md:flex items-center gap-4">
+              <div className="relative w-64">
+                <Input
+                  size="middle"
+                  prefix={<FaSearch className="text-gray-400" />}
+                  placeholder="Tìm kiếm phòng khám, bác sĩ..."
+                  className="rounded-full"
+                />
+              </div>
 
               <Dropdown
                 menu={{
@@ -140,10 +119,10 @@ const HeaderBooking = () => {
                   <Avatar
                     src={userInfo.avatar.url}
                     size={40}
-                    className="cursor-pointer border-2 border-cyan-300"
+                    className="cursor-pointer border-2 border-blue-200 hover:border-blue-300 transition-colors"
                   />
                 ) : (
-                  <div className="p-1.5 bg-gray-50 rounded-lg cursor-pointer">
+                  <div className="p-2 hover:bg-gray-100 rounded-full cursor-pointer transition-colors">
                     <FaUserCircle className="w-6 h-6 text-[#1677ff]" />
                   </div>
                 )}
@@ -152,7 +131,7 @@ const HeaderBooking = () => {
 
             {/* Mobile Menu Button */}
             <button
-              className="md:hidden p-2 hover:bg-gray-50 rounded-lg"
+              className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
               onClick={() => setIsDrawerOpen(true)}
             >
               <FaBars className="w-5 h-5 text-gray-600" />
@@ -168,19 +147,19 @@ const HeaderBooking = () => {
             initial={{ opacity: 0, x: "100%" }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: "100%" }}
-            className="fixed inset-0 z-50 md:hidden"
+            className="fixed inset-0 z-50 lg:hidden"
           >
             <div
-              className="absolute inset-0 bg-black/20"
+              className="absolute inset-0 bg-black/20 backdrop-blur-sm"
               onClick={() => setIsDrawerOpen(false)}
             />
             <div className="absolute right-0 top-0 h-full w-72 bg-white shadow-xl">
-              <div className="p-4">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-lg font-medium">Menu</h2>
+              <div className="p-5 space-y-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-semibold text-gray-800">Menu</h2>
                   <button
                     onClick={() => setIsDrawerOpen(false)}
-                    className="p-2 hover:bg-gray-50 rounded-lg"
+                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                   >
                     <IoLogOut className="w-5 h-5" />
                   </button>
@@ -189,42 +168,58 @@ const HeaderBooking = () => {
                 <Input
                   prefix={<FaSearch className="text-gray-400" />}
                   placeholder="Tìm kiếm..."
-                  className="mb-4"
+                  className="rounded-full"
                 />
 
-                <div className="space-y-1">
+                <nav className="space-y-1">
+                  {menuItems.map((item, index) => (
+                    <motion.button
+                      key={index}
+                      onClick={() => {
+                        navigate(item.path);
+                        setIsDrawerOpen(false);
+                      }}
+                      className="w-full p-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      {item.label}
+                    </motion.button>
+                  ))}
+                </nav>
+
+                <div className="pt-4 border-t">
                   {isAuthenticated
                     ? [authItems[0], authItems[2]].map((item) => (
-                        <div
-                          key={item.key}
-                          className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer"
-                          onClick={item.onClick}
-                        >
-                          {item.icon}
-                          <span className="font-medium text-sm">
-                            {item.label}
-                          </span>
-                        </div>
-                      ))
+                      <button
+                        key={item.key}
+                        onClick={() => {
+                          item.onClick();
+                          setIsDrawerOpen(false);
+                        }}
+                        className="w-full p-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                      >
+                        {item.label}
+                      </button>
+                    ))
                     : [authItems[0], authItems[1]].map((item) => (
-                        <div
-                          key={item.key}
-                          className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer"
-                          onClick={item.onClick}
-                        >
-                          {item.icon}
-                          <span className="font-medium text-sm">
-                            {item.label}
-                          </span>
-                        </div>
-                      ))}
+                      <button
+                        key={item.key}
+                        onClick={() => {
+                          item.onClick();
+                          setIsDrawerOpen(false);
+                        }}
+                        className="w-full p-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                      >
+                        {item.label}
+                      </button>
+                    ))}
                 </div>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </AntHeader>
+    </AntHeader >
   );
 };
 

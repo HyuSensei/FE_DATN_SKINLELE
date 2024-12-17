@@ -23,7 +23,7 @@ const RatingSelect = ({ value, onChange }) => (
       <Select.Option key={rate} value={rate}>
         <Space>
           <span>{rate}</span>
-          <Rate disabled defaultValue={rate} className="text-sm" />
+          <Rate disabled defaultValue={rate} count={1} className="text-sm" />
         </Space>
       </Select.Option>
     ))}
@@ -35,8 +35,8 @@ const StatisticCard = ({ stats }) => (
     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
       <div className="flex items-center gap-4">
         <div className="text-center">
-          <div className="text-3xl font-bold text-blue-600">
-            {stats.averageRating}
+          <div className="text-3xl font-bold">
+            {stats.averageRating ? stats.averageRating > 0 : "0.0"}
           </div>
           <Rate
             disabled
@@ -57,7 +57,7 @@ const StatisticCard = ({ stats }) => (
             return (
               <div key={rating} className="flex items-center gap-2 mb-2">
                 <span className="min-w-[60px] text-sm">
-                  {rating} sao ({count})
+                  {rating} sao
                 </span>
                 <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
                   <div
@@ -65,6 +65,7 @@ const StatisticCard = ({ stats }) => (
                     style={{ width: `${percentage}%` }}
                   />
                 </div>
+                ({count})
               </div>
             );
           })}
