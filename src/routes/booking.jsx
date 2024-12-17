@@ -13,6 +13,8 @@ const DoctorOwner = lazy(() => import("@pages/DoctorOwner"));
 const Doctor = lazy(() => import("@pages/Doctor"));
 const Clinic = lazy(() => import("@pages/Clinic"));
 const BookingHistory = lazy(() => import("@pages/BookingHistory"));
+const DoctorList = lazy(() => import("@pages/DoctorList"));
+const ClinicList = lazy(() => import("@pages/ClinicList"));
 
 const WrapBookingRoute = ({
   element: Element,
@@ -58,13 +60,13 @@ const routes = [
     isDoctor: true,
   },
   {
-    path: "/doctor/:slug",
+    path: "/doctor-detail/:slug",
     element: Doctor,
     title: "SkinLeLeClinic - Thông tin chi tiết bác sĩ",
     isAuth: true,
   },
   {
-    path: "/clinic/:slug",
+    path: "/clinic-detail/:slug",
     element: Clinic,
     title: "SkinLeLeClinic - Thông tin chi tiết phòng khám",
   },
@@ -73,6 +75,16 @@ const routes = [
     element: BookingHistory,
     title: "SkinLeLeClinic - Lịch sử đặt khám",
     isAuth: true,
+  },
+  {
+    path: "/doctors",
+    element: DoctorList,
+    title: "SkinLeLeClinic - Danh sách bác sĩ",
+  },
+  {
+    path: "/clinics",
+    element: ClinicList,
+    title: "SkinLeLeClinic - Danh sách phòng khám",
   },
 ];
 

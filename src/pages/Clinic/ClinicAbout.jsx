@@ -196,7 +196,7 @@ const ClinicAbout = ({ clinic }) => {
                 type="link"
                 className="w-full flex items-center justify-center gap-2 text-blue-600 mt-4"
               >
-                Xem tất thêm
+                Xem thêm
               </Button>
             )}
           </div>

@@ -143,7 +143,7 @@ const SliderClinics = ({ clinics = [], isLoading = false, settings = {} }) => {
                   {/* Button Section - Fixed at Bottom */}
                   <div className="mt-auto">
                     <button
-                      onClick={() => navigate(`/clinic/${clinic.slug}`)}
+                      onClick={() => navigate(`/clinic-detail/${clinic.slug}`)}
                       className="mt-6 w-full py-2.5 px-4 bg-gradient-to-r from-blue-500 to-cyan-400 text-white rounded-xl font-medium hover:from-blue-600 hover:to-cyan-500 active:scale-[0.98] transition-all duration-300 shadow-md hover:shadow-lg"
                     >
                       Xem chi tiết

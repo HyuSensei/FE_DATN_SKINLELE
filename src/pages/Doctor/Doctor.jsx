@@ -149,7 +149,7 @@ const Doctor = () => {
                       </div>
                     </div>
                     <Link
-                      to={`/clinic/${clinic.slug}`}
+                      to={`/clinic-detail/${clinic.slug}`}
                       className="inline-flex items-center gap-2 text-blue-500 hover:text-blue-600 font-medium min-w-[200px]"
                     >
                       Xem chi tiết phòng khám

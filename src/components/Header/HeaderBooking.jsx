@@ -20,10 +20,9 @@ const HeaderBooking = () => {
   const menuItems = [
     { label: "Phòng khám", path: "/clinics" },
     { label: "Bác sĩ", path: "/doctors" },
-    { label: "Đặt lịch khám", path: "/booking" },
     { label: "Lịch khám", path: "/booking-history" },
     { label: "Hợp tác", path: "/partnership" },
-    { label: "Giới thiệu", path: "/about" },
+    { label: "Giới thiệu", path: "/about-skinlele-clinic" },
   ];
 
   const authItems = [
@@ -78,13 +77,15 @@ const HeaderBooking = () => {
                   <motion.li key={index}>
                     <button
                       onClick={() => {
-                        if (!isAuthenticated && item.path === "/booking-history") {
+                        if (
+                          !isAuthenticated &&
+                          item.path === "/booking-history"
+                        ) {
                           dispatch(setOpenModelAuth(true));
                           return;
                         }
                         navigate(item.path);
                       }}
-
                       className="relative px-2 py-1.5 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors group"
                     >
                       {item.label}
@@ -102,7 +103,7 @@ const HeaderBooking = () => {
                   size="middle"
                   prefix={<FaSearch className="text-gray-400" />}
                   placeholder="Tìm kiếm phòng khám, bác sĩ..."
-                  className="rounded-full"
+                  className="rounded-full bg-slate-50"
                 />
               </div>
 
@@ -190,36 +191,36 @@ const HeaderBooking = () => {
                 <div className="pt-4 border-t">
                   {isAuthenticated
                     ? [authItems[0], authItems[2]].map((item) => (
-                      <button
-                        key={item.key}
-                        onClick={() => {
-                          item.onClick();
-                          setIsDrawerOpen(false);
-                        }}
-                        className="w-full p-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                      >
-                        {item.label}
-                      </button>
-                    ))
+                        <button
+                          key={item.key}
+                          onClick={() => {
+                            item.onClick();
+                            setIsDrawerOpen(false);
+                          }}
+                          className="w-full p-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                        >
+                          {item.label}
+                        </button>
+                      ))
                     : [authItems[0], authItems[1]].map((item) => (
-                      <button
-                        key={item.key}
-                        onClick={() => {
-                          item.onClick();
-                          setIsDrawerOpen(false);
-                        }}
-                        className="w-full p-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                      >
-                        {item.label}
-                      </button>
-                    ))}
+                        <button
+                          key={item.key}
+                          onClick={() => {
+                            item.onClick();
+                            setIsDrawerOpen(false);
+                          }}
+                          className="w-full p-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                        >
+                          {item.label}
+                        </button>
+                      ))}
                 </div>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </AntHeader >
+    </AntHeader>
   );
 };
 

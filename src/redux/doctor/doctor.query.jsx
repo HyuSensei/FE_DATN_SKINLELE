@@ -31,7 +31,16 @@ export const doctorApi = createApi({
       transformResponse: (response) => response.data,
     }),
     getDoctorsByCustomer: builder.query({
-      query: ({ page, pageSize, search = "", specialty = "", clinic = "" }) => {
+      query: ({
+        page,
+        pageSize,
+        specialty = "",
+        experience = "",
+        priceRange = "",
+        rating = "",
+        clinic = "",
+        search = "",
+      }) => {
         if (page && pageSize) {
           const queryStrings = new URLSearchParams({
             page,
@@ -39,6 +48,9 @@ export const doctorApi = createApi({
             search,
             specialty,
             clinic,
+            experience,
+            priceRange,
+            rating,
           });
           return {
             url: `/doctors/by-customer?${queryStrings}`,
@@ -84,6 +96,13 @@ export const doctorApi = createApi({
       },
       transformResponse: (response) => response.data,
     }),
+    getFilterOptionsDoctor: builder.query({
+      query: () => ({
+        url: `/doctors/filter-options`,
+        method: "GET",
+      }),
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
@@ -93,5 +112,6 @@ export const {
   useGetDoctorsByCustomerQuery,
   useGetDoctorDetailQuery,
   useGetScheduleBookingDoctorQuery,
-  useGetAllReviewsByCustomerQuery
+  useGetAllReviewsByCustomerQuery,
+  useGetFilterOptionsDoctorQuery,
 } = doctorApi;

@@ -16,13 +16,26 @@ export const clinicApi = createApi({
       transformResponse: (response) => response.data,
     }),
     getClinicsByCustomer: builder.query({
-      query: ({ page, pageSize, search = "", specialty = "" }) => {
+      query: ({
+        page,
+        pageSize,
+        specialties = "",
+        priceRange = "",
+        doctorCount = "",
+        rating = "",
+        workingHours = "",
+        search = "",
+      }) => {
         if (page && pageSize) {
           const queryStrings = new URLSearchParams({
             page,
             pageSize,
             search,
-            specialty,
+            specialties,
+            priceRange,
+            doctorCount,
+            rating,
+            workingHours,
           });
           return {
             url: `/clinics/by-customer?${queryStrings}`,
@@ -67,6 +80,13 @@ export const clinicApi = createApi({
       },
       transformResponse: (response) => response.data,
     }),
+    getFilterOptionsClinic: builder.query({
+      query: () => ({
+        url: `/clinics/filter-options`,
+        method: "GET",
+      }),
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
@@ -75,4 +95,5 @@ export const {
   useGetClinicsByCustomerQuery,
   useGetClinicDetailBySlugQuery,
   useGetReviewsClinicQuery,
+  useGetFilterOptionsClinicQuery,
 } = clinicApi;
