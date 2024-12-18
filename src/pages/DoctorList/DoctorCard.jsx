@@ -1,10 +1,9 @@
 import { Avatar, Rate } from "antd";
 import React from "react";
 import { MdVerified } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const DoctorCard = ({ doctor }) => {
-  const navigate = useNavigate();
   if (!doctor) return null;
 
   return (
@@ -59,12 +58,14 @@ const DoctorCard = ({ doctor }) => {
             </div>
           </div>
 
-          <button
-            onClick={() => navigate(`/doctor-detail/${doctor.slug}`)}
-            className="mt-6 w-full py-2.5 px-4 bg-gradient-to-r from-blue-500 to-cyan-400 text-white rounded-xl font-medium hover:from-blue-600 hover:to-cyan-500 active:scale-[0.98] transition-all duration-300 shadow-md hover:shadow-lg"
-          >
-            Đặt lịch khám
-          </button>
+          <div className="mt-auto">
+            <Link
+              to={`/doctor-detail/${doctor.slug}`}
+              className="hover:text-slate-50 mt-6 w-full py-2.5 px-4 bg-gradient-to-r from-blue-500 to-cyan-400 text-white rounded-xl font-medium hover:from-blue-600 hover:to-cyan-500 active:scale-[0.98] transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center"
+            >
+              Đặt lịch khám
+            </Link>
+          </div>
         </div>
       </div>
     </div>

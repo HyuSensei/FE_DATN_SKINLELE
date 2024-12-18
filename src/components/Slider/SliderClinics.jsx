@@ -7,10 +7,9 @@ import {
 import Slider from "react-slick";
 import { motion } from "framer-motion";
 import { FaLocationDot } from "react-icons/fa6";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const SliderClinics = ({ clinics = [], isLoading = false, settings = {} }) => {
-  const navigate = useNavigate();
   const NextArrow = ({ onClick }) => (
     <button
       onClick={onClick}
@@ -97,11 +96,11 @@ const SliderClinics = ({ clinics = [], isLoading = false, settings = {} }) => {
                   <div className="flex items-center gap-2 mb-4">
                     <Rate
                       disabled
-                      defaultValue={clinic.rating}
+                      defaultValue={clinic.averageRating}
                       className="text-sm"
                     />
                     <span className="text-gray-600 text-sm">
-                      ({clinic.reviews} đánh giá)
+                      ({clinic.totalReviews} đánh giá)
                     </span>
                   </div>
 
@@ -142,12 +141,12 @@ const SliderClinics = ({ clinics = [], isLoading = false, settings = {} }) => {
 
                   {/* Button Section - Fixed at Bottom */}
                   <div className="mt-auto">
-                    <button
-                      onClick={() => navigate(`/clinic-detail/${clinic.slug}`)}
-                      className="mt-6 w-full py-2.5 px-4 bg-gradient-to-r from-blue-500 to-cyan-400 text-white rounded-xl font-medium hover:from-blue-600 hover:to-cyan-500 active:scale-[0.98] transition-all duration-300 shadow-md hover:shadow-lg"
+                    <Link
+                      to={`/clinic-detail/${clinic.slug}`}
+                      className="hover:text-slate-50 mt-6 w-full py-2.5 px-4 bg-gradient-to-r from-blue-500 to-cyan-400 text-white rounded-xl font-medium hover:from-blue-600 hover:to-cyan-500 active:scale-[0.98] transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center"
                     >
                       Xem chi tiết
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </motion.div>

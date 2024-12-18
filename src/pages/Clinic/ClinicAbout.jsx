@@ -1,16 +1,16 @@
 import EmptyData from "@/components/Error/EmptyData";
 import LoadingContent from "@/components/Loading/LoaingContent";
 import { useGetDoctorsByCustomerQuery } from "@/redux/doctor/doctor.query";
-import { Avatar, Button } from "antd";
-import React, { useEffect, useState } from "react";
+import { Button, Empty } from "antd";
+import React, { useCallback, useEffect, useState } from "react";
 import { BsFillCheckCircleFill } from "react-icons/bs";
-import { MdOutlineVerified } from "react-icons/md";
 import { RiStarFill, RiUserStarFill } from "react-icons/ri";
+import DoctorItem from "./DoctorItem";
 
 const ClinicAbout = ({ clinic }) => {
   const [params, setParams] = useState({
     page: 1,
-    pageSize: 3,
+    pageSize: 5,
   });
   const [doctors, setDoctors] = useState([]);
 
@@ -41,6 +41,19 @@ const ClinicAbout = ({ clinic }) => {
     };
     return order[a.dayOfWeek] - order[b.dayOfWeek];
   });
+
+  const handleSeenMore = useCallback(() => {
+    if (data?.hasMore) {
+      setParams((prev) => ({
+        ...prev,
+        page: prev.page + 1,
+      }));
+    }
+
+    if (data?.doctors) {
+      setDoctors((prev) => [...prev, ...data.doctors]);
+    }
+  }, [data?.hasMore, data?.doctors]);
 
   if (errorDoctor) {
     return <EmptyData description="Có lỗi xảy ra khi lấy danh sách bác sĩ" />;
@@ -153,46 +166,16 @@ const ClinicAbout = ({ clinic }) => {
             Đội ngũ bác sĩ
           </h3>
           <div className="space-y-4">
+            {
+              !doctors.length && !isLoadingDoctor && <Empty description="Chưa có thông tin bác sĩ" />
+            }
             {doctors.length > 0 &&
-              doctors.map((doctor) => (
-                <div
-                  key={doctor._id}
-                  className="bg-white rounded-xl p-4 hover:bg-gray-50 transition-colors cursor-pointer border border-gray-100 hover:border-blue-200"
-                >
-                  <div className="flex items-center gap-4 flex-wrap justify-center">
-                    <Avatar
-                      src={doctor.avatar.url}
-                      size={56}
-                      className="border-2 border-blue-100"
-                    />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-semibold text-gray-800">
-                          BS. {doctor.name}
-                        </h4>
-                        {doctor.isActive && (
-                          <MdOutlineVerified color="#5ad7ff" size={18} />
-                        )}
-                      </div>
-                      <p className="text-sm text-gray-500 mb-2">
-                        {doctor.specialty} • {doctor.experience} năm kinh nghiệm
-                      </p>
-                      <div className="flex items-center gap-4 text-sm">
-                        <div className="flex items-center gap-1">
-                          <RiStarFill className="text-yellow-400" />
-                          <span>{doctor.rating}</span>
-                        </div>
-                        <span className="text-gray-400">•</span>
-                        <span className="text-gray-500">
-                          {doctor.reviewCount} đánh giá
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              doctors.map((doctor, index) => (
+                <DoctorItem key={index} {...{ doctor }} />
               ))}
             {hasMore && (
               <Button
+                onClick={handleSeenMore}
                 type="link"
                 className="w-full flex items-center justify-center gap-2 text-blue-600 mt-4"
               >

@@ -10,12 +10,10 @@ import { LuRefreshCcw } from "react-icons/lu";
 import FilterPanel from "./FilterPanel";
 import FilterTag from "./FilterTag";
 import EmptyData from "@/components/Error/EmptyData";
-import { useNavigate } from "react-router-dom";
 import DoctorCard from "./DoctorCard";
 import { ArrowRightOutlined } from "@ant-design/icons";
 
 const DoctorList = () => {
-  const navigate = useNavigate();
   const [paginate, setPaginate] = useState({
     page: 1,
     pageSize: 9,
@@ -125,14 +123,16 @@ const DoctorList = () => {
                     <Empty description="Danh sách bác sĩ trống" />
                   </div>
                 )}
-                <div className="flex justify-center mt-4 items-center">
-                  <Button
-                    type="link"
-                    className="w-full flex items-center justify-center gap-2 text-blue-600 mt-4"
-                  >
-                    Xem thêm bác sĩ <ArrowRightOutlined />
-                  </Button>
-                </div>
+                {
+                  hasMore && <div className="flex justify-center mt-4 items-center">
+                    <Button
+                      type="link"
+                      className="w-full flex items-center justify-center gap-2 text-blue-600 mt-4"
+                    >
+                      Xem thêm bác sĩ <ArrowRightOutlined />
+                    </Button>
+                  </div>
+                }
               </Spin>
             </Card>
           </div>

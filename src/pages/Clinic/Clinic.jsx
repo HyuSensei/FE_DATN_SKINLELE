@@ -149,7 +149,7 @@ const Clinic = () => {
       </div>
 
       {/* Main Content */}
-      <div className="mx-auto lg:px-16 py-12">
+      <div className="mx-auto lg:px-16 py-12 px-4">
         <Tabs
           defaultActiveKey="1"
           size="large"

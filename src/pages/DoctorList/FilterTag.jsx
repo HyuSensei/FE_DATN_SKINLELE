@@ -90,7 +90,7 @@ const FilterTag = ({ selectedFilters, filterOptions, setSelectedFilters }) => {
     <Tag
       closable
       onClose={onClose}
-      className={`m-1 py-1.5 px-3 rounded-full flex items-center gap-1.5 font-medium text-sm ${getTagColor(
+      className={`m-1 mb-2 py-1.5 px-3 rounded-full flex items-center gap-1.5 font-medium text-sm ${getTagColor(
         color
       )}`}
     >
@@ -110,7 +110,7 @@ const FilterTag = ({ selectedFilters, filterOptions, setSelectedFilters }) => {
             key={key}
             {...filterInfo}
             onClose={() =>
-              setSelectedFilters((prev) => ({ ...prev, [key]: null }))
+              setSelectedFilters((prev) => ({ ...prev, [key]: "" }))
             }
           />
         );
