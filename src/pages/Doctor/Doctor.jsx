@@ -19,10 +19,12 @@ import { useGetDoctorDetailQuery } from "@/redux/doctor/doctor.query";
 import { formatPrice } from "@/helpers/formatPrice";
 import LoadingContent from "@/components/Loading/LoaingContent";
 import { RiMapPinFill } from "react-icons/ri";
+import useScrollToSection from "@/hook/useScrollToSection";
 
 const Doctor = () => {
   const { slug } = useParams();
   const [activeTab, setActiveTab] = useState("1");
+  const sectionRef = useScrollToSection();
 
   const {
     data: doctor,
@@ -112,6 +114,10 @@ const Doctor = () => {
                 </div>
               </div>
               <CustomButton
+                onClick={() => {
+                  setActiveTab("1");
+                  sectionRef.scrollToSection();
+                }}
                 variant="primary"
                 className="mt-4 md:mt-0 px-6 py-2 text-lg"
               >
@@ -222,7 +228,10 @@ const Doctor = () => {
               />
             </div>
 
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div
+              className="bg-white rounded-lg shadow-lg overflow-hidden"
+              ref={sectionRef.ref}
+            >
               <Tabs
                 activeKey={activeTab}
                 onChange={setActiveTab}
@@ -232,7 +241,7 @@ const Doctor = () => {
                     label: (
                       <span className="flex items-center gap-2">Lịch khám</span>
                     ),
-                    children: <DoctorSchedule {...{ doctor }} />,
+                    children: <DoctorSchedule {...{ doctor, refetch }} />,
                   },
                   {
                     key: "2",

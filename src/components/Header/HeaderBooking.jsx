@@ -1,9 +1,9 @@
-import { Input, Layout, Dropdown, Avatar } from "antd";
+import { Input, Layout, Dropdown, Avatar, Badge } from "antd";
 import { FaBars, FaSearch, FaUserCircle } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
-import { IoLogOut } from "react-icons/io5";
-import { useNavigate } from "react-router-dom";
+import { IoLogOut, IoNotificationsOutline } from "react-icons/io5";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import ModalAuth from "../Modal/ModalAuth";
 import { logoutUser, setOpenModelAuth } from "@/redux/auth/auth.slice";
@@ -11,7 +11,6 @@ import { logoutUser, setOpenModelAuth } from "@/redux/auth/auth.slice";
 const { Header: AntHeader } = Layout;
 
 const HeaderBooking = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const { isAuthenticated, userInfo } = useSelector((state) => state.auth);
@@ -26,25 +25,17 @@ const HeaderBooking = () => {
   ];
 
   const authItems = [
-    {
-      label: "Quay lại SkinLeLe",
-      key: "doctor",
-      onClick: () => navigate("/"),
-    },
-    {
-      label: "Đăng nhập",
-      key: "login",
-      onClick: () => setOpenAuth(true),
-    },
-    {
-      label: "Đăng xuất",
-      key: "logout",
-      onClick: () => {
-        dispatch(logoutUser());
-        navigate("/home-booking");
-      },
-    },
+    { label: "Quay lại SkinLeLe", key: "doctor", path: "/" },
+    { label: "Đăng nhập", key: "login", action: () => setOpenAuth(true) },
+    { label: "Đăng xuất", key: "logout", action: () => dispatch(logoutUser()) },
   ];
+
+  const handleNavigation = (e, path) => {
+    if (!isAuthenticated && path === "/booking-history") {
+      e.preventDefault();
+      dispatch(setOpenModelAuth(true));
+    }
+  };
 
   return (
     <AntHeader className="fixed top-0 left-0 right-0 z-50 p-0 bg-white">
@@ -54,20 +45,21 @@ const HeaderBooking = () => {
           <div className="flex items-center justify-between gap-8 px-6">
             {/* Logo */}
             <motion.div
-              onClick={() => navigate("/home-booking")}
               className="flex items-center gap-3 cursor-pointer"
               whileHover={{ scale: 1.02 }}
             >
-              <div className="w-16 h-16 rounded-lg overflow-hidden">
-                <img
-                  src="https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565402/upload-static-skinlele/kkbdfw5bzr6tlvfl5v3z.png"
-                  alt="logo"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="font-extrabold text-xl text-[#2464ec] font-[Bungee]">
-                SkinLeLe <span className="text-gray-500">Clinic</span>
-              </div>
+              <Link to="/home-booking" className="flex items-center gap-3">
+                <div className="w-16 h-16 rounded-lg overflow-hidden">
+                  <img
+                    src="https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565402/upload-static-skinlele/kkbdfw5bzr6tlvfl5v3z.png"
+                    alt="logo"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="font-extrabold text-xl text-[#2464ec] font-[Bungee]">
+                  SkinLeLe <span className="text-gray-500">Clinic</span>
+                </div>
+              </Link>
             </motion.div>
 
             {/* Navigation Menu */}
@@ -75,22 +67,14 @@ const HeaderBooking = () => {
               <ul className="flex items-center gap-8">
                 {menuItems.map((item, index) => (
                   <motion.li key={index}>
-                    <button
-                      onClick={() => {
-                        if (
-                          !isAuthenticated &&
-                          item.path === "/booking-history"
-                        ) {
-                          dispatch(setOpenModelAuth(true));
-                          return;
-                        }
-                        navigate(item.path);
-                      }}
+                    <Link
+                      to={item.path}
+                      onClick={(e) => handleNavigation(e, item.path)}
                       className="relative px-2 py-1.5 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors group"
                     >
                       {item.label}
                       <span className="absolute inset-x-0 bottom-0 h-0.5 bg-blue-600 scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
-                    </button>
+                    </Link>
                   </motion.li>
                 ))}
               </ul>
@@ -106,12 +90,46 @@ const HeaderBooking = () => {
                   className="rounded-full bg-slate-50"
                 />
               </div>
-
+              <Badge count={1} offset={[-9, 4]} color="cyan">
+                <div className="h-10 w-10 hover:bg-slate-100 rounded-full flex items-center justify-center cursor-pointer">
+                  <IoNotificationsOutline className="text-slate-500 text-2xl" />
+                </div>
+              </Badge>
               <Dropdown
                 menu={{
                   items: isAuthenticated
-                    ? [authItems[0], authItems[2]]
-                    : [authItems[0], authItems[1]],
+                    ? [
+                        {
+                          label: (
+                            <Link to={authItems[0].path}>
+                              {authItems[0].label}
+                            </Link>
+                          ),
+                        },
+                        {
+                          label: (
+                            <span onClick={authItems[2].action}>
+                              {authItems[2].label}
+                            </span>
+                          ),
+                        },
+                      ]
+                    : [
+                        {
+                          label: (
+                            <Link to={authItems[0].path}>
+                              {authItems[0].label}
+                            </Link>
+                          ),
+                        },
+                        {
+                          label: (
+                            <span onClick={authItems[1].action}>
+                              {authItems[1].label}
+                            </span>
+                          ),
+                        },
+                      ],
                 }}
                 placement="bottomRight"
                 trigger={["click"]}
@@ -123,8 +141,8 @@ const HeaderBooking = () => {
                     className="cursor-pointer border-2 border-blue-200 hover:border-blue-300 transition-colors"
                   />
                 ) : (
-                  <div className="p-2 hover:bg-gray-100 rounded-full cursor-pointer transition-colors">
-                    <FaUserCircle className="w-6 h-6 text-[#1677ff]" />
+                  <div className="p-2 bg-gray-100 rounded-full cursor-pointer transition-colors">
+                    <FaUserCircle className="text-2xl text-[#1677ff]" />
                   </div>
                 )}
               </Dropdown>
@@ -174,45 +192,65 @@ const HeaderBooking = () => {
 
                 <nav className="space-y-1">
                   {menuItems.map((item, index) => (
-                    <motion.button
-                      key={index}
-                      onClick={() => {
-                        navigate(item.path);
-                        setIsDrawerOpen(false);
-                      }}
-                      className="w-full p-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      {item.label}
-                    </motion.button>
+                    <motion.div key={index} whileTap={{ scale: 0.98 }}>
+                      <Link
+                        to={item.path}
+                        onClick={() => setIsDrawerOpen(false)}
+                        className="w-full block p-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                      >
+                        {item.label}
+                      </Link>
+                    </motion.div>
                   ))}
                 </nav>
 
                 <div className="pt-4 border-t">
                   {isAuthenticated
                     ? [authItems[0], authItems[2]].map((item) => (
-                        <button
-                          key={item.key}
-                          onClick={() => {
-                            item.onClick();
-                            setIsDrawerOpen(false);
-                          }}
-                          className="w-full p-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                        >
-                          {item.label}
-                        </button>
+                        <motion.div key={item.key} whileTap={{ scale: 0.98 }}>
+                          {item.key === "logout" ? (
+                            <span
+                              onClick={() => {
+                                item.action();
+                                setIsDrawerOpen(false);
+                              }}
+                              className="w-full block p-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+                            >
+                              {item.label}
+                            </span>
+                          ) : (
+                            <Link
+                              to={item.path}
+                              onClick={() => setIsDrawerOpen(false)}
+                              className="w-full block p-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                            >
+                              {item.label}
+                            </Link>
+                          )}
+                        </motion.div>
                       ))
                     : [authItems[0], authItems[1]].map((item) => (
-                        <button
-                          key={item.key}
-                          onClick={() => {
-                            item.onClick();
-                            setIsDrawerOpen(false);
-                          }}
-                          className="w-full p-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                        >
-                          {item.label}
-                        </button>
+                        <motion.div key={item.key} whileTap={{ scale: 0.98 }}>
+                          {item.key === "login" ? (
+                            <span
+                              onClick={() => {
+                                item.action();
+                                setIsDrawerOpen(false);
+                              }}
+                              className="w-full block p-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+                            >
+                              {item.label}
+                            </span>
+                          ) : (
+                            <Link
+                              to={item.path}
+                              onClick={() => setIsDrawerOpen(false)}
+                              className="w-full block p-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                            >
+                              {item.label}
+                            </Link>
+                          )}
+                        </motion.div>
                       ))}
                 </div>
               </div>

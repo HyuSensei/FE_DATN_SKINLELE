@@ -6,10 +6,15 @@ import { useGetScheduleBookingDoctorQuery } from "@/redux/doctor/doctor.query";
 import { monthsDefault } from "@/const/dataDefault";
 import LoadingContent from "@/components/Loading/LoaingContent";
 import ConfirmBooking from "./ConfirmBooking";
+import { useDispatch, useSelector } from "react-redux";
+import BookingResult from "./BookingResult";
+import { BookingActions } from "@/redux/booking/booking.slice";
 
-const DoctorSchedule = ({ doctor }) => {
+const DoctorSchedule = ({ doctor, refetch }) => {
+  const dispath = useDispatch();
   const [selectedDate, setSelectedDate] = useState(dayjs().locale("vi"));
   const [selectedTime, setSelectedTime] = useState(null);
+  const [openResult, setOpenResult] = useState(false);
 
   const years = Array.from({ length: 21 }, (_, i) => dayjs().year() + i);
   const daysOfWeek = Array.from({ length: 7 }, (_, i) =>
@@ -89,6 +94,16 @@ const DoctorSchedule = ({ doctor }) => {
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-6 flex-wrap gap-2">
+        <BookingResult
+          {...{
+            open: openResult,
+            onClose: () => {
+              setOpenResult(false);
+              dispath(BookingActions.setBooking(null));
+              refetch();
+            },
+          }}
+        />
         <Select
           className="w-full lg:w-36"
           value={selectedDate.month()}
@@ -189,11 +204,15 @@ const DoctorSchedule = ({ doctor }) => {
                           ? "bg-blue-500 text-white ring-2 ring-blue-300"
                           : "bg-white border border-gray-200 hover:bg-blue-50"
                       }
-                      ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}
+                      ${
+                        isDisabled || !slot.isAvailable
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }
                     `}
                   >
-                    {isDisabled ? " 🟠" : "🟢"} {slot.startTime} -{" "}
-                    {slot.endTime}
+                    {isDisabled || !slot.isAvailable ? " 🟠" : "🟢"}{" "}
+                    {slot.startTime} - {slot.endTime}
                   </button>
                 </List.Item>
               );
@@ -210,6 +229,7 @@ const DoctorSchedule = ({ doctor }) => {
             doctor,
             handleClearTime,
             handleTimeSlotAction,
+            setOpenResult
           }}
         />
       )}

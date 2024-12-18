@@ -33,7 +33,7 @@ const FilterPanel = ({
           <h2 className="text-xl font-bold text-gray-800">
             🔎 Bộ lọc tìm kiếm
           </h2>
-          <div className="flex gap-4">
+          <div className="flex gap-4 py-4">
             <Statistic
               title="Tổng phòng khám"
               value={filterOptions.status.stats.total || 0}

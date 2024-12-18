@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   useGetDoctorsByCustomerQuery,
   useGetFilterOptionsDoctorQuery,
@@ -10,8 +10,8 @@ import { LuRefreshCcw } from "react-icons/lu";
 import FilterPanel from "./FilterPanel";
 import FilterTag from "./FilterTag";
 import EmptyData from "@/components/Error/EmptyData";
-import DoctorCard from "./DoctorCard";
 import { ArrowRightOutlined } from "@ant-design/icons";
+import DoctorCard from "@/components/Item/DoctorCard";
 
 const DoctorList = () => {
   const [paginate, setPaginate] = useState({
@@ -40,10 +40,21 @@ const DoctorList = () => {
     });
 
   useEffect(() => {
-    if (dataDoctors) {
-      setDoctors(dataDoctors.doctors || []);
+    if (dataDoctors && paginate.page === 1) {
+      setDoctors(dataDoctors.doctors);
+    } else if (dataDoctors) {
+      setDoctors((prev) => [...prev, ...dataDoctors.doctors]);
     }
   }, [dataDoctors]);
+
+  const handleSeenMore = useCallback(() => {
+    if (dataDoctors?.hasMore) {
+      setPaginate((prev) => ({
+        ...prev,
+        page: prev.page + 1,
+      }));
+    }
+  }, [dataDoctors?.hasMore]);
 
   if (!dataDoctors && !isLoadingDoctors) {
     return <EmptyData description="Có lỗi xảy ra khi lấy danh sách bác sĩ" />;
@@ -123,16 +134,17 @@ const DoctorList = () => {
                     <Empty description="Danh sách bác sĩ trống" />
                   </div>
                 )}
-                {
-                  hasMore && <div className="flex justify-center mt-4 items-center">
+                {hasMore && (
+                  <div className="flex justify-center mt-4 items-center">
                     <Button
+                      onClick={handleSeenMore}
                       type="link"
                       className="w-full flex items-center justify-center gap-2 text-blue-600 mt-4"
                     >
                       Xem thêm bác sĩ <ArrowRightOutlined />
                     </Button>
                   </div>
-                }
+                )}
               </Spin>
             </Card>
           </div>

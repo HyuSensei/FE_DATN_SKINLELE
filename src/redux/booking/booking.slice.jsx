@@ -1,11 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {};
+const initialState = {
+  booking: null,
+};
 
 export const bookingSlice = createSlice({
   name: "booking",
   initialState,
-  reducers: {},
+  reducers: {
+    setBooking(state, action) {
+      state.booking = action.payload;
+    },
+  },
 });
 
 export const BookingActions = bookingSlice.actions;

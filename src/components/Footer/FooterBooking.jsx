@@ -91,7 +91,7 @@ const FooterBooking = () => {
               />
               <ContactItem
                 icon={FaMapMarkerAlt}
-                text="Số 11 Hoàng Cầu - Q.Đống Đa - Hà Nội"
+                text="Cát Quế - Hoài Đức - Hà Nội"
               />
             </div>
           </div>

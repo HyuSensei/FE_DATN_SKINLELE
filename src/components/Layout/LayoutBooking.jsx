@@ -8,8 +8,8 @@ import ModalAuth from "../Modal/ModalAuth";
 
 const LayoutBooking = ({ children }) => {
   const location = useLocation();
-  const dispatch = useDispatch()
-  const { openModelAuth } = useSelector(state => state.auth)
+  const dispatch = useDispatch();
+  const { openModelAuth } = useSelector((state) => state.auth);
 
   useEffect(() => {
     window.scrollTo({
@@ -21,7 +21,12 @@ const LayoutBooking = ({ children }) => {
 
   return (
     <div className="site-layout flex flex-col overflow-x-hidden min-h-screen">
-      <ModalAuth {...{ open: openModelAuth, onClose: () => dispatch(setOpenModelAuth(false)) }} />
+      <ModalAuth
+        {...{
+          open: openModelAuth,
+          onClose: () => dispatch(setOpenModelAuth(false)),
+        }}
+      />
       <HeaderBooking />
       <div className="min-h-screen">{children}</div>
       <FooterBooking />

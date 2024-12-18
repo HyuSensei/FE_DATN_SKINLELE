@@ -24,22 +24,22 @@ const HomeBooking = () => {
 
   const services = [
     {
-      icon: <MdHealthAndSafety color="#f4dd22" size={50} />,
+      icon: <MdHealthAndSafety color="#09957a" size={50} />,
       title: "Điều trị mụn",
       description: "Phương pháp điều trị mụn chuyên sâu, hiệu quả",
     },
     {
-      icon: <FaUserMd color="#f4dd22" size={50} />,
+      icon: <FaUserMd color="#09957a" size={50} />,
       title: "Trị nám - tàn nhang",
       description: "Công nghệ laser tiên tiến, an toàn",
     },
     {
-      icon: <FaClock color="#f4dd22" size={50} />,
+      icon: <FaClock color="#09957a" size={50} />,
       title: "Trẻ hóa da",
       description: "Liệu trình chăm sóc và trẻ hóa toàn diện",
     },
     {
-      icon: <MdSupportAgent color="#f4dd22" size={50} />,
+      icon: <MdSupportAgent color="#09957a" size={50} />,
       title: "Tư vấn da liễu",
       description: "Đội ngũ bác sĩ giàu kinh nghiệm tư vấn",
     },

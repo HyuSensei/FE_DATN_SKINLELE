@@ -9,13 +9,14 @@ import locale from "antd/es/date-picker/locale/vi_VN";
 import { createBooking } from "@/redux/booking/booking.thunk";
 import { useScroll } from "@/components/context/ScrollProvider";
 import { MdOutlineBookmarks } from "react-icons/md";
-
+import { BookingActions } from "@/redux/booking/booking.slice";
 const ConfirmBooking = ({
   selectedTime,
   selectedDate,
   doctor,
   handleClearTime,
   handleTimeSlotAction,
+  setOpenResult,
 }) => {
   const { scrollToTop } = useScroll();
   const [form] = Form.useForm();
@@ -48,10 +49,18 @@ const ConfirmBooking = ({
       const res = await dispatch(createBooking(payload)).unwrap();
       if (res.success) {
         message.success(res.message);
-        scrollToTop();
-        handleClearTime();
         form.resetFields();
+        handleClearTime();
         handleTimeSlotAction({ ...selectedTime });
+        dispatch(
+          BookingActions.setBooking({
+            ...res.data,
+            doctor,
+            clinic: doctor.clinic,
+          })
+        );
+        scrollToTop();
+        setOpenResult(true);
       }
     } catch (error) {
       console.log(error);

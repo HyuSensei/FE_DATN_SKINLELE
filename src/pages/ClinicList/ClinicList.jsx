@@ -4,14 +4,14 @@ import {
   useGetClinicsByCustomerQuery,
   useGetFilterOptionsClinicQuery,
 } from "@/redux/clinic/clinic.query";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { FaFilter } from "react-icons/fa6";
 import FilterPanel from "./FilterPanel";
 import FilterTag from "./FilterTag";
 import { LuRefreshCcw } from "react-icons/lu";
 import { Button, Card, Empty, Spin } from "antd";
-import ClinicCard from "./ClinicCard";
 import { ArrowRightOutlined } from "@ant-design/icons";
+import ClinicCard from "@/components/Item/ClinicCard";
 
 const ClinicList = () => {
   const [paginate, setPaginate] = useState({
@@ -38,10 +38,21 @@ const ClinicList = () => {
     });
 
   useEffect(() => {
-    if (dataClinics) {
-      setClinics(dataClinics.clinics || []);
+    if (dataClinics && paginate.page === 1) {
+      setClinics(dataClinics.clinics);
+    } else if (dataClinics) {
+      setClinics((prev) => [...prev, ...dataClinics.doctors]);
     }
   }, [dataClinics]);
+
+  const handleSeenMore = useCallback(() => {
+    if (dataClinics?.hasMore) {
+      setPaginate((prev) => ({
+        ...prev,
+        page: prev.page + 1,
+      }));
+    }
+  }, [dataClinics?.hasMore]);
 
   if (!dataClinics && !isLoadingClinics) {
     return (
@@ -125,6 +136,7 @@ const ClinicList = () => {
                 {hasMore && (
                   <div className="flex justify-center mt-4">
                     <Button
+                      onClick={handleSeenMore}
                       type="link"
                       className="w-full flex items-center justify-center gap-2 text-blue-600 mt-4"
                     >

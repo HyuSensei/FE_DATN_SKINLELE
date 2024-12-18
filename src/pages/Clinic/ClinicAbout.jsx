@@ -24,10 +24,12 @@ const ClinicAbout = ({ clinic }) => {
   );
 
   useEffect(() => {
-    if (data) {
+    if (data && params.page === 1) {
       setDoctors(data.doctors);
+    } else if (data) {
+      setDoctors((prev) => [...prev, ...data.doctors]);
     }
-  }, [data]);
+  }, [data, params.page]);
 
   const sortedHours = [...clinic.workingHours].sort((a, b) => {
     const order = {
@@ -49,11 +51,7 @@ const ClinicAbout = ({ clinic }) => {
         page: prev.page + 1,
       }));
     }
-
-    if (data?.doctors) {
-      setDoctors((prev) => [...prev, ...data.doctors]);
-    }
-  }, [data?.hasMore, data?.doctors]);
+  }, [data?.hasMore]);
 
   if (errorDoctor) {
     return <EmptyData description="Có lỗi xảy ra khi lấy danh sách bác sĩ" />;
@@ -166,9 +164,9 @@ const ClinicAbout = ({ clinic }) => {
             Đội ngũ bác sĩ
           </h3>
           <div className="space-y-4">
-            {
-              !doctors.length && !isLoadingDoctor && <Empty description="Chưa có thông tin bác sĩ" />
-            }
+            {!doctors.length && !isLoadingDoctor && (
+              <Empty description="Chưa có thông tin bác sĩ" />
+            )}
             {doctors.length > 0 &&
               doctors.map((doctor, index) => (
                 <DoctorItem key={index} {...{ doctor }} />
