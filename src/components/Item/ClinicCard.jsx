@@ -1,8 +1,9 @@
-import { Rate, Tag } from "antd";
+import { Tag } from "antd";
 import React from "react";
 import { motion } from "framer-motion";
 import { FaLocationDot } from "react-icons/fa6";
 import { Link } from "react-router-dom";
+import StarReview from "../StarReview";
 
 const ClinicCard = ({ clinic }) => {
   if (!clinic) return null;
@@ -39,7 +40,7 @@ const ClinicCard = ({ clinic }) => {
         <div className="p-6 flex-1 flex flex-col">
           {/* Rating Section */}
           <div className="flex items-center gap-2 mb-4">
-            <Rate disabled defaultValue={clinic.rating} className="text-sm" />
+            <StarReview rate={clinic.averageRating} singleMode={false} />
             <span className="text-gray-600 text-sm">
               ({clinic.reviews} đánh giá)
             </span>

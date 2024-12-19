@@ -88,11 +88,15 @@ const MenuContent = ({ activeMenu, onMenuSelect }) => {
           className="flex items-center gap-4 hover:text-sky-600"
         >
           <IoIosArrowRoundBack className="rounded-full size-6" />
-          <span className="font-medium">Quay lại trang khách hàng</span>
+          <span className="font-medium">Quay lại trang chủ</span>
         </Link>
         <Divider />
         <div className="flex items-center gap-2 flex-wrap">
-          <Avatar src={doctorInfo.avatar.url} size={60} className="border-2 border-sky-300" />
+          <Avatar
+            src={doctorInfo.avatar.url}
+            size={60}
+            className="border-2 border-sky-300"
+          />
           <div className="text-base">
             <div className="font-medium">{doctorInfo.name}</div>
             <div>{doctorInfo.email}</div>

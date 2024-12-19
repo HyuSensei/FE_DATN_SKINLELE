@@ -28,14 +28,16 @@ const ClinicList = () => {
     workingHours: "",
     search: "",
   });
-  const [clinics, setClinics] = useState([]);
   const [isMobileFilterVisible, setIsMobileFilterVisible] = useState(false);
-
   const { data: dataClinics, isLoading: isLoadingClinics } =
-    useGetClinicsByCustomerQuery({
-      ...paginate,
-      ...selectedFilters,
-    });
+    useGetClinicsByCustomerQuery(
+      {
+        ...paginate,
+        ...selectedFilters,
+      },
+      { refetchOnMountOrArgChange: false }
+    );
+  const [clinics, setClinics] = useState(dataClinics?.clinics || []);
 
   useEffect(() => {
     if (dataClinics && paginate.page === 1) {
@@ -125,14 +127,21 @@ const ClinicList = () => {
                 {clinics.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {clinics.map((clinic, index) => (
-                      <ClinicCard key={index} clinic={clinic} />
+                      <ClinicCard
+                        key={index}
+                        clinic={{
+                          ...clinic,
+                          reviews: clinic.totalReviews,
+                          rating: clinic.averageRating,
+                        }}
+                      />
                     ))}
                   </div>
-                ) : (
+                ) : !isLoadingClinics ? (
                   <div className="flex justify-center">
                     <Empty description="Danh sách phòng khám trống" />
                   </div>
-                )}
+                ) : null}
                 {hasMore && (
                   <div className="flex justify-center mt-4">
                     <Button

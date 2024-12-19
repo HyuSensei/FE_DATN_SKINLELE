@@ -1,30 +1,20 @@
-import React, { useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
-import { FiMail, FiLock, FiArrowRight } from "react-icons/fi";
+import { FiLock, FiArrowRight } from "react-icons/fi";
 import { useDispatch } from "react-redux";
 import { getAccountAdmin, loginAdmin } from "@redux/auth/auth.thunk";
 import { set } from "@storage/storage";
-import { message } from "antd";
+import { Form, Input, Button, message } from "antd";
 import { useNavigate } from "react-router-dom";
+import { BiUser } from "react-icons/bi";
 
 const LoginAdmin = () => {
+  const [form] = Form.useForm();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [input, setInput] = useState({
-    username: "",
-    password: "",
-  });
 
-  const handleChangeInput = (key, value) => {
-    setInput((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    dispatch(loginAdmin(input)).then((res) => {
+  const handleSubmit = async (values) => {
+    dispatch(loginAdmin(values)).then((res) => {
       if (res.payload.success) {
         const resData = res.payload.data;
         set("ACCESS_TOKEN_ADMIN", res.payload.accessToken);
@@ -49,40 +39,63 @@ const LoginAdmin = () => {
           <h2 className="text-3xl font-bold mb-6 text-center">
             Admin SkinLele
           </h2>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="relative">
-              <FiMail className="absolute top-3 left-3 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Tên đăng nhập..."
-                value={input.username}
-                onChange={(e) => handleChangeInput("username", e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div className="relative">
-              <FiLock className="absolute top-3 left-3 text-gray-400" />
-              <input
-                type="password"
-                placeholder="Mật khẩu..."
-                value={input.password}
-                onChange={(e) => handleChangeInput("password", e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-full py-2 px-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-md flex items-center justify-center space-x-2 hover:from-blue-600 hover:to-purple-700 transition duration-300"
-              type="submit"
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={handleSubmit}
+            className="space-y-6"
+            requiredMark={false}
+          >
+            <Form.Item
+              name="username"
+              label={
+                <div className="text-gray-200 text-base font-medium">
+                  Tên đăng nhập
+                </div>
+              }
+              rules={[
+                { required: true, message: "Vui lòng nhập tên đăng nhập" },
+              ]}
             >
-              <span>Đăng Nhập</span>
-              <FiArrowRight />
-            </motion.button>
-          </form>
+              <Input
+                size="large"
+                prefix={<BiUser className="text-gray-400" />}
+                placeholder="Tên đăng nhập..."
+                className="bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="password"
+              label={
+                <div className="text-gray-200 text-base font-medium">
+                  Mật khẩu
+                </div>
+              }
+              rules={[{ required: true, message: "Vui lòng nhập mật khẩu" }]}
+            >
+              <Input.Password
+                size="large"
+                prefix={<FiLock className="text-gray-400" />}
+                placeholder="Mật khẩu..."
+                className="bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </Form.Item>
+
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                Size="large"
+                type="primary"
+                htmlType="submit"
+                className="w-full py-4 px-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-md flex items-center justify-center space-x-2 hover:from-blue-600 hover:to-purple-700 transition duration-300"
+              >
+                <span>Đăng Nhập</span>
+                <FiArrowRight />
+              </Button>
+            </motion.div>
+          </Form>
         </motion.div>
+
         <motion.div
           initial={{ x: 100, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}

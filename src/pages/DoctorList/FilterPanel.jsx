@@ -27,7 +27,7 @@ const FilterPanel = ({
   );
 
   return (
-    <>
+    <div>
       <div className="flex items-center justify-between mb-4">
         <div className="space-y-1">
           <h2 className="text-xl font-bold text-gray-800">
@@ -178,7 +178,7 @@ const FilterPanel = ({
           ))}
         </Radio.Group>
       </FilterSection>
-    </>
+    </div>
   );
 };
 

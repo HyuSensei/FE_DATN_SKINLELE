@@ -26,10 +26,7 @@ const DoctorList = () => {
     clinic: "",
     search: "",
   });
-  const [doctors, setDoctors] = useState([]);
-
   const [isMobileFilterVisible, setIsMobileFilterVisible] = useState(false);
-
   const { data: filterOptions, isLoading: isLoadingFilters } =
     useGetFilterOptionsDoctorQuery();
 
@@ -38,6 +35,7 @@ const DoctorList = () => {
       ...paginate,
       ...selectedFilters,
     });
+  const [doctors, setDoctors] = useState(dataDoctors?.doctors || []);
 
   useEffect(() => {
     if (dataDoctors && paginate.page === 1) {
@@ -78,13 +76,11 @@ const DoctorList = () => {
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Filters Panel */}
           <div
-            className={`
-            lg:w-1/4 
-            ${isMobileFilterVisible ? "block" : "hidden"} 
-            lg:block
-          `}
+            className={`lg:w-1/4 ${
+              isMobileFilterVisible ? "block" : "hidden"
+            } lg:block`}
           >
-            <Card className="sticky top-24">
+            <Card className="sticky top-24 ">
               <FilterPanel
                 {...{
                   filterOptions,
@@ -129,17 +125,18 @@ const DoctorList = () => {
                       <DoctorCard key={index} doctor={doctor} />
                     ))}
                   </div>
-                ) : (
+                ) : !isLoadingDoctors ? (
                   <div className="flex justify-center">
                     <Empty description="Danh sách bác sĩ trống" />
                   </div>
-                )}
+                ) : null}
+
                 {hasMore && (
-                  <div className="flex justify-center mt-4 items-center">
+                  <div className="flex justify-center mt-4">
                     <Button
                       onClick={handleSeenMore}
                       type="link"
-                      className="w-full flex items-center justify-center gap-2 text-blue-600 mt-4"
+                      className="flex items-center gap-2 text-blue-600"
                     >
                       Xem thêm bác sĩ <ArrowRightOutlined />
                     </Button>

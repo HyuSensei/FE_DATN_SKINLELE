@@ -1,7 +1,8 @@
-import { Avatar, Rate } from "antd";
+import { Avatar } from "antd";
 import React from "react";
 import { MdVerified } from "react-icons/md";
 import { Link } from "react-router-dom";
+import StarReview from "../StarReview";
 
 const DoctorCard = ({ doctor }) => {
   if (!doctor) return null;
@@ -47,14 +48,10 @@ const DoctorCard = ({ doctor }) => {
             </div>
 
             <div className="flex flex-col items-center gap-1">
-              <Rate
-                disabled
-                defaultValue={doctor.rating}
-                className="text-sm text-yellow-400"
-              />
+              <StarReview rate={doctor.rating} singleMode={false} />
               {/* <span className="text-gray-500 text-sm">
-            {doctor.reviewCount}
-          </span> */}
+                {doctor.reviewCount}
+              </span> */}
             </div>
           </div>
 

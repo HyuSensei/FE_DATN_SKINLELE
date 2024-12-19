@@ -1,15 +1,68 @@
-import React from "react";
-import { Form, Input, Select, Button, Upload } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import React, { useEffect, useState } from "react";
+import { Form, Input, message, Upload } from "antd";
 import CustomButton from "@/components/CustomButton";
-
-const { Option } = Select;
+import { useDispatch, useSelector } from "react-redux";
+import {
+  deleteFile,
+  UPLOAD_SKINLELE_CLINIC_PRESET,
+  uploadFile,
+} from "@/helpers/uploadCloudinary";
+import { updateAccountAdmin } from "@/redux/auth/auth.thunk";
+import { IoCloudUpload } from "react-icons/io5";
 
 const SettingAdmin = () => {
+  const dispatch = useDispatch();
+  const { adminInfo } = useSelector((state) => state.auth);
   const [form] = Form.useForm();
+  const [avatar, setAvatar] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (values) => {
-    console.log("values", values);
+  useEffect(() => {
+    if (adminInfo) {
+      form.setFieldsValue({
+        name: adminInfo.name,
+        avatar: {
+          url: adminInfo.avatar.url,
+          publicId: adminInfo.avatar.publicId,
+        },
+      });
+      setAvatar([
+        { url: adminInfo.avatar.url, publicId: adminInfo.avatar.publicId },
+      ]);
+    }
+  }, [adminInfo, form]);
+
+  const handleSubmit = async (values) => {
+    try {
+      setLoading(true);
+      let payload = {};
+      if (avatar[0]?.originFileObj) {
+        const result = await uploadFile({
+          file: avatar[0].originFileObj,
+          type: UPLOAD_SKINLELE_CLINIC_PRESET,
+        });
+        await deleteFile(adminInfo.avatar.publicId);
+        payload = {
+          ...values,
+          avatar: { url: result.secure_url, publicId: result.public_id },
+        };
+      } else {
+        payload = { ...values };
+      }
+
+      const res = await dispatch(
+        updateAccountAdmin({ id: adminInfo?._id, data: payload })
+      ).unwrap();
+
+      if (res.success) {
+        message.success(res.message);
+        window.location.reload();
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -22,27 +75,27 @@ const SettingAdmin = () => {
     >
       <Form.Item
         name="avatar"
-        valuePropName="fileList"
-        getValueFromEvent={(e) => {
-          if (Array.isArray(e)) return e;
-          return e?.fileList;
-        }}
         rules={[{ required: true, message: "Vui lòng chọn ảnh đại diện" }]}
         className="flex items-center justify-center w-full"
       >
         <Upload
           accept="image/*"
+          onChange={({ fileList }) => setAvatar(fileList)}
+          fileList={avatar}
           listType="picture-circle"
-          showUploadList={false}
+          beforeUpload={() => false}
+          maxCount={1}
         >
-          <div>
-            <UploadOutlined />
-            <div className="mt-2">Tải lên</div>
-          </div>
+          {avatar.length === 0 && (
+            <div className="flex flex-col items-center">
+              <IoCloudUpload className="w-6 h-6" />
+              <div className="mt-2">Tải ảnh</div>
+            </div>
+          )}
         </Upload>
       </Form.Item>
       <Form.Item
-        name="fullName"
+        name="name"
         label="Họ và tên"
         className="w-full lg:flex-1"
         rules={[
@@ -60,10 +113,7 @@ const SettingAdmin = () => {
         name="password"
         label="Mật khẩu"
         className="w-full lg:flex-1"
-        rules={[
-          { required: true, message: "Vui lòng nhập mật khẩu" },
-          { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự" },
-        ]}
+        rules={[{ min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự" }]}
       >
         <Input.Password
           size="large"
@@ -73,18 +123,20 @@ const SettingAdmin = () => {
       </Form.Item>
 
       <Form.Item
-        name="confirmPassword"
+        name="newPassword"
         label="Nhập mật khẩu mới"
         className="w-full lg:flex-1"
         dependencies={["password"]}
         rules={[
-          { required: true, message: "Vui lòng nhập lại mật khẩu" },
+          { min: 6, message: "Mật khẩu mới phải có ít nhất 6 ký tự" },
           ({ getFieldValue }) => ({
             validator(_, value) {
-              if (!value || getFieldValue("password") === value) {
+              if (!value || getFieldValue("password") !== value) {
                 return Promise.resolve();
               }
-              return Promise.reject(new Error("Mật khẩu nhập lại không khớp"));
+              return Promise.reject(
+                new Error("Mật khẩu mới không được giống với mật khẩu cũ")
+              );
             },
           }),
         ]}
@@ -95,7 +147,12 @@ const SettingAdmin = () => {
           className="w-full mt-1 shadow-lg"
         />
       </Form.Item>
-      <CustomButton variant="primary" type="submit" className="w-full">
+      <CustomButton
+        isLoading={loading}
+        variant="primary"
+        type="submit"
+        className="w-full"
+      >
         Cập nhật tài khoản
       </CustomButton>
     </Form>

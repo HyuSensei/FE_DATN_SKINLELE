@@ -1,5 +1,17 @@
 import { useState, useEffect, useCallback } from "react";
-import { Avatar, Card, Empty, Rate, Space, Select, Button, Form, Input, message, Divider } from "antd";
+import {
+  Avatar,
+  Card,
+  Empty,
+  Rate,
+  Space,
+  Select,
+  Button,
+  Form,
+  Input,
+  message,
+  Divider,
+} from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { useGetAllReviewsByCustomerQuery } from "@/redux/doctor/doctor.query";
 import dayjs from "@utils/dayjsTz";
@@ -11,7 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { createReviewDoctor } from "@/redux/doctor/doctor.thunk";
 import { capitalizeFirstLetter } from "@/helpers/formatDate";
 import StarReview from "@/components/StarReview";
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 
 const RatingSelect = ({ value, onChange }) => (
   <Select
@@ -46,7 +58,9 @@ const StatisticCard = ({ stats }) => {
             className="space-y-2"
           >
             <div className="text-4xl font-bold text-gray-900">
-              {stats.averageRating > 0 ? Number(stats.averageRating).toFixed(1) : "0.0"}
+              {stats.averageRating > 0
+                ? Number(stats.averageRating).toFixed(1)
+                : "0.0"}
             </div>
             <StarReview rate={stats.averageRating || 0} singleMode={false} />
             <div className="text-gray-500 font-medium">
@@ -94,8 +108,8 @@ const StatisticCard = ({ stats }) => {
 };
 
 const DoctorReview = ({ doctor }) => {
-  const dispatch = useDispatch()
-  const { isAuthenticated } = useSelector(state => state.auth)
+  const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const [reviews, setReviews] = useState([]);
   const [paginate, setPaginate] = useState({
     page: 1,
@@ -104,12 +118,10 @@ const DoctorReview = ({ doctor }) => {
   const [filters, setFilters] = useState({
     rate: "",
   });
-  const [hasMore, setHasMore] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [loadingSubmit, setLoadingSubmit] = useState(false)
-  const [form] = Form.useForm()
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [form] = Form.useForm();
 
-  if (!doctor) return null
+  if (!doctor) return null;
 
   const { data, isLoading, error, refetch } = useGetAllReviewsByCustomerQuery(
     { ...paginate, ...filters, doctor: doctor?._id },
@@ -123,9 +135,8 @@ const DoctorReview = ({ doctor }) => {
       } else {
         setReviews((prev) => [...prev, ...data.reviews]);
       }
-      setHasMore(data.hasMore);
     }
-  }, [data, paginate.page]);
+  }, [data]);
 
   const handleFilterChange = useCallback((value) => {
     setFilters((prev) => ({ ...prev, rate: value }));
@@ -133,12 +144,14 @@ const DoctorReview = ({ doctor }) => {
     setReviews([]);
   }, []);
 
-  const loadMore = useCallback(() => {
-    if (!hasMore || loadingMore) return;
-    setLoadingMore(true);
-    setPaginate((prev) => ({ ...prev, page: prev.page + 1 }));
-    setLoadingMore(false);
-  }, [hasMore, loadingMore]);
+  const handleSeenMore = useCallback(() => {
+    if (data?.hasMore) {
+      setPaginate((prev) => ({
+        ...prev,
+        page: prev.page + 1,
+      }));
+    }
+  }, [data?.hasMore]);
 
   if (error) {
     return (
@@ -162,46 +175,81 @@ const DoctorReview = ({ doctor }) => {
 
   const handleReviewDoctor = async (values) => {
     try {
-      if (!isAuthenticated) return
+      if (!isAuthenticated) return;
 
-      setLoadingSubmit(true)
-      const res = await dispatch(createReviewDoctor({
-        doctor: doctor._id,
-        ...values
-      })).unwrap()
+      setLoadingSubmit(true);
+      const res = await dispatch(
+        createReviewDoctor({
+          doctor: doctor._id,
+          ...values,
+        })
+      ).unwrap();
 
       if (res.success) {
-        message.success(res.message)
-        form.resetFields()
-        refetch()
+        message.success(res.message);
+        form.resetFields();
+        refetch();
       }
-
     } catch (error) {
       console.log(error);
     } finally {
-      setLoadingSubmit(true)
+      setLoadingSubmit(true);
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
       {data.stats && <StatisticCard stats={data.stats} />}
       <Divider />
       <div className="space-y-2">
-        <div className="text-base font-medium">
-          Viết đánh giá ngay
+        <div className="text-base font-medium">Viết đánh giá ngay</div>
+        <div className="text-sm text-gray-400 italic flex items-center gap-2">
+          ( Chọn mức độ hài lòng
+          <FaRegHandPointDown />)
         </div>
-        <div className="text-sm text-gray-400 italic flex items-center gap-2">( Chọn mức độ hài lòng<FaRegHandPointDown />)</div>
-        <Form onFinish={handleReviewDoctor} form={form} layout="vertical" requiredMark={false}>
+        <Form
+          onFinish={handleReviewDoctor}
+          form={form}
+          layout="vertical"
+          requiredMark={false}
+        >
           <Form.Item name="rate">
-            <Rate className="text-2xl" rules={[{ required: true, message: "Vui lòng chọn mức độ hài lòng của bạn !" }]} />
+            <Rate
+              className="text-2xl"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn mức độ hài lòng của bạn",
+                },
+              ]}
+            />
           </Form.Item>
-          <Form.Item name="content" rules={[
-            { required: true, message: "Vui lòng nhập nội dung đánh giá" },
-            { max: 250, message: "Nội dung không quá 250 ký tự" }]}>
-            <Input.TextArea rows={4} placeholder={isAuthenticated ? "Nhập nộp dung đánh giá..." : "Vui lòng đăng nhập để gửi đánh giá !"} />
+
+          <Form.Item
+            name="content"
+            rules={[
+              { required: true, message: "Vui lòng nhập nội dung đánh giá" },
+              { max: 250, message: "Nội dung không quá 250 ký tự" },
+            ]}
+          >
+            <Input.TextArea
+              rows={4}
+              placeholder={
+                isAuthenticated
+                  ? "Nhập nộp dung đánh giá..."
+                  : "Vui lòng đăng nhập để gửi đánh giá !"
+              }
+            />
           </Form.Item>
-          <CustomButton isLoading={loadingSubmit} disabled={!isAuthenticated} type="submit" icon={<IoIosSend />} variant="dark">Gửi đánh giá</CustomButton>
+          <CustomButton
+            isLoading={loadingSubmit}
+            disabled={!isAuthenticated}
+            type="submit"
+            icon={<IoIosSend />}
+            variant="dark"
+          >
+            Gửi đánh giá
+          </CustomButton>
         </Form>
       </div>
       <Divider />
@@ -215,47 +263,48 @@ const DoctorReview = ({ doctor }) => {
           <Empty description="Chưa có đánh giá nào!" />
         )}
 
-        {reviews.map((review) => (
-          <Card
-            key={review._id}
-            className="shadow-sm hover:shadow-md transition-shadow"
-            bordered={false}
-          >
-            <div className="flex items-start gap-4">
-              <Avatar
-                size={48}
-                src={review.user.avatar?.url}
-                icon={!review.user.avatar?.url && <UserOutlined />}
-                className="bg-blue-100"
-              />
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <h4 className="font-semibold text-gray-800">
-                    {review.user.name}
-                  </h4>
-                </div>
-                <Rate
-                  disabled
-                  value={review.rate}
-                  className="text-sm text-yellow-400"
+        {reviews.length > 0 &&
+          reviews.map((review) => (
+            <Card
+              key={review._id}
+              className="shadow-sm hover:shadow-md transition-shadow"
+              bordered={false}
+            >
+              <div className="flex items-start gap-4">
+                <Avatar
+                  size={48}
+                  src={review.user.avatar?.url}
+                  icon={!review.user.avatar?.url && <UserOutlined />}
+                  className="bg-blue-100 border-2 border-sky-300"
                 />
-                <p className="text-gray-600 mb-2 whitespace-pre-line">
-                  {review.content}
-                </p>
-                <span className="text-gray-400 text-sm">
-                  {capitalizeFirstLetter(dayjs(review.createdAt).fromNow())}
-                </span>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-semibold text-gray-800">
+                      {review.user.name}
+                    </h4>
+                  </div>
+                  <Rate
+                    disabled
+                    value={review.rate}
+                    className="text-sm text-yellow-400"
+                  />
+                  <p className="text-gray-600 mb-2 whitespace-pre-line">
+                    {review.content}
+                  </p>
+                  <span className="text-gray-400 text-sm">
+                    {capitalizeFirstLetter(dayjs(review.createdAt).fromNow())}
+                  </span>
+                </div>
               </div>
-            </div>
-          </Card>
-        ))}
+            </Card>
+          ))}
 
-        {hasMore && (
+        {data?.hasMore && (
           <div className="text-center pt-4">
             <Button
               size="large"
-              onClick={loadMore}
-              loading={loadingMore}
+              onClick={handleSeenMore}
+              loading={isLoading}
               className="min-w-[200px]"
             >
               Xem thêm đánh giá

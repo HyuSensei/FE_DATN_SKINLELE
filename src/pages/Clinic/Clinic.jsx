@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Tabs, Button, Empty, Spin } from "antd";
 import {
   RiMapPinFill,
@@ -19,6 +19,7 @@ import LoadingContent from "@/components/Loading/LoaingContent";
 
 const Clinic = () => {
   const { slug } = useParams();
+  const [activeTab, setActiveTab] = useState("2");
 
   const {
     data: clinic,
@@ -151,7 +152,8 @@ const Clinic = () => {
       {/* Main Content */}
       <div className="mx-auto lg:px-16 py-12 px-4">
         <Tabs
-          defaultActiveKey="1"
+          activeKey={activeTab}
+          onChange={setActiveTab}
           size="large"
           items={[
             {

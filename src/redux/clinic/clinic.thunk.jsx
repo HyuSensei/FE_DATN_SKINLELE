@@ -73,4 +73,16 @@ export const getClinicDetailByAdmin = createAsyncThunk(
   }
 );
 
+export const createReviewClinic = createAsyncThunk(
+  "clinic/createReviewClinic",
+  async (payload, { rejectWithValue }) => {
+    try {
+      return await axios.post("/clinics/reviews", payload);
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 

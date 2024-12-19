@@ -11,7 +11,7 @@ const FilterTag = ({ selectedFilters, filterOptions, setSelectedFilters }) => {
           (p) => p.value === value
         );
         return {
-          label: `Mức phí: ${price?.label || value}`,
+          label: `Phí khám: ${price?.label || value} VND`,
           color: "green",
         };
       }

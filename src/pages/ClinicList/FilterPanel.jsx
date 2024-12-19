@@ -50,7 +50,7 @@ const FilterPanel = ({
 
       {/* Price Range Filter */}
       <FilterSection
-        title="Mức phí"
+        title="Phí khám"
         stats={`${filterOptions.prices.stats.formatted.min} - ${filterOptions.prices.stats.formatted.max}  VND`}
       >
         <div className="px-2">
