@@ -22,6 +22,7 @@ import CustomButton from "@/components/CustomButton";
 import { updateDoctorInfor } from "@/redux/doctor/doctor.thunk";
 import { useScroll } from "@/components/context/ScrollProvider";
 import { DURATION_OPTIONS } from "@/const/dataDefault";
+import { setDoctorInfo } from "@/redux/auth/auth.slice";
 
 const EditInfor = ({ setIsEdit }) => {
   const dispatch = useDispatch();
@@ -79,6 +80,7 @@ const EditInfor = ({ setIsEdit }) => {
       ).unwrap();
 
       if (res.success) {
+        dispatch(setDoctorInfo({ ...res.data, clinic: doctorInfo.clinic }))
         message.success(res.message);
         scrollToTop()
         setIsEdit(false)
@@ -293,7 +295,7 @@ const EditInfor = ({ setIsEdit }) => {
               ]}
             >
               <Select
-               value={doctorInfo.duration}
+                value={doctorInfo.duration}
                 size="large"
                 options={DURATION_OPTIONS}
                 placeholder="Chọn thời gian khám"

@@ -288,7 +288,7 @@ const EditSchedule = ({ workingHours = [], handleChangeEdit, refetch }) => {
             </Form.Item>
           </div>
         ))}
-        <div className="flex justify-between mt-6">
+        <div className="flex justify-end gap-4 mt-6">
           <CustomButton
             icon={<IoMdArrowRoundBack />}
             onClick={() => handleChangeEdit("schedule", false)}
@@ -302,7 +302,7 @@ const EditSchedule = ({ workingHours = [], handleChangeEdit, refetch }) => {
             type="submit"
             loading={loading}
           >
-            Cập nhật
+            Lưu thay đổi
           </CustomButton>
         </div>
       </Form>

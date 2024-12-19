@@ -50,35 +50,39 @@ const DoctorOwner = () => {
   }, [navigate]);
 
   return (
-    <div className="mt-24 p-4 md:p-6">
-      <div className="flex flex-col lg:flex-row max-w-[1900px] mx-auto gap-6 h-full">
-        <div className="w-full lg:w-80 sticky lg:top-20">
+    <div className=" bg-slate-50 p-4 md:p-6 lg:pt-20">
+      <div className="flex flex-col lg:flex-row max-w-[1900px] mx-auto h-full gap-6 mt-6">
+        <div className="w-full lg:w-80 lg:h-full lg:sticky lg:top-[72px]">
           <SidebarMenu
             activeMenu={activeMenu}
             onMenuSelect={handleSelectedMenu}
           />
         </div>
-
-        {/* Content Area */}
-        <div className="flex-1 min-w-0 order-2">
-          <Card
-            className="bg-gradient-to-br from-blue-50 via-white to-indigo-50 shadow-lg border-2 min-h-screen"
-            bordered={false}
-          >
-            <div className="m-0 text-gray-800 flex items-center gap-2 uppercase text-2xl font-bold">
-              {title}
-            </div>
-            {activeMenu === "statistics" && (
-              <ManageStatistic {...{ activeMenu }} />
-            )}
-            {activeMenu === "bookings" && <ManageBooking {...{ activeMenu }} />}
-            {activeMenu === "profile" && <ManageProfile />}
-            {activeMenu === "reviews" && <ManageReview {...{ activeMenu }} />}
-            {activeMenu === "schedules" && <ManageSchedule />}
-          </Card>
+        <div className="flex-1">
+          <div className="flex flex-col w-full h-full min-h-screen">
+            <Card
+              className="bg-gradient-to-br from-blue-50 via-white to-indigo-50 shadow-lg"
+              bordered={false}
+            >
+              <div className="m-0 text-gray-800 flex items-center gap-2 uppercase text-2xl font-bold">
+                {title}
+              </div>
+              {activeMenu === "statistics" && (
+                <ManageStatistic {...{ activeMenu }} />
+              )}
+              {activeMenu === "bookings" && <ManageBooking {...{ activeMenu }} />}
+              {activeMenu === "profile" && <ManageProfile />}
+              {activeMenu === "reviews" && <ManageReview {...{ activeMenu }} />}
+              {activeMenu === "schedules" && <ManageSchedule />}
+            </Card>
+          </div>
         </div>
+        {/* Content Area */}
+
       </div>
     </div>
+    // <div className="p-4 md:p-6 h-full bg-slate-50">
+    // </div>
   );
 };
 

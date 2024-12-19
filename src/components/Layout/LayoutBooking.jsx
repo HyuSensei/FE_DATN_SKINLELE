@@ -20,7 +20,7 @@ const LayoutBooking = ({ children }) => {
   }, [location.pathname]);
 
   return (
-    <div className="site-layout flex flex-col overflow-x-hidden min-h-screen">
+    <div className="site-layout flex flex-col min-h-screen">
       <ModalAuth
         {...{
           open: openModelAuth,

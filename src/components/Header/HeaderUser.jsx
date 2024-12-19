@@ -120,8 +120,13 @@ const HeaderUser = () => {
     ...createMenuCategoryItems(categories),
     {
       key: "promotions",
-      label: "Khuyến mãi hot",
+      label: "🎁 Khuyến mãi hot",
       path: "/promotions",
+    },
+    {
+      key: "clinic",
+      label: "💥 Đặt lịch khám da liễu",
+      path: "/home-booking",
     },
   ];
 

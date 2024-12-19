@@ -8,6 +8,7 @@ const CustomButton = ({
   icon,
   loading = false,
   type = "button",
+  disabled = false
 }) => {
   const baseStyle =
     "px-6 py-2.5 rounded-lg font-medium transition-all duration-300 text-sm relative overflow-hidden";
@@ -57,7 +58,7 @@ const CustomButton = ({
         disabled:shadow-none
       `}
       onClick={onClick}
-      disabled={loading}
+      disabled={loading || disabled}
     >
       {loading ? (
         <>

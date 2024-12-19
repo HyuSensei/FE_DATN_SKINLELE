@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Input, Select, Table, Avatar, Rate, Tag, Tooltip } from "antd";
+import { Input, Select, Table, Avatar, Rate, Tag, Tooltip, Popconfirm, Switch } from "antd";
 import {
   StarFilled,
   MessageOutlined,
@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import { useGetAllReviewsByDoctorQuery } from "@/redux/doctor/doctor.query";
 import { debounce } from "lodash";
 import dayjs from "dayjs";
+import { MdOutlineDeleteOutline } from "react-icons/md";
 
 const StatCard = ({ icon: Icon, title, value, subtitle, gradient }) => (
   <div className={`relative overflow-hidden rounded-2xl p-6 ${gradient}`}>
@@ -36,9 +37,8 @@ const RatingBar = ({ rating, count, total, maxWidth = 100 }) => (
         className="absolute left-0 top-0 h-full rounded-full transition-all duration-500 group-hover:opacity-90"
         style={{
           width: `${(count / total) * maxWidth}%`,
-          background: `linear-gradient(90deg, rgb(251, 191, 36) ${
-            rating * 20
-          }%, rgb(251, 146, 60))`,
+          background: `linear-gradient(90deg, rgb(251, 191, 36) ${rating * 20
+            }%, rgb(251, 146, 60))`,
         }}
       />
     </div>
@@ -79,7 +79,7 @@ const ManageReview = () => {
     }
   }, [data]);
 
-  const { stats = {}, reviews = [] } = data?.data || {};
+  const { stats = {}, reviews = [] } = data || {};
   const {
     totalReviews = 0,
     averageRating = 0,
@@ -137,16 +137,48 @@ const ManageReview = () => {
       key: "date",
       width: 180,
       render: (record) => (
-        <Tooltip
-          title={dayjs(record.booking?.date).format("HH:mm - DD/MM/YYYY")}
+        !record.booking ? "Chưa đặt lịch" : <Tooltip
+          title={dayjs(record.booking.date).format("HH:mm - DD/MM/YYYY")}
         >
           <Tag
             icon={<CalendarOutlined className="mr-1" />}
             className="px-3 py-1.5 rounded-full text-blue-600 bg-blue-50 border-blue-100"
           >
-            {dayjs(record.booking?.date).format("DD/MM/YYYY")}
+            {dayjs(record.booking.date).format("DD/MM/YYYY")}
           </Tag>
         </Tooltip>
+
+      ),
+    },
+    {
+      title: "Thao tác",
+      key: "action",
+      render: (record) => (
+        <div className="flex gap-2 items-center">
+          <Tooltip title={record.isActive ? "Ẩn đánh giá" : "Hiện đánh giá"}>
+            <Switch
+              checked={record?.isActive}
+              onChange={(checked) => { }}
+            />
+          </Tooltip>
+          <Popconfirm
+            className="max-w-40"
+            placement="topLeft"
+            title={"Xác nhận xóa thông tin đánh giá"}
+            onConfirm={() => { }}
+            okText="Xóa"
+            cancelText="Hủy"
+            destroyTooltipOnHide={true}
+          >
+            <Tooltip title="Xóa">
+              <button
+                className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors"
+              >
+                <MdOutlineDeleteOutline />
+              </button>
+            </Tooltip>
+          </Popconfirm>
+        </div>
       ),
     },
   ];
@@ -193,11 +225,11 @@ const ManageReview = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
-        <div className="p-6 border-b border-gray-100">
+      <div className="space-y-4">
+        <div className="p-6 border-b border-gray-100 bg-white rounded-lg">
           <div className="flex flex-wrap gap-4">
             <Input
-              placeholder="Tìm kiếm theo tên bệnh nhân..."
+              placeholder="Tìm kiếm..."
               prefix={<SearchOutlined className="text-gray-400" />}
               className="flex-1 min-w-[300px]"
               size="large"
@@ -237,9 +269,7 @@ const ManageReview = () => {
             total: paginate.totalItems,
             onChange: (page, pageSize) =>
               setPaginate((prev) => ({ ...prev, page, pageSize })),
-            className: "px-6 py-4",
           }}
-          className="rounded-2xl overflow-hidden"
         />
       </div>
     </div>

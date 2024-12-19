@@ -64,7 +64,7 @@ const Partnership = () => {
       </div>
 
       {/* Stats Section */}
-      <div className="mx-auto px-4 sm:px-6 lg:px-8 -mt-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white rounded-2xl shadow-xl p-8 transform hover:scale-105 transition-all">
             <div className="text-teal-600 font-bold text-4xl mb-2">500+</div>
@@ -82,7 +82,7 @@ const Partnership = () => {
       </div>
 
       {/* Features Grid */}
-      <div className="mx-auto px-4 sm:px-6 lg:px-8 py-24">
+      <div className="mx-auto px-4 sm:px-6 lg:px-20 py-24">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
             Lợi ích khi trở thành đối tác
@@ -112,7 +112,7 @@ const Partnership = () => {
       </div>
 
       {/* Contact Form Section */}
-      <div className="mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+      <div className="mx-auto px-4 sm:px-6 lg:px-20 pb-24">
         <div className="relative bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
           <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-blue-50 to-transparent" />
 

@@ -87,3 +87,15 @@ export const updateDoctorInfor = createAsyncThunk(
   }
 );
 
+export const createReviewDoctor = createAsyncThunk(
+  "doctor/createReviewDoctor",
+  async (payload, { rejectWithValue }) => {
+    try {
+      return await axios.post("/doctors/reviews", payload);
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+

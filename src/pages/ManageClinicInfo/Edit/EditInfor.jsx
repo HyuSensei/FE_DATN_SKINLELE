@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Form, Input, Tag, Card, Row, Col, Button, message, Upload } from "antd";
+import React, { useEffect, useState } from "react";
+import { Form, Input, Tag, Card, Row, Col, message, Upload } from "antd";
 import { IoAdd, IoCloudUpload } from "react-icons/io5";
 import FroalaEditor from "react-froala-wysiwyg";
 import "froala-editor/js/froala_editor.pkgd.min.js";
@@ -12,6 +12,7 @@ import { useDispatch } from "react-redux";
 import { updateClinicByOwner } from "@/redux/clinic/clinic.thunk";
 import { useScroll } from "@/components/context/ScrollProvider";
 import { deleteFile, UPLOAD_SKINLELE_CLINIC_PRESET, uploadFile } from "@/helpers/uploadCloudinary";
+import CustomButton from "@/components/CustomButton";
 
 const config = {
   imageUpload: false,
@@ -39,6 +40,23 @@ const EditInfo = ({ clinic, handleChangeEdit, refetch }) => {
       publicId: clinic.logo.publicId
     },
   ]);
+
+  useEffect(() => {
+    if (clinic) {
+      form.setFieldsValue({
+        avatar: {
+          url: clinic.logo.url,
+          publicId: clinic.logo.publicId
+        },
+      });
+      setLogo([
+        {
+          url: clinic.logo.url,
+          publicId: clinic.logo.publicId
+        }
+      ]);
+    }
+  }, [clinic, form]);
 
   const handleSpecialtyClose = (removedTag) => {
     const newSpecialties = specialties.filter((tag) => tag !== removedTag);
@@ -109,7 +127,7 @@ const EditInfo = ({ clinic, handleChangeEdit, refetch }) => {
         email: clinic.email,
         address: clinic.address,
         description: clinic.description,
-        specialties: clinic.specialties,
+        specialties: clinic.specialties
       }}
       onFinish={handleSubmit}
     >
@@ -262,7 +280,7 @@ const EditInfo = ({ clinic, handleChangeEdit, refetch }) => {
       </Card>
 
       <div className="flex justify-end gap-4">
-        <Button
+        <CustomButton
           icon={<IoMdArrowRoundBack className="text-lg" />}
           onClick={() => {
             handleChangeEdit("info", false);
@@ -270,16 +288,15 @@ const EditInfo = ({ clinic, handleChangeEdit, refetch }) => {
           }}
         >
           Đóng
-        </Button>
-        <Button
-          type="primary"
-          htmlType="submit"
-          loading={loading}
-          className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-blue-200/50 active:shadow-inner disabled:opacity-70 disabled:cursor-not-allowed"
+        </CustomButton>
+        <CustomButton
+          isLoaind={loading}
           icon={<MdSave className="text-lg" />}
+          type="submit"
+          variant="primary"
         >
-          Lưu thay đổi
-        </Button>
+          {loading ? "Đang lưu..." : "Lưu thay đổi"}
+        </CustomButton>
       </div>
     </Form>
   );

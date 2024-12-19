@@ -4,11 +4,12 @@ import { FiChevronRight, FiGrid } from "react-icons/fi";
 import { RiDashboard3Line } from "react-icons/ri";
 import { FaRegCalendarCheck, FaRegUser } from "react-icons/fa6";
 import { MdOutlineReviews } from "react-icons/md";
-import { Collapse } from "antd";
+import { Avatar, Collapse, Divider } from "antd";
 import { IoSettingsOutline } from "react-icons/io5";
-import { IoIosLogOut } from "react-icons/io";
-import { useDispatch } from "react-redux";
+import { IoIosArrowRoundBack, IoIosLogOut } from "react-icons/io";
+import { useDispatch, useSelector } from "react-redux";
 import { logoutDoctor } from "@/redux/auth/auth.slice";
+import { Link } from "react-router-dom";
 
 const MenuItem = ({ icon: Icon, text, isActive, onClick }) => (
   <motion.div
@@ -16,21 +17,18 @@ const MenuItem = ({ icon: Icon, text, isActive, onClick }) => (
     whileTap={{ scale: 0.98 }}
     onClick={onClick}
     className={`flex items-center gap-4 px-4 py-3 cursor-pointer rounded-lg mx-2 transition-all duration-300 ease-in-out
-            ${
-              isActive
-                ? "bg-blue-500 text-white shadow-lg shadow-blue-200"
-                : "hover:bg-gray-100 dark:hover:bg-slate-700"
-            }`}
+            ${isActive
+        ? "bg-blue-500 text-white shadow-lg shadow-blue-200"
+        : "hover:bg-gray-100 dark:hover:bg-slate-700"
+      }`}
   >
     <Icon
-      className={`text-xl ${
-        isActive ? "text-white" : "text-gray-500 dark:text-gray-400"
-      }`}
+      className={`text-xl ${isActive ? "text-white" : "text-gray-500 dark:text-gray-400"
+        }`}
     />
     <span
-      className={`font-medium ${
-        isActive ? "text-white" : "text-gray-600 dark:text-gray-300"
-      }`}
+      className={`font-medium ${isActive ? "text-white" : "text-gray-600 dark:text-gray-300"
+        }`}
     >
       {text}
     </span>
@@ -38,6 +36,7 @@ const MenuItem = ({ icon: Icon, text, isActive, onClick }) => (
 );
 
 const MenuContent = ({ activeMenu, onMenuSelect }) => {
+  const { doctorInfo } = useSelector(state => state.auth)
   const dispatch = useDispatch();
   const handleLogout = () => {
     dispatch(logoutDoctor());
@@ -83,6 +82,23 @@ const MenuContent = ({ activeMenu, onMenuSelect }) => {
         onClick={() => onMenuSelect("schedules")}
       />
       <MenuItem icon={IoIosLogOut} text="Đăng xuất" onClick={handleLogout} />
+      <div className="mt-auto py-8 mb-2 ">
+        <Link
+          href={"/home-booking"}
+          className="flex items-center gap-4 hover:text-sky-600"
+        >
+          <IoIosArrowRoundBack className="rounded-full size-6" />
+          <span className="font-medium">Quay lại trang khách hàng</span>
+        </Link>
+        <Divider />
+        <div className="flex items-center gap-2 flex-wrap">
+          <Avatar src={doctorInfo.avatar.url} size={60} className="border-2 border-sky-300" />
+          <div className="text-base">
+            <div className="font-medium">{doctorInfo.name}</div>
+            <div>{doctorInfo.email}</div>
+          </div>
+        </div>
+      </div>
     </motion.div>
   );
 };
@@ -108,22 +124,20 @@ const SidebarMenu = ({ activeMenu, onMenuSelect }) => {
         <Collapse
           expandIcon={({ isActive }) => (
             <FiChevronRight
-              className={`transform transition-transform duration-200 ${
-                isActive ? "rotate-90" : ""
-              }`}
+              className={`transform transition-transform duration-200 ${isActive ? "rotate-90" : ""
+                }`}
             />
           )}
-          className="bg-white dark:bg-slate-800 rounded-xl shadow-md border-0"
+          className="bg-white rounded-xl shadow-md border-0"
           items={collapseItems}
         />
       </div>
-
       {/* Desktop Sidebar */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.3 }}
-        className="hidden lg:block w-80 rounded-xl bg-white border-2 shadow-md p-6"
+        className="hidden lg:block w-80 rounded-xl bg-white shadow-md p-6 h-full"
       >
         <div className="border-b-2 border-gray-200 mb-2">
           <div className="text-gray-800 flex items-center gap-3 px-2 pb-4">
@@ -136,5 +150,6 @@ const SidebarMenu = ({ activeMenu, onMenuSelect }) => {
     </>
   );
 };
+
 
 export default SidebarMenu;
