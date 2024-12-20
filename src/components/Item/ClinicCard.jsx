@@ -1,9 +1,9 @@
-import { Tag } from "antd";
+import { Rate, Tag } from "antd";
 import React from "react";
 import { motion } from "framer-motion";
 import { FaLocationDot } from "react-icons/fa6";
 import { Link } from "react-router-dom";
-import StarReview from "../StarReview";
+import { createAverageRate } from "@/utils/createIcon";
 
 const ClinicCard = ({ clinic }) => {
   if (!clinic) return null;
@@ -40,9 +40,21 @@ const ClinicCard = ({ clinic }) => {
         <div className="p-6 flex-1 flex flex-col">
           {/* Rating Section */}
           <div className="flex items-center gap-2 mb-4">
-            <StarReview rate={clinic.averageRating} singleMode={false} />
+            <Rate
+              disabled
+              character={({ index }) =>
+                createAverageRate({
+                  index: index + 1,
+                  rate: parseFloat(clinic.averageRating),
+                  width: "14px",
+                  height: "14px",
+                  activeColor: "#f4dd22",
+                  nonActiveColor: "#ebe8fb",
+                })
+              }
+            />
             <span className="text-gray-600 text-sm">
-              ({clinic.reviews} đánh giá)
+              ({clinic.totalReviews} đánh giá)
             </span>
           </div>
 

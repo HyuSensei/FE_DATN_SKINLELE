@@ -264,8 +264,7 @@ const CreateDoctor = () => {
       <div className="w-full">
         <Button
           loading={loading}
-          type="primary"
-          htmlType="submit"
+          type="submit"
           size="large"
           className="w-full text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none rounded-full"
         >

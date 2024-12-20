@@ -232,16 +232,12 @@ const Register = ({ setStep }) => {
           }),
         ]}
       >
-        <Input.Password
-          placeholder="Nhập lại mật khẩu..."
-         size="large"
-        />
+        <Input.Password placeholder="Nhập lại mật khẩu..." size="large" />
       </Form.Item>
 
       <Form.Item>
         <button
-          type="primary"
-          htmlType="submit"
+          type="submit"
           className="w-full font-bold bg-gradient-to-r from-yellow-300 via-orange-600 to-purple-800 text-white p-3 rounded-md hover:bg-sky-800 focus:outline-none"
         >
           Đăng ký

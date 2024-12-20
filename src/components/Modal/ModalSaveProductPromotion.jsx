@@ -102,8 +102,7 @@ const ModalSaveProductPromotion = ({
           <h2 className="text-lg font-bold">Thông tin khuyến mãi</h2>
           <div className="flex items-center gap-2">
             <Button
-              type="primary"
-              htmlType="submit"
+              type="submit"
               className="bg-indigo-600 hover:bg-indigo-700 w-full sm:w-auto"
             >
               Tạo ngay

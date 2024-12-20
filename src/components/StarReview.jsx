@@ -1,13 +1,13 @@
 import React from 'react';
 
 const StarReview = ({
-  rate,
+  rate = 0,
   singleMode = false,
   width = "24px",
   height = "24px",
   activeColor = "#FBCE14",
   nonActiveColor = "#E4E9EC",
-  className = ""
+  className = "",
 }) => {
 
   const getSingleStarFill = () => {
@@ -35,9 +35,21 @@ const StarReview = ({
           className="overflow-visible"
         >
           <defs>
-            <linearGradient id="single-star-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset={`${getSingleStarFill()}%`} stopColor={activeColor} />
-              <stop offset={`${getSingleStarFill()}%`} stopColor={nonActiveColor} />
+            <linearGradient
+              id="single-star-gradient"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="0%"
+            >
+              <stop
+                offset={`${getSingleStarFill()}%`}
+                stopColor={activeColor}
+              />
+              <stop
+                offset={`${getSingleStarFill()}%`}
+                stopColor={nonActiveColor}
+              />
             </linearGradient>
           </defs>
           <path
@@ -62,9 +74,21 @@ const StarReview = ({
             className="overflow-visible"
           >
             <defs>
-              <linearGradient id={`star-gradient-${index}`} x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset={`${getMultiStarFill(index)}%`} stopColor={activeColor} />
-                <stop offset={`${getMultiStarFill(index)}%`} stopColor={nonActiveColor} />
+              <linearGradient
+                id={`star-gradient-${index}`}
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="0%"
+              >
+                <stop
+                  offset={`${getMultiStarFill(index)}%`}
+                  stopColor={activeColor}
+                />
+                <stop
+                  offset={`${getMultiStarFill(index)}%`}
+                  stopColor={nonActiveColor}
+                />
               </linearGradient>
             </defs>
             <path

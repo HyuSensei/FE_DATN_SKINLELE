@@ -80,7 +80,7 @@ const PageTitle = ({
   title,
   description = DEFAULT_DESCRIPTION,
   keywords = DEFAULT_KEYWORDS,
-  ogImage = "https://skinlele.vercel.app/og/default.png",
+  ogImage = "https://skinlele.vercel.app/images/og/default.png",
   children,
 }) => {
   const dispatch = useDispatch();

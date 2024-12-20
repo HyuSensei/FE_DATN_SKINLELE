@@ -42,8 +42,6 @@ const ClinicList = () => {
   useEffect(() => {
     if (dataClinics && paginate.page === 1) {
       setClinics(dataClinics.clinics);
-    } else if (dataClinics) {
-      setClinics((prev) => [...prev, ...dataClinics.doctors]);
     }
   }, [dataClinics]);
 
@@ -53,8 +51,18 @@ const ClinicList = () => {
         ...prev,
         page: prev.page + 1,
       }));
+
+      if (dataClinics?.clinics) {
+        setClinics((prev) => {
+          const existingIds = new Set(prev.map((clinic) => clinic._id));
+          const newClinics = dataClinics.clinics.filter(
+            (clinic) => !existingIds.has(clinic._id)
+          );
+          return [...prev, ...newClinics];
+        });
+      }
     }
-  }, [dataClinics?.hasMore]);
+  }, [dataClinics?.hasMore, dataClinics?.clinic]);
 
   if (!dataClinics && !isLoadingClinics) {
     return (
@@ -127,14 +135,7 @@ const ClinicList = () => {
                 {clinics.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {clinics.map((clinic, index) => (
-                      <ClinicCard
-                        key={index}
-                        clinic={{
-                          ...clinic,
-                          reviews: clinic.totalReviews,
-                          rating: clinic.averageRating,
-                        }}
-                      />
+                      <ClinicCard key={index} clinic={clinic} />
                     ))}
                   </div>
                 ) : !isLoadingClinics ? (

@@ -1,8 +1,8 @@
-import { Avatar } from "antd";
+import { Avatar, Rate } from "antd";
 import React from "react";
 import { MdVerified } from "react-icons/md";
 import { Link } from "react-router-dom";
-import StarReview from "../StarReview";
+import { createAverageRate } from "@/utils/createIcon";
 
 const DoctorCard = ({ doctor }) => {
   if (!doctor) return null;
@@ -32,9 +32,12 @@ const DoctorCard = ({ doctor }) => {
 
         {/* Card Content */}
         <div className="px-6 pt-14 pb-6">
-          <h3 className="flex items-center gap-2 justify-center text-lg font-semibold text-center line-clamp-1 text-gray-800 group-hover:text-blue-600 transition-colors duration-300">
-            BS. {doctor.name} <MdVerified className="text-[#5ad7ff]" />
-          </h3>
+          <div className="flex items-center gap-2 justify-center ">
+            <h3 className="text-lg font-semibold text-center line-clamp-1 text-gray-800 group-hover:text-blue-600 transition-colors duration-300">
+              BS. {doctor.name}
+            </h3>
+            <MdVerified className="text-[#5ad7ff] text-xl" />
+          </div>
 
           <div className="flex items-center justify-center gap-2 mt-2 text-blue-600 font-medium">
             <span className="text-sm">{doctor.specialty}</span>
@@ -47,11 +50,23 @@ const DoctorCard = ({ doctor }) => {
               </span>
             </div>
 
-            <div className="flex flex-col items-center gap-1">
-              <StarReview rate={doctor.rating} singleMode={false} />
-              {/* <span className="text-gray-500 text-sm">
-                {doctor.reviewCount}
-              </span> */}
+            <div className="flex items-center gap-2 justify-center">
+              <Rate
+                disabled
+                character={({ index }) =>
+                  createAverageRate({
+                    index: index + 1,
+                    rate: parseFloat(doctor.rating),
+                    width: "14px",
+                    height: "14px",
+                    activeColor: "#f4dd22",
+                    nonActiveColor: "#ebe8fb",
+                  })
+                }
+              />
+              <div className="text-gray-500 text-sm">
+                ({doctor.reviewCount} đánh giá)
+              </div>
             </div>
           </div>
 

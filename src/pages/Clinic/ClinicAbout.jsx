@@ -6,6 +6,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { BsFillCheckCircleFill } from "react-icons/bs";
 import { RiStarFill, RiUserStarFill } from "react-icons/ri";
 import DoctorItem from "./DoctorItem";
+import { Link } from "react-router-dom";
 
 const ClinicAbout = ({ clinic }) => {
   const [params, setParams] = useState({
@@ -26,10 +27,8 @@ const ClinicAbout = ({ clinic }) => {
   useEffect(() => {
     if (data && params.page === 1) {
       setDoctors(data.doctors);
-    } else if (data) {
-      setDoctors((prev) => [...prev, ...data.doctors]);
     }
-  }, [data, params.page]);
+  }, [data]);
 
   const sortedHours = [...clinic.workingHours].sort((a, b) => {
     const order = {
@@ -51,7 +50,19 @@ const ClinicAbout = ({ clinic }) => {
         page: prev.page + 1,
       }));
     }
-  }, [data?.hasMore]);
+
+    if (data?.doctors) {
+      console.log(data?.doctors);
+
+      setDoctors((prev) => {
+        const existingIds = new Set(prev.map((doctor) => doctor._id));
+        const newDoctors = data.doctors.filter(
+          (doctor) => !existingIds.has(doctor._id)
+        );
+        return [...prev, ...newDoctors];
+      });
+    }
+  }, [data?.hasMore, data?.doctors]);
 
   if (errorDoctor) {
     return <EmptyData description="Có lỗi xảy ra khi lấy danh sách bác sĩ" />;
@@ -169,7 +180,9 @@ const ClinicAbout = ({ clinic }) => {
             )}
             {doctors.length > 0 &&
               doctors.map((doctor, index) => (
-                <DoctorItem key={index} {...{ doctor }} />
+                <Link key={index} to={`/doctor-detail/${doctor.slug}`}>
+                  <DoctorItem {...{ doctor }} />
+                </Link>
               ))}
             {hasMore && (
               <Button

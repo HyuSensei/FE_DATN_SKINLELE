@@ -19,7 +19,7 @@ import LoadingContent from "@/components/Loading/LoaingContent";
 
 const Clinic = () => {
   const { slug } = useParams();
-  const [activeTab, setActiveTab] = useState("2");
+  const [activeTab, setActiveTab] = useState("1");
 
   const {
     data: clinic,
