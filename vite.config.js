@@ -1,10 +1,17 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from "path";
+import compression from "vite-plugin-compression";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    compression({
+      algorithm: "gzip",
+      ext: ".gz",
+    }),
+  ],
   css: {
     preprocessorOptions: {
       scss: {
@@ -28,6 +35,16 @@ export default defineConfig({
       "@storage": path.resolve(__dirname, "src/storage"),
       "@utils": path.resolve(__dirname, "src/utils"),
       "@validate": path.resolve(__dirname, "src/validate"),
+    },
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ["react", "react-dom"],
+          antd: ["antd"],
+        },
+      },
     },
   },
 });

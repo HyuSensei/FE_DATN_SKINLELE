@@ -55,7 +55,11 @@ const WrapRoute = ({ element: Element, title, isProtected, isAuthRoute }) => (
 );
 
 const routes = [
-  { path: "/", element: Home, title: "SkinLeLe" },
+  {
+    path: "/",
+    element: Home,
+    title: "SkinLeLe - Hãy cùng chăm sóc làn da của bạn cùng chúng tôi",
+  },
   {
     path: "/auth",
     element: Auth,
