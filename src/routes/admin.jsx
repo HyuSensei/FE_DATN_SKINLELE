@@ -29,6 +29,7 @@ const ManageBooking = lazy(() => import("@pages/ManageBooking"));
 const ManageClinic = lazy(() => import("@pages/ManageClinic"));
 const ManageClinicInfo = lazy(() => import("@pages/ManageClinicInfo"));
 const CreateDoctor = lazy(() => import("@pages/CreateDoctor"));
+const ManageReviewByClinic = lazy(() => import("@pages/ManageReviewByClinic"));
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticatedAdmin, isLoading } = useSelector(
@@ -234,6 +235,13 @@ const adminRoutes = [
     element: CreateDoctor,
     title: "Admin - Tạo Thông Tin Bác Sĩ",
     layoutTitle: "Tạo thông tin bác sĩ",
+    isProtected: true,
+  },
+  {
+    path: "/admin/clinics/reviews",
+    element: ManageReviewByClinic,
+    title: "Admin - Quản lý thông tin đánh giá",
+    layoutTitle: "Quản lý thông tin đánh giá",
     isProtected: true,
   },
 ];

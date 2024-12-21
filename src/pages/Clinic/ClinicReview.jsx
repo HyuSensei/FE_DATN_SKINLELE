@@ -109,52 +109,6 @@ const ClinicReview = ({ clinic }) => {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-6">
       <div className="lg:col-span-2">
         {/* Rating Summary */}
-        {/* <Card className="mb-8 transition-shadow duration-300">
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-8">
-            <div className="text-center">
-              <div className="text-5xl font-bold text-gray-800 mb-2">
-                {Number(stats.averageRating).toFixed(1)}
-              </div>
-              <StarReview
-                {...{ rate: stats.averageRating, singleMode: false }}
-              />
-              <div className="text-gray-500 mt-2">
-                {stats.totalReviews} đánh giá
-              </div>
-            </div>
-
-            <div className="flex-1 w-full">
-              <div className="space-y-4">
-                {Object.entries(stats.ratingDistribution)
-                  .reverse()
-                  .map(([rating, count]) => (
-                    <div key={rating} className="flex items-center gap-4">
-                      <div className="w-16 text-gray-600 font-medium">
-                        {rating} sao
-                      </div>
-                      <div className="flex-1">
-                        <Progress
-                          percent={
-                            (count / Math.max(stats.totalReviews, 1)) * 100
-                          }
-                          showInfo={false}
-                          strokeColor={{
-                            from: "#facc15",
-                            to: "#eab308",
-                          }}
-                          trailColor="#f3f4f6"
-                          size={10}
-                        />
-                      </div>
-                      <div className="w-12 text-right text-gray-500">
-                        {count}
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            </div>
-          </div>
-        </Card> */}
         <div className="text-base font-medium mb-4">Đánh giá tổng quan</div>
         <motion.div initial="hidden" animate="show" variants={container}>
           <Card className="mb-8 shadow-sm hover:shadow-md transition-shadow duration-300">
@@ -207,7 +161,7 @@ const ClinicReview = ({ clinic }) => {
                               }
                               showInfo={false}
                               strokeColor={{
-                                from: "#fbbf24",
+                                from: "#f4dd22",
                                 to: "#f59e0b",
                               }}
                               trailColor="#f3f4f6"

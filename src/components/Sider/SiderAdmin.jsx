@@ -134,6 +134,12 @@ const MENU_CLINIC_ITEMS = [
   },
   {
     key: "5",
+    icon: <StarOutlined />,
+    label: "Đánh giá",
+    path: "/admin/clinics/reviews",
+  },
+  {
+    key: "6",
     icon: <SettingOutlined />,
     label: "Cài đặt",
     path: "/admin/settings",

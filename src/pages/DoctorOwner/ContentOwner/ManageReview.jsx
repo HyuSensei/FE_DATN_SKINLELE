@@ -1,5 +1,16 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Input, Select, Table, Avatar, Rate, Tag, Tooltip, Popconfirm, Switch } from "antd";
+import {
+  Input,
+  Select,
+  Table,
+  Avatar,
+  Rate,
+  Tag,
+  Tooltip,
+  Popconfirm,
+  Switch,
+  message,
+} from "antd";
 import {
   StarFilled,
   MessageOutlined,
@@ -7,48 +18,19 @@ import {
   CalendarOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useGetAllReviewsByDoctorQuery } from "@/redux/doctor/doctor.query";
 import { debounce } from "lodash";
 import dayjs from "dayjs";
 import { MdOutlineDeleteOutline } from "react-icons/md";
-
-const StatCard = ({ icon: Icon, title, value, subtitle, gradient }) => (
-  <div className={`relative overflow-hidden rounded-2xl p-6 ${gradient}`}>
-    <div className="absolute top-0 right-0 w-32 h-32 transform translate-x-16 -translate-y-8">
-      <Icon className="w-full h-full opacity-10 text-white" />
-    </div>
-    <div className="relative z-10">
-      <p className="text-xl font-medium text-white/80">{title}</p>
-      <h3 className="text-3xl font-bold text-white mt-2 mb-1">{value}</h3>
-      {subtitle && <p className="text-sm text-white/70">{subtitle}</p>}
-    </div>
-  </div>
-);
-
-const RatingBar = ({ rating, count, total, maxWidth = 100 }) => (
-  <div className="flex items-center gap-3 group">
-    <div className="flex items-center gap-1 min-w-[50px]">
-      <span className="text-white font-medium text-base">{rating}</span>
-      <StarFilled className="text-yellow-400 text-xl" />
-    </div>
-    <div className="flex-1 relative h-3 rounded-full bg-gray-100 overflow-hidden">
-      <div
-        className="absolute left-0 top-0 h-full rounded-full transition-all duration-500 group-hover:opacity-90"
-        style={{
-          width: `${(count / total) * maxWidth}%`,
-          background: `linear-gradient(90deg, rgb(251, 191, 36) ${rating * 20
-            }%, rgb(251, 146, 60))`,
-        }}
-      />
-    </div>
-    <span className="text-base font-medium text-white min-w-[40px]">
-      {count || 0}
-    </span>
-  </div>
-);
+import RatingStats from "./Action/RatingStats";
+import {
+  removeReviewDoctor,
+  updateReviewDoctor,
+} from "@/redux/doctor/doctor.thunk";
 
 const ManageReview = () => {
+  const dispatch = useDispatch();
   const { _id } = useSelector((state) => state.auth.doctorInfo);
   const [paginate, setPaginate] = useState({
     page: 1,
@@ -60,7 +42,7 @@ const ManageReview = () => {
     rate: "",
   });
 
-  const { data, isLoading } = useGetAllReviewsByDoctorQuery(
+  const { data, isLoading, refetch } = useGetAllReviewsByDoctorQuery(
     {
       doctor: _id,
       page: paginate.page,
@@ -136,19 +118,21 @@ const ManageReview = () => {
       title: "Ngày khám",
       key: "date",
       width: 180,
-      render: (record) => (
-        !record.booking ? "Chưa đặt lịch" : <Tooltip
-          title={dayjs(record.booking.date).format("HH:mm - DD/MM/YYYY")}
-        >
-          <Tag
-            icon={<CalendarOutlined className="mr-1" />}
-            className="px-3 py-1.5 rounded-full text-blue-600 bg-blue-50 border-blue-100"
+      render: (record) =>
+        !record.booking ? (
+          "Chưa đặt lịch"
+        ) : (
+          <Tooltip
+            title={dayjs(record.booking.date).format("HH:mm - DD/MM/YYYY")}
           >
-            {dayjs(record.booking.date).format("DD/MM/YYYY")}
-          </Tag>
-        </Tooltip>
-
-      ),
+            <Tag
+              icon={<CalendarOutlined className="mr-1" />}
+              className="px-3 py-1.5 rounded-full text-blue-600 bg-blue-50 border-blue-100"
+            >
+              {dayjs(record.booking.date).format("DD/MM/YYYY")}
+            </Tag>
+          </Tooltip>
+        ),
     },
     {
       title: "Thao tác",
@@ -158,22 +142,24 @@ const ManageReview = () => {
           <Tooltip title={record.isActive ? "Ẩn đánh giá" : "Hiện đánh giá"}>
             <Switch
               checked={record?.isActive}
-              onChange={(checked) => { }}
+              onChange={(checked) => {
+                handleUpdateReview({ id: record._id, isActive: checked });
+              }}
             />
           </Tooltip>
           <Popconfirm
             className="max-w-40"
             placement="topLeft"
             title={"Xác nhận xóa thông tin đánh giá"}
-            onConfirm={() => { }}
+            onConfirm={() => {
+              handleRemoveReview(record._id);
+            }}
             okText="Xóa"
             cancelText="Hủy"
             destroyTooltipOnHide={true}
           >
             <Tooltip title="Xóa">
-              <button
-                className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors"
-              >
+              <button className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
                 <MdOutlineDeleteOutline />
               </button>
             </Tooltip>
@@ -191,39 +177,31 @@ const ManageReview = () => {
     []
   );
 
+  const handleRemoveReview = async (id) => {
+    const res = await dispatch(removeReviewDoctor(id)).unwrap();
+    if (res.success) {
+      message.success(res.message);
+      refetch();
+    }
+  };
+
+  const handleUpdateReview = async ({ id, isActive }) => {
+    const res = await dispatch(
+      updateReviewDoctor({ id, data: { isActive } })
+    ).unwrap();
+    if (res.success) {
+      message.success(res.message);
+      refetch();
+    }
+  };
+
   return (
     <div className="space-y-8 mt-6 px-2">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <StatCard
-          icon={MessageOutlined}
-          title="Tổng đánh giá"
-          value={totalReviews}
-          gradient="bg-gradient-to-r from-blue-500 to-blue-600"
-        />
-        <StatCard
-          icon={StarFilled}
-          title="Điểm trung bình"
-          value={`${averageRating.toFixed(1)}/5`}
-          gradient="bg-gradient-to-r from-orange-500 to-pink-500"
-        />
-        <div className="lg:col-span-1 md:col-span-2 col-span-1">
-          <div className="rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">
-              Phân bố đánh giá
-            </h3>
-            <div className="space-y-3">
-              {[5, 4, 3, 2, 1].map((rating) => (
-                <RatingBar
-                  key={rating}
-                  rating={rating}
-                  count={ratingDistribution[rating]}
-                  total={totalReviews}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+      <RatingStats
+        totalReviews={totalReviews}
+        averageRating={averageRating}
+        ratingDistribution={ratingDistribution}
+      />
 
       <div className="space-y-4">
         <div className="p-6 border-b border-gray-100 bg-white rounded-lg">

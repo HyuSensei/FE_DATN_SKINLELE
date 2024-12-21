@@ -85,4 +85,28 @@ export const createReviewClinic = createAsyncThunk(
   }
 );
 
+export const updateReviewClinic = createAsyncThunk(
+  "clinic/updateReviewClinic",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      return await axios.put(`/admin/clinics/reviews/${id}`, data);
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const removeReviewClinic = createAsyncThunk(
+  "clinic/removeReviewClinic",
+  async (id, { rejectWithValue }) => {
+    try {
+      return await axios.delete(`/admin/clinics/reviews/${id}`);
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 

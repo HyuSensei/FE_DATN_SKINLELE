@@ -99,3 +99,27 @@ export const createReviewDoctor = createAsyncThunk(
   }
 );
 
+export const updateReviewDoctor = createAsyncThunk(
+  "doctor/updateReviewDoctor",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      return await axios.put(`/doctors/reviews/${id}`, data);
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const removeReviewDoctor = createAsyncThunk(
+  "doctor/removeReviewDoctor",
+  async (id, { rejectWithValue }) => {
+    try {
+      return await axios.delete(`/doctors/reviews/${id}`);
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+

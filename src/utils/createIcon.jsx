@@ -64,8 +64,8 @@ export const createAverageRate = ({
     >
       <defs>
         <linearGradient id={`grad-${index}`} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset={`${fillPercentage}%`} stopColor="#001529" />
-          <stop offset={`${fillPercentage}%`} stopColor="#e5e7eb" />
+          <stop offset={`${fillPercentage}%`} stopColor={activeColor} />
+          <stop offset={`${fillPercentage}%`} stopColor={nonActiveColor} />
         </linearGradient>
       </defs>
       <path
