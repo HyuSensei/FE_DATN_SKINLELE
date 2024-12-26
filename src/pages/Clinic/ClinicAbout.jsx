@@ -25,10 +25,20 @@ const ClinicAbout = ({ clinic }) => {
   );
 
   useEffect(() => {
-    if (data && params.page === 1) {
-      setDoctors(data.doctors);
+    if (data?.doctors) {
+      if (params.page === 1) {
+        setDoctors(data.doctors);
+      } else {
+        setDoctors((prev) => {
+          const existingIds = new Set(prev.map((doctor) => doctor._id));
+          const newDoctors = data.doctors.filter(
+            (doctor) => !existingIds.has(doctor._id)
+          );
+          return [...prev, ...newDoctors];
+        });
+      }
     }
-  }, [data]);
+  }, [data, params.page]);
 
   const sortedHours = [...clinic.workingHours].sort((a, b) => {
     const order = {
@@ -50,19 +60,7 @@ const ClinicAbout = ({ clinic }) => {
         page: prev.page + 1,
       }));
     }
-
-    if (data?.doctors) {
-      console.log(data?.doctors);
-
-      setDoctors((prev) => {
-        const existingIds = new Set(prev.map((doctor) => doctor._id));
-        const newDoctors = data.doctors.filter(
-          (doctor) => !existingIds.has(doctor._id)
-        );
-        return [...prev, ...newDoctors];
-      });
-    }
-  }, [data?.hasMore, data?.doctors]);
+  }, [data?.hasMore]);
 
   if (errorDoctor) {
     return <EmptyData description="Có lỗi xảy ra khi lấy danh sách bác sĩ" />;

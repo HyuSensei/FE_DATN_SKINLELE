@@ -40,19 +40,10 @@ const ClinicList = () => {
   const [clinics, setClinics] = useState(dataClinics?.clinics || []);
 
   useEffect(() => {
-    if (dataClinics && paginate.page === 1) {
-      setClinics(dataClinics.clinics);
-    }
-  }, [dataClinics]);
-
-  const handleSeenMore = useCallback(() => {
-    if (dataClinics?.hasMore) {
-      setPaginate((prev) => ({
-        ...prev,
-        page: prev.page + 1,
-      }));
-
-      if (dataClinics?.clinics) {
+    if (dataClinics?.clinics) {
+      if (paginate.page === 1) {
+        setClinics(dataClinics.clinics);
+      } else {
         setClinics((prev) => {
           const existingIds = new Set(prev.map((clinic) => clinic._id));
           const newClinics = dataClinics.clinics.filter(
@@ -62,7 +53,16 @@ const ClinicList = () => {
         });
       }
     }
-  }, [dataClinics?.hasMore, dataClinics?.clinic]);
+  }, [dataClinics, paginate.page]);
+
+  const handleSeenMore = useCallback(() => {
+    if (dataClinics?.hasMore) {
+      setPaginate((prev) => ({
+        ...prev,
+        page: prev.page + 1,
+      }));
+    }
+  }, [dataClinics?.hasMore]);
 
   if (!dataClinics && !isLoadingClinics) {
     return (

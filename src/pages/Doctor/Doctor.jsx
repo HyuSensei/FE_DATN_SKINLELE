@@ -20,6 +20,7 @@ import { formatPrice } from "@/helpers/formatPrice";
 import LoadingContent from "@/components/Loading/LoaingContent";
 import { RiMapPinFill } from "react-icons/ri";
 import useScrollToSection from "@/hook/useScrollToSection";
+import StarReview from "@/components/StarReview";
 
 const Doctor = () => {
   const { slug } = useParams();
@@ -74,11 +75,7 @@ const Doctor = () => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Đánh giá</p>
-                    <Rate
-                      disabled
-                      defaultValue={doctor.rating}
-                      className="text-sm"
-                    />
+                    <StarReview rate={doctor.rating} singleMode={false} />
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -241,7 +238,7 @@ const Doctor = () => {
                     label: (
                       <span className="flex items-center gap-2">Lịch khám</span>
                     ),
-                    children: <DoctorSchedule {...{ doctor, refetch }} />,
+                    children: <DoctorSchedule {...{ doctor }} />,
                   },
                   {
                     key: "2",

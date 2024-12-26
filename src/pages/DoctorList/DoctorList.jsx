@@ -38,19 +38,10 @@ const DoctorList = () => {
   const [doctors, setDoctors] = useState(dataDoctors?.doctors || []);
 
   useEffect(() => {
-    if (dataDoctors && paginate.page === 1) {
-      setDoctors(dataDoctors.doctors);
-    }
-  }, [dataDoctors]);
-
-  const handleSeenMore = useCallback(() => {
-    if (dataDoctors?.hasMore) {
-      setPaginate((prev) => ({
-        ...prev,
-        page: prev.page + 1,
-      }));
-
-      if (dataDoctors?.doctors) {
+    if (dataDoctors?.doctors) {
+      if (paginate.page === 1) {
+        setDoctors(dataDoctors.doctors);
+      } else {
         setDoctors((prev) => {
           const existingIds = new Set(prev.map((doctor) => doctor._id));
           const newDoctors = dataDoctors.doctors.filter(
@@ -60,7 +51,16 @@ const DoctorList = () => {
         });
       }
     }
-  }, [dataDoctors?.hasMore, dataDoctors?.doctors]);
+  }, [dataDoctors, paginate.page]);
+
+  const handleSeenMore = useCallback(() => {
+    if (dataDoctors?.hasMore) {
+      setPaginate((prev) => ({
+        ...prev,
+        page: prev.page + 1,
+      }));
+    }
+  }, [dataDoctors?.hasMore]);
 
   if (!dataDoctors && !isLoadingDoctors) {
     return <EmptyData description="Có lỗi xảy ra khi lấy danh sách bác sĩ" />;

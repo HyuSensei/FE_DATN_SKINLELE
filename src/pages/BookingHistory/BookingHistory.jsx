@@ -33,7 +33,7 @@ const BookingHistory = () => {
     { label: "Đã hủy", value: "cancelled" },
   ];
 
-  const { data, isLoading, error } = useGetBookingsByCustomerQuery(
+  const { data, isLoading, error, refetch } = useGetBookingsByCustomerQuery(
     {
       ...params,
     },
@@ -117,7 +117,9 @@ const BookingHistory = () => {
 
       <Spin spinning={isLoading} tip="Đang tải...">
         {bookings.length > 0 ? (
-          bookings.map((item) => <BookingCard key={item._id} booking={item} />)
+          bookings.map((item) => (
+            <BookingCard key={item._id} booking={item} refetch={refetch} />
+          ))
         ) : (
           <Empty description="Không có lịch đặt khám nào !" />
         )}

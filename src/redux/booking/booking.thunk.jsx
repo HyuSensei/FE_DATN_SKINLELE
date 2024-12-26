@@ -26,4 +26,16 @@ export const updateStatusBooking = createAsyncThunk(
   }
 );
 
+export const updateBookingInfo = createAsyncThunk(
+  "booking/updateBookingInfo",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      return await axios.put(`/bookings/customer-info/${id}`, data);
+    } catch (error) {
+      message.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 

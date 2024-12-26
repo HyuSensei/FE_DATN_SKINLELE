@@ -1,5 +1,5 @@
 import { Avatar, Badge, Card, Divider, Tag, Tooltip } from "antd";
-import React from "react";
+import React, { useState } from "react";
 import {
   CalendarOutlined,
   ClockCircleOutlined,
@@ -14,14 +14,15 @@ import {
   MedicineBoxOutlined,
   StarFilled,
   InfoCircleOutlined,
-  MoneyCollectOutlined,
 } from "@ant-design/icons";
 import CustomButton from "@/components/CustomButton";
 import moment from "@utils/monentTz";
 import { formatPrice } from "@/helpers/formatPrice";
 import { TbCalendarCancel } from "react-icons/tb";
+import BookingUpdateInfo from "./BookingUpdateInfo";
+import BookingCancel from "./BookingCancel";
 
-const BookingCard = ({ booking }) => {
+const BookingCard = ({ booking, refetch }) => {
   const statusConfig = {
     pending: {
       color: "#faad14",
@@ -57,6 +58,8 @@ const BookingCard = ({ booking }) => {
     },
   };
   const status = statusConfig[booking.status];
+  const [isEdit, setIsEdit] = useState(false);
+  const [openCancel, setOpenCancel] = useState(false);
 
   return (
     <Card
@@ -68,7 +71,6 @@ const BookingCard = ({ booking }) => {
         className="absolute top-0 left-0 right-0 h-1.5"
         style={{ backgroundColor: status.color }}
       />
-
       <div className="p-6">
         {/* Header with Status */}
         <div className="flex flex-wrap justify-between items-start gap-4 mb-6">
@@ -88,7 +90,7 @@ const BookingCard = ({ booking }) => {
             </Tooltip>
             <Tag
               icon={<CalendarOutlined />}
-              className="m-0 py-1.5 px-3 text-base bg-gray-50 border-0 rounded-full"
+              className="m-0 py-1.5 px-3 text-sm bg-gray-50 border-0 rounded-full"
             >
               {moment(booking.date).format("DD MMMM, YYYY")}
             </Tag>
@@ -97,7 +99,6 @@ const BookingCard = ({ booking }) => {
             Giá khám: {formatPrice(booking.price)} VND
           </Tag>
         </div>
-
         {/* Doctor & Appointment Info */}
         <div className="bg-blue-50/50 p-6 rounded-xl mb-6">
           <div className="flex gap-4">
@@ -147,121 +148,153 @@ const BookingCard = ({ booking }) => {
         </div>
 
         {/* Patient Info */}
-        <div className="bg-gray-50 p-6 rounded-xl">
-          <h4 className="flex items-center gap-2 font-medium mb-4">
-            <UserOutlined className="text-blue-500" />
-            Thông tin người khám
-          </h4>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <UserOutlined className="text-gray-400" />
-                <span>{booking.customer.name}</span>
+        {!isEdit && (
+          <div className="bg-gray-50 p-6 rounded-xl">
+            <h4 className="flex items-center gap-2 font-medium mb-4">
+              <UserOutlined className="text-blue-500" />
+              Thông tin người khám
+            </h4>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <UserOutlined className="text-gray-400" />
+                  <span>{booking.customer.name}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <PhoneOutlined className="text-gray-400" />
+                  <span>{booking.customer.phone}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <MailOutlined className="text-gray-400" />
+                  <span>{booking.customer.email}</span>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <PhoneOutlined className="text-gray-400" />
-                <span>{booking.customer.phone}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <MailOutlined className="text-gray-400" />
-                <span>{booking.customer.email}</span>
-              </div>
-            </div>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <CalendarOutlined className="text-gray-400" />
-                <span>
-                  Ngày sinh:{" "}
-                  {moment(booking.customer.dateOfBirth).format("DD/MM/YYYY")}
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <UserOutlined className="text-gray-400" />
-                <span>
-                  Giới tính: {booking.customer.gender === "male" ? "Nam" : "Nữ"}
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <EnvironmentOutlined className="text-gray-400" />
-                <span>{booking.customer.address}</span>
-              </div>
-            </div>
-          </div>
-
-          {booking.note && (
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              <div className="flex items-start gap-2">
-                <InfoCircleOutlined className="text-blue-500 mt-1" />
-                <div>
-                  <span className="font-medium">Ghi chú:</span> {booking.note}
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <CalendarOutlined className="text-gray-400" />
+                  <span>
+                    Ngày sinh:{" "}
+                    {moment(booking.customer.dateOfBirth).format("DD/MM/YYYY")}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <UserOutlined className="text-gray-400" />
+                  <span>
+                    Giới tính:{" "}
+                    {booking.customer.gender === "male" ? "Nam" : "Nữ"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <EnvironmentOutlined className="text-gray-400" />
+                  <span>{booking.customer.address}</span>
                 </div>
               </div>
             </div>
-          )}
 
-          {booking.statusHistory && booking.statusHistory.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-gray-100">
-              <h5 className="text-sm font-medium mb-2 text-gray-600">
-                Lịch sử trạng thái
-              </h5>
-              <div className="space-y-2">
-                {booking.statusHistory.map((item, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-2 text-sm text-gray-500"
-                  >
-                    <div
-                      className="w-2 h-2 rounded-full"
-                      style={{
-                        backgroundColor: statusConfig[item.status]?.color,
-                      }}
-                    />
-                    <span>
-                      {moment(item.date).format("HH:mm, DD/MM/YYYY")} -{" "}
-                      {statusConfig[item.status]?.text}
-                    </span>
+            {booking.note && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <div className="flex items-start gap-2">
+                  <InfoCircleOutlined className="text-blue-500 mt-1" />
+                  <div>
+                    <span className="font-medium">Ghi chú:</span> {booking.note}
                   </div>
-                ))}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
 
+            {booking.statusHistory && booking.statusHistory.length > 0 && (
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <h5 className="text-sm font-medium mb-2 text-gray-600">
+                  Lịch sử trạng thái
+                </h5>
+                <div className="space-y-2">
+                  {booking.statusHistory.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center gap-2 text-sm text-gray-500"
+                    >
+                      <div
+                        className="w-2 h-2 rounded-full"
+                        style={{
+                          backgroundColor: statusConfig[item.status]?.color,
+                        }}
+                      />
+                      <span>
+                        {moment(item.date).format("HH:mm, DD/MM/YYYY")} -{" "}
+                        {statusConfig[item.status]?.text}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+        {isEdit && (
+          <BookingUpdateInfo
+            {...{
+              bookingId: booking._id,
+              setIsEdit,
+              onClose: (isFetch) => {
+                if (isFetch) {
+                  refetch();
+                }
+                setIsEdit(false);
+              },
+              customer: booking.customer,
+            }}
+          />
+        )}
         {/* Actions */}
-        {(booking.status === "completed" || booking.status === "pending") && (
-          <>
-            <Divider />
-            <div className="flex flex-wrap justify-end gap-3">
-              {booking.status === "completed" && (
-                <CustomButton
-                  variant="primary"
-                  icon={<StarFilled />}
-                  className="shadow-sm"
-                >
-                  Đánh giá bác sĩ
-                </CustomButton>
-              )}
-              {booking.status === "pending" && (
-                <>
-                  <CustomButton
-                    variant="danger"
-                    icon={<TbCalendarCancel size={20} />}
-                    className="shadow-sm"
-                  >
-                    Hủy lịch
-                  </CustomButton>
+        {!isEdit &&
+          (booking.status === "completed" || booking.status === "pending") && (
+            <>
+              <Divider />
+              <div className="flex flex-wrap justify-end gap-3">
+                {booking.status === "completed" && (
                   <CustomButton
                     variant="primary"
-                    icon={<EditOutlined />}
+                    icon={<StarFilled />}
                     className="shadow-sm"
                   >
-                    Cập nhật thông tin
+                    Đánh giá bác sĩ
                   </CustomButton>
-                </>
-              )}
-            </div>
-          </>
-        )}
+                )}
+                {booking.status === "pending" && (
+                  <>
+                    <BookingCancel
+                      {...{
+                        open: openCancel,
+                        booking,
+                        onClose: (isFetch) => {
+                          if (isFetch) {
+                            refetch();
+                          }
+                          setOpenCancel(false);
+                        },
+                      }}
+                    />
+                    <CustomButton
+                      onClick={() => setOpenCancel(true)}
+                      variant="danger"
+                      icon={<TbCalendarCancel size={20} />}
+                      className="shadow-sm"
+                    >
+                      Hủy lịch
+                    </CustomButton>
+                    <CustomButton
+                      onClick={() => setIsEdit(true)}
+                      variant="primary"
+                      icon={<EditOutlined />}
+                      className="shadow-sm"
+                    >
+                      Cập nhật thông tin
+                    </CustomButton>
+                  </>
+                )}
+              </div>
+            </>
+          )}
       </div>
     </Card>
   );

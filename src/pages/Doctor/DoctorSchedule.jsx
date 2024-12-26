@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import BookingResult from "./BookingResult";
 import { BookingActions } from "@/redux/booking/booking.slice";
 
-const DoctorSchedule = ({ doctor, refetch }) => {
+const DoctorSchedule = ({ doctor }) => {
   const dispath = useDispatch();
   const [selectedDate, setSelectedDate] = useState(dayjs().locale("vi"));
   const [selectedTime, setSelectedTime] = useState(null);
@@ -35,7 +35,7 @@ const DoctorSchedule = ({ doctor, refetch }) => {
     dayjs.locale("vi");
   }, []);
 
-  const { data, isLoading, error } = useGetScheduleBookingDoctorQuery(
+  const { data, isLoading, error, refetch } = useGetScheduleBookingDoctorQuery(
     {
       doctorId: doctor._id,
       date: selectedDate.format("YYYY-MM-DD"),
@@ -98,9 +98,9 @@ const DoctorSchedule = ({ doctor, refetch }) => {
           {...{
             open: openResult,
             onClose: () => {
-              setOpenResult(false);
               dispath(BookingActions.setBooking(null));
               refetch();
+              setOpenResult(false);
             },
           }}
         />
@@ -229,7 +229,7 @@ const DoctorSchedule = ({ doctor, refetch }) => {
             doctor,
             handleClearTime,
             handleTimeSlotAction,
-            setOpenResult
+            setOpenResult,
           }}
         />
       )}
