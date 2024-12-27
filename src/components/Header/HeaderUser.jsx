@@ -17,7 +17,6 @@ import { getAllCategory } from "@redux/category/category.thunk";
 import { logoutUser } from "@redux/auth/auth.slice";
 import { FaRegUserCircle } from "react-icons/fa";
 import SearchHeader from "@components/Search/SearchHeader";
-import { menuDefaut } from "@const/dataDefault";
 import { clearCart } from "@redux/cart/cart.slice";
 
 const HeaderUser = () => {
@@ -90,16 +89,7 @@ const HeaderUser = () => {
     }
   };
 
-  const menuDataDefault =
-    isArray(categories) &&
-    categories.length > 0 &&
-    isArray(brands) &&
-    brands.length > 0
-      ? []
-      : menuDefaut;
-
   const menuItems = [
-    // ...menuDataDefault,
     {
       key: "brands",
       label: "Thương hiệu",

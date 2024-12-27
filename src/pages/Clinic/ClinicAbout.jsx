@@ -176,12 +176,14 @@ const ClinicAbout = ({ clinic }) => {
             {!doctors.length && !isLoadingDoctor && (
               <Empty description="Chưa có thông tin bác sĩ" />
             )}
-            {doctors.length > 0 &&
-              doctors.map((doctor, index) => (
-                <Link key={index} to={`/doctor-detail/${doctor.slug}`}>
-                  <DoctorItem {...{ doctor }} />
-                </Link>
-              ))}
+            <div className="flex flex-col gap-4">
+              {doctors.length > 0 &&
+                doctors.map((doctor, index) => (
+                  <Link key={index} to={`/doctor-detail/${doctor.slug}`}>
+                    <DoctorItem {...{ doctor }} />
+                  </Link>
+                ))}
+            </div>
             {hasMore && (
               <Button
                 onClick={handleSeenMore}

@@ -12,6 +12,7 @@ import FilterTag from "./FilterTag";
 import EmptyData from "@/components/Error/EmptyData";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import DoctorCard from "@/components/Item/DoctorCard";
+import DermatologistBanner from "./DermatologistBanner";
 
 const DoctorList = () => {
   const [paginate, setPaginate] = useState({
@@ -71,6 +72,7 @@ const DoctorList = () => {
   return (
     <div className="mx-auto lg:px-16 mt-20 mb-10">
       <div className="p-6">
+        <DermatologistBanner />
         {/* Mobile Filter Toggle */}
         <div className="lg:hidden mb-4">
           <CustomButton
@@ -84,9 +86,8 @@ const DoctorList = () => {
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Filters Panel */}
           <div
-            className={`lg:w-1/4 ${
-              isMobileFilterVisible ? "block" : "hidden"
-            } lg:block`}
+            className={`lg:w-1/4 ${isMobileFilterVisible ? "block" : "hidden"
+              } lg:block`}
           >
             <Card className="sticky top-24 ">
               <FilterPanel

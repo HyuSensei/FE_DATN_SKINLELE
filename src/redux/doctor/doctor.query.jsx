@@ -103,6 +103,13 @@ export const doctorApi = createApi({
       }),
       transformResponse: (response) => response.data,
     }),
+    getDoctorClinicBySearch: builder.query({
+      query: ({ search }) => ({
+        url: `/doctors/search-doctor-clinic?search=${search}`,
+        method: "GET",
+      }),
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
@@ -114,4 +121,5 @@ export const {
   useGetScheduleBookingDoctorQuery,
   useGetAllReviewsByCustomerQuery,
   useGetFilterOptionsDoctorQuery,
+  useGetDoctorClinicBySearchQuery
 } = doctorApi;

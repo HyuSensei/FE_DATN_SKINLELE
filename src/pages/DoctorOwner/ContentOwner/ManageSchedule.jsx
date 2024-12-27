@@ -188,12 +188,12 @@ const ManageSchedule = () => {
               isClinicHoliday && isDoctorHoliday
                 ? "Cả phòng khám và bác sĩ đều nghỉ lễ"
                 : isClinicHoliday
-                ? "Phòng khám nghỉ lễ"
-                : isDoctorHoliday
-                ? "Bác sĩ nghỉ phép"
-                : isOpen
-                ? "Có lịch khám"
-                : "Không có lịch khám"
+                  ? "Phòng khám nghỉ lễ"
+                  : isDoctorHoliday
+                    ? "Bác sĩ nghỉ phép"
+                    : isOpen
+                      ? "Có lịch khám"
+                      : "Không có lịch khám"
             }
           >
             <span className={`text-xs ${status.textColor}`}>{status.text}</span>
@@ -208,8 +208,8 @@ const ManageSchedule = () => {
       moment(h).startOf("day").isSame(moment(date).startOf("day"))
     )
       ? holidaysDoctor.filter(
-          (h) => !moment(h).startOf("day").isSame(moment(date).startOf("day"))
-        )
+        (h) => !moment(h).startOf("day").isSame(moment(date).startOf("day"))
+      )
       : [...holidaysDoctor, date];
 
     const res = await dispatch(
@@ -229,10 +229,80 @@ const ManageSchedule = () => {
     <div className="space-y-8 mt-6">
       {/* Schedule Section */}
       <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-          Lịch làm việc của phòng khám
-        </h2>
-        {renderScheduleContent()}
+        {/* {renderScheduleContent()} */}
+        <div className="grid grid-cols-1 lg:grid-cols-7 divide-y lg:divide-y-0 lg:divide-x divide-gray-200">
+          {workingHours.map((slot, index) => (
+            <div
+              key={index}
+              className={`p-4 transition-colors ${!slot.isOpen ? 'bg-gray-50' : 'hover:bg-blue-50'
+                }`}
+            >
+              {/* Header */}
+              <div className="flex flex-col items-start gap-2">
+                <div className="flex items-center gap-2">
+                  <IoCalendarOutline className={`w-5 h-5 ${slot.isOpen ? 'text-blue-600' : 'text-gray-400'
+                    }`} />
+                  <span className={`font-medium ${slot.isOpen ? 'text-blue-600' : 'text-gray-400'
+                    }`}>
+                    {slot.dayOfWeek}
+                  </span>
+                </div>
+
+                {/* Status Badge */}
+                {slot.isOpen ? (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    <IoCheckmarkCircleOutline className="w-4 h-4 mr-1" />
+                    Đang hoạt động
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                    <IoCloseCircleOutline className="w-4 h-4 mr-1" />
+                    Không hoạt động
+                  </span>
+                )}
+              </div>
+
+              {/* Working Hours */}
+              {slot.isOpen && (
+                <div className="mt-4 space-y-3">
+                  <Tooltip title="Thời gian làm việc">
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <IoTimeOutline className="w-4 h-4" />
+                      <span className="text-sm">{slot.startTime} - {slot.endTime}</span>
+                    </div>
+                  </Tooltip>
+
+                  {/* Duration Badge */}
+                  <div className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700">
+                    {duration} phút / ca khám
+                  </div>
+
+                  {/* Break Time */}
+                  {slot.breakTime && (
+                    <Tooltip title="Giờ nghỉ trưa">
+                      <div className="flex items-center gap-2 text-gray-500">
+                        <IoCafeOutline className="w-4 h-4" />
+                        <span className="text-sm">
+                          {slot.breakTime.start} - {slot.breakTime.end}
+                        </span>
+                      </div>
+                    </Tooltip>
+                  )}
+                </div>
+              )}
+
+              {/* Closed Notice */}
+              {!slot.isOpen && (
+                <div className="mt-4">
+                  <div className="flex items-center gap-2 text-gray-500">
+                    <IoWarningOutline className="w-4 h-4 text-amber-500" />
+                    <span className="text-sm">Không có lịch khám</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Calendar Section */}

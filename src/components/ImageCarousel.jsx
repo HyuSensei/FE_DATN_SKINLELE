@@ -5,6 +5,7 @@ const ImageCarousel = ({ images, name }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
   const intervalRef = useRef(null);
+  const transitionInProgress = useRef(false);
 
   useEffect(() => {
     return () => {
@@ -15,12 +16,19 @@ const ImageCarousel = ({ images, name }) => {
   }, []);
 
   const startInterval = () => {
-    if (images.length > 1) {
+    if (images.length > 1 && !intervalRef.current) {
       intervalRef.current = setInterval(() => {
-        setCurrentImageIndex((prevIndex) =>
-          prevIndex === images.length - 1 ? 0 : prevIndex + 1
-        );
-      }, 1000);
+        if (!transitionInProgress.current) {
+          transitionInProgress.current = true;
+          setCurrentImageIndex((prevIndex) => {
+            const newIndex = prevIndex === images.length - 1 ? 0 : prevIndex + 1;
+            setTimeout(() => {
+              transitionInProgress.current = false;
+            }, 300);
+            return newIndex;
+          });
+        }
+      }, 1500);
     }
   };
 
@@ -39,16 +47,21 @@ const ImageCarousel = ({ images, name }) => {
   const handleMouseLeave = () => {
     setIsHovering(false);
     stopInterval();
-    setCurrentImageIndex(0);
+    transitionInProgress.current = false;
+    setTimeout(() => {
+      if (!isHovering) {
+        setCurrentImageIndex(0);
+      }
+    }, 300);
   };
 
   return (
     <div
-      className="relative pb-[100%] overflow-hidden rounded-t-lg"
+      className="relative pb-[100%] overflow-hidden rounded-t-lg bg-gray-100"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <AnimatePresence initial={false}>
+      <AnimatePresence mode="wait">
         <motion.img
           key={currentImageIndex}
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 hover:scale-105"
@@ -58,16 +71,18 @@ const ImageCarousel = ({ images, name }) => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
+          loading="lazy"
         />
       </AnimatePresence>
       {isHovering && images.length > 1 && (
-        <div className="absolute bottom-2 left-0 right-0 flex justify-center">
+        <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
           {images.map((_, index) => (
             <div
               key={index}
-              className={`w-2 h-2 rounded-full mx-1 ${
-                index === currentImageIndex ? "bg-white" : "bg-gray-300"
-              }`}
+              className={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${index === currentImageIndex
+                  ? "bg-white shadow-md"
+                  : "bg-white/50"
+                }`}
             />
           ))}
         </div>

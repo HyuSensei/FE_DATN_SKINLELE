@@ -1,12 +1,13 @@
-import { Input, Layout, Dropdown, Avatar, Badge } from "antd";
-import { FaBars, FaSearch, FaUserCircle } from "react-icons/fa";
+import { Layout, Dropdown, Avatar, Badge } from "antd";
+import { FaBars, FaUserCircle } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
-import { IoLogOut, IoNotificationsOutline } from "react-icons/io5";
+import { IoLogOutOutline, IoNotificationsOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import ModalAuth from "../Modal/ModalAuth";
 import { logoutUser, setOpenModelAuth } from "@/redux/auth/auth.slice";
+import SearchHeaderBooking from "../Search/SearchHeaderBooking";
 
 const { Header: AntHeader } = Layout;
 
@@ -83,12 +84,7 @@ const HeaderBooking = () => {
             {/* Actions */}
             <div className="hidden md:flex items-center gap-4">
               <div className="relative w-64">
-                <Input
-                  size="middle"
-                  prefix={<FaSearch className="text-gray-400" />}
-                  placeholder="Tìm kiếm phòng khám, bác sĩ..."
-                  className="rounded-full bg-slate-50"
-                />
+                <SearchHeaderBooking />
               </div>
               <Badge count={1} offset={[-9, 4]} color="cyan">
                 <div className="h-10 w-10 hover:bg-slate-100 rounded-full flex items-center justify-center cursor-pointer">
@@ -99,37 +95,37 @@ const HeaderBooking = () => {
                 menu={{
                   items: isAuthenticated
                     ? [
-                        {
-                          label: (
-                            <Link to={authItems[0].path}>
-                              {authItems[0].label}
-                            </Link>
-                          ),
-                        },
-                        {
-                          label: (
-                            <span onClick={authItems[2].action}>
-                              {authItems[2].label}
-                            </span>
-                          ),
-                        },
-                      ]
+                      {
+                        label: (
+                          <Link to={authItems[0].path}>
+                            {authItems[0].label}
+                          </Link>
+                        ),
+                      },
+                      {
+                        label: (
+                          <span onClick={authItems[2].action}>
+                            {authItems[2].label}
+                          </span>
+                        ),
+                      },
+                    ]
                     : [
-                        {
-                          label: (
-                            <Link to={authItems[0].path}>
-                              {authItems[0].label}
-                            </Link>
-                          ),
-                        },
-                        {
-                          label: (
-                            <span onClick={authItems[1].action}>
-                              {authItems[1].label}
-                            </span>
-                          ),
-                        },
-                      ],
+                      {
+                        label: (
+                          <Link to={authItems[0].path}>
+                            {authItems[0].label}
+                          </Link>
+                        ),
+                      },
+                      {
+                        label: (
+                          <span onClick={authItems[1].action}>
+                            {authItems[1].label}
+                          </span>
+                        ),
+                      },
+                    ],
                 }}
                 placement="bottomRight"
                 trigger={["click"]}
@@ -180,15 +176,11 @@ const HeaderBooking = () => {
                     onClick={() => setIsDrawerOpen(false)}
                     className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                   >
-                    <IoLogOut className="w-5 h-5" />
+                    <IoLogOutOutline className="w-5 h-5" />
                   </button>
                 </div>
 
-                <Input
-                  prefix={<FaSearch className="text-gray-400" />}
-                  placeholder="Tìm kiếm..."
-                  className="rounded-full"
-                />
+                <SearchHeaderBooking />
 
                 <nav className="space-y-1">
                   {menuItems.map((item, index) => (
@@ -207,51 +199,51 @@ const HeaderBooking = () => {
                 <div className="pt-4 border-t">
                   {isAuthenticated
                     ? [authItems[0], authItems[2]].map((item) => (
-                        <motion.div key={item.key} whileTap={{ scale: 0.98 }}>
-                          {item.key === "logout" ? (
-                            <span
-                              onClick={() => {
-                                item.action();
-                                setIsDrawerOpen(false);
-                              }}
-                              className="w-full block p-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
-                            >
-                              {item.label}
-                            </span>
-                          ) : (
-                            <Link
-                              to={item.path}
-                              onClick={() => setIsDrawerOpen(false)}
-                              className="w-full block p-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                            >
-                              {item.label}
-                            </Link>
-                          )}
-                        </motion.div>
-                      ))
+                      <motion.div key={item.key} whileTap={{ scale: 0.98 }}>
+                        {item.key === "logout" ? (
+                          <span
+                            onClick={() => {
+                              item.action();
+                              setIsDrawerOpen(false);
+                            }}
+                            className="w-full block p-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+                          >
+                            {item.label}
+                          </span>
+                        ) : (
+                          <Link
+                            to={item.path}
+                            onClick={() => setIsDrawerOpen(false)}
+                            className="w-full block p-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                          >
+                            {item.label}
+                          </Link>
+                        )}
+                      </motion.div>
+                    ))
                     : [authItems[0], authItems[1]].map((item) => (
-                        <motion.div key={item.key} whileTap={{ scale: 0.98 }}>
-                          {item.key === "login" ? (
-                            <span
-                              onClick={() => {
-                                item.action();
-                                setIsDrawerOpen(false);
-                              }}
-                              className="w-full block p-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
-                            >
-                              {item.label}
-                            </span>
-                          ) : (
-                            <Link
-                              to={item.path}
-                              onClick={() => setIsDrawerOpen(false)}
-                              className="w-full block p-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                            >
-                              {item.label}
-                            </Link>
-                          )}
-                        </motion.div>
-                      ))}
+                      <motion.div key={item.key} whileTap={{ scale: 0.98 }}>
+                        {item.key === "login" ? (
+                          <span
+                            onClick={() => {
+                              item.action();
+                              setIsDrawerOpen(false);
+                            }}
+                            className="w-full block p-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+                          >
+                            {item.label}
+                          </span>
+                        ) : (
+                          <Link
+                            to={item.path}
+                            onClick={() => setIsDrawerOpen(false)}
+                            className="w-full block p-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                          >
+                            {item.label}
+                          </Link>
+                        )}
+                      </motion.div>
+                    ))}
                 </div>
               </div>
             </div>
