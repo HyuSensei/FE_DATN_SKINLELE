@@ -285,7 +285,7 @@ const ClinicReview = ({ clinic }) => {
               />
             </Form.Item>
             <CustomButton
-              isLoading={loadingSubmit}
+              loading={loadingSubmit}
               type="submit"
               variant="primary"
               icon={<RiStarFill />}

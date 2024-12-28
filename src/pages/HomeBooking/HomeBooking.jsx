@@ -9,19 +9,6 @@ import SliderDoctors from "@/components/Slider/SliderDoctors";
 import SliderClinics from "@/components/Slider/SliderClinics";
 
 const HomeBooking = () => {
-  const fadeInUp = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6 },
-  };
-
-  const stats = [
-    { number: "1.500.000 +", text: "LƯỢT TRUY CẬP/THÁNG" },
-    { number: "2.000 +", text: "BÁC SĨ" },
-    { number: "300.000 +", text: "NGƯỜI ĐÃ SỬ DỤNG" },
-    { number: "300 +", text: "PHÒNG KHÁM" },
-  ];
-
   const services = [
     {
       icon: <MdHealthAndSafety color="#09957a" size={50} />,
@@ -62,85 +49,6 @@ const HomeBooking = () => {
 
   return (
     <>
-      {/* Hero Section */}
-      {/* <div className="relative h-[550px] w-full overflow-hidden pt-10">
-        <motion.div
-          initial={{ scale: 1.1 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 1.5 }}
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: `
-              linear-gradient(45deg, rgba(59, 100, 100, 0.5), rgba(59, 99, 50, 0.5)), 
-              url('https://images.squarespace-cdn.com/content/v1/591c613d03596e365f052329/1528897715162-PNJDO1JXGGKMEW7Q6MBY/Banner-6.jpg?format=1000w')`,
-          }}
-        />
-
-        <div className="container mx-auto px-4 py-20">
-          <div className="relative grid grid-cols-1 gap-8 md:grid-cols-2">
-            <motion.div
-              className="flex flex-col justify-center text-white"
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <motion.div
-                className="mb-4 text-2xl lg:text-4xl font-bold"
-                variants={fadeInUp}
-                initial="initial"
-                animate="animate"
-              >
-                Chăm Sóc Sức Khỏe Làn Da Của Bạn
-              </motion.div>
-              <motion.div
-                className="mb-8 text-lg lg:text-xl font-light"
-                variants={fadeInUp}
-                initial="initial"
-                animate="animate"
-                transition={{ delay: 0.2 }}
-              >
-                Đặt lịch khám với các bác sĩ da liễu hàng đầu
-              </motion.div>
-              <motion.button
-                className="w-fit rounded-full bg-yellow-400 px-8 py-3 font-semibold text-white transition-all hover:bg-yellow-300"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                ĐẶT LỊCH NGAY
-              </motion.button>
-            </motion.div>
-
-            <div className="grid grid-cols-2 gap-1 lg:gap-6">
-              {stats.map((stat, index) => (
-                <motion.div
-                  key={index}
-                  className="text-center text-white"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 + index * 0.1 }}
-                >
-                  <motion.div
-                    className="text-3xl font-bold md:text-4xl"
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    {stat.number}
-                  </motion.div>
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    <Tag className="mt-1 opacity-80" color="#6c9bbf">
-                      <div className="p-1 text-sm">{stat.text}</div>
-                    </Tag>
-                  </motion.div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div> */}
-
       {/* CTA Section */}
       <div className="relative py-20 overflow-hidden h-[550px] lg:h-[600px]">
         {/* Background with animation */}
@@ -210,7 +118,9 @@ const HomeBooking = () => {
                 transition={{ duration: 0.6 }}
               >
                 <span className="text-2xl animate-bounce inline-block">✨</span>
-                <span>Bắt đầu hành trình chăm sóc làn da của bạn</span>
+                <span className="capitalize">
+                  Bắt đầu hành trình chăm sóc làn da của bạn
+                </span>
               </motion.h2>
 
               <motion.p

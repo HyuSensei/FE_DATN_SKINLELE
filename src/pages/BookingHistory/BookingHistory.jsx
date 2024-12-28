@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Button, Card, Empty, Radio, Spin, Tooltip } from "antd";
 import {
   CheckCircleFilled,
@@ -13,8 +13,17 @@ import BookingCard from "./BookingCard";
 import { useSelector } from "react-redux";
 import { useGetBookingsByCustomerQuery } from "@/redux/booking/booking.query";
 import EmptyData from "@/components/Error/EmptyData";
+import LoadingContent from "@/components/Loading/LoaingContent";
 
 moment.locale("vi");
+
+const filterOptions = [
+  { label: "Tất cả", value: "" },
+  { label: "Chờ xác nhận", value: "pending" },
+  { label: "Đã xác nhận", value: "confirmed" },
+  { label: "Hoàn thành", value: "completed" },
+  { label: "Đã hủy", value: "cancelled" },
+];
 
 const BookingHistory = () => {
   const [activeStatus, setActiveStatus] = useState("");
@@ -24,26 +33,44 @@ const BookingHistory = () => {
     status: "",
   });
   const { isAuthenticated } = useSelector((state) => state.auth);
-
-  const filterOptions = [
-    { label: "Tất cả", value: "" },
-    { label: "Chờ xác nhận", value: "pending" },
-    { label: "Đã xác nhận", value: "confirmed" },
-    { label: "Hoàn thành", value: "completed" },
-    { label: "Đã hủy", value: "cancelled" },
-  ];
-
   const { data, isLoading, error, refetch } = useGetBookingsByCustomerQuery(
     {
       ...params,
     },
     { skip: !isAuthenticated }
   );
+  const [bookings, setBookings] = useState(data?.bookings || []);
+
+  useEffect(() => {
+    if (data?.bookings) {
+      if (params.page === 1) {
+        setBookings(data.bookings);
+      } else {
+        setBookings((prev) => {
+          const existingIds = new Set(prev.map((booking) => booking._id));
+          const newBookings = data.bookings.filter(
+            (booking) => !existingIds.has(booking._id)
+          );
+          return [...prev, ...newBookings];
+        });
+      }
+    }
+  }, [data?.bookings, params.page]);
+
+  const handleSeeMore = useCallback(() => {
+    if (data?.hasMore) {
+      setParams((prev) => ({
+        ...prev,
+        page: prev.page + 1,
+      }));
+    }
+  }, [data?.hasMore]);
+
+  if (isLoading) return <LoadingContent />;
 
   if (error) return <EmptyData description="Không tìm thấy lich sử đặt khám" />;
 
-  const bookings = data?.bookings || [];
-  const { hasMore = false, statistics = {} } = data || {};
+  const { statistics = {} } = data || {};
 
   const handleChangeParams = (key, value) => {
     setParams((prev) => ({
@@ -88,22 +115,22 @@ const BookingHistory = () => {
               Tổng số: {statistics?.total || 0}
             </span>
           </Tooltip>
-          <Tooltip title="Đã hoàn thành">
-            <span>
-              <CheckCircleFilled className="mr-1 text-green-500" />
-              Hoàn thành: {statistics?.completed || 0}
-            </span>
-          </Tooltip>
-          <Tooltip title="Đang chờ">
+          <Tooltip title="Chờ xác nhận">
             <span>
               <ClockCircleOutlined className="mr-1 text-orange-500" />
-              Đang chờ: {statistics?.pending || 0}
+              Chờ xác nhận: {statistics?.pending || 0}
             </span>
           </Tooltip>
           <Tooltip title="Đã xác nhận">
             <span>
               <CheckOutlined className="mr-1 text-blue-500" />
               Đã xác nhận: {statistics?.confirmed || 0}
+            </span>
+          </Tooltip>
+          <Tooltip title="Đã hoàn thành">
+            <span>
+              <CheckCircleFilled className="mr-1 text-green-500" />
+              Hoàn thành: {statistics?.completed || 0}
             </span>
           </Tooltip>
           <Tooltip title="Đã hủy">
@@ -116,7 +143,7 @@ const BookingHistory = () => {
       </Card>
 
       <Spin spinning={isLoading} tip="Đang tải...">
-        {bookings.length > 0 ? (
+        {bookings?.length > 0 ? (
           bookings.map((item) => (
             <BookingCard key={item._id} booking={item} refetch={refetch} />
           ))
@@ -124,13 +151,13 @@ const BookingHistory = () => {
           <Empty description="Không có lịch đặt khám nào !" />
         )}
       </Spin>
-      {hasMore && (
+      {data?.hasMore && (
         <div className="flex justify-center mt-4">
           <Button
             type="link"
-            onClick={() =>
-              setParams((prev) => ({ ...prev, page: prev.page + 1 }))
-            }
+            size="large"
+            onClick={handleSeeMore}
+            loading={isLoading}
           >
             Tải thêm lịch khám
           </Button>

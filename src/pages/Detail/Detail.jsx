@@ -7,7 +7,6 @@ import {
   InputNumber,
   Tooltip,
   Card,
-  Spin,
   Empty,
   notification,
   Tag,
@@ -27,19 +26,20 @@ import {
   IoNotifications,
 } from "react-icons/io5";
 import RateList from "@components/RateList";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { getDetailProduct } from "@redux/product/product.thunk";
-import isEmpty from "lodash/isEmpty";
 import { formatPrice } from "@helpers/formatPrice";
 import { GiDiamondTrophy } from "react-icons/gi";
 import { addToCart } from "@redux/cart/cart.slice";
 import confetti from "canvas-confetti";
+import { useGetProductDetailQuery } from "@/redux/product/product.query";
+import LoadingContent from "@/components/Loading/LoaingContent";
+import { useGetDoctorRecommendQuery } from "@/redux/doctor/doctor.query";
+import RecommendedDoctors from "./RecommendedDoctors";
 
 const Detail = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { productDetail, isLoading } = useSelector((state) => state.product);
   const [product, setProduct] = useState({
     productId: "",
     name: "",
@@ -53,41 +53,63 @@ const Detail = () => {
     brand: "",
     quantity: 1,
   });
+  const [queryDoctors, setQueryDoctors] = useState({
+    page: 1,
+    pageSize: 10,
+  });
 
   const { slug } = useParams();
 
-  const discountPercentage = productDetail.promotion
-    ? productDetail.promotion.discountPercentage
-    : 0;
-  const originalPrice = productDetail.originalPrice || productDetail.price;
-  const discountedPrice = productDetail.price;
+  const {
+    data: dataProduct,
+    isLoading: loadingProduct,
+    error: errorProduct,
+  } = useGetProductDetailQuery({ slug }, { skip: !slug });
+
+  const categoryIds =
+    dataProduct?.categories?.map((category) => category._id) || [];
+
+  const {
+    data: dataDoctors,
+    isLoading: loadingDoctor,
+    error: errorDoctor,
+  } = useGetDoctorRecommendQuery(
+    { ...queryDoctors, categories: categoryIds?.join(",") },
+    { skip: !dataProduct }
+  );
 
   useEffect(() => {
-    if (slug) {
-      dispatch(getDetailProduct(slug));
-    }
-  }, [slug]);
-
-  useEffect(() => {
-    if (!isEmpty(productDetail)) {
+    if (dataProduct) {
       setProduct((prev) => ({
         ...prev,
-        productId: productDetail._id,
-        name: productDetail.name,
-        image: productDetail.mainImage.url,
-        price: productDetail.price,
-        brand: productDetail.brand.name,
+        productId: dataProduct._id,
+        name: dataProduct.name,
+        image: dataProduct.mainImage.url,
+        price: dataProduct.price,
+        brand: dataProduct.brand.name,
         color:
-          productDetail.variants.length > 0
+          dataProduct.variants.length > 0
             ? {
-                name: productDetail.variants[0].color.name,
-                code: productDetail.variants[0].color.code,
-                image: productDetail.variants[0].color.image.url,
+                name: dataProduct.variants[0].color.name,
+                code: dataProduct.variants[0].color.code,
+                image: dataProduct.variants[0].color.image.url,
               }
             : {},
       }));
     }
-  }, [productDetail]);
+  }, [dataProduct]);
+
+  if (errorProduct) return <Empty className="mt-24" />;
+
+  if (loadingProduct) return <LoadingContent />;
+
+  if (!dataProduct) return <Empty className="mt-24" />;
+
+  const discountPercentage = dataProduct.promotion
+    ? dataProduct.promotion.discountPercentage
+    : 0;
+  const originalPrice = dataProduct.originalPrice || dataProduct.price;
+  const discountedPrice = dataProduct.price;
 
   const openNotification = () => {
     confetti({
@@ -175,19 +197,10 @@ const Detail = () => {
     openNotification();
   };
 
-  if (isLoading)
-    return (
-      <div className="flex items-center justify-center flex-col h-screen">
-        <Spin size="large" />
-      </div>
-    );
-
-  if (isEmpty(productDetail)) return <Empty className="mt-24" />;
-
   const carouselImages = [
-    productDetail.mainImage,
-    ...productDetail.images,
-    ...(productDetail.variants || []).map((variant) => variant.color.image),
+    dataProduct.mainImage,
+    ...dataProduct.images,
+    ...(dataProduct.variants || []).map((variant) => variant.color.image),
   ].filter(Boolean);
 
   return (
@@ -231,7 +244,7 @@ const Detail = () => {
         <div className="product-info">
           <Card className="mb-6 shadow-md hover:shadow-lg transition-shadow duration-300 text-base">
             <h1 className="text-base md:text-xl font-bold mb-4">
-              {productDetail.name}
+              {dataProduct.name}
             </h1>
             <div className="flex items-center mb-4">
               <Rate
@@ -239,14 +252,14 @@ const Detail = () => {
                 character={({ index }) =>
                   createAverageRate({
                     index: index + 1,
-                    rate: parseFloat(productDetail.averageRating),
+                    rate: parseFloat(dataProduct.averageRating),
                     width: "24px",
                     height: "24px",
                   })
                 }
               />
               <span className="ml-2 text-gray-500">
-                ({productDetail.totalReviews} đánh giá)
+                ({dataProduct.totalReviews} đánh giá)
               </span>
             </div>
             <div className="relative overflow-hidden bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 p-1 rounded-lg shadow-lg mb-6">
@@ -302,13 +315,13 @@ const Detail = () => {
                 </div>
               )}
             </div>
-            {productDetail.variants.length > 0 && (
+            {dataProduct.variants.length > 0 && (
               <div className="mb-6">
                 <h3 className="font-semibold mb-2">
                   Màu sắc: {product.color.name}
                 </h3>
                 <div className="flex space-x-2">
-                  {productDetail.variants.map((item, index) => (
+                  {dataProduct.variants.map((item, index) => (
                     <Tooltip key={index} title={item.color.name}>
                       <div
                         className={`w-8 h-8 rounded-full cursor-pointer border-2 ${
@@ -384,12 +397,20 @@ const Detail = () => {
 
       <div className="mt-12">
         <h2 className="text-2xl font-bold">Mô tả sản phẩm</h2>
-        <div dangerouslySetInnerHTML={{ __html: productDetail.description }} />
+        <div dangerouslySetInnerHTML={{ __html: dataProduct.description }} />
       </div>
+
+      {dataProduct && (
+        <RecommendedDoctors
+          data={dataDoctors?.doctors || []}
+          loading={loadingDoctor}
+          error={errorDoctor}
+        />
+      )}
 
       <div className="mt-12">
         <h2 className="text-2xl font-bold mb-4">Đánh giá sản phẩm</h2>
-        <RateList {...{ product: productDetail }} />
+        <RateList {...{ product: dataProduct }} />
       </div>
     </div>
   );

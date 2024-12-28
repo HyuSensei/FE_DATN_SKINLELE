@@ -182,3 +182,13 @@ body {
 .hidden-scroll {
   overflow-x: hidden !important;
 }
+
+.hide-scrollbar-doctor {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none; 
+}
+
+.hide-scrollbar-doctor::-webkit-scrollbar {
+  display: none; 
+}

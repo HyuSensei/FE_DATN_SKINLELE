@@ -21,6 +21,7 @@ import { formatPrice } from "@/helpers/formatPrice";
 import { TbCalendarCancel } from "react-icons/tb";
 import BookingUpdateInfo from "./BookingUpdateInfo";
 import BookingCancel from "./BookingCancel";
+import BookingReviewAction from "./BookingReviewAction";
 
 const BookingCard = ({ booking, refetch }) => {
   const statusConfig = {
@@ -60,6 +61,7 @@ const BookingCard = ({ booking, refetch }) => {
   const status = statusConfig[booking.status];
   const [isEdit, setIsEdit] = useState(false);
   const [openCancel, setOpenCancel] = useState(false);
+  const [openReview, setOpenReview] = useState(false);
 
   return (
     <Card
@@ -252,13 +254,29 @@ const BookingCard = ({ booking, refetch }) => {
               <Divider />
               <div className="flex flex-wrap justify-end gap-3">
                 {booking.status === "completed" && (
-                  <CustomButton
-                    variant="primary"
-                    icon={<StarFilled />}
-                    className="shadow-sm"
-                  >
-                    Đánh giá bác sĩ
-                  </CustomButton>
+                  <>
+                    <BookingReviewAction
+                      {...{
+                        open: openReview,
+                        booking,
+                        onClose: (isFetch) => {
+                          if (isFetch) {
+                            refetch();
+                          }
+                          setOpenReview(false);
+                        },
+                      }}
+                    />
+                    <CustomButton
+                      disabled={booking.isReview}
+                      onClick={() => setOpenReview(true)}
+                      variant="dark"
+                      icon={<StarFilled />}
+                      className="shadow-sm"
+                    >
+                      {booking.isReview ? "Đã đánh giá" : "Đánh giá bác sĩ"}
+                    </CustomButton>
+                  </>
                 )}
                 {booking.status === "pending" && (
                   <>

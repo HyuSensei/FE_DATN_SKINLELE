@@ -3,13 +3,12 @@ import { List, Pagination, Rate, Spin, Tag } from "antd";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { formatPrice } from "@helpers/formatPrice";
-import { defaultProduct } from "@const/defaultProduct";
 import { createAverageRate } from "@utils/createIcon";
 import ImageCarousel from "@components/ImageCarousel";
 
 const ProductList = ({
   isLoading,
-  products = defaultProduct,
+  products = [],
   title = "",
   setPaginate,
   paginate = { page: 1, pageSize: 10, totalPage: 0, totalItems: 0 },

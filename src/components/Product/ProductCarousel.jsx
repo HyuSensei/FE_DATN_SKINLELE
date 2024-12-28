@@ -75,13 +75,7 @@ const ProductCarousel = ({
     ],
   };
 
-  const Loading = () => (
-    <div className="flex items-center justify-center m-4">
-      <Spin size="large" />
-    </div>
-  );
-
-  if (isLoading) return Loading();
+  if (isLoading) return <LoadingContent />;
 
   if (products.length === 0 && !isLoading) return null;
 

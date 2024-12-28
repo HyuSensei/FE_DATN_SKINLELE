@@ -1,14 +1,12 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   getPromotionDetail,
   updatePromotion,
 } from "@redux/promotion/promotion.thunk";
-import { getAllProductPromitionAdd } from "@redux/product/product.thunk";
 import {
   Empty,
-  Spin,
   Form,
   Input,
   Button,
@@ -21,13 +19,17 @@ import {
   Tag,
   Tooltip,
   Checkbox,
+  Select,
 } from "antd";
-import { isEmpty } from "lodash";
+import { debounce, isEmpty } from "lodash";
 import moment from "moment";
 import locale from "antd/es/date-picker/locale/vi_VN";
 import { PiSpinnerBall } from "react-icons/pi";
 import { formatPrice } from "@helpers/formatPrice";
 import { formatDateReview } from "@helpers/formatDate";
+import { useGetProductAddPromotionQuery } from "@/redux/product/product.query";
+import LoadingContent from "@/components/Loading/LoaingContent";
+import { SearchOutlined } from "@ant-design/icons";
 
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
@@ -38,30 +40,24 @@ const PromotionDetail = () => {
   const dispatch = useDispatch();
   const { promotion: promotionDetail, isLoading: promotionLoading } =
     useSelector((state) => state.promotion);
-  const {
-    products,
-    isLoading: productsLoading,
-    paginateAdmin: pagination,
-  } = useSelector((state) => state.product);
   const { id } = useParams();
   const [selectedProducts, setSelectedProducts] = useState([]);
-  const [paginate, setPaginate] = useState({
-    page: 1,
-    pageSize: 5,
-    totalPage: 0,
-    totalItems: 0,
+  const [filters, setFilters] = useState({
+    name: "",
+    sort: "asc",
   });
+  const { data, isLoading: productsLoading } = useGetProductAddPromotionQuery({
+    ...filters,
+  });
+  const { data: products = [] } = data || {};
   const [promotion, setPromotion] = useState(null);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
 
   useEffect(() => {
     if (id) {
       dispatch(getPromotionDetail(id));
     }
   }, [id, dispatch]);
-
-  useEffect(() => {
-    dispatch(getAllProductPromitionAdd(paginate));
-  }, [paginate, dispatch]);
 
   useEffect(() => {
     if (!isEmpty(promotionDetail)) {
@@ -71,6 +67,7 @@ const PromotionDetail = () => {
         name: item.product.name,
         discountPercentage: item.discountPercentage,
         maxQty: item.maxQty,
+        maxDiscountAmount: item.maxDiscountAmount,
       }));
       setSelectedProducts(newData);
       setPromotion(promotionDetail);
@@ -89,32 +86,54 @@ const PromotionDetail = () => {
   }, [promotion, products]);
 
   const handleSubmit = async (values) => {
-    const formattedProducts = selectedProducts.map((product) => ({
-      product: product.product,
-      discountPercentage: form.getFieldValue([
-        "products",
-        product.product,
-        "discountPercentage",
-      ]),
-      maxQty: form.getFieldValue(["products", product.product, "maxQty"]),
-    }));
+    try {
+      setLoadingSubmit(true);
+      const formattedProducts = selectedProducts.map((product) => ({
+        product: product.product,
+        discountPercentage: form.getFieldValue([
+          "products",
+          product.product,
+          "discountPercentage",
+        ]),
+        maxQty: form.getFieldValue(["products", product.product, "maxQty"]),
+        maxDiscountAmount: form.getFieldValue([
+          "products",
+          product.product,
+          "maxDiscountAmount",
+        ]),
+      }));
 
-    const formattedValues = {
-      ...values,
-      products: formattedProducts,
-      startDate: values.date[0].format("YYYY-MM-DD HH:mm:ss"),
-      endDate: values.date[1].format("YYYY-MM-DD HH:mm:ss"),
-    };
-    delete formattedValues.date;
+      const formattedValues = {
+        ...values,
+        products: formattedProducts,
+        startDate: values.date[0].format("YYYY-MM-DD HH:mm:ss"),
+        endDate: values.date[1].format("YYYY-MM-DD HH:mm:ss"),
+      };
+      delete formattedValues.date;
 
-    const res = await dispatch(
-      updatePromotion({ id, data: formattedValues })
-    ).unwrap();
-    if (res.success) {
-      message.success(res.message);
-      navigate("/admin/promotions");
+      const res = await dispatch(
+        updatePromotion({ id, data: formattedValues })
+      ).unwrap();
+      if (res.success) {
+        message.success(res.message);
+        navigate("/admin/promotions");
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoadingSubmit(false);
     }
   };
+
+  const debouncedSearch = useCallback(
+    debounce((key, value) => {
+      setFilters((prev) => ({
+        ...prev,
+        [key]: value,
+      }));
+    }, 500),
+    []
+  );
 
   const columns = [
     {
@@ -194,6 +213,9 @@ const PromotionDetail = () => {
             ? existingProduct.discountPercentage
             : 0,
           maxQty: existingProduct ? existingProduct.maxQty : 0,
+          maxDiscountAmount: existingProduct
+            ? existingProduct.maxDiscountAmount
+            : 0,
         };
       });
 
@@ -208,36 +230,53 @@ const PromotionDetail = () => {
   };
 
   if (promotionLoading || productsLoading) {
-    return (
-      <div className="flex items-center justify-center flex-col h-screen">
-        <Spin size="large" />
-      </div>
-    );
+    return <LoadingContent />;
   }
 
   if (isEmpty(promotion)) return <Empty className="mt-24" />;
 
   return (
     <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4">
-      <div className="w-full lg:w-1/2">
-        <h2 className="text-lg font-bold mb-4">Danh sách sản phẩm</h2>
-        <Table
-          loading={productsLoading}
-          columns={columns}
-          dataSource={productsWithPromoInfo}
-          rowSelection={rowSelection}
-          rowKey="_id"
-          pagination={{
-            current: pagination.page,
-            pageSize: pagination.pageSize,
-            total: pagination.totalItems,
-            onChange: (page, pageSize) => setPaginate({ page, pageSize }),
-          }}
-          scroll={{ x: true }}
-        />
+      <div className="w-full lg:w-1/2 space-y-4">
+        <h2 className="text-lg font-bold">Danh sách sản phẩm</h2>
+        <div className="flex items-center space-x-2">
+          <Input
+            placeholder="Tìm kiếm sản phẩm..."
+            prefix={<SearchOutlined className="text-gray-400" />}
+            allowClear
+            onChange={(e) => debouncedSearch("name", e.target.value)}
+          />
+          <Select
+            className="w-40"
+            value={filters.sort}
+            onChange={(value) => debouncedSearch("sort", value)}
+            placeholder="Sắp xếp"
+            options={[
+              {
+                label: "Tăng dần",
+                value: "asc",
+              },
+              {
+                label: "Giảm dần",
+                value: "desc",
+              },
+            ]}
+          />
+        </div>
+        <div className="max-h-[800px] overflow-y-scroll">
+          <Table
+            loading={productsLoading}
+            columns={columns}
+            dataSource={productsWithPromoInfo}
+            rowSelection={rowSelection}
+            rowKey="_id"
+            pagination={false}
+          />
+        </div>
       </div>
       <div className="w-full lg:w-1/2">
         <Form
+          requiredMark={false}
           form={form}
           onFinish={handleSubmit}
           layout="vertical"
@@ -247,6 +286,7 @@ const PromotionDetail = () => {
               acc[product.product] = {
                 discountPercentage: product.discountPercentage,
                 maxQty: product.maxQty,
+                maxDiscountAmount: product.maxDiscountAmount,
               };
               return acc;
             }, {}),
@@ -260,6 +300,7 @@ const PromotionDetail = () => {
             <h2 className="text-lg font-bold">Cập nhật thông tin khuyến mãi</h2>
             <div className="flex items-center gap-2">
               <Button
+                loading={loadingSubmit}
                 type="primary"
                 htmlType="submit"
                 className="bg-indigo-600 hover:bg-indigo-700 w-full sm:w-auto"
@@ -354,6 +395,22 @@ const PromotionDetail = () => {
                     <InputNumber
                       placeholder="Số lượng tối đa"
                       min={1}
+                      className="w-full"
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name={["products", product.product, "maxDiscountAmount"]}
+                    label="Giảm giá tối đa"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng nhập giảm giá tối đa",
+                      },
+                    ]}
+                    className="w-full sm:w-1/2"
+                  >
+                    <InputNumber
+                      placeholder="Giám giá tối đa"
                       className="w-full"
                     />
                   </Form.Item>

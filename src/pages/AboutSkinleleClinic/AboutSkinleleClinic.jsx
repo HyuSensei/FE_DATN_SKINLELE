@@ -29,7 +29,7 @@ const AboutSkinleleClinic = () => {
             </span>
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-bold mb-8 leading-tight">
+          <h1 className="text-4xl md:text-5xl font-bold mb-8 leading-tight">
             Giải Pháp Quản Lý Toàn Diện
             <br />
             <span className="bg-gradient-to-r from-teal-200 to-emerald-200 text-transparent bg-clip-text">
@@ -51,7 +51,7 @@ const AboutSkinleleClinic = () => {
             </button>
           </div>
 
-          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-sm">
+          <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-sm">
             <div>
               <div className="text-3xl font-bold mb-2">2000+</div>
               <div className="text-teal-100">Phòng khám tin dùng</div>

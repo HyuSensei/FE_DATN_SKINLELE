@@ -110,6 +110,20 @@ export const doctorApi = createApi({
       }),
       transformResponse: (response) => response.data,
     }),
+    getDoctorRecommend: builder.query({
+      query: ({ page = 1, pageSize = 5, categories = "" }) => {
+        const queryStrings = new URLSearchParams({
+          page,
+          pageSize,
+          categories,
+        }).toString();
+        return {
+          url: `/doctors/doctor-recommend/?${queryStrings}`,
+          method: "GET",
+        };
+      },
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
@@ -121,5 +135,6 @@ export const {
   useGetScheduleBookingDoctorQuery,
   useGetAllReviewsByCustomerQuery,
   useGetFilterOptionsDoctorQuery,
-  useGetDoctorClinicBySearchQuery
+  useGetDoctorClinicBySearchQuery,
+  useGetDoctorRecommendQuery,
 } = doctorApi;

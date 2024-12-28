@@ -193,7 +193,7 @@ const DoctorReview = ({ doctor }) => {
     } catch (error) {
       console.log(error);
     } finally {
-      setLoadingSubmit(true);
+      setLoadingSubmit(false);
     }
   };
 
@@ -213,16 +213,16 @@ const DoctorReview = ({ doctor }) => {
           layout="vertical"
           requiredMark={false}
         >
-          <Form.Item name="rate">
-            <Rate
-              className="text-2xl"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn mức độ hài lòng của bạn",
-                },
-              ]}
-            />
+          <Form.Item
+            name="rate"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng chọn mức độ hài lòng của bạn",
+              },
+            ]}
+          >
+            <Rate className="text-2xl" />
           </Form.Item>
 
           <Form.Item
@@ -242,7 +242,7 @@ const DoctorReview = ({ doctor }) => {
             />
           </Form.Item>
           <CustomButton
-            isLoading={loadingSubmit}
+            loading={loadingSubmit}
             disabled={!isAuthenticated}
             type="submit"
             icon={<IoIosSend />}
@@ -252,7 +252,6 @@ const DoctorReview = ({ doctor }) => {
           </CustomButton>
         </Form>
       </div>
-      <Divider />
       <div className="flex justify-between mb-4 items-center">
         <div className="text-base font-medium">Danh sách đánh giá</div>
         <RatingSelect value={filters.rate} onChange={handleFilterChange} />
@@ -265,11 +264,8 @@ const DoctorReview = ({ doctor }) => {
 
         {reviews.length > 0 &&
           reviews.map((review) => (
-            <Card
-              key={review._id}
-              className="shadow-sm hover:shadow-md transition-shadow"
-              bordered={false}
-            >
+            <div key={review._id}>
+              <Divider />
               <div className="flex items-start gap-4">
                 <Avatar
                   size={48}
@@ -296,7 +292,7 @@ const DoctorReview = ({ doctor }) => {
                   </span>
                 </div>
               </div>
-            </Card>
+            </div>
           ))}
 
         {data?.hasMore && (

@@ -219,7 +219,6 @@ const HeaderUser = () => {
               Skin<span>LeLe</span>
             </div>
           </motion.div>
-
           <div className="hidden md:block flex-grow max-w-xl mx-8">
             <SearchHeader />
           </div>

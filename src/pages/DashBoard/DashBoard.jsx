@@ -220,7 +220,7 @@ const DashBoard = () => {
         />
         <DashboardCard
           title="Tổng tiền đơn hàng"
-          value={`${formatPrice(totalOrderAmount)} VND`}
+          value={`${formatPrice(totalOrderAmount, true)} VND`}
           icon={FaMoneyCheck}
           color="#32bffc"
           trend="up"

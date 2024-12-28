@@ -58,7 +58,7 @@ const Account = () => {
         </div>
 
         {/* Right Column: Dynamic Content */}
-        <div className="w-full md:w-3/4">
+        <div className="w-full md:w-3/4 min-h-screen">
           <Card className="shadow-md rounded-lg">{renderContent()}</Card>
         </div>
       </div>

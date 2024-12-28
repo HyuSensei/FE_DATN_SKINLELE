@@ -54,7 +54,7 @@ const DoctorList = () => {
     }
   }, [dataDoctors, paginate.page]);
 
-  const handleSeenMore = useCallback(() => {
+  const handleSeeMore = useCallback(() => {
     if (dataDoctors?.hasMore) {
       setPaginate((prev) => ({
         ...prev,
@@ -143,7 +143,7 @@ const DoctorList = () => {
                 {hasMore && (
                   <div className="flex justify-center mt-4">
                     <Button
-                      onClick={handleSeenMore}
+                      onClick={handleSeeMore}
                       type="link"
                       className="flex items-center gap-2 text-blue-600"
                     >

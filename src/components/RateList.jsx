@@ -10,6 +10,7 @@ import {
   Spin,
   Pagination,
   Image,
+  Divider,
 } from "antd";
 import { createAverageRate, createIcon, SingleStar } from "@utils/createIcon";
 import {
@@ -23,9 +24,10 @@ import ModalRate from "@components/Modal/ModalRate";
 import { useDispatch, useSelector } from "react-redux";
 import isEmpty from "lodash/isEmpty";
 import { getReviewProduct } from "@redux/review/review.thunk";
-import { formatDateReview } from "@helpers/formatDate";
+import { capitalizeFirstLetter } from "@helpers/formatDate";
 import { FaQuoteLeft, FaQuoteRight } from "react-icons/fa6";
-import { MdVerified, MdDateRange } from "react-icons/md";
+import { MdVerified } from "react-icons/md";
+import dayjs from "@utils/dayjsTz";
 
 const RateList = ({ product }) => {
   const dispatch = useDispatch();
@@ -232,7 +234,8 @@ const RateList = ({ product }) => {
                 itemLayout="vertical"
                 dataSource={reviews}
                 renderItem={(review) => (
-                  <Card className="mb-4 shadow-lg hover:shadow-xl transition-all duration-300 w-full">
+                  <div className="pb-4">
+                    <Divider />
                     <div className="flex flex-col space-y-2">
                       <div className="flex items-start space-x-2">
                         <Avatar
@@ -257,8 +260,9 @@ const RateList = ({ product }) => {
                               </div>
                             </div>
                             <div className="text-sm text-gray-500 flex items-center gap-2">
-                              <MdDateRange />
-                              {formatDateReview(review.createdAt)}
+                              {capitalizeFirstLetter(
+                                dayjs(review.createdAt).fromNow()
+                              )}
                             </div>
                           </div>
                           <Rate
@@ -308,7 +312,7 @@ const RateList = ({ product }) => {
                         </Image.PreviewGroup>
                       )}
                     </div>
-                  </Card>
+                  </div>
                 )}
               />
               <div className="text-right mt-4">

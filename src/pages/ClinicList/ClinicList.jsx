@@ -12,6 +12,7 @@ import { LuRefreshCcw } from "react-icons/lu";
 import { Button, Card, Empty, Spin } from "antd";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import ClinicCard from "@/components/Item/ClinicCard";
+import ClinicBanner from "./ClinicBanner";
 
 const ClinicList = () => {
   const [paginate, setPaginate] = useState({
@@ -75,6 +76,7 @@ const ClinicList = () => {
   return (
     <div className="mx-auto lg:px-16 mt-20 mb-10">
       <div className="p-6">
+        <ClinicBanner />
         {/* Mobile Filter Toggle */}
         <div className="lg:hidden mb-4">
           <CustomButton
