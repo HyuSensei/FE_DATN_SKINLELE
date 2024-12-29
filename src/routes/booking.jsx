@@ -1,4 +1,5 @@
 import AuthUserWrapper from "@/components/Auth/AuthUserWapper";
+import ProviderSocket from "@/components/Layout/ProviderSocket";
 import LoadingClinic from "@/components/Loading/LoadingClinic";
 import React, { lazy, Suspense } from "react";
 
@@ -29,15 +30,19 @@ const WrapBookingRoute = ({
     <PageTitle title={title}>
       {isAuth ? (
         <AuthUserWrapper {...{ isModalAuth, isAuthBooking: isAuth }}>
-          <LayoutBooking>
-            <Element />
-          </LayoutBooking>
+          <ProviderSocket>
+            <LayoutBooking>
+              <Element />
+            </LayoutBooking>
+          </ProviderSocket>
         </AuthUserWrapper>
       ) : isDoctor ? (
         <AuthDoctorWapper>
-          <LayoutBooking>
-            <Element />
-          </LayoutBooking>
+          <ProviderSocket>
+            <LayoutBooking>
+              <Element />
+            </LayoutBooking>
+          </ProviderSocket>
         </AuthDoctorWapper>
       ) : (
         <LayoutBooking>

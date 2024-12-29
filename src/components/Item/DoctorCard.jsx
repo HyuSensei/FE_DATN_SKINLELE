@@ -70,6 +70,19 @@ const DoctorCard = ({ doctor }) => {
             </div>
           </div>
 
+          <Link to={`/clinic-detail/${doctor.clinic.slug}`}>
+            <div className="flex items-center gap-2 justify-center mt-3">
+              <img
+                src={doctor.clinic.logo.url}
+                alt={doctor.clinic.name}
+                className="w-12 h-12 border-2 rounded-full border-sky-300 shadow-lg group-hover:scale-105 transition-transform duration-300"
+              />
+              <div className="text-sm text-gray-600 truncate-2-lines">
+                {doctor.clinic.name}
+              </div>
+            </div>
+          </Link>
+
           <div className="mt-auto">
             <Link
               to={`/doctor-detail/${doctor.slug}`}

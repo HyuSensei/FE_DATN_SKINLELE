@@ -141,6 +141,7 @@ const SearchHeaderBooking = () => {
         overlayClassName="w-full md:w-[600px]"
         overlayStyle={{ maxWidth: "90vw" }}
         arrow={false}
+        placement="bottomRight"
       >
         <Input
           value={search}

@@ -84,6 +84,7 @@ const ModalSaveProductPromotion = ({
       width={900}
     >
       <Form
+        requiredMark={false}
         form={form}
         onFinish={handleSubmit}
         layout="vertical"
@@ -102,8 +103,8 @@ const ModalSaveProductPromotion = ({
           <h2 className="text-lg font-bold">Thông tin khuyến mãi</h2>
           <div className="flex items-center gap-2">
             <Button
-              type="submit"
-              className="bg-indigo-600 hover:bg-indigo-700 w-full sm:w-auto"
+              htmlType="submit"
+              className="bg-indigo-600 hover:bg-indigo-700 w-full sm:w-auto text-white"
             >
               Tạo ngay
             </Button>

@@ -83,6 +83,7 @@ export const authSlice = createSlice({
       remove("cart");
       state.isAuthenticated = false;
       state.userInfo = {};
+      window.location.reload();
     },
     setUserInfo(state, action) {
       state.userInfo = action.payload;

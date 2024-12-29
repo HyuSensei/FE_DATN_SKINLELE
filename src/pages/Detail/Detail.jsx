@@ -85,7 +85,9 @@ const Detail = () => {
         productId: dataProduct._id,
         name: dataProduct.name,
         image: dataProduct.mainImage.url,
-        price: dataProduct.price,
+        price: dataProduct.promotion
+          ? dataProduct.finalPrice
+          : dataProduct.price,
         brand: dataProduct.brand.name,
         color:
           dataProduct.variants.length > 0
@@ -108,8 +110,9 @@ const Detail = () => {
   const discountPercentage = dataProduct.promotion
     ? dataProduct.promotion.discountPercentage
     : 0;
-  const originalPrice = dataProduct.originalPrice || dataProduct.price;
-  const discountedPrice = dataProduct.price;
+  const discountedPrice = dataProduct.promotion
+    ? dataProduct.finalPrice
+    : dataProduct.price;
 
   const openNotification = () => {
     confetti({
@@ -301,11 +304,11 @@ const Detail = () => {
               {discountPercentage > 0 && (
                 <div className="flex items-center">
                   <span className="text-lg text-gray-500 line-through mr-2">
-                    {formatPrice(originalPrice)}đ
+                    {formatPrice(dataProduct.price)}đ
                   </span>
                   <Tooltip
                     title={`Bạn tiết kiệm: ${formatPrice(
-                      originalPrice - discountedPrice
+                      dataProduct.price - discountedPrice
                     )}đ`}
                   >
                     <span className="text-sm text-green-600 font-medium cursor-help">

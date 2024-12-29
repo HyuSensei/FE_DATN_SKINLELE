@@ -4,6 +4,7 @@ import HeaderUser from "@components/Header/HeaderUser";
 import FooterUser from "@components/Footer/FooterUser";
 import PopupClinic from "./PopupClinic";
 import PopupPromotional from "./PopupConfetti";
+import ConversationSupport from "../Chat/ConversationSupport";
 
 const LayoutUser = ({ children }) => {
   const location = useLocation();
@@ -21,7 +22,8 @@ const LayoutUser = ({ children }) => {
       <HeaderUser />
       <main className="flex-grow px-4 lg:px-16 py-2">{children}</main>
       <PopupClinic />
-      <PopupPromotional />
+      {/* <PopupPromotional /> */}
+      <ConversationSupport />
       <FooterUser />
     </div>
   );

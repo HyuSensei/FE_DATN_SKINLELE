@@ -28,15 +28,17 @@ import dayjs from "@utils/dayjsTz";
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
 
+const SORT_OPTIONS = [
+  { label: "Tăng dần", value: "asc" },
+  { label: "Giảm dần", value: "desc" },
+];
+
 const CreatePromotion = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [filters, setFilters] = useState({
-    name: "",
-    sort: "asc",
-  });
-  const { data, isLoading } = useGetProductAddPromotionQuery({ ...filters });
+  const [filters, setFilters] = useState({ name: "", sort: "asc" });
+  const { data, isLoading } = useGetProductAddPromotionQuery(filters);
   const { data: products = [] } = data || {};
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
@@ -50,10 +52,7 @@ const CreatePromotion = () => {
 
   const debouncedSearch = useCallback(
     debounce((key, value) => {
-      setFilters((prev) => ({
-        ...prev,
-        [key]: value,
-      }));
+      setFilters((prev) => ({ ...prev, [key]: value }));
     }, 500),
     []
   );
@@ -133,28 +132,15 @@ const CreatePromotion = () => {
           maxQty: 0,
         }));
         setSelectedProducts(updatedSelectedProducts);
-
-        const productsFieldsValue = {};
-        updatedSelectedProducts.forEach((product) => {
-          productsFieldsValue[product.product] = {
-            discountPercentage: 0,
-            maxQty: 0,
-            maxDiscountAmount: 0,
-          };
-        });
-        form.setFieldsValue({ products: productsFieldsValue });
-
-        const previousProductIds = selectedProducts.map((p) => p.product);
-        const unselectedProductIds = previousProductIds.filter(
-          (id) => !selectedRowKeys.includes(id)
-        );
-        unselectedProductIds.forEach((id) => {
-          form.setFields([
-            {
-              name: ["products", id],
-              value: null,
-            },
-          ]);
+        form.setFieldsValue({
+          products: updatedSelectedProducts.reduce((acc, product) => {
+            acc[product.product] = {
+              discountPercentage: 0,
+              maxQty: 0,
+              maxDiscountAmount: 0,
+            };
+            return acc;
+          }, {}),
         });
       },
       getCheckboxProps: (record) => ({
@@ -194,7 +180,7 @@ const CreatePromotion = () => {
           navigate("/admin/promotions");
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
       } finally {
         setLoadingSubmit(false);
       }
@@ -218,16 +204,7 @@ const CreatePromotion = () => {
             value={filters.sort}
             onChange={(value) => debouncedSearch("sort", value)}
             placeholder="Sắp xếp"
-            options={[
-              {
-                label: "Tăng dần",
-                value: "asc",
-              },
-              {
-                label: "Giảm dần",
-                value: "desc",
-              },
-            ]}
+            options={SORT_OPTIONS}
           />
         </div>
         <div className="max-h-[800px] overflow-y-scroll">
@@ -235,22 +212,20 @@ const CreatePromotion = () => {
             columns={columns}
             dataSource={formattedProducts}
             loading={isLoading}
-            rowSelection={{
-              type: "checkbox",
-              ...rowSelection,
-            }}
+            rowSelection={{ type: "checkbox", ...rowSelection }}
             pagination={false}
             scroll={{ x: true }}
           />
         </div>
       </div>
+
       <div className="w-full lg:w-1/2">
         <Form
           requiredMark={false}
-          className="space-y-4"
           form={form}
           onFinish={handleSubmit}
           layout="vertical"
+          className="space-y-4"
         >
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
             <h2 className="text-lg font-bold">Tạo mới thông tin khuyến mãi</h2>
@@ -271,38 +246,30 @@ const CreatePromotion = () => {
               </Button>
             </div>
           </div>
+
           <Form.Item
             name="name"
             label="Tên khuyến mãi"
             rules={[
-              {
-                required: true,
-                message: "Vui lòng nhập tên khuyến mãi",
-              },
+              { required: true, message: "Vui lòng nhập tên khuyến mãi" },
             ]}
           >
             <Input size="middle" placeholder="Nhập tên khuyến mãi..." />
           </Form.Item>
+
           <Form.Item
             name="description"
             label="Mô tả"
-            rules={[
-              {
-                required: true,
-                message: "Vui lòng nhập mô tả",
-              },
-            ]}
+            rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
           >
             <TextArea rows={4} placeholder="Nhập mô tả..." />
           </Form.Item>
+
           <Form.Item
             name="date"
             label="Thời gian áp dụng"
             rules={[
-              {
-                required: true,
-                message: "Vui lòng chọn thời gian áp dụng",
-              },
+              { required: true, message: "Vui lòng chọn thời gian áp dụng" },
             ]}
           >
             <RangePicker
@@ -314,6 +281,7 @@ const CreatePromotion = () => {
               }
             />
           </Form.Item>
+
           <div>
             <h3 className="text-sm font-medium mb-2">Sản phẩm được chọn</h3>
             {selectedProducts.length === 0 ? (
@@ -382,7 +350,7 @@ const CreatePromotion = () => {
                       className="w-full sm:w-1/2"
                     >
                       <InputNumber
-                        placeholder="Giám giá tối đa"
+                        placeholder="Giảm giá tối đa"
                         className="w-full"
                       />
                     </Form.Item>

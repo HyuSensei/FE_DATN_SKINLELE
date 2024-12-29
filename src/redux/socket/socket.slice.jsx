@@ -1,14 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  supportMessages: [],
-  customerMessages: [],
-  doctorMessages: [],
-  supportConversation: null,
-  customerConversation: null,
-  doctorConversation: null,
-  doctorId: "",
-  adminId: "",
   socketCustomer: null,
   socketAdmin: null,
   socketDoctor: null,
@@ -27,6 +19,9 @@ export const socketSlice = createSlice({
     },
     setSocketDoctor(state, action) {
       state.socketDoctor = action.payload;
+    },
+    setUserOnlines(state, action) {
+      state.userOnlines = action.payload;
     },
   },
 });

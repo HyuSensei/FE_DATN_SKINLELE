@@ -83,8 +83,7 @@ const ProductCarousel = ({
     const discountPercentage = item.promotion
       ? item.promotion.discountPercentage
       : 0;
-    const originalPrice = item.originalPrice || item.price;
-    const discountedPrice = item.price;
+    const discountedPrice = item.promotion ? item.finalPrice : item.price;
 
     return (
       <div className="px-2 py-2">
@@ -120,7 +119,7 @@ const ProductCarousel = ({
               <span className="font-bold">{formatPrice(discountedPrice)}đ</span>
               {discountPercentage > 0 && (
                 <span className="text-gray-400 line-through text-sm">
-                  {formatPrice(originalPrice)}đ
+                  {formatPrice(item.price)}đ
                 </span>
               )}
             </div>

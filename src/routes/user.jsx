@@ -1,7 +1,8 @@
 import React, { lazy, Suspense } from "react";
 import { useSelector } from "react-redux";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import Loading from "@components/Loading/Loading";
+import ProviderSocket from "@/components/Layout/ProviderSocket";
 
 const PageTitle = lazy(() => import("@components/Layout/PageTitle"));
 const LayoutUser = lazy(() => import("@components/Layout/LayoutUser"));
@@ -34,23 +35,25 @@ const AuthRoute = ({ children }) => {
 
 const WrapRoute = ({ element: Element, title, isProtected, isAuthRoute }) => (
   <Suspense fallback={<Loading />}>
-    <AuthUserWapper>
-      <LayoutUser>
-        <PageTitle title={title}>
-          {isProtected ? (
-            <ProtectedRoute>
+    <PageTitle title={title}>
+      <AuthUserWapper>
+        <ProviderSocket>
+          <LayoutUser>
+            {isProtected ? (
+              <ProtectedRoute>
+                <Element />
+              </ProtectedRoute>
+            ) : isAuthRoute ? (
+              <AuthRoute>
+                <Element />
+              </AuthRoute>
+            ) : (
               <Element />
-            </ProtectedRoute>
-          ) : isAuthRoute ? (
-            <AuthRoute>
-              <Element />
-            </AuthRoute>
-          ) : (
-            <Element />
-          )}
-        </PageTitle>
-      </LayoutUser>
-    </AuthUserWapper>
+            )}
+          </LayoutUser>
+        </ProviderSocket>
+      </AuthUserWapper>
+    </PageTitle>
   </Suspense>
 );
 

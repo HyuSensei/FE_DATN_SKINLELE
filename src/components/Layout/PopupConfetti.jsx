@@ -143,7 +143,7 @@ const PopupConfetti = () => {
             <div className="text-center mb-6">
               <div className="inline-flex items-center bg-rose-50 rounded-full px-6 py-2 mb-3">
                 <h2 className="text-xl font-medium">
-                🎁 Quà tặng chính hãng
+                  🎁 Khuyến mãi hot cùng SkinLeLe
                 </h2>
               </div>
             </div>
@@ -152,20 +152,20 @@ const PopupConfetti = () => {
             {/* Badges */}
             <div className="flex justify-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm flex items-center">
-                <GiStarShuriken className="mr-1" /> Freeship 15k
+                <GiStarShuriken className="mr-1" /> Freeship 
               </span>
               <span className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm flex items-center">
-                <GiStarShuriken className="mr-1" /> Giao 24h
+                <GiStarShuriken className="mr-1" /> Giao hàng toàn quốc
               </span>
             </div>
 
             {/* Offers */}
             <div className="grid grid-cols-2 gap-4 mb-6">
               {[
-                { min: '299k', gift: 'Son lì', value: '229k' },
-                { min: '499k', gift: 'Kem chống nắng', value: '380k' },
-                { min: '799k', gift: 'Bộ dưỡng da', value: '900k' },
-                { min: '1500k', gift: 'Son dưỡng', value: '380k' },
+                { min: "299k", gift: "Son lì", value: "229k" },
+                { min: "499k", gift: "Kem chống nắng", value: "380k" },
+                { min: "799k", gift: "Bộ dưỡng da", value: "900k" },
+                { min: "1500k", gift: "Son dưỡng", value: "380k" },
               ].map((offer, index) => (
                 <div
                   key={index}

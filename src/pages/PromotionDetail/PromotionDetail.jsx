@@ -34,6 +34,11 @@ import { SearchOutlined } from "@ant-design/icons";
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
 
+const SORT_OPTIONS = [
+  { label: "Tăng dần", value: "asc" },
+  { label: "Giảm dần", value: "desc" },
+];
+
 const PromotionDetail = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
@@ -42,23 +47,21 @@ const PromotionDetail = () => {
     useSelector((state) => state.promotion);
   const { id } = useParams();
   const [selectedProducts, setSelectedProducts] = useState([]);
-  const [filters, setFilters] = useState({
-    name: "",
-    sort: "asc",
-  });
-  const { data, isLoading: productsLoading } = useGetProductAddPromotionQuery({
-    ...filters,
-  });
-  const { data: products = [] } = data || {};
+  const [filters, setFilters] = useState({ name: "", sort: "asc" });
+  const { data, isLoading: productsLoading } =
+    useGetProductAddPromotionQuery(filters);
+  const { data: products = [] } = data || [];
   const [promotion, setPromotion] = useState(null);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
 
+  // Fetch promotion details
   useEffect(() => {
     if (id) {
       dispatch(getPromotionDetail(id));
     }
   }, [id, dispatch]);
 
+  // Set the promotion and selected products once promotion data is fetched
   useEffect(() => {
     if (!isEmpty(promotionDetail)) {
       const newData = promotionDetail.products.map((item) => ({
@@ -74,6 +77,7 @@ const PromotionDetail = () => {
     }
   }, [promotionDetail]);
 
+  // Memoize product data with promotion info
   const productsWithPromoInfo = useMemo(() => {
     if (isEmpty(promotion) || isEmpty(products)) return [];
     return products.map((product) => ({
@@ -85,6 +89,7 @@ const PromotionDetail = () => {
     }));
   }, [promotion, products]);
 
+  // Handle form submission
   const handleSubmit = async (values) => {
     try {
       setLoadingSubmit(true);
@@ -125,16 +130,15 @@ const PromotionDetail = () => {
     }
   };
 
+  // Debounced search handler
   const debouncedSearch = useCallback(
     debounce((key, value) => {
-      setFilters((prev) => ({
-        ...prev,
-        [key]: value,
-      }));
+      setFilters((prev) => ({ ...prev, [key]: value }));
     }, 500),
     []
   );
 
+  // Table columns for product list
   const columns = [
     {
       title: "Ảnh",
@@ -192,11 +196,11 @@ const PromotionDetail = () => {
     },
   ];
 
+  // Row selection for table
   const rowSelection = {
     selectedRowKeys: selectedProducts.map((p) => p.product),
     onChange: (_, selectedRows) => {
       const currentPageProducts = products.map((p) => p._id);
-
       const productsFromOtherPages = selectedProducts.filter(
         (p) => !currentPageProducts.includes(p.product)
       );
@@ -229,6 +233,7 @@ const PromotionDetail = () => {
     }),
   };
 
+  // Loading and Empty States
   if (promotionLoading || productsLoading) {
     return <LoadingContent />;
   }
@@ -251,16 +256,7 @@ const PromotionDetail = () => {
             value={filters.sort}
             onChange={(value) => debouncedSearch("sort", value)}
             placeholder="Sắp xếp"
-            options={[
-              {
-                label: "Tăng dần",
-                value: "asc",
-              },
-              {
-                label: "Giảm dần",
-                value: "desc",
-              },
-            ]}
+            options={SORT_OPTIONS}
           />
         </div>
         <div className="max-h-[800px] overflow-y-scroll">
@@ -274,6 +270,7 @@ const PromotionDetail = () => {
           />
         </div>
       </div>
+
       <div className="w-full lg:w-1/2">
         <Form
           requiredMark={false}
@@ -343,6 +340,7 @@ const PromotionDetail = () => {
           <Form.Item name="isActive" valuePropName="checked">
             <Checkbox>Kích hoạt khuyến mãi</Checkbox>
           </Form.Item>
+
           <div>
             <h3 className="text-sm font-medium mb-2">Sản phẩm được chọn</h3>
             {selectedProducts.length === 0 && <Empty />}
@@ -410,7 +408,7 @@ const PromotionDetail = () => {
                     className="w-full sm:w-1/2"
                   >
                     <InputNumber
-                      placeholder="Giám giá tối đa"
+                      placeholder="Giảm giá tối đa"
                       className="w-full"
                     />
                   </Form.Item>
