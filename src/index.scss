@@ -166,4 +166,18 @@ body {
   animation: zoom-in-zoom-out 2s ease-out infinite;
 }
 
+.hide-scrollbar-custom {
+  overflow: scroll; /* Cho phép cuộn */
+}
+
+/* Ẩn thanh cuộn dọc */
+.hide-scrollbar-custom::-webkit-scrollbar {
+  display: none;
+}
+
+/* Ẩn thanh cuộn ngang */
+.hide-scrollbar-custom::-webkit-scrollbar {
+  display: none;
+}
+
 

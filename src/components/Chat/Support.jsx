@@ -9,10 +9,17 @@ import { useDispatch, useSelector } from "react-redux";
 const Support = ({ admin, conversation }) => {
   const dispatch = useDispatch();
   const { userOnlines } = useSelector((state) => state.socket);
+  const { userInfo } = useSelector((state) => state.auth)
 
+  const isOwner = (userId) => {
+    return userId === userInfo._id
+  }
   const isOnline = (userId) => {
     return userOnlines?.some((item) => item === userId);
   };
+  const isReadOwner = (userId, lastMessage) => {
+    return userId === userInfo?._id && lastMessage?.isRead
+  }
 
   const handleSelectConversation = (admin) => {
     dispatch(ChatActions.setSupportConversationSelected(admin));
@@ -21,11 +28,11 @@ const Support = ({ admin, conversation }) => {
       ChatActions.setOpenChat({ key: "isConversationSupport", value: false })
     );
   };
+  
   return (
     <div
-      className={`p-4 hover:bg-gray-200 transition-colors cursor-pointer ${
-        conversation && !conversation.lastMessage.isRead ? "bg-gray-100" : ""
-      }`}
+      className={`p-4 hover:bg-gray-200 transition-colors cursor-pointer ${conversation && !isReadOwner ? "bg-gray-100" : ""
+        }`}
       onClick={() =>
         handleSelectConversation({
           ...admin,
@@ -54,15 +61,15 @@ const Support = ({ admin, conversation }) => {
 
         {conversation &&
           conversation.lastMessage &&
-          !conversation.lastMessage.isRead && (
+          !isReadOwner && (
             <FaCircleDot className="animate-ping text-sky-400" />
           )}
       </div>
 
       {conversation && conversation.lastMessage && (
         <div className="mt-2 ml-[60px]">
-          <p className="text-sm text-gray-500 line-clamp-1 truncate">
-            {conversation.lastMessage.content}
+          <p className={`text-sm line-clamp-1 truncate ${!isReadOwner ? "text-gray-600 font-medium" : "text-gray-500 "}`}>
+            {isOwner ? "Bạn:" : ""} {conversation.lastMessage.content}
           </p>
           <p className="text-xs text-gray-400 mt-1">
             {capitalizeFirstLetter(

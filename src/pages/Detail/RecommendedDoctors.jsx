@@ -46,7 +46,7 @@ const RecommendedDoctors = ({ data, loading, error }) => {
 
       {/* Doctor List */}
       <motion.div
-        className="flex gap-4 md:gap-6 overflow-x-auto hide-scrollbar-doctor pb-4 -mx-4 px-4 md:-mx-6 md:px-6"
+        className="flex gap-4 md:gap-6 overflow-x-auto hide-scrollbar-custom pb-4 -mx-4 px-4 md:-mx-6 md:px-6"
         initial="hidden"
         animate="visible"
         variants={{

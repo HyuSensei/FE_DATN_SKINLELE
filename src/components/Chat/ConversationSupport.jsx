@@ -21,10 +21,15 @@ const ConversationSupport = () => {
   const { socketCustomer: socket } = useSelector((state) => state.socket);
   const { isAuthenticated, userInfo } = useSelector((state) => state.auth);
 
-  const unReadCount =
-    supportList?.filter(
-      (item) => item.conversation && !item.conversation?.lastMessage?.isRead
-    ).length || 0;
+  const isUserAuthenticated = isAuthenticated && userInfo._id;
+  const supportConversations = supportList?.filter(item => item.conversation);
+
+  const unReadCount = isUserAuthenticated
+    ? supportConversations?.filter(item => {
+      const lastMessage = item.conversation?.lastMessage;
+      return lastMessage?.receiver._id === userInfo._id && !lastMessage?.isRead;
+    }).length || 0
+    : 0;
 
   useEffect(() => {
     const shakeInterval = setInterval(() => {
@@ -42,16 +47,12 @@ const ConversationSupport = () => {
         dispatch(ChatActions.setSupportList(conversations));
       });
 
-      if (isChatSupport && supportConversationSelected) {
+      if (isChatSupport && supportConversationSelected && supportConversationSelected.conversationId) {
         socket.emit("getMessages", supportConversationSelected.conversationId);
         socket.on("resGetMessages", (messages) => {
           dispatch(ChatActions.setSupportMessages(messages));
         });
       }
-
-      socket.on("resNewMessage", (message) => {
-        dispatch(ChatActions.setSupportMessages([...supportMessages, message]));
-      });
 
       return () => {
         socket.off("resGetAllSupport", (conversations) => {
@@ -60,19 +61,13 @@ const ConversationSupport = () => {
         socket.off("resGetMessages", (messages) => {
           dispatch(ChatActions.setSupportMessages(messages));
         });
-        socket.off("resNewMessage", (message) => {
-          dispatch(
-            ChatActions.setSupportMessages([...supportMessages, message])
-          );
-        });
       };
     }
   }, [
     isAuthenticated,
     socket,
     supportConversationSelected,
-    userInfo,
-    supportMessages,
+    userInfo
   ]);
 
   const handleClickChatIcon = () => {
@@ -108,9 +103,8 @@ const ConversationSupport = () => {
 
   return (
     <div
-      className={`fixed ${
-        isConversationSupport || isChatSupport ? " bottom-8" : " bottom-20"
-      } right-8 z-50`}
+      className={`fixed ${isConversationSupport || isChatSupport ? " bottom-8" : " bottom-20"
+        } right-8 z-50`}
     >
       {/* Chat Icon */}
       {!isConversationSupport && !isChatSupport && (
@@ -171,7 +165,7 @@ const ConversationSupport = () => {
             />
           </div>
 
-          <div className="divide-y divide-gray-100 max-h-[400px] overflow-y-auto">
+          <div className="divide-y divide-gray-100 max-h-[400px] overflow-y-auto hide-scrollbar-custom">
             {supportList.length > 0 &&
               supportList.map(({ admin, conversation }) => (
                 <Support
