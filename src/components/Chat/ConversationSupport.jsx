@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ChatActions } from "@/redux/chat/chat.slice";
 import { Link } from "react-router-dom";
 import Support from "./Support";
+import { LoadingConversation } from "./Loading";
 
 const ConversationSupport = () => {
   const dispatch = useDispatch();
@@ -20,16 +21,26 @@ const ConversationSupport = () => {
   const [isShaking, setIsShaking] = useState(false);
   const { socketCustomer: socket } = useSelector((state) => state.socket);
   const { isAuthenticated, userInfo } = useSelector((state) => state.auth);
+  const [isLoading, setIsLoading] = useState(true);
 
   const isUserAuthenticated = isAuthenticated && userInfo._id;
-  const supportConversations = supportList?.filter(item => item.conversation);
+  const supportConversations = supportList?.filter((item) => item.conversation);
 
   const unReadCount = isUserAuthenticated
-    ? supportConversations?.filter(item => {
-      const lastMessage = item.conversation?.lastMessage;
-      return lastMessage?.receiver._id === userInfo._id && !lastMessage?.isRead;
-    }).length || 0
+    ? supportConversations?.filter((item) => {
+        const lastMessage = item.conversation?.lastMessage;
+        return (
+          lastMessage?.receiver._id === userInfo._id && !lastMessage?.isRead
+        );
+      }).length || 0
     : 0;
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [isConversationSupport]);
 
   useEffect(() => {
     const shakeInterval = setInterval(() => {
@@ -47,7 +58,11 @@ const ConversationSupport = () => {
         dispatch(ChatActions.setSupportList(conversations));
       });
 
-      if (isChatSupport && supportConversationSelected && supportConversationSelected.conversationId) {
+      if (
+        isChatSupport &&
+        supportConversationSelected &&
+        supportConversationSelected.conversationId
+      ) {
         socket.emit("getMessages", supportConversationSelected.conversationId);
         socket.on("resGetMessages", (messages) => {
           dispatch(ChatActions.setSupportMessages(messages));
@@ -63,12 +78,7 @@ const ConversationSupport = () => {
         });
       };
     }
-  }, [
-    isAuthenticated,
-    socket,
-    supportConversationSelected,
-    userInfo
-  ]);
+  }, [isAuthenticated, socket, supportConversationSelected, userInfo]);
 
   const handleClickChatIcon = () => {
     if (isChatSupport) {
@@ -103,8 +113,9 @@ const ConversationSupport = () => {
 
   return (
     <div
-      className={`fixed ${isConversationSupport || isChatSupport ? " bottom-8" : " bottom-20"
-        } right-8 z-50`}
+      className={`fixed ${
+        isConversationSupport || isChatSupport ? " bottom-8" : " bottom-20"
+      } right-8 z-50`}
     >
       {/* Chat Icon */}
       {!isConversationSupport && !isChatSupport && (
@@ -166,14 +177,18 @@ const ConversationSupport = () => {
           </div>
 
           <div className="divide-y divide-gray-100 max-h-[400px] overflow-y-auto hide-scrollbar-custom">
-            {supportList.length > 0 &&
+            {isLoading ? (
+              <LoadingConversation />
+            ) : (
+              supportList.length > 0 &&
               supportList.map(({ admin, conversation }) => (
                 <Support
                   key={admin._id}
                   admin={admin}
                   conversation={conversation}
                 />
-              ))}
+              ))
+            )}
           </div>
         </div>
       )}
@@ -185,6 +200,16 @@ const ConversationSupport = () => {
           onClose={onCloseChat}
           messages={supportMessages}
           onSubmit={handleSendMessage}
+          typeMessage="User_Admin"
+          sender={{
+            _id: userInfo._id,
+            role: "User",
+          }}
+          receiver={{
+            _id: supportConversationSelected._id,
+            role: "Admin",
+          }}
+          isAuth={isAuthenticated}
         />
       )}
     </div>

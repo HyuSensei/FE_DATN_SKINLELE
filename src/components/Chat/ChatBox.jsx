@@ -1,30 +1,67 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button, Input, Upload, Popover } from "antd";
-import { BsSend } from "react-icons/bs";
 import { IoClose } from "react-icons/io5";
 import { FaSmile } from "react-icons/fa";
 import EmojiPicker from "emoji-picker-react";
 import Message from "./Message";
-import { RiAttachment2, RiFolderVideoLine, RiImage2Line } from "react-icons/ri";
+import { RiFolderVideoLine, RiImage2Line } from "react-icons/ri";
 import { useSelector } from "react-redux";
+import { LoadingMessage } from "./Loading";
+import PreviewUpload from "./PreviewUpload";
+import { HiGif } from "react-icons/hi2";
+import { IoIosSend, IoMdImages } from "react-icons/io";
+import VoiceRecorder from "./VoiceRecorder";
+import {
+  UPLOAD_SKINLELE_CHAT_PRESET,
+  uploadFile,
+} from "@/helpers/uploadCloudinary";
 
-const ChatBox = ({ conversation, onClose, messages, onSubmit }) => {
-  const [message, setMessage] = useState("");
+const ChatBox = ({
+  conversation,
+  onClose,
+  messages = [],
+  onSubmit,
+  typeMessage,
+  sender,
+  receiver,
+  isAuth = false,
+  requiredLogin = "💬 Vui lòng đăng nhập để tiếp tục !",
+  emptyMessageText = "💬 Bạn đang gặp phải vấn đề ?",
+}) => {
+  const [previewFiles, setPreviewFiles] = useState([]);
   const [showEmoji, setShowEmoji] = useState(false);
   const [openMedia, setOpenMedia] = useState(false);
   const messagesEndRef = useRef(null);
   const { userOnlines } = useSelector((state) => state.socket);
-  const { isAuthenticated, userInfo } = useSelector((state) => state.auth);
+  const [isLoading, setIsLoading] = useState(true);
+  const [inputMessage, setInputMessage] = useState({
+    type: typeMessage,
+    sender,
+    receiver,
+    content: "",
+    attachments: [],
+  });
+  const [loadingUpload, setLoadingUpload] = useState(false);
   const isOnline = (userId) => {
     return userOnlines?.some((item) => item === userId);
   };
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isLoading]);
 
   const onEmojiClick = (emojiObject) => {
-    setMessage((prev) => prev + emojiObject.emoji);
+    setInputMessage((prev) => ({
+      ...prev,
+      content: prev.content + emojiObject.emoji,
+    }));
   };
 
   const scrollToBottom = () => {
@@ -33,35 +70,116 @@ const ChatBox = ({ conversation, onClose, messages, onSubmit }) => {
     }
   };
 
-  const handleSendMessage = () => {
-    if (message.trim()) {
-      const newMessage = {
-        type: "User_Admin",
-        content: message,
-        sender: {
-          _id: userInfo._id,
-          role: "User",
-        },
-        receiver: {
-          _id: conversation._id,
-          role: "Admin",
-        },
-        attachments: [],
+  const handleUpload = (info, type) => {
+    const file = info.file;
+    if (file.status === "done") {
+      const newFile = {
+        uid: file.uid,
+        name: file.name,
+        status: "done",
+        url: URL.createObjectURL(file.originFileObj),
+        type,
+        file: file.originFileObj,
       };
+      setPreviewFiles((prev) => [...prev, newFile]);
 
-      onSubmit(newMessage);
-      setMessage("");
+      setInputMessage({
+        ...inputMessage,
+        attachments: [
+          ...(inputMessage.attachments || []),
+          {
+            url: newFile.url,
+            publicId: newFile.uid,
+            type: type,
+          },
+        ],
+      });
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
+  };
+
+  const handleRemoveFile = (uid) => {
+    setPreviewFiles((prev) => prev.filter((file) => file.uid !== uid));
+  };
+
+  const handleRecordingComplete = (audioUrl, audioFile) => {
+    const newAudio = {
+      uid: Date.now().toString(),
+      name: "Voice Message",
+      status: "done",
+      url: audioUrl,
+      type: "audio",
+      file: audioFile,
+    };
+    setPreviewFiles((prev) => [...prev, newAudio]);
+  };
+
+  const handleSendMessage = async () => {
+    try {
+      if (inputMessage.content.trim() || previewFiles.length > 0) {
+        let uploadedData;
+        if (previewFiles.length > 0) {
+          setLoadingUpload(true);
+          uploadedData = await Promise.all(
+            previewFiles.map(async (item) => {
+              if (item.file && item.type) {
+                const result = await uploadFile({
+                  file: item.file,
+                  type: UPLOAD_SKINLELE_CHAT_PRESET,
+                });
+                if (result && result.secure_url && result.public_id) {
+                  return {
+                    url: result.secure_url,
+                    publicId: result.public_id,
+                    type: item.type,
+                  };
+                }
+              }
+              return null;
+            })
+          );
+        }
+
+        const newMessage = {
+          ...inputMessage,
+          attachments: uploadedData || [],
+        };
+
+        onSubmit(newMessage);
+        setInputMessage((prev) => ({
+          ...prev,
+          content: "",
+          attachments: [],
+        }));
+        setPreviewFiles([]);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoadingUpload(false);
     }
   };
 
   const contentUpload = (
     <div className="space-y-1">
-      <Upload accept="image/*" showUploadList={false}>
+      <Upload
+        customRequest={({ onSuccess }) => onSuccess?.("OK")}
+        onChange={(info) => handleUpload(info, "image")}
+        accept="image/*"
+        showUploadList={false}
+      >
         <div className="p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors flex items-center gap-1 cursor-pointer">
           <RiImage2Line size={20} /> Tải ảnh lên
         </div>
       </Upload>
-      <Upload accept="video/*" showUploadList={false}>
+      <Upload
+        accept="video/*"
+        showUploadList={false}
+        customRequest={({ onSuccess }) => onSuccess?.("OK")}
+        onChange={(info) => handleUpload(info, "video")}
+      >
         <div className="p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors flex items-center gap-1 cursor-pointer">
           <RiFolderVideoLine size={20} /> Tải video lên
         </div>
@@ -108,28 +226,41 @@ const ChatBox = ({ conversation, onClose, messages, onSubmit }) => {
 
         {/* Messages Area */}
         <div
-          className={`flex-1 p-4 overflow-y-auto ${
-            messages.length === 0
-              ? "bg-[#eff1fe] min-h-[300px] max-h-[350px] "
-              : "bg-gray-50 min-h-[400px] max-h-[500px]"
-          } space-y-2`}
+          className={`flex-1 p-4 overflow-y-auto space-y-4 ${
+            isAuth && messages.length > 0
+              ? "bg-gray-50 min-h-[400px] max-h-[500px]"
+              : "bg-[#eff1fe] min-h-[350px] max-h-[400px]"
+          }`}
         >
-          {messages.length === 0 && (
+          {isLoading ? (
+            <LoadingMessage />
+          ) : messages.length === 0 && previewFiles.length === 0 ? (
             <div className="space-y-2">
               <img
                 src="https://res.cloudinary.com/dt8cdxgji/image/upload/v1735490423/upload-static-skinlele/ixxzdvyrg0serdipiynb.gif"
                 alt="Empty-Chat"
               />
               <div className="text-center text-gray-600 italic">
-                {isAuthenticated
-                  ? "💬 Bạn đang gặp phải vấn đề ?"
-                  : "💬 Vui lòng đăng nhập để tiếp tục !"}
+                {!isAuth ? requiredLogin : emptyMessageText}
               </div>
             </div>
+          ) : (
+            <>
+              {messages.map((msg) => (
+                <Message key={msg._id} message={msg} sender={sender} />
+              ))}
+              {previewFiles.length > 0 && (
+                <div className="flex justify-end">
+                  <div className="w-full">
+                    <PreviewUpload
+                      files={previewFiles}
+                      onRemove={handleRemoveFile}
+                    />
+                  </div>
+                </div>
+              )}
+            </>
           )}
-          {messages.map((msg) => (
-            <Message key={msg._id} message={msg} />
-          ))}
           <div ref={messagesEndRef} />
         </div>
 
@@ -137,7 +268,8 @@ const ChatBox = ({ conversation, onClose, messages, onSubmit }) => {
         <div className="p-4 border-t border-gray-100 bg-white rounded-b-xl">
           <div className="flex gap-2 items-center">
             <div className="relative">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
+                <VoiceRecorder onRecordingComplete={handleRecordingComplete} />
                 <Popover
                   open={openMedia}
                   placement="topLeft"
@@ -146,15 +278,18 @@ const ChatBox = ({ conversation, onClose, messages, onSubmit }) => {
                   onOpenChange={() => setOpenMedia(!openMedia)}
                 >
                   <button className="p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors">
-                    <RiAttachment2 size={20} />
+                    <IoMdImages size={20} />
                   </button>
                 </Popover>
                 <button
                   onClick={() => setShowEmoji((prev) => !prev)}
                   className="p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors"
                 >
-                  <FaSmile size={20} />
+                  <FaSmile size={18} />
                 </button>
+                {/* <button className="p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors">
+                  <HiGif size={18} />
+                </button> */}
               </div>
               {showEmoji && (
                 <div className="absolute bottom-12 left-0 z-50 animate-fadeIn">
@@ -167,22 +302,28 @@ const ChatBox = ({ conversation, onClose, messages, onSubmit }) => {
               )}
             </div>
             <Input
-              placeholder="Nhập tin nhắn..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              disabled={loadingUpload || isLoading}
+              size="middle"
+              placeholder={loadingUpload ? "Đang gửi..." : "Nhập tin nhắn..."}
+              value={inputMessage.content}
+              onChange={(e) =>
+                setInputMessage((prev) => ({
+                  ...prev,
+                  content: e.target.value,
+                }))
+              }
               className="rounded-full bg-gray-50 hover:bg-gray-100 focus:bg-white transition-all duration-300"
               onPressEnter={handleSendMessage}
-              suffix={
-                <Button
-                  type="text"
-                  className={`text-blue-500 hover:text-blue-600 hover:scale-110 transition-all duration-300
-                    ${message.trim() ? "opacity-100" : "opacity-50"}`}
-                  disabled={!message.trim()}
-                  onClick={handleSendMessage}
-                  icon={<BsSend className="text-xl" />}
-                />
-              }
             />
+            <button
+              onClick={handleSendMessage}
+              disabled={
+                !inputMessage.content.trim() || loadingUpload || isLoading
+              }
+              className="p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors cursor-pointer"
+            >
+              <IoIosSend size={20} />
+            </button>
           </div>
         </div>
       </div>

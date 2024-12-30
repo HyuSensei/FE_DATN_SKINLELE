@@ -5,16 +5,19 @@ import {
   SearchOutlined,
   SettingOutlined,
   LogoutOutlined,
+  MessageOutlined,
 } from "@ant-design/icons";
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logoutAdmin } from "@redux/auth/auth.slice";
 import { BsFillMenuButtonFill, BsFillMenuButtonWideFill } from "react-icons/bs";
+import ConversationCustomer from "../Chat/ConversationCustomer";
 
 const { Header } = Layout;
 
 const HeaderAdmin = ({ collapsed, setCollapsed }) => {
+  const [showCustomerChat, setShowCustomerChat] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -78,8 +81,15 @@ const HeaderAdmin = ({ collapsed, setCollapsed }) => {
       </div>
       <div className="flex items-center">
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-          <Badge color={"#65bebc"} count={5} className="mr-4">
-            <Button icon={<BellOutlined />} shape="circle" />
+          <ConversationCustomer
+            visible={showCustomerChat}
+            setVisible={setShowCustomerChat}
+          />
+        </motion.div>
+
+        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+          <Badge color={"#65bebc"} count={5} className="mr-4" offset={[-5, 5]}>
+            <Button icon={<BellOutlined />} shape="circle" size="large" />
           </Badge>
         </motion.div>
         <Dropdown menu={{ items }}>

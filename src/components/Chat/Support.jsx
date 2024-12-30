@@ -31,8 +31,9 @@ const Support = ({ admin, conversation }) => {
   
   return (
     <div
-      className={`p-4 hover:bg-gray-200 transition-colors cursor-pointer ${conversation && !isReadOwner ? "bg-gray-100" : ""
-        }`}
+      className={`p-4 hover:bg-gray-200 transition-colors cursor-pointer ${
+        conversation && !isReadOwner ? "bg-gray-100" : ""
+      }`}
       onClick={() =>
         handleSelectConversation({
           ...admin,
@@ -59,17 +60,23 @@ const Support = ({ admin, conversation }) => {
           </div>
         </div>
 
-        {conversation &&
-          conversation.lastMessage &&
-          !isReadOwner && (
-            <FaCircleDot className="animate-ping text-sky-400" />
-          )}
+        {conversation && conversation.lastMessage && !isReadOwner && (
+          <FaCircleDot className="animate-ping text-sky-400" />
+        )}
       </div>
 
       {conversation && conversation.lastMessage && (
         <div className="mt-2 ml-[60px]">
-          <p className={`text-sm line-clamp-1 truncate ${!isReadOwner ? "text-gray-600 font-medium" : "text-gray-500 "}`}>
-            {isOwner ? "Bạn:" : ""} {conversation.lastMessage.content}
+          <p
+            className={`text-sm line-clamp-1 truncate ${
+              !isReadOwner ? "text-gray-600 font-medium" : "text-gray-500 "
+            }`}
+          >
+            {isOwner ? "Bạn:" : ""}{" "}
+            {!conversation.lastMessage.content &&
+            conversation.lastMessage.attachments.length > 0
+              ? "Đã gửi 1 phương tiện"
+              : conversation.lastMessage.content}
           </p>
           <p className="text-xs text-gray-400 mt-1">
             {capitalizeFirstLetter(

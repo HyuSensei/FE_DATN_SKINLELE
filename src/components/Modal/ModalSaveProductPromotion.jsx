@@ -16,6 +16,7 @@ import React from "react";
 import { createPromotion } from "@redux/promotion/promotion.thunk";
 import { useDispatch } from "react-redux";
 import { getProductAlmostExpired } from "@redux/product/product.thunk";
+import { formatPrice } from "@/helpers/formatPrice";
 
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
@@ -40,6 +41,11 @@ const ModalSaveProductPromotion = ({
         "discountPercentage",
       ]),
       maxQty: form.getFieldValue(["products", product.product, "maxQty"]),
+      maxDiscountAmount: form.getFieldValue([
+        "products",
+        product.product,
+        "maxDiscountAmount",
+      ]),
     }));
     const formattedValues = {
       ...values,
@@ -94,6 +100,7 @@ const ModalSaveProductPromotion = ({
             acc[product.product] = {
               discountPercentage: product.discountPercentage,
               maxQty: product.maxQty,
+              maxDiscountAmount: product.maxDiscountAmount,
             };
             return acc;
           }, {}),
@@ -146,7 +153,7 @@ const ModalSaveProductPromotion = ({
                   title={product.name}
                   className="text-sm font-normal truncate"
                 >
-                  {product.name}
+                  {product.name} - ({formatPrice(product.price) + " VND"})
                 </Tooltip>
               }
             >
@@ -181,6 +188,22 @@ const ModalSaveProductPromotion = ({
                   <InputNumber
                     placeholder="Số lượng tối đa"
                     min={1}
+                    className="w-full"
+                  />
+                </Form.Item>
+                <Form.Item
+                  name={["products", product.product, "maxDiscountAmount"]}
+                  label="Giảm giá tối đa"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập giảm giá tối đa",
+                    },
+                  ]}
+                  className="w-full sm:w-1/2"
+                >
+                  <InputNumber
+                    placeholder="Giảm giá tối đa"
                     className="w-full"
                   />
                 </Form.Item>

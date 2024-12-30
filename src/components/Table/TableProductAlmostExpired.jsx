@@ -96,6 +96,7 @@ const TableProductAlmostExpired = ({
           image: row.mainImage.url,
           product: row._id,
           name: row.name,
+          price: row.price,
           discountPercentage: existingProduct
             ? existingProduct.discountPercentage
             : 0,

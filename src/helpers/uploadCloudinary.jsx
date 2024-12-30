@@ -5,10 +5,10 @@ const API_KEY = import.meta.env.VITE_APP_CLOUDINARY_API_KEY;
 const SECRET_KEY = import.meta.env.VITE_APP_CLOUDINARY_SECRET_KEY;
 
 const UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_NAME}/auto/upload`;
-const DESTROY_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_NAME}/image/destroy`;
 
 export const UPLOAD_SKINLELE_PRESET = "store";
 export const UPLOAD_SKINLELE_CLINIC_PRESET = "clinic";
+export const UPLOAD_SKINLELE_CHAT_PRESET = "chat";
 
 const getPreset = (type) => {
   switch (type) {
@@ -16,6 +16,8 @@ const getPreset = (type) => {
       return "skinlele-upload";
     case UPLOAD_SKINLELE_CLINIC_PRESET:
       return "skinlele-clinic-upload";
+    case UPLOAD_SKINLELE_CHAT_PRESET:
+      return "skinlele-chat-upload";
     default:
       return "skinlele-upload";
   }
@@ -41,7 +43,7 @@ export const uploadFile = async ({ file, type = "store" }) => {
   }
 };
 
-export const deleteFile = async (publicId) => {
+export const deleteFile = async (publicId, type = "image") => {
   const timestamp = Math.floor(Date.now() / 1000);
   const signature = CryptoJS.SHA1(
     `public_id=${publicId}&timestamp=${timestamp}${SECRET_KEY}`
@@ -52,10 +54,13 @@ export const deleteFile = async (publicId) => {
   formData.append("api_key", API_KEY);
   formData.append("timestamp", timestamp);
   try {
-    const response = await fetch(DESTROY_URL, {
-      method: "POST",
-      body: formData,
-    });
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/${CLOUDINARY_NAME}/${type}/destroy`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
