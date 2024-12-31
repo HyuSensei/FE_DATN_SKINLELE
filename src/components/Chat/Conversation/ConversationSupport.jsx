@@ -6,7 +6,7 @@ import { IoClose } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { ChatActions } from "@/redux/chat/chat.slice";
 import { Link } from "react-router-dom";
-import { LoadingConversation } from "../Loading"; 
+import { LoadingConversation } from "../Loading";
 import SupportItem from "../Item/SupportItem";
 
 const ConversationSupport = () => {
@@ -15,7 +15,7 @@ const ConversationSupport = () => {
     openChat,
     supportList,
     supportMessages,
-    supportConversationSelected,
+    supportConversationSelected: conversation,
   } = useSelector((state) => state.chat);
   const { isChatSupport, isConversationSupport } = openChat;
   const [isShaking, setIsShaking] = useState(false);
@@ -27,8 +27,33 @@ const ConversationSupport = () => {
   const supportConversations = supportList?.filter((item) => item.conversation);
 
   const unReadCount = isUserAuthenticated
-    ? supportConversations?.filter((item) => (item?.conversation?.lastMessage?.receiver === userInfo?._id && !item?.conversation?.lastMessage?.isRead)).length || 0
+    ? supportConversations?.filter(
+        (item) =>
+          item?.conversation?.lastMessage?.receiver === userInfo?._id &&
+          !item?.conversation?.lastMessage?.isRead
+      ).length || 0
     : 0;
+
+  const handleGetAllSupport = (conversations) => {
+    dispatch(ChatActions.setSupportList(conversations));
+  };
+
+  const handleGetMessages = (messages) => {
+    if (!conversation) {
+      socket.emit("getAllSupport", userInfo?._id);
+    }
+
+    if (
+      messages.length > 0 &&
+      conversation &&
+      ((messages[0].sender._id === conversation._id &&
+        messages[0].receiver._id === userInfo._id) ||
+        (messages[0].sender._id === userInfo._id &&
+          messages[0].receiver._id === conversation._id))
+    ) {
+      dispatch(ChatActions.setSupportMessages(messages));
+    }
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -49,30 +74,17 @@ const ConversationSupport = () => {
   useEffect(() => {
     if (isAuthenticated && socket) {
       socket.emit("getAllSupport", userInfo._id);
-      socket.on("resGetAllSupport", (conversations) => {
-        dispatch(ChatActions.setSupportList(conversations));
-      });
+      socket.on("resGetAllSupport", handleGetAllSupport);
 
-      if (
-        isChatSupport &&
-        supportConversationSelected
-      ) {
-        socket.emit("getMessages", supportConversationSelected.conversationId);
-        socket.on("resGetMessages", (messages) => {
-          dispatch(ChatActions.setSupportMessages(messages));
-        });
-      }
+      socket.emit("getMessages", conversation?.conversationId);
+      socket.on("resGetMessages", handleGetMessages);
 
       return () => {
-        socket.off("resGetAllSupport", (conversations) => {
-          dispatch(ChatActions.setSupportList(conversations));
-        });
-        socket.off("resGetMessages", (messages) => {
-          dispatch(ChatActions.setSupportMessages(messages));
-        });
+        socket.off("resGetAllSupport", handleGetAllSupport);
+        socket.off("resGetMessages", handleGetMessages);
       };
     }
-  }, [isAuthenticated, socket, supportConversationSelected, userInfo]);
+  }, [isAuthenticated, socket, conversation, supportMessages]);
 
   const handleClickChatIcon = () => {
     if (isChatSupport) {
@@ -107,8 +119,9 @@ const ConversationSupport = () => {
 
   return (
     <div
-      className={`fixed ${isConversationSupport || isChatSupport ? " bottom-8" : " bottom-20"
-        } right-8 z-50`}
+      className={`fixed ${
+        isConversationSupport || isChatSupport ? " bottom-8" : " bottom-20"
+      } right-8 z-50`}
     >
       {/* Chat Icon */}
       {!isConversationSupport && !isChatSupport && (
@@ -189,7 +202,7 @@ const ConversationSupport = () => {
       {/* Chat Box */}
       {isChatSupport && (
         <ChatBox
-          conversation={supportConversationSelected}
+          conversation={conversation}
           onClose={onCloseChat}
           messages={supportMessages}
           onSubmit={handleSendMessage}
@@ -199,7 +212,7 @@ const ConversationSupport = () => {
             role: "User",
           }}
           receiver={{
-            _id: supportConversationSelected._id,
+            _id: conversation._id,
             role: "Admin",
           }}
           isAuth={isAuthenticated}

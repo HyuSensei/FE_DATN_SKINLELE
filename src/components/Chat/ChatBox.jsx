@@ -202,10 +202,11 @@ const ChatBox = ({
               <h3 className="font-bold text-lg">{conversation.name}</h3>
               <div className="flex items-center gap-2">
                 <span
-                  className={`w-2 h-2 rounded-full ${isOnline(conversation._id)
+                  className={`w-2 h-2 rounded-full ${
+                    isOnline(conversation._id)
                       ? "bg-green-400 animate-pulse"
                       : "bg-yellow-200"
-                    }`}
+                  }`}
                 ></span>
                 <span className="text-sm text-blue-100">
                   {isOnline(conversation._id) ? "Online" : "Offline"}
@@ -223,17 +224,18 @@ const ChatBox = ({
 
         {/* Messages Area */}
         <div
-          className={`flex-1 p-4 overflow-y-auto space-y-4 ${isAuth && messages.length > 0
-              ? "bg-gray-50 min-h-[400px] max-h-[500px]"
-              : "bg-[#eff1fe] min-h-[350px] max-h-[400px]"
-            }`}
+          className={`flex-1 p-4 overflow-y-auto space-y-4 ${
+            isAuth && messages.length > 0
+              ? "min-h-[400px] max-h-[500px]"
+              : "min-h-[350px] max-h-[400px]"
+          }`}
         >
           {isLoading ? (
             <LoadingMessage />
           ) : messages.length === 0 && previewFiles.length === 0 ? (
             <div className="space-y-2">
               <img
-                src="https://res.cloudinary.com/dt8cdxgji/image/upload/v1735490423/upload-static-skinlele/ixxzdvyrg0serdipiynb.gif"
+                src="https://res.cloudinary.com/dt8cdxgji/image/upload/v1735490492/upload-static-skinlele/mnxtiwl6e2ukw7co11xi.gif"
                 alt="Empty-Chat"
               />
             </div>

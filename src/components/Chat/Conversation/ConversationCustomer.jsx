@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Badge, Button, Empty, Input, Popover } from "antd";
 import { MessageOutlined, SearchOutlined } from "@ant-design/icons";
 import ChatBox from "../ChatBox";
@@ -11,24 +11,35 @@ const ConversationCustomer = () => {
   const dispatch = useDispatch();
   const {
     openChat,
-    customerConversationSelected,
-    supportMessages,
+    customerConversationSelected: conversation,
     customerList,
+    supportMessages,
   } = useSelector((state) => state.chat);
-  const { isConversationCustomer, isChatCustomer } = openChat;
-  const popoverRef = useRef(null);
+  const { isConversationCustomer } = openChat;
   const { socketAdmin: socket } = useSelector((state) => state.socket);
   const { isAuthenticatedAdmin, adminInfo } = useSelector(
     (state) => state.auth
   );
   const [isLoading, setIsLoading] = useState(true);
+  const [searchValue, setSearchValue] = useState("");
 
   const customerConversations = customerList?.filter(
     (item) => item.conversation
   );
   const unReadCount = isAuthenticatedAdmin
-    ? customerConversations?.filter((item) => (item?.conversation?.lastMessage?.receiver === adminInfo?._id && !item?.conversation?.lastMessage?.isRead)).length || 0
+    ? customerConversations?.filter((item) => {
+        const lastMessage = item?.conversation?.lastMessage;
+        return lastMessage?.receiver === adminInfo?._id && !lastMessage?.isRead;
+      }).length || 0
     : 0;
+
+  const handleGetAllCustomer = (conversations) => {
+    dispatch(ChatActions.setCustomerList(conversations));
+  };
+
+  const handleGetMessages = (messages) => {
+    dispatch(ChatActions.setSupportMessages(messages));
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -40,64 +51,63 @@ const ConversationCustomer = () => {
   useEffect(() => {
     if (isAuthenticatedAdmin && socket) {
       socket.emit("getAllCustomer", adminInfo?._id);
-      socket.on("resGetAllCustomer", (conversations) => {
-        dispatch(ChatActions.setCustomerList(conversations));
-      });
+      socket.on("resGetAllCustomer", handleGetAllCustomer);
 
-      if (
-        isConversationCustomer &&
-        customerConversationSelected
-      ) {
-        socket.emit("getMessages", customerConversationSelected.conversationId);
-        socket.on("resGetMessages", (messages) => {
-          dispatch(ChatActions.setSupportMessages(messages));
-        });
-      }
+      socket.emit("getMessages", conversation?.conversationId);
+      socket.on("resGetMessages", handleGetMessages);
 
       return () => {
-        socket.off("resGetAllCustomer", (conversations) => {
-          dispatch(ChatActions.setSupportList(conversations));
-        });
-
-        socket.off("resGetMessages", (messages) => {
-          dispatch(ChatActions.setSupportMessages(messages));
-        });
+        socket.off("resGetAllCustomer", handleGetAllCustomer);
+        socket.off("resGetMessages", handleGetMessages);
       };
     }
-  }, [isAuthenticatedAdmin, socket, customerConversationSelected, adminInfo]);
+  }, [isAuthenticatedAdmin, socket, conversation, supportMessages]);
+
+  const filteredCustomerList = customerList.filter(({ customer }) => {
+    if (!searchValue) return true;
+
+    return (
+      customer.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+      customer.email.toLowerCase().includes(searchValue.toLowerCase())
+    );
+  });
 
   const content = (
-    <div ref={popoverRef} className="w-96">
+    <div className="w-96">
       <div className="p-3 border-b space-y-2">
         <h3 className="text-lg font-semibold">Cuộc trò chuyện</h3>
         <Input
           className="rounded-lg bg-gray-50"
           placeholder="Tìm kiếm..."
           prefix={<SearchOutlined />}
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
         />
       </div>
-      <div className="divide-y max-h-96 overflow-y-auto hide-scrollbar-custom">
-        {
-          isLoading ? (<LoadingConversation />) :
-            (customerList.length > 0 ?
-              (customerList.map(({ customer, conversation }) => (
-                <CustomerItem key={customer._id} customer={customer} conversation={conversation} />
-              )))
-              : (<Empty
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description="Không có cuộc trò chuyện"
-              />
-              ))
-        }
+      <div className="max-h-96 overflow-y-auto hide-scrollbar-custom">
+        {isLoading ? (
+          <LoadingConversation />
+        ) : filteredCustomerList.length > 0 ? (
+          filteredCustomerList.map(({ customer, conversation }) => (
+            <CustomerItem
+              key={customer._id}
+              customer={customer}
+              conversation={conversation}
+            />
+          ))
+        ) : (
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description={
+              searchValue
+                ? "Không tìm thấy kết quả"
+                : "Không có cuộc trò chuyện"
+            }
+          />
+        )}
       </div>
     </div>
   );
-
-  const onCloseChat = () => {
-    dispatch(ChatActions.setOpenChat({ key: "isChatCustomer", value: false }));
-    dispatch(ChatActions.setCustomerConversationSelected(null))
-    dispatch(ChatActions.setSupportMessages([]));
-  };
 
   return (
     <>
@@ -125,14 +135,6 @@ const ConversationCustomer = () => {
           <Button icon={<MessageOutlined />} shape="circle" size="large" />
         </Badge>
       </Popover>
-
-      {isChatCustomer && (
-        <ChatBox
-          conversation={customerConversationSelected}
-          onClose={onCloseChat}
-          messages={supportMessages}
-        />
-      )}
     </>
   );
 };

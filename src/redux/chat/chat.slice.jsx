@@ -12,6 +12,7 @@ const initialState = {
   supportMessages: [],
   supportConversationSelected: null,
   customerConversationSelected: null,
+  isAction: false,
 };
 
 export const chatSlice = createSlice({

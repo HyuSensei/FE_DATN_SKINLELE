@@ -8,25 +8,52 @@ import { useDispatch, useSelector } from "react-redux";
 
 const SupportItem = ({ admin, conversation }) => {
   const dispatch = useDispatch();
-  const { userOnlines } = useSelector((state) => state.socket);
-  const { userInfo } = useSelector((state) => state.auth)
+  const { openChat } = useSelector((state) => state.chat);
+  const { userOnlines, socketCustomer: socket } = useSelector(
+    (state) => state.socket
+  );
+  const { userInfo } = useSelector((state) => state.auth);
 
-  const isOwner = admin._id === userInfo._id
+  const isOwner = conversation?.lastMessage?.sender === userInfo._id;
   const isOnline = userOnlines?.some((item) => item === admin._id);
-  const isReadOwner = conversation?.lastMessage?.sender === userInfo?._id
+  const lastMessage = conversation?.lastMessage;
+  const isOwnerRead =
+    (lastMessage?.receiver === userInfo._id && lastMessage?.isRead) ||
+    lastMessage?.sender === userInfo._id;
 
   const handleSelectConversation = (admin) => {
+    if (socket && conversation) {
+      const {
+        lastMessage,
+        sender,
+        receiver,
+        _id: conversationId,
+      } = conversation;
+      if (lastMessage.receiver === userInfo._id && !lastMessage.isRead)
+        socket.emit(
+          "seenMessage",
+          JSON.stringify({
+            conversationId,
+            sender,
+            receiver,
+          })
+        );
+    }
+
     dispatch(ChatActions.setSupportConversationSelected(admin));
-    dispatch(ChatActions.setOpenChat({ key: "isChatSupport", value: true }));
     dispatch(
-      ChatActions.setOpenChat({ key: "isConversationSupport", value: false })
+      ChatActions.setOpenChatAll({
+        ...openChat,
+        isChatSupport: true,
+        isConversationSupport: false,
+      })
     );
   };
-  
+
   return (
     <div
       className={`p-4 hover:bg-gray-200 transition-colors cursor-pointer ${
-        conversation && !isReadOwner ? "bg-gray-100" : ""
+        conversation && !isOwnerRead ? "bg-gray-100" : ""
       }`}
       onClick={() =>
         handleSelectConversation({
@@ -54,7 +81,7 @@ const SupportItem = ({ admin, conversation }) => {
           </div>
         </div>
 
-        {conversation && conversation.lastMessage && !isReadOwner && (
+        {conversation && !isOwnerRead && (
           <FaCircleDot className="animate-ping text-sky-400" />
         )}
       </div>
@@ -63,7 +90,7 @@ const SupportItem = ({ admin, conversation }) => {
         <div className="mt-2 ml-[60px]">
           <p
             className={`text-sm line-clamp-1 truncate ${
-              !isReadOwner ? "text-gray-600 font-medium" : "text-gray-500 "
+              isOwnerRead ? "text-gray-500 " : "text-gray-600 font-medium"
             }`}
           >
             {isOwner ? "Bạn:" : ""}{" "}
