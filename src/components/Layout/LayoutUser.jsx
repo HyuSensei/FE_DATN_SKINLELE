@@ -4,7 +4,7 @@ import HeaderUser from "@components/Header/HeaderUser";
 import FooterUser from "@components/Footer/FooterUser";
 import PopupClinic from "./PopupClinic";
 import PopupPromotional from "./PopupConfetti";
-import ConversationSupport from "../Chat/ConversationSupport";
+import ConversationSupport from "../Chat/Conversation/ConversationSupport";
 
 const LayoutUser = ({ children }) => {
   const location = useLocation();

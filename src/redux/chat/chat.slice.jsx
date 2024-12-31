@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   openChat: {
     isChatSupport: false,
+    isChatCustomer: false,
     isConversationSupport: false,
     isConversationCustomer: false,
   },
@@ -19,7 +20,8 @@ export const chatSlice = createSlice({
   reducers: {
     setSupportList(state, action) {
       const data = action.payload;
-      const res = data.sort((a, b) => {
+
+      const sortedData = [...data].sort((a, b) => {
         const dateA = a?.conversation?.updatedAt
           ? new Date(a.conversation.updatedAt)
           : 0;
@@ -29,11 +31,11 @@ export const chatSlice = createSlice({
         return dateB - dateA;
       });
 
-      state.supportList = res;
+      state.supportList = sortedData;
     },
     setCustomerList(state, action) {
       const data = action.payload;
-      const res = data.sort((a, b) => {
+      const sortedData = [...data].sort((a, b) => {
         const dateA = a?.conversation?.updatedAt
           ? new Date(a.conversation.updatedAt)
           : 0;
@@ -42,9 +44,9 @@ export const chatSlice = createSlice({
           : 0;
         return dateB - dateA;
       });
-
-      state.customerList = res;
+      state.customerList = sortedData;
     },
+
     setSupportMessages(state, action) {
       state.supportMessages = action.payload;
     },
@@ -54,6 +56,9 @@ export const chatSlice = createSlice({
         ...state.openChat,
         [key]: value,
       };
+    },
+    setOpenChatAll(state, action) {
+      state.openChat = action.payload;
     },
     setUserOnlines(state, action) {
       state.userOnlines = action.payload;

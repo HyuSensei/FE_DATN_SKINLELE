@@ -12,12 +12,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logoutAdmin } from "@redux/auth/auth.slice";
 import { BsFillMenuButtonFill, BsFillMenuButtonWideFill } from "react-icons/bs";
-import ConversationCustomer from "../Chat/ConversationCustomer";
+import ConversationCustomer from "../Chat/Conversation/ConversationCustomer";
 
 const { Header } = Layout;
 
 const HeaderAdmin = ({ collapsed, setCollapsed }) => {
-  const [showCustomerChat, setShowCustomerChat] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -81,10 +80,7 @@ const HeaderAdmin = ({ collapsed, setCollapsed }) => {
       </div>
       <div className="flex items-center">
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-          <ConversationCustomer
-            visible={showCustomerChat}
-            setVisible={setShowCustomerChat}
-          />
+          <ConversationCustomer />
         </motion.div>
 
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>

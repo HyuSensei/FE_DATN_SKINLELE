@@ -6,20 +6,14 @@ import React from "react";
 import { FaCircleDot } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 
-const Support = ({ admin, conversation }) => {
+const SupportItem = ({ admin, conversation }) => {
   const dispatch = useDispatch();
   const { userOnlines } = useSelector((state) => state.socket);
   const { userInfo } = useSelector((state) => state.auth)
 
-  const isOwner = (userId) => {
-    return userId === userInfo._id
-  }
-  const isOnline = (userId) => {
-    return userOnlines?.some((item) => item === userId);
-  };
-  const isReadOwner = (userId, lastMessage) => {
-    return userId === userInfo?._id && lastMessage?.isRead
-  }
+  const isOwner = admin._id === userInfo._id
+  const isOnline = userOnlines?.some((item) => item === admin._id);
+  const isReadOwner = conversation?.lastMessage?.sender === userInfo?._id
 
   const handleSelectConversation = (admin) => {
     dispatch(ChatActions.setSupportConversationSelected(admin));
@@ -44,7 +38,7 @@ const Support = ({ admin, conversation }) => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <Badge dot status={isOnline(admin._id) ? "success" : "warning"}>
+            <Badge dot status={isOnline ? "success" : "warning"}>
               <Avatar
                 src={admin.avatar.url}
                 size={48}
@@ -89,4 +83,4 @@ const Support = ({ admin, conversation }) => {
   );
 };
 
-export default Support;
+export default SupportItem;

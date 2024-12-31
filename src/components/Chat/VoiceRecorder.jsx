@@ -1,3 +1,4 @@
+import { message } from "antd";
 import React, { useState, useRef, useEffect } from "react";
 import { FaMicrophone, FaStop } from "react-icons/fa6";
 
@@ -70,6 +71,7 @@ const VoiceRecorder = ({ onRecordingComplete }) => {
         setRecordingTime((prev) => prev + 1);
       }, 1000);
     } catch (error) {
+      message.warning("Xin lỗi thiết bị của bạn không hỗ trợ")
       console.error("Error accessing microphone:", error);
     }
   };

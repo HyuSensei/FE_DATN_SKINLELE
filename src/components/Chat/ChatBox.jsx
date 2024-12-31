@@ -25,8 +25,6 @@ const ChatBox = ({
   sender,
   receiver,
   isAuth = false,
-  requiredLogin = "💬 Vui lòng đăng nhập để tiếp tục !",
-  emptyMessageText = "💬 Bạn đang gặp phải vấn đề ?",
 }) => {
   const [previewFiles, setPreviewFiles] = useState([]);
   const [showEmoji, setShowEmoji] = useState(false);
@@ -204,11 +202,10 @@ const ChatBox = ({
               <h3 className="font-bold text-lg">{conversation.name}</h3>
               <div className="flex items-center gap-2">
                 <span
-                  className={`w-2 h-2 rounded-full ${
-                    isOnline(conversation._id)
+                  className={`w-2 h-2 rounded-full ${isOnline(conversation._id)
                       ? "bg-green-400 animate-pulse"
                       : "bg-yellow-200"
-                  }`}
+                    }`}
                 ></span>
                 <span className="text-sm text-blue-100">
                   {isOnline(conversation._id) ? "Online" : "Offline"}
@@ -226,11 +223,10 @@ const ChatBox = ({
 
         {/* Messages Area */}
         <div
-          className={`flex-1 p-4 overflow-y-auto space-y-4 ${
-            isAuth && messages.length > 0
+          className={`flex-1 p-4 overflow-y-auto space-y-4 ${isAuth && messages.length > 0
               ? "bg-gray-50 min-h-[400px] max-h-[500px]"
               : "bg-[#eff1fe] min-h-[350px] max-h-[400px]"
-          }`}
+            }`}
         >
           {isLoading ? (
             <LoadingMessage />
@@ -240,9 +236,6 @@ const ChatBox = ({
                 src="https://res.cloudinary.com/dt8cdxgji/image/upload/v1735490423/upload-static-skinlele/ixxzdvyrg0serdipiynb.gif"
                 alt="Empty-Chat"
               />
-              <div className="text-center text-gray-600 italic">
-                {!isAuth ? requiredLogin : emptyMessageText}
-              </div>
             </div>
           ) : (
             <>

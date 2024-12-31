@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Badge, Button } from "antd";
 import { BsFillChatFill } from "react-icons/bs";
-import ChatBox from "./ChatBox";
+import ChatBox from "../ChatBox";
 import { IoClose } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { ChatActions } from "@/redux/chat/chat.slice";
 import { Link } from "react-router-dom";
-import Support from "./Support";
-import { LoadingConversation } from "./Loading";
+import { LoadingConversation } from "../Loading"; 
+import SupportItem from "../Item/SupportItem";
 
 const ConversationSupport = () => {
   const dispatch = useDispatch();
@@ -27,12 +27,7 @@ const ConversationSupport = () => {
   const supportConversations = supportList?.filter((item) => item.conversation);
 
   const unReadCount = isUserAuthenticated
-    ? supportConversations?.filter((item) => {
-        const lastMessage = item.conversation?.lastMessage;
-        return (
-          lastMessage?.receiver._id === userInfo._id && !lastMessage?.isRead
-        );
-      }).length || 0
+    ? supportConversations?.filter((item) => (item?.conversation?.lastMessage?.receiver === userInfo?._id && !item?.conversation?.lastMessage?.isRead)).length || 0
     : 0;
 
   useEffect(() => {
@@ -60,8 +55,7 @@ const ConversationSupport = () => {
 
       if (
         isChatSupport &&
-        supportConversationSelected &&
-        supportConversationSelected.conversationId
+        supportConversationSelected
       ) {
         socket.emit("getMessages", supportConversationSelected.conversationId);
         socket.on("resGetMessages", (messages) => {
@@ -113,9 +107,8 @@ const ConversationSupport = () => {
 
   return (
     <div
-      className={`fixed ${
-        isConversationSupport || isChatSupport ? " bottom-8" : " bottom-20"
-      } right-8 z-50`}
+      className={`fixed ${isConversationSupport || isChatSupport ? " bottom-8" : " bottom-20"
+        } right-8 z-50`}
     >
       {/* Chat Icon */}
       {!isConversationSupport && !isChatSupport && (
@@ -182,7 +175,7 @@ const ConversationSupport = () => {
             ) : (
               supportList.length > 0 &&
               supportList.map(({ admin, conversation }) => (
-                <Support
+                <SupportItem
                   key={admin._id}
                   admin={admin}
                   conversation={conversation}
