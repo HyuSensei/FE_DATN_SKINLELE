@@ -30,11 +30,6 @@ const StatCard = ({ icon, title, value, subValue, color }) => (
   <Card
     bordered={false}
     className="h-full transition-all duration-300 hover:shadow-lg group"
-    bodyStyle={{
-      height: "100%",
-      padding: "24px",
-      background: `linear-gradient(135deg, ${color}08 0%, ${color}16 100%)`,
-    }}
   >
     <div className="flex flex-col h-full">
       <div className={`p-2 rounded-lg bg-${color}-50 w-fit`}>{icon}</div>

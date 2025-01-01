@@ -13,11 +13,16 @@ import { setOpenModelAuth } from "@/redux/auth/auth.slice";
 
 const DoctorConsultationCard = ({ doctor }) => {
   const dispatch = useDispatch();
-  const { socketCustomer: socket } = useSelector((state) => state.socket);
+  const { socketCustomer: socket, userOnlines } = useSelector(
+    (state) => state.socket
+  );
   const { openChat, doctorConversationSelected: conversation } = useSelector(
     (state) => state.chat
   );
   const { isAuthenticated, userInfo } = useSelector((state) => state.auth);
+  const isOnline = () => {
+    return userOnlines?.some((item) => item === doctor._id);
+  };
 
   const handleGetConversation = (res) => {
     if (res) {
@@ -82,9 +87,17 @@ const DoctorConsultationCard = ({ doctor }) => {
             <div className="flex flex-col items-end gap-2">
               <div className="flex items-center gap-2">
                 <span
-                  className={`w-2 h-2 rounded-full bg-green-400 animate-pulse`}
+                  className={`w-2 h-2 rounded-full ${
+                    isOnline() ? "bg-green-400 animate-pulse" : "bg-yellow-400"
+                  } `}
                 />
-                <span className="text-sm text-green-400">Đang hoạt động</span>
+                <span
+                  className={`text-sm ${
+                    isOnline() ? "text-green-400" : "text-yellow-400"
+                  }`}
+                >
+                  {isOnline() ? "Online" : "Offline"}
+                </span>
               </div>
             </div>
           </div>

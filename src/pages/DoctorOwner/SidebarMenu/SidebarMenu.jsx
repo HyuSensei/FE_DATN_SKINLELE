@@ -10,6 +10,7 @@ import { IoIosArrowRoundBack, IoIosLogOut } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutDoctor } from "@/redux/auth/auth.slice";
 import { Link } from "react-router-dom";
+import { BiMessageRoundedDetail } from "react-icons/bi";
 
 const MenuItem = ({ icon: Icon, text, isActive, onClick }) => (
   <motion.div
@@ -17,18 +18,21 @@ const MenuItem = ({ icon: Icon, text, isActive, onClick }) => (
     whileTap={{ scale: 0.98 }}
     onClick={onClick}
     className={`flex items-center gap-4 px-4 py-3 cursor-pointer rounded-lg mx-2 transition-all duration-300 ease-in-out
-            ${isActive
-        ? "bg-blue-500 text-white shadow-lg shadow-blue-200"
-        : "hover:bg-gray-100 dark:hover:bg-slate-700"
-      }`}
+            ${
+              isActive
+                ? "bg-blue-500 text-white shadow-lg shadow-blue-200"
+                : "hover:bg-gray-100 dark:hover:bg-slate-700"
+            }`}
   >
     <Icon
-      className={`text-xl ${isActive ? "text-white" : "text-gray-500 dark:text-gray-400"
-        }`}
+      className={`text-xl ${
+        isActive ? "text-white" : "text-gray-500 dark:text-gray-400"
+      }`}
     />
     <span
-      className={`font-medium ${isActive ? "text-white" : "text-gray-600 dark:text-gray-300"
-        }`}
+      className={`font-medium ${
+        isActive ? "text-white" : "text-gray-600 dark:text-gray-300"
+      }`}
     >
       {text}
     </span>
@@ -36,7 +40,7 @@ const MenuItem = ({ icon: Icon, text, isActive, onClick }) => (
 );
 
 const MenuContent = ({ activeMenu, onMenuSelect }) => {
-  const { doctorInfo } = useSelector(state => state.auth)
+  const { doctorInfo } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const handleLogout = () => {
     dispatch(logoutDoctor());
@@ -70,6 +74,12 @@ const MenuContent = ({ activeMenu, onMenuSelect }) => {
         onClick={() => onMenuSelect("bookings")}
       />
       <MenuItem
+        icon={BiMessageRoundedDetail}
+        text="Tin nhắn"
+        isActive={activeMenu === "messages"}
+        onClick={() => onMenuSelect("messages")}
+      />
+      <MenuItem
         icon={MdOutlineReviews}
         text="Đánh giá"
         isActive={activeMenu === "reviews"}
@@ -92,7 +102,11 @@ const MenuContent = ({ activeMenu, onMenuSelect }) => {
         </Link>
         <Divider />
         <div className="flex items-center gap-2 flex-wrap">
-          <Avatar src={doctorInfo.avatar.url} size={60} className="border-2 border-sky-300" />
+          <Avatar
+            src={doctorInfo.avatar.url}
+            size={60}
+            className="border-2 border-sky-300"
+          />
           <div className="text-base">
             <div className="font-medium">{doctorInfo.name}</div>
             <div>{doctorInfo.email}</div>

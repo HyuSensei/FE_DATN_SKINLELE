@@ -100,22 +100,22 @@ const OnlineConsultation = () => {
               <DoctorConsultationCard key={index} doctor={doctor} />
             ))}
           </div>
-        </Spin>
 
-        {/* View All Button */}
-        {hasMore && (
-          <div className="text-center mt-8">
-            <Button
-              onClick={handleSeeMore}
-              type="default"
-              size="large"
-              icon={<BsArrowRight className="ml-2" />}
-              className="font-medium"
-            >
-              Xem tất cả bác sĩ
-            </Button>
-          </div>
-        )}
+          {/* View All Button */}
+          {hasMore && (
+            <div className="text-center mt-8">
+              <Button
+                onClick={handleSeeMore}
+                type="default"
+                size="large"
+                icon={<BsArrowRight className="ml-2" />}
+                className="font-medium"
+              >
+                Xem tất cả bác sĩ
+              </Button>
+            </div>
+          )}
+        </Spin>
       </div>
     </>
   );

@@ -7,6 +7,7 @@ import ManageBooking from "./ContentOwner/ManageBooking";
 import ManageProfile from "./ContentOwner/ManageProfile";
 import ManageReview from "./ContentOwner/ManageReview";
 import ManageSchedule from "./ContentOwner/ManageSchedule";
+import ManageChat from "./ContentOwner/ManageChat";
 
 const DoctorOwner = () => {
   const navigate = useNavigate();
@@ -28,6 +29,8 @@ const DoctorOwner = () => {
         return "Danh sách đánh giá";
       case "schedules":
         return "Lịch làm việc";
+      case "messages":
+        return "";
       default:
         return "";
     }
@@ -70,19 +73,18 @@ const DoctorOwner = () => {
               {activeMenu === "statistics" && (
                 <ManageStatistic {...{ activeMenu }} />
               )}
-              {activeMenu === "bookings" && <ManageBooking {...{ activeMenu }} />}
+              {activeMenu === "bookings" && (
+                <ManageBooking {...{ activeMenu }} />
+              )}
               {activeMenu === "profile" && <ManageProfile />}
               {activeMenu === "reviews" && <ManageReview {...{ activeMenu }} />}
               {activeMenu === "schedules" && <ManageSchedule />}
+              {activeMenu === "messages" && <ManageChat />}
             </Card>
           </div>
         </div>
-        {/* Content Area */}
-
       </div>
     </div>
-    // <div className="p-4 md:p-6 h-full bg-slate-50">
-    // </div>
   );
 };
 
