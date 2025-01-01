@@ -133,7 +133,7 @@ const ConversationSupport = () => {
             type="primary"
             shape="circle"
             size="large"
-            className={`w-16 h-16 flex items-center justify-center bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 border-none shadow-lg transition-all duration-300 hover:scale-110
+            className={`w-16 h-16 flex items-center justify-center bg-gradient-to-r from-rose-500 to-rose-400 hover:from-rose-600 hover:to-rose-700 border-none shadow-lg transition-all duration-300 hover:scale-110
                 ${isShaking ? "animate-shake" : ""}`}
           >
             <Badge count={unReadCount} color="#e55c76">
@@ -147,18 +147,18 @@ const ConversationSupport = () => {
       {/* Support List */}
       {isConversationSupport && (
         <div className="w-[350px] bg-white rounded-xl shadow-2xl overflow-hidden animate-slideIn">
-          <div className="p-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white flex justify-between">
+          <div className="p-4 bg-gradient-to-r from-rose-500 to-rose-400 text-white flex justify-between">
             <div className="flex flex-col gap-1">
               <h3 className="font-bold text-sm flex items-center gap-2">
                 <BsFillChatFill /> Nhân viên hỗ trợ SkinLeLe 🎧
               </h3>
               {isAuthenticated && (
-                <p className="text-xs text-blue-100">
+                <p className="text-xs text-blue-50">
                   Chọn một nhân viên để bắt đầu nhận hỗ trợ
                 </p>
               )}
               {!isAuthenticated && (
-                <p className="text-sm text-blue-100">
+                <p className="text-sm text-blue-50">
                   Vui lòng{" "}
                   <Link to="/auth" className="font-semibold hover:underline">
                     Đăng nhập
@@ -182,7 +182,7 @@ const ConversationSupport = () => {
             />
           </div>
 
-          <div className="divide-y divide-gray-100 max-h-[400px] overflow-y-auto hide-scrollbar-custom">
+          <div className="max-h-[400px] overflow-y-auto hide-scrollbar-custom">
             {isLoading ? (
               <LoadingConversation />
             ) : (

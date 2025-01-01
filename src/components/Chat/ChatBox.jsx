@@ -25,6 +25,8 @@ const ChatBox = ({
   sender,
   receiver,
   isAuth = false,
+  isClinic = false,
+  loading = false,
 }) => {
   const [previewFiles, setPreviewFiles] = useState([]);
   const [showEmoji, setShowEmoji] = useState(false);
@@ -189,7 +191,13 @@ const ChatBox = ({
     <div className="fixed bottom-8 right-8 z-50">
       <div className="animate-slideIn rounded-xl shadow-2xl w-[350px] sm:w-[400px] max-h-[600px] flex flex-col bg-white">
         {/* Header */}
-        <div className="p-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-t-xl flex items-center justify-between">
+        <div
+          className={`p-4 ${
+            isClinic
+              ? "bg-gradient-to-r from-blue-500 to-blue-600"
+              : "bg-gradient-to-r from-rose-300 to-rose-400"
+          } text-white rounded-t-xl flex items-center justify-between`}
+        >
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
               <img
@@ -230,12 +238,16 @@ const ChatBox = ({
               : "min-h-[350px] max-h-[400px]"
           }`}
         >
-          {isLoading ? (
+          {isLoading || loading ? (
             <LoadingMessage />
           ) : messages.length === 0 && previewFiles.length === 0 ? (
             <div className="space-y-2">
               <img
-                src="https://res.cloudinary.com/dt8cdxgji/image/upload/v1735490492/upload-static-skinlele/mnxtiwl6e2ukw7co11xi.gif"
+                src={
+                  isClinic
+                    ? "https://res.cloudinary.com/dt8cdxgji/image/upload/v1735490492/upload-static-skinlele/mnxtiwl6e2ukw7co11xi.gif"
+                    : "https://res.cloudinary.com/dt8cdxgji/image/upload/v1735664179/upload-static-skinlele/pr7cuv4eg2ffspdg8p1c.gif"
+                }
                 alt="Empty-Chat"
               />
             </div>

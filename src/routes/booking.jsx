@@ -18,6 +18,7 @@ const DoctorList = lazy(() => import("@pages/DoctorList"));
 const ClinicList = lazy(() => import("@pages/ClinicList"));
 const AboutSkinleleClinic = lazy(() => import("@pages/AboutSkinleleClinic"));
 const Partnership = lazy(() => import("@pages/Partnership"));
+const OnlineConsultation = lazy(() => import("@pages/OnlineConsultation"));
 
 const WrapBookingRoute = ({
   element: Element,
@@ -94,6 +95,13 @@ const routes = [
     path: "/clinics",
     element: ClinicList,
     title: "SkinLeLeClinic - Danh sách phòng khám",
+    isAuth: true,
+  },
+  {
+    path: "/online-consultation",
+    element: OnlineConsultation,
+    title:
+      "SkinLeLeClinic - Tư vẫn trực thăm khám phù hợp nhu cầu da của khách hàng cùng các bac sĩ chuyên gia",
     isAuth: true,
   },
   {

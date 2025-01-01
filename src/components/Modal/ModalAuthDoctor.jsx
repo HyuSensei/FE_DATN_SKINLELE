@@ -4,15 +4,10 @@ import CustomButton from "../CustomButton";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { loginDoctor } from "@/redux/auth/auth.thunk";
-import {
-  setDoctorInfo,
-  setIsAuthenticatedDoctor,
-} from "@/redux/auth/auth.slice";
+import { setIsAuthenticatedDoctor } from "@/redux/auth/auth.slice";
 import { set } from "@/storage/storage";
-import { useNavigate } from "react-router-dom";
 
 const ModalAuthDoctor = ({ open, onClose }) => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -38,7 +33,7 @@ const ModalAuthDoctor = ({ open, onClose }) => {
         }
         dispatch(setIsAuthenticatedDoctor(true));
         message.success(res.message);
-        onClose();
+        window.location.reload();
       }
     } catch (error) {
       console.log(error);

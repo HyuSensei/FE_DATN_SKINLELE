@@ -120,12 +120,13 @@ const SidebarMenu = ({ activeMenu, onMenuSelect }) => {
   return (
     <>
       {/* Mobile Collapse */}
-      <div className="lg:hidden w-full">
+      <div className="lg:hidden w-full mt-10">
         <Collapse
           expandIcon={({ isActive }) => (
             <FiChevronRight
-              className={`transform transition-transform duration-200 ${isActive ? "rotate-90" : ""
-                }`}
+              className={`transform transition-transform duration-200 ${
+                isActive ? "rotate-90" : ""
+              }`}
             />
           )}
           className="bg-white rounded-xl shadow-md border-0"

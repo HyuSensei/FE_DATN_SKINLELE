@@ -2,17 +2,21 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   openChat: {
+    isChatDoctor: false,
     isChatSupport: false,
     isChatCustomer: false,
     isConversationSupport: false,
     isConversationCustomer: false,
+    isConversationDoctor: false,
   },
   supportList: [],
   customerList: [],
+  doctorList: [],
   supportMessages: [],
+  doctorMessages: [],
   supportConversationSelected: null,
   customerConversationSelected: null,
-  isAction: false,
+  doctorConversationSelected: null,
 };
 
 export const chatSlice = createSlice({
@@ -48,8 +52,24 @@ export const chatSlice = createSlice({
       state.customerList = sortedData;
     },
 
+    setDoctorList(state, action) {
+      const data = action.payload;
+      const sortedData = [...data].sort((a, b) => {
+        const dateA = a?.conversation?.updatedAt
+          ? new Date(a.conversation.updatedAt)
+          : 0;
+        const dateB = b?.conversation?.updatedAt
+          ? new Date(b.conversation.updatedAt)
+          : 0;
+        return dateB - dateA;
+      });
+      state.doctorList = sortedData;
+    },
     setSupportMessages(state, action) {
       state.supportMessages = action.payload;
+    },
+    setDoctorMessages(state, action) {
+      state.doctorMessages = action.payload;
     },
     setOpenChat(state, action) {
       const { key, value } = action.payload;
@@ -69,6 +89,9 @@ export const chatSlice = createSlice({
     },
     setCustomerConversationSelected(state, action) {
       state.customerConversationSelected = action.payload;
+    },
+    setDoctorConversationSelected(state, action) {
+      state.doctorConversationSelected = action.payload;
     },
   },
 });

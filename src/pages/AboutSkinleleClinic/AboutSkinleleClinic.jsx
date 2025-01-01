@@ -241,56 +241,6 @@ const AboutSkinleleClinic = () => {
                 ))}
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-8">
-              <div className="bg-white p-6 rounded-xl shadow-lg">
-                <img
-                  src={
-                    "https://scontent.fhan14-3.fna.fbcdn.net/v/t39.30808-6/299652252_2027218947668525_499858223143631738_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=Qw4vUp4S7p8Q7kNvgFA_tGL&_nc_oc=Adh3GpnyKHAlFQRsrYTa4gRZcOtqDCPrLeXJX1wOX8djM6CqR1q4zWTHqXmVP-7SQ_LXML58HrccS2D_kB4tfWER&_nc_zt=23&_nc_ht=scontent.fhan14-3.fna&_nc_gid=A6JrlkuiBk-Fz2pL0sHsyiZ&oh=00_AYDuLKuCIyx1NQZjAQZz3C7b9ouwtOIFFlKp6vqy_KEWOQ&oe=6768C7B7"
-                  }
-                  alt={`Client`}
-                  className="h-28 w-28 mx-auto mb-4 rounded-full border-slate-400 border-2"
-                />
-                <div className="text-center text-gray-600 text-sm">
-                  Phòng khám Sbeauty
-                </div>
-              </div>
-              <div className="bg-white p-6 rounded-xl shadow-lg">
-                <img
-                  src={
-                    "https://yt3.googleusercontent.com/ytc/AIdro_njhp6jhj-0qcjw69Q3lY5etOB1qBxYjZPLNDycWkCBIhw=s900-c-k-c0x00ffffff-no-rj"
-                  }
-                  alt={`Client`}
-                  className="h-28 w-28 mx-auto mb-4 rounded-full border-slate-400 border-2"
-                />
-                <div className="text-center text-gray-600 text-sm">
-                  Phòng khám Maia&Maia
-                </div>
-              </div>
-              <div className="bg-white p-6 rounded-xl shadow-lg">
-                <img
-                  src={
-                    "https://scontent.fhan14-2.fna.fbcdn.net/v/t39.30808-6/341058261_1245896086051139_4897214149601914775_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=PbIYgGBW75kQ7kNvgHeh3Hg&_nc_oc=Adi42zsGCL9PpG8XVSEBCOCBjfrBSFh1ssgfpoSrtH74e7inMkrgyh_65UevdP8bp8nbEPdcTZYsmPB-HAefyWvX&_nc_zt=23&_nc_ht=scontent.fhan14-2.fna&_nc_gid=ADILi4vFkf3yCDnBCoAooCI&oh=00_AYBgnWBPc1JvibhjZtt0ncvbqkDflpeoahdpu0azVX3mYw&oe=6768EE2D"
-                  }
-                  alt={`Client`}
-                  className="h-28 w-28 mx-auto mb-4 rounded-full border-slate-400 border-2"
-                />
-                <div className="text-center text-gray-600 text-sm">
-                  Phòng khám da liễu Hà Nội
-                </div>
-              </div>
-              <div className="bg-white p-6 rounded-xl shadow-lg">
-                <img
-                  src={
-                    "https://scontent.fhan14-3.fna.fbcdn.net/v/t39.30808-6/458979271_1394498361484564_6927483304867446382_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=a5f93a&_nc_ohc=ujfw7fZG7x8Q7kNvgF94BG-&_nc_oc=AdjH2Ch8iiAjWQAXV8IdaEM5_K4sXwmLKLmNbrFLwjbGxWqov5hFS84-kv-qdhXU5RdpIjf9lHdzHgxKT6ZxDmvt&_nc_zt=23&_nc_ht=scontent.fhan14-3.fna&_nc_gid=AIFO5bSHKajlienZ7moLDKX&oh=00_AYCLvK0oABGhYgcAihancCm90WZdfCRM3i0062biW4iBtw&oe=6768C8DF"
-                  }
-                  alt={`Client`}
-                  className="h-28 w-28 mx-auto mb-4 rounded-full border-slate-400 border-2"
-                />
-                <div className="text-center text-gray-600 text-sm">
-                  Phòng khám Zahan
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>

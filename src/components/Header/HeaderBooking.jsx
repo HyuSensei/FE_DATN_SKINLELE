@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ModalAuth from "../Modal/ModalAuth";
 import { logoutUser, setOpenModelAuth } from "@/redux/auth/auth.slice";
 import SearchHeaderBooking from "../Search/SearchHeaderBooking";
+import { LiaFacebookMessenger } from "react-icons/lia";
 
 const { Header: AntHeader } = Layout;
 
@@ -22,6 +23,7 @@ const HeaderBooking = () => {
     { label: "Phòng khám", path: "/clinics" },
     { label: "Bác sĩ", path: "/doctors" },
     { label: "Lịch khám", path: "/booking-history" },
+    { label: "Tư vấn trực tuyến", path: "/online-consultation" },
     { label: "Hợp tác", path: "/partnership" },
     { label: "Giới thiệu", path: "/about-skinlele-clinic" },
   ];
@@ -96,7 +98,12 @@ const HeaderBooking = () => {
                 </div>
               )}
               <Badge count={1} offset={[-9, 4]} color="cyan">
-                <div className="h-10 w-10 hover:bg-slate-100 rounded-full flex items-center justify-center cursor-pointer">
+                <div className="h-10 w-10 bg-slate-50 hover:bg-slate-100 rounded-full flex items-center justify-center cursor-pointer">
+                  <LiaFacebookMessenger className="text-slate-500 text-2xl" />
+                </div>
+              </Badge>
+              <Badge count={1} offset={[-9, 4]} color="cyan">
+                <div className="h-10 w-10 bg-slate-50 hover:bg-slate-100 rounded-full flex items-center justify-center cursor-pointer">
                   <IoNotificationsOutline className="text-slate-500 text-2xl" />
                 </div>
               </Badge>

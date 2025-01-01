@@ -7,8 +7,14 @@ const SOCKET_SERVER_URL = import.meta.env.VITE_APP_API_BASE_URL;
 
 const ProviderSocket = ({ children }) => {
   const dispatch = useDispatch();
-  const { isAuthenticated, isAuthenticatedAdmin, userInfo, adminInfo } =
-    useSelector((state) => state.auth);
+  const {
+    isAuthenticated,
+    isAuthenticatedAdmin,
+    isAuthenticatedDoctor,
+    userInfo,
+    adminInfo,
+    doctorInfo,
+  } = useSelector((state) => state.auth);
 
   // Socket connection for authenticated customer
   useEffect(() => {
@@ -60,6 +66,31 @@ const ProviderSocket = ({ children }) => {
       };
     }
   }, [isAuthenticatedAdmin]);
+
+  // Socket connection for authenticated customer
+  useEffect(() => {
+    if (isAuthenticatedDoctor) {
+      const socketConnect = io(SOCKET_SERVER_URL, {
+        query: {
+          userId: doctorInfo?._id,
+          userType: "doctor",
+        },
+      });
+
+      socketConnect.on("userOnlines", (userOnlines) =>
+        dispatch(SocketActions.setUserOnlines(userOnlines))
+      );
+      dispatch(SocketActions.setSocketDoctor(socketConnect));
+
+      return () => {
+        socketConnect.disconnect();
+        dispatch(SocketActions.setSocketDoctor(null));
+        socketConnect.off("userOnlines", (userOnlines) =>
+          dispatch(SocketActions.setUserOnlines(userOnlines))
+        );
+      };
+    }
+  }, [isAuthenticatedDoctor]);
 
   return <>{children}</>;
 };
