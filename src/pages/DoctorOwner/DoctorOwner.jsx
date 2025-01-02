@@ -63,24 +63,19 @@ const DoctorOwner = () => {
         </div>
         <div className="flex-1">
           <div className="flex flex-col w-full h-full min-h-screen">
-            <Card
-              className="bg-gradient-to-br from-blue-50 via-white to-indigo-50 shadow-lg"
-              bordered={false}
-            >
-              <div className="m-0 text-gray-800 flex items-center gap-2 uppercase text-2xl font-bold">
-                {title}
-              </div>
-              {activeMenu === "statistics" && (
-                <ManageStatistic {...{ activeMenu }} />
-              )}
-              {activeMenu === "bookings" && (
-                <ManageBooking {...{ activeMenu }} />
-              )}
-              {activeMenu === "profile" && <ManageProfile />}
-              {activeMenu === "reviews" && <ManageReview {...{ activeMenu }} />}
-              {activeMenu === "schedules" && <ManageSchedule />}
-              {activeMenu === "messages" && <ManageChat />}
-            </Card>
+            <div className="m-0 text-gray-800 flex items-center gap-2 uppercase text-2xl font-bold">
+              {title}
+            </div>
+            {activeMenu === "statistics" && (
+              <ManageStatistic {...{ activeMenu }} />
+            )}
+            {activeMenu === "bookings" && (
+              <ManageBooking {...{ activeMenu }} />
+            )}
+            {activeMenu === "profile" && <ManageProfile />}
+            {activeMenu === "reviews" && <ManageReview {...{ activeMenu }} />}
+            {activeMenu === "schedules" && <ManageSchedule />}
+            {activeMenu === "messages" && <ManageChat />}
           </div>
         </div>
       </div>

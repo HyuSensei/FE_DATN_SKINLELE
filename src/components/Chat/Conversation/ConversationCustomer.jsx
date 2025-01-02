@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Badge, Button, Empty, Input, Popover } from "antd";
+import { Badge, Button, Empty, Input, Popover, Tabs } from "antd";
 import { MessageOutlined, SearchOutlined } from "@ant-design/icons";
-import ChatBox from "../ChatBox";
 import { useDispatch, useSelector } from "react-redux";
 import { ChatActions } from "@/redux/chat/chat.slice";
 import { LoadingConversation } from "../Loading";
@@ -22,15 +21,16 @@ const ConversationCustomer = () => {
   );
   const [isLoading, setIsLoading] = useState(true);
   const [searchValue, setSearchValue] = useState("");
+  const [activeTab, setActiveTab] = useState("all");
 
   const customerConversations = customerList?.filter(
     (item) => item.conversation
   );
   const unReadCount = isAuthenticatedAdmin
     ? customerConversations?.filter((item) => {
-        const lastMessage = item?.conversation?.lastMessage;
-        return lastMessage?.receiver === adminInfo?._id && !lastMessage?.isRead;
-      }).length || 0
+      const lastMessage = item?.conversation?.lastMessage;
+      return lastMessage?.receiver === adminInfo?._id && !lastMessage?.isRead;
+    }).length || 0
     : 0;
 
   const handleGetAllCustomer = (conversations) => {
@@ -63,25 +63,47 @@ const ConversationCustomer = () => {
     }
   }, [isAuthenticatedAdmin, socket, conversation, supportMessages]);
 
-  const filteredCustomerList = customerList.filter(({ customer }) => {
-    if (!searchValue) return true;
+  const filteredCustomerList = customerList.filter(({ customer, conversation }) => {
+    const lastMessage = conversation?.lastMessage;
 
-    return (
-      customer.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-      customer.email.toLowerCase().includes(searchValue.toLowerCase())
-    );
+    if (searchValue) {
+      const matchesSearch =
+        customer.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+        customer.email.toLowerCase().includes(searchValue.toLowerCase());
+      if (!matchesSearch) return false;
+    }
+
+    if (activeTab === "unread") {
+      return lastMessage?.receiver === adminInfo?._id && !lastMessage?.isRead;
+    }
+    if (activeTab === "read") {
+      return lastMessage?.receiver === adminInfo?._id && lastMessage?.isRead;
+    }
+
+    return true;
   });
 
   const content = (
     <div className="w-96">
-      <div className="p-3 border-b space-y-2">
-        <h3 className="text-lg font-semibold">Cuộc trò chuyện</h3>
+      <h3 className="text-lg font-semibold">Cuộc trò chuyện</h3>
+      <div className="space-y-2 mt-2">
         <Input
+          size="middle"
           className="rounded-lg bg-gray-50"
-          placeholder="Tìm kiếm..."
+          placeholder="Tìm kiếm cuộc trò chuyện"
           prefix={<SearchOutlined />}
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
+        />
+        <Tabs
+          activeTab
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          items={[
+            { label: "Tất cả", key: "all" },
+            { label: "Chưa đọc", key: "unread" },
+            { label: "Đã đọc", key: "read" },
+          ]}
         />
       </div>
       <div className="max-h-96 overflow-y-auto hide-scrollbar-custom">

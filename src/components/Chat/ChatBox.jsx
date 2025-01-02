@@ -42,8 +42,8 @@ const ChatBox = ({
     attachments: [],
   });
   const [loadingUpload, setLoadingUpload] = useState(false);
-  const isOnline = (userId) => {
-    return userOnlines?.some((item) => item === userId);
+  const isOnline = () => {
+    return userOnlines?.some((item) => item === conversation._id);
   };
 
   useEffect(() => {
@@ -211,13 +211,13 @@ const ChatBox = ({
               <div className="flex items-center gap-2">
                 <span
                   className={`w-2 h-2 rounded-full ${
-                    isOnline(conversation._id)
+                    isOnline()
                       ? "bg-green-400 animate-pulse"
                       : "bg-yellow-200"
                   }`}
                 ></span>
                 <span className="text-sm text-blue-100">
-                  {isOnline(conversation._id) ? "Online" : "Offline"}
+                  {isOnline() ? "Online" : "Offline"}
                 </span>
               </div>
             </div>

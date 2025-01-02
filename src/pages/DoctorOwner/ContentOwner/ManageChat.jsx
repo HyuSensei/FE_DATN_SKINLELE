@@ -1,71 +1,71 @@
-import React, { useState } from "react";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import ConversationList from "./ConversationList";
-import ChatWindow from "./ChatWindow";
-
-dayjs.extend(relativeTime);
-
-// Mock data for conversations
-const mockConversations = [
-  {
-    id: 1,
-    name: "Nguyễn Văn A",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=1",
-    lastMessage: "Bác sĩ ơi, tôi muốn đặt lịch khám",
-    timestamp: dayjs().subtract(5, "minute"),
-    unread: 3,
-    online: true,
-  },
-  {
-    id: 2,
-    name: "Trần Thị B",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=2",
-    lastMessage: "Cảm ơn bác sĩ đã tư vấn",
-    timestamp: dayjs().subtract(1, "hour"),
-    unread: 0,
-    online: false,
-  },
-  // Add more mock conversations...
-];
-
-// Mock messages for a conversation
-const mockMessages = [
-  {
-    id: 1,
-    senderId: 1,
-    content: "Bác sĩ ơi, tôi muốn đặt lịch khám",
-    timestamp: dayjs().subtract(5, "minute"),
-  },
-  {
-    id: 2,
-    senderId: "doctor",
-    content: "Chào bạn, bạn có thể cho mình biết triệu chứng của bạn không?",
-    timestamp: dayjs().subtract(4, "minute"),
-  },
-  // Add more mock messages...
-];
+import React, { useEffect } from "react";
+import ConversationCustomerByDoctor from "../../../components/Chat/Conversation/ConversationCustomerByDoctor";
+import ChatWindow from "../../../components/Chat/ChatWindow";
+import { useDispatch, useSelector } from "react-redux";
+import { Empty } from "antd";
+import { ChatActions } from "@/redux/chat/chat.slice";
 
 const ManageChat = () => {
-  const [selectedId, setSelectedId] = useState(null);
-  const selectedConversation = mockConversations.find(
-    (c) => c.id === selectedId
+  const dispatch = useDispatch();
+  const { socketDoctor: socket } = useSelector((state) => state.socket);
+  const { doctorMessages, customerConversationSelected: conversation } = useSelector(
+    (state) => state.chat
+  );
+  const { isAuthenticatedDoctor: isAuth, doctorInfo } = useSelector(
+    (state) => state.auth
   );
 
+  const handleGetMessages = (messages) => {
+    dispatch(ChatActions.setDoctorMessages(messages));
+  };
+
+  useEffect(() => {
+    if (isAuth && socket) {
+      socket.emit("getMessages", conversation?.conversationId);
+      socket.on("resGetMessages", handleGetMessages);
+
+      return () => {
+        socket.off("resGetMessages", handleGetMessages);
+      };
+    }
+  }, [isAuth, socket, conversation]);
+
+  const handleSendMessage = (message) => {
+    if (!isAuth) return;
+    if (socket && message) {
+      socket.emit("createMessage", JSON.stringify(message));
+    }
+  };
+
   return (
-    <div className="min-h-screen grid grid-cols-1 md:grid-cols-3 gap-6 h-[calc(100vh-200px)] bg-white rounded-xl shadow-lg overflow-hidden">
-      <div className="md:col-span-1">
-        <ConversationList
-          conversations={mockConversations}
-          selectedId={selectedId}
-          onSelect={setSelectedId}
-        />
-      </div>
-      <div className="md:col-span-2">
-        <ChatWindow
-          conversation={selectedConversation}
-          messages={mockMessages}
-        />
+    <div className="h-[calc(100vh-100px)] flex flex-col overflow-hidden bg-white rounded-xl shadow-lg">
+      <div className="flex-1 flex min-h-0"> {/* min-h-0 để flex container co giãn đúng */}
+        <div className="w-1/3 border-r border-gray-200 overflow-hidden flex flex-col">
+          <ConversationCustomerByDoctor />
+        </div>
+
+        <div className="w-2/3 flex flex-col overflow-hidden">
+          {!conversation ? (
+            <div className="h-full flex items-center justify-center">
+              <Empty description="Chọn một cuộc trò chuyện để bắt đầu" />
+            </div>
+          ) : (
+            <ChatWindow
+              typeMessage={"User_Doctor"}
+              conversation={conversation}
+              messages={doctorMessages}
+              onSubmit={handleSendMessage}
+              sender={{
+                _id: doctorInfo?._id,
+                role: "Doctor"
+              }}
+              receiver={{
+                _id: conversation?._id,
+                role: "User"
+              }}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

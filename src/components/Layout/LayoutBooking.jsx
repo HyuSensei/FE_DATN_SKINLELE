@@ -37,8 +37,11 @@ const LayoutBooking = ({ children }) => {
   };
 
   const handleGetMessages = (messages) => {
+    if(!messages.length) {
+      dispatch(ChatActions.setDoctorMessages(messages));
+      return
+    }
     if (
-      messages.length > 0 &&
       conversation &&
       ((messages[0].sender._id === conversation._id &&
         messages[0].receiver._id === userInfo?._id) ||
