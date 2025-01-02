@@ -3,7 +3,7 @@ import dayjs from "@utils/dayjsTz";
 import { Avatar } from "antd";
 import { capitalizeFirstLetter } from "@/helpers/formatDate";
 
-const Message = ({ message, sender = null }) => {
+const Message = ({ message, sender = null, isClinic = false }) => {
   const isSender = sender && message.sender._id === sender._id ? true : false;
   const timeAgo = capitalizeFirstLetter(dayjs(message.createdAt).fromNow());
 
@@ -88,7 +88,11 @@ const Message = ({ message, sender = null }) => {
             </p>
           </div>
         )}
-        <span className="text-xs text-gray-400">{timeAgo}</span>
+        <span
+          className={`text-xs ${!isClinic ? "text-white" : "text-gray-500"}`}
+        >
+          {timeAgo}
+        </span>
       </div>
     </div>
   );

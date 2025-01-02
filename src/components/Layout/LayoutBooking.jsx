@@ -37,9 +37,9 @@ const LayoutBooking = ({ children }) => {
   };
 
   const handleGetMessages = (messages) => {
-    if(!messages.length) {
+    if (!messages.length) {
       dispatch(ChatActions.setDoctorMessages(messages));
-      return
+      return;
     }
     if (
       conversation &&
@@ -61,7 +61,7 @@ const LayoutBooking = ({ children }) => {
         socket.off("resGetMessages", handleGetMessages);
       };
     }
-  }, [isAuthenticated, socket, conversation, doctorMessages]);
+  }, [isAuthenticated, socket, conversation]);
 
   const handleSendMessage = (message) => {
     if (!isAuthenticated) return;

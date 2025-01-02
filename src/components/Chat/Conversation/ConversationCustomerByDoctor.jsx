@@ -5,13 +5,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { ChatActions } from "@/redux/chat/chat.slice";
 import CustomerItemByDoctor from "../Item/CustomerItemByDoctor";
 import { LoadingConversation } from "../Loading";
+
 const ConversationCustomerByDoctor = () => {
   const dispatch = useDispatch();
   const { socketDoctor: socket } = useSelector((state) => state.socket);
-  const { isAuthenticatedDoctor, doctorInfo } = useSelector((state) => state.auth);
-  const {
-    customerList,
-  } = useSelector((state) => state.chat);
+  const { isAuthenticatedDoctor, doctorInfo } = useSelector(
+    (state) => state.auth
+  );
+  const { customerList, doctorMessages } = useSelector((state) => state.chat);
   const [isLoading, setIsLoading] = useState(true);
   const [searchValue, setSearchValue] = useState("");
   const [activeTab, setActiveTab] = useState("all");
@@ -29,7 +30,7 @@ const ConversationCustomerByDoctor = () => {
         socket.off("resGetAllCustomer", handleGetAllCustomer);
       };
     }
-  }, [isAuthenticatedDoctor, socket, doctorInfo]);
+  }, [isAuthenticatedDoctor, socket, doctorMessages]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -38,19 +39,46 @@ const ConversationCustomerByDoctor = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  const filteredCustomers = customerList.filter(
+    ({ customer, conversation }) => {
+      const lastMessage = conversation?.lastMessage;
+      if (searchValue) {
+        const matchesSearch =
+          customer.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+          customer.email.toLowerCase().includes(searchValue.toLowerCase());
+        if (!matchesSearch) return false;
+      }
+
+      switch (activeTab) {
+        case "unread":
+          return (
+            lastMessage?.receiver === doctorInfo?._id && !lastMessage?.isRead
+          );
+        case "read":
+          return (
+            lastMessage?.receiver === doctorInfo?._id && lastMessage?.isRead
+          );
+        default:
+          return true;
+      }
+    }
+  );
+
   return (
     <div className="h-full flex flex-col">
-      <div className="p-4 space-y-4">
+      <div className="p-4 space-y-4 shrink-0">
         <div className="text-xl font-medium text-gray-900">Cuộc trò chuyện</div>
         <Input
           size="middle"
           prefix={<SearchOutlined className="text-gray-400" />}
           placeholder="Tìm kiếm cuộc trò chuyện..."
           className="rounded-lg"
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
         />
         <Tabs
-          defaultActiveKey="all"
-          className="px-4 pt-2"
+          activeKey={activeTab}
+          onChange={setActiveTab}
           items={[
             { label: "Tất cả", key: "all" },
             { label: "Chưa đọc", key: "unread" },
@@ -63,8 +91,8 @@ const ConversationCustomerByDoctor = () => {
           <div className="px-2">
             <LoadingConversation />
           </div>
-        ) : customerList.length > 0 ? (
-          customerList.map(({ customer, conversation }) => (
+        ) : filteredCustomers.length > 0 ? (
+          filteredCustomers.map(({ customer, conversation }) => (
             <CustomerItemByDoctor
               key={customer._id}
               customer={customer}
@@ -83,8 +111,7 @@ const ConversationCustomerByDoctor = () => {
         )}
       </div>
     </div>
-  )
+  );
 };
 
 export default ConversationCustomerByDoctor;
-

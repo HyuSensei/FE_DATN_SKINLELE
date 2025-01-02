@@ -76,15 +76,22 @@ const ConversationSupport = () => {
       socket.emit("getAllSupport", userInfo._id);
       socket.on("resGetAllSupport", handleGetAllSupport);
 
+      return () => {
+        socket.off("resGetAllSupport", handleGetAllSupport);
+      };
+    }
+  }, [isAuthenticated, socket, supportMessages]);
+
+  useEffect(() => {
+    if (isAuthenticated && socket) {
       socket.emit("getMessages", conversation?.conversationId);
       socket.on("resGetMessages", handleGetMessages);
 
       return () => {
-        socket.off("resGetAllSupport", handleGetAllSupport);
         socket.off("resGetMessages", handleGetMessages);
       };
     }
-  }, [isAuthenticated, socket, conversation, supportMessages]);
+  }, [isAuthenticated, socket, conversation]);
 
   const handleClickChatIcon = () => {
     if (isChatSupport) {

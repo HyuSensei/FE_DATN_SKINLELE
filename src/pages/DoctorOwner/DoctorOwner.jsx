@@ -69,9 +69,7 @@ const DoctorOwner = () => {
             {activeMenu === "statistics" && (
               <ManageStatistic {...{ activeMenu }} />
             )}
-            {activeMenu === "bookings" && (
-              <ManageBooking {...{ activeMenu }} />
-            )}
+            {activeMenu === "bookings" && <ManageBooking {...{ activeMenu }} />}
             {activeMenu === "profile" && <ManageProfile />}
             {activeMenu === "reviews" && <ManageReview {...{ activeMenu }} />}
             {activeMenu === "schedules" && <ManageSchedule />}

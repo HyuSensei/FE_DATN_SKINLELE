@@ -1,44 +1,41 @@
-import React, { useState, useEffect } from "react";
-import { Badge, Button, Empty, Input, Popover, Tabs } from "antd";
-import { MessageOutlined, SearchOutlined } from "@ant-design/icons";
-import { useDispatch, useSelector } from "react-redux";
 import { ChatActions } from "@/redux/chat/chat.slice";
+import { Badge, Button, Empty, Input, Popover, Tabs } from "antd";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { MessageOutlined, SearchOutlined } from "@ant-design/icons";
 import { LoadingConversation } from "../Loading";
-import CustomerItem from "../Item/CustomerItem";
+import DoctorItem from "../Item/DoctorItem";
+import { LiaFacebookMessenger } from "react-icons/lia";
 
-const ConversationCustomer = () => {
+const ConversationDoctor = () => {
   const dispatch = useDispatch();
   const {
     openChat,
-    customerConversationSelected: conversation,
-    customerList,
-    supportMessages,
+    doctorConversationSelected: conversation,
+    doctorList,
+    doctorMessages,
   } = useSelector((state) => state.chat);
-  const { isConversationCustomer } = openChat;
-  const { socketAdmin: socket } = useSelector((state) => state.socket);
-  const { isAuthenticatedAdmin, adminInfo } = useSelector(
-    (state) => state.auth
-  );
+  const { isConversationDoctor } = openChat;
+  const { socketCustomer: socket } = useSelector((state) => state.socket);
+  const { isAuthenticated, userInfo } = useSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState(true);
   const [searchValue, setSearchValue] = useState("");
   const [activeTab, setActiveTab] = useState("all");
 
-  const customerConversations = customerList?.filter(
-    (item) => item.conversation
-  );
-  const unReadCount = isAuthenticatedAdmin
-    ? customerConversations?.filter((item) => {
-      const lastMessage = item?.conversation?.lastMessage;
-      return lastMessage?.receiver === adminInfo?._id && !lastMessage?.isRead;
-    }).length || 0
+  const doctorConversations = doctorList?.filter((item) => item.conversation);
+  const unReadCount = isAuthenticated
+    ? doctorConversations?.filter((item) => {
+        const lastMessage = item?.conversation?.lastMessage;
+        return lastMessage?.receiver === userInfo?._id && !lastMessage?.isRead;
+      }).length || 0
     : 0;
 
-  const handleGetAllCustomer = (conversations) => {
-    dispatch(ChatActions.setCustomerList(conversations));
+  const handleGetAllDoctor = (conversations) => {
+    dispatch(ChatActions.setDoctorList(conversations));
   };
 
   const handleGetMessages = (messages) => {
-    dispatch(ChatActions.setSupportMessages(messages));
+    dispatch(ChatActions.setDoctorMessages(messages));
   };
 
   useEffect(() => {
@@ -49,18 +46,18 @@ const ConversationCustomer = () => {
   }, []);
 
   useEffect(() => {
-    if (isAuthenticatedAdmin && socket) {
-      socket.emit("getAllCustomer", adminInfo?._id);
-      socket.on("resGetAllCustomer", handleGetAllCustomer);
+    if (isAuthenticated && socket) {
+      socket.emit("getAllDoctor", userInfo?._id);
+      socket.on("resGetAllDoctor", handleGetAllDoctor);
 
       return () => {
-        socket.off("resGetAllCustomer", handleGetAllCustomer);
+        socket.off("resGetAllDoctor", handleGetAllDoctor);
       };
     }
-  }, [isAuthenticatedAdmin, socket, supportMessages]);
+  }, [isAuthenticated, socket, doctorMessages]);
 
   useEffect(() => {
-    if (isAuthenticatedAdmin && socket) {
+    if (isAuthenticated && socket) {
       socket.emit("getMessages", conversation?.conversationId);
       socket.on("resGetMessages", handleGetMessages);
 
@@ -68,9 +65,9 @@ const ConversationCustomer = () => {
         socket.off("resGetMessages", handleGetMessages);
       };
     }
-  }, [isAuthenticatedAdmin, socket, conversation]);
+  }, [isAuthenticated, socket, conversation]);
 
-  const filteredCustomerList = customerList.filter(({ customer, conversation }) => {
+  const filteredDoctorList = doctorList.filter(({ customer, conversation }) => {
     const lastMessage = conversation?.lastMessage;
 
     if (searchValue) {
@@ -81,10 +78,10 @@ const ConversationCustomer = () => {
     }
 
     if (activeTab === "unread") {
-      return lastMessage?.receiver === adminInfo?._id && !lastMessage?.isRead;
+      return lastMessage?.receiver === userInfo?._id && !lastMessage?.isRead;
     }
     if (activeTab === "read") {
-      return lastMessage?.receiver === adminInfo?._id && lastMessage?.isRead;
+      return lastMessage?.receiver === userInfo?._id && lastMessage?.isRead;
     }
 
     return true;
@@ -116,11 +113,11 @@ const ConversationCustomer = () => {
       <div className="max-h-96 overflow-y-auto hide-scrollbar-custom">
         {isLoading ? (
           <LoadingConversation />
-        ) : filteredCustomerList.length > 0 ? (
-          filteredCustomerList.map(({ customer, conversation }) => (
-            <CustomerItem
-              key={customer._id}
-              customer={customer}
+        ) : filteredDoctorList.length > 0 ? (
+          filteredDoctorList.map(({ doctor, conversation }) => (
+            <DoctorItem
+              key={doctor._id}
+              doctor={doctor}
               conversation={conversation}
             />
           ))
@@ -143,11 +140,11 @@ const ConversationCustomer = () => {
       <Popover
         content={content}
         trigger="click"
-        open={isConversationCustomer}
+        open={isConversationDoctor}
         onOpenChange={(open) =>
           dispatch(
             ChatActions.setOpenChat({
-              key: "isConversationCustomer",
+              key: "isConversationDoctor",
               value: open,
             })
           )
@@ -155,17 +152,14 @@ const ConversationCustomer = () => {
         placement="bottomRight"
         arrow={false}
       >
-        <Badge
-          color={"#65bebc"}
-          count={unReadCount}
-          className="mr-4"
-          offset={[-5, 5]}
-        >
-          <Button icon={<MessageOutlined />} shape="circle" size="large" />
+        <Badge count={unReadCount} offset={[-9, 4]} color="cyan">
+          <div className="h-10 w-10 bg-slate-50 hover:bg-slate-100 rounded-full flex items-center justify-center cursor-pointer">
+            <LiaFacebookMessenger className="text-slate-500 text-2xl" />
+          </div>
         </Badge>
       </Popover>
     </>
   );
 };
 
-export default ConversationCustomer;
+export default ConversationDoctor;

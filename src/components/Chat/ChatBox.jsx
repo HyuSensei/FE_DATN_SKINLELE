@@ -42,9 +42,12 @@ const ChatBox = ({
     attachments: [],
   });
   const [loadingUpload, setLoadingUpload] = useState(false);
+  const messagesContainerRef = useRef(null);
+  const [shouldScroll, setShouldScroll] = useState(true);
   const isOnline = () => {
     return userOnlines?.some((item) => item === conversation._id);
   };
+  const isEmptyChat = messages.length === 0 && previewFiles.length === 0;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -54,8 +57,41 @@ const ChatBox = ({
   }, []);
 
   useEffect(() => {
-    scrollToBottom();
+    setInputMessage((prev) => ({
+      ...prev,
+      type: typeMessage,
+      sender,
+      receiver,
+    }));
+  }, [typeMessage, sender, receiver]);
+
+  useEffect(() => {
+    if (shouldScroll && messagesContainerRef.current) {
+      const scrollContainer = messagesContainerRef.current;
+      scrollContainer.scrollTop = scrollContainer.scrollHeight;
+    }
+  }, [messages, shouldScroll]);
+
+  useEffect(() => {
+    if (messages.length > 0 && !isLoading) {
+      requestAnimationFrame(() => {
+        if (messagesContainerRef.current) {
+          messagesContainerRef.current.scrollTop =
+            messagesContainerRef.current.scrollHeight;
+        }
+      });
+    }
   }, [messages, isLoading]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const handleScroll = (e) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.target;
+    const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+    setShouldScroll(isNearBottom);
+  };
 
   const onEmojiClick = (emojiObject) => {
     setInputMessage((prev) => ({
@@ -211,9 +247,7 @@ const ChatBox = ({
               <div className="flex items-center gap-2">
                 <span
                   className={`w-2 h-2 rounded-full ${
-                    isOnline()
-                      ? "bg-green-400 animate-pulse"
-                      : "bg-yellow-200"
+                    isOnline() ? "bg-green-400 animate-pulse" : "bg-yellow-200"
                   }`}
                 ></span>
                 <span className="text-sm text-blue-100">
@@ -232,15 +266,29 @@ const ChatBox = ({
 
         {/* Messages Area */}
         <div
+          style={
+            isEmptyChat
+              ? null
+              : {
+                  backgroundImage: isClinic
+                    ? `url("https://res.cloudinary.com/dt8cdxgji/image/upload/v1735835724/upload-static-skinlele/czo6fgwfhar5wp2odbq1.jpg")`
+                    : `url("https://res.cloudinary.com/dt8cdxgji/image/upload/v1735835724/upload-static-skinlele/pw8bt13ga6irbn6rntpu.jpg")`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  backgroundRepeat: "no-repeat",
+                }
+          }
+          ref={messagesContainerRef}
           className={`flex-1 p-4 overflow-y-auto space-y-4 ${
             isAuth && messages.length > 0
               ? "min-h-[400px] max-h-[500px]"
               : "min-h-[350px] max-h-[400px]"
           }`}
+          onScroll={handleScroll}
         >
           {isLoading || loading ? (
             <LoadingMessage />
-          ) : messages.length === 0 && previewFiles.length === 0 ? (
+          ) : isEmptyChat ? (
             <div className="space-y-2">
               <img
                 src={
@@ -268,7 +316,6 @@ const ChatBox = ({
               )}
             </>
           )}
-          <div ref={messagesEndRef} />
         </div>
 
         {/* Input Area */}

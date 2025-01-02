@@ -9,15 +9,17 @@ import ModalAuth from "../Modal/ModalAuth";
 import { logoutUser, setOpenModelAuth } from "@/redux/auth/auth.slice";
 import SearchHeaderBooking from "../Search/SearchHeaderBooking";
 import { LiaFacebookMessenger } from "react-icons/lia";
+import ConversationDoctor from "../Chat/Conversation/ConversationDoctor";
 
 const { Header: AntHeader } = Layout;
 
 const HeaderBooking = () => {
+  const location = useLocation();
   const dispatch = useDispatch();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const { isAuthenticated, userInfo } = useSelector((state) => state.auth);
   const [openAuth, setOpenAuth] = useState(false);
-  const location = useLocation();
+  const isDoctorOwner = location.pathname === "/doctor-owner";
 
   const menuItems = [
     { label: "Phòng khám", path: "/clinics" },
@@ -26,7 +28,7 @@ const HeaderBooking = () => {
     { label: "Tư vấn trực tuyến", path: "/online-consultation" },
     { label: "Hợp tác", path: "/partnership" },
     { label: "Giới thiệu", path: "/about-skinlele-clinic" },
-  ];
+  ].filter((item) => (isDoctorOwner ? item.path !== "/booking-history" : true));
 
   const authItems = [
     { label: "Quay lại SkinLeLe", key: "doctor", path: "/" },
@@ -97,67 +99,72 @@ const HeaderBooking = () => {
                   <SearchHeaderBooking />
                 </div>
               )}
-              <Badge count={1} offset={[-9, 4]} color="cyan">
-                <div className="h-10 w-10 bg-slate-50 hover:bg-slate-100 rounded-full flex items-center justify-center cursor-pointer">
-                  <LiaFacebookMessenger className="text-slate-500 text-2xl" />
-                </div>
-              </Badge>
+              {!isDoctorOwner && (
+                // <Badge count={1} offset={[-9, 4]} color="cyan">
+                //   <div className="h-10 w-10 bg-slate-50 hover:bg-slate-100 rounded-full flex items-center justify-center cursor-pointer">
+                //     <LiaFacebookMessenger className="text-slate-500 text-2xl" />
+                //   </div>
+                // </Badge>
+                <ConversationDoctor />
+              )}
               <Badge count={1} offset={[-9, 4]} color="cyan">
                 <div className="h-10 w-10 bg-slate-50 hover:bg-slate-100 rounded-full flex items-center justify-center cursor-pointer">
                   <IoNotificationsOutline className="text-slate-500 text-2xl" />
                 </div>
               </Badge>
-              <Dropdown
-                menu={{
-                  items: isAuthenticated
-                    ? [
-                        {
-                          label: (
-                            <Link to={authItems[0].path}>
-                              {authItems[0].label}
-                            </Link>
-                          ),
-                        },
-                        {
-                          label: (
-                            <span onClick={authItems[2].action}>
-                              {authItems[2].label}
-                            </span>
-                          ),
-                        },
-                      ]
-                    : [
-                        {
-                          label: (
-                            <Link to={authItems[0].path}>
-                              {authItems[0].label}
-                            </Link>
-                          ),
-                        },
-                        {
-                          label: (
-                            <span onClick={authItems[1].action}>
-                              {authItems[1].label}
-                            </span>
-                          ),
-                        },
-                      ],
-                }}
-                placement="bottomRight"
-                trigger={["click"]}
-              >
-                {isAuthenticated ? (
-                  <Avatar
-                    src={userInfo.avatar.url}
-                    size={40}
-                    className="cursor-pointer border-2 border-blue-200 hover:border-blue-300 transition-colors"
-                  />
-                ) : (
-                  <div className="p-2 bg-gray-100 rounded-full cursor-pointer transition-colors">
-                    <FaUserCircle className="text-2xl text-[#1677ff]" />
-                  </div>
-                )}
-              </Dropdown>
+              {!isDoctorOwner && (
+                <Dropdown
+                  menu={{
+                    items: isAuthenticated
+                      ? [
+                          {
+                            label: (
+                              <Link to={authItems[0].path}>
+                                {authItems[0].label}
+                              </Link>
+                            ),
+                          },
+                          {
+                            label: (
+                              <span onClick={authItems[2].action}>
+                                {authItems[2].label}
+                              </span>
+                            ),
+                          },
+                        ]
+                      : [
+                          {
+                            label: (
+                              <Link to={authItems[0].path}>
+                                {authItems[0].label}
+                              </Link>
+                            ),
+                          },
+                          {
+                            label: (
+                              <span onClick={authItems[1].action}>
+                                {authItems[1].label}
+                              </span>
+                            ),
+                          },
+                        ],
+                  }}
+                  placement="bottomRight"
+                  trigger={["click"]}
+                >
+                  {isAuthenticated ? (
+                    <Avatar
+                      src={userInfo.avatar.url}
+                      size={40}
+                      className="cursor-pointer border-2 border-blue-200 hover:border-blue-300 transition-colors"
+                    />
+                  ) : (
+                    <div className="p-2 bg-gray-100 rounded-full cursor-pointer transition-colors">
+                      <FaUserCircle className="text-2xl text-[#1677ff]" />
+                    </div>
+                  )}
+                </Dropdown>
+              )}
             </div>
 
             {/* Mobile Menu Button */}

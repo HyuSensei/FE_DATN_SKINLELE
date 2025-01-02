@@ -3,23 +3,24 @@ import { ChatActions } from "@/redux/chat/chat.slice";
 import { Avatar, Badge } from "antd";
 import dayjs from "@utils/dayjsTz";
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { FaCircleDot } from "react-icons/fa6";
+import { useDispatch, useSelector } from "react-redux";
 
-const CustomerItemByDoctor = ({ customer, conversation }) => {
+const DoctorItem = ({ doctor, conversation }) => {
   const dispatch = useDispatch();
-  const { userOnlines, socketDoctor: socket } = useSelector(
+  const { userOnlines, socketCustomer: socket } = useSelector(
     (state) => state.socket
   );
-  const { doctorInfo } = useSelector((state) => state.auth);
+  const { openChat } = useSelector((state) => state.chat);
+  const { userInfo } = useSelector((state) => state.auth);
   const isOnline = () => {
-    return userOnlines?.some((item) => item === customer._id);
+    return userOnlines?.some((item) => item === doctor._id);
   };
-  const isOwner = conversation?.lastMessage?.sender === doctorInfo._id;
+  const isOwner = conversation?.lastMessage?.sender === userInfo._id;
   const lastMessage = conversation?.lastMessage;
   const isOwnerRead =
-    (lastMessage?.receiver === doctorInfo._id && lastMessage?.isRead) ||
-    lastMessage?.sender === doctorInfo._id;
+    (lastMessage?.receiver === userInfo._id && lastMessage?.isRead) ||
+    lastMessage?.sender === userInfo._id;
 
   const handleSelectConversation = () => {
     if (socket && conversation) {
@@ -30,7 +31,7 @@ const CustomerItemByDoctor = ({ customer, conversation }) => {
         _id: conversationId,
       } = conversation;
 
-      if (lastMessage.receiver === doctorInfo._id && !lastMessage.isRead)
+      if (lastMessage.receiver === userInfo._id && !lastMessage.isRead)
         socket.emit(
           "seenMessage",
           JSON.stringify({
@@ -42,9 +43,16 @@ const CustomerItemByDoctor = ({ customer, conversation }) => {
     }
 
     dispatch(
-      ChatActions.setCustomerConversationSelected({
-        ...customer,
+      ChatActions.setDoctorConversationSelected({
+        ...doctor,
         conversationId: conversation?._id || "",
+      })
+    );
+    dispatch(
+      ChatActions.setOpenChatAll({
+        ...openChat,
+        isChatDoctor: true,
+        isConversationDoctor: false,
       })
     );
   };
@@ -60,7 +68,7 @@ const CustomerItemByDoctor = ({ customer, conversation }) => {
         <div className="relative">
           <Badge dot status={isOnline() ? "success" : "warning"}>
             <Avatar
-              src={customer.avatar.url}
+              src={doctor.avatar.url}
               size={48}
               className="bg-gradient-to-r from-blue-500 to-blue-600"
             />
@@ -68,7 +76,7 @@ const CustomerItemByDoctor = ({ customer, conversation }) => {
         </div>
         <div className="flex-1">
           <div className="flex justify-between items-center">
-            <span className="font-medium">{customer.name}</span>
+            <span className="font-medium">{doctor.name}</span>
           </div>
           {!conversation && (
             <div className="text-gray-400">Chưa có tin nhắn !</div>
@@ -102,4 +110,4 @@ const CustomerItemByDoctor = ({ customer, conversation }) => {
   );
 };
 
-export default CustomerItemByDoctor;
+export default DoctorItem;
