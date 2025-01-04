@@ -94,7 +94,7 @@ const MenuContent = ({ activeMenu, onMenuSelect }) => {
       <MenuItem icon={IoIosLogOut} text="Đăng xuất" onClick={handleLogout} />
       <div className="mt-14 mb-2">
         <Link
-          href={"/home-booking"}
+          to={"/home-booking"}
           className="flex items-center gap-4 hover:text-sky-600"
         >
           <IoIosArrowRoundBack className="rounded-full size-6" />

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Input, Button } from "antd";
 import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
-import TableCategory from "@components/Table/TableCategory";
+import TableCategory from "@/pages/ManageCategory/TableCategory";
 import { getCategoryList } from "@redux/category/category.thunk";
 import debounce from "lodash/debounce";
 import ModalCategoryAction from "@components/Modal/ModalCategoryAction";

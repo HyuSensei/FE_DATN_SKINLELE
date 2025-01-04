@@ -21,6 +21,7 @@ const ChatWindow = ({
   sender,
   receiver,
   onSubmit,
+  socket = null,
 }) => {
   const [previewFiles, setPreviewFiles] = useState([]);
   const [showEmoji, setShowEmoji] = useState(false);
@@ -38,6 +39,11 @@ const ChatWindow = ({
   });
   const [loadingUpload, setLoadingUpload] = useState(false);
   const isEmptyChat = messages.length === 0 && previewFiles.length === 0;
+  const lastMessage = messages[messages.length - 1] || null;
+  const isReceiverUnreanded =
+    lastMessage?.receiver?._id === sender?._id &&
+    conversation._id === receiver?._id &&
+    !lastMessage?.isRead;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -54,6 +60,19 @@ const ChatWindow = ({
       receiver,
     }));
   }, [typeMessage, sender, receiver]);
+
+  useEffect(() => {
+    if (socket && isReceiverUnreanded && lastMessage) {
+      socket.emit(
+        "seenMessage",
+        JSON.stringify({
+          conversationId: lastMessage.conversation,
+          sender: sender._id,
+          receiver: receiver._id,
+        })
+      );
+    }
+  }, [socket, lastMessage]);
 
   useEffect(() => {
     if (shouldScroll && messagesContainerRef.current) {

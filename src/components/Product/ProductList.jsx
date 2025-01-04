@@ -163,7 +163,7 @@ const ProductList = ({
         products?.length > 0 &&
         paginate.totalPage > 1 &&
         isPagination && (
-          <div className="mt-8 flex justify-end">
+          <div className="mt-8 flex justify-center items-center">
             <Pagination
               current={paginate.page}
               pageSize={paginate.pageSize}

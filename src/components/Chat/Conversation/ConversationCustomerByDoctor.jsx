@@ -75,6 +75,7 @@ const ConversationCustomerByDoctor = () => {
           className="rounded-lg"
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
+          allowClear
         />
         <Tabs
           activeKey={activeTab}

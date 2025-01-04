@@ -79,10 +79,11 @@ const HeaderAdmin = ({ collapsed, setCollapsed }) => {
         </motion.div>
       </div>
       <div className="flex items-center">
-        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-          <ConversationCustomer />
-        </motion.div>
-
+        {adminInfo?.role === "ADMIN" && (
+          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+            <ConversationCustomer />
+          </motion.div>
+        )}
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
           <Badge color={"#65bebc"} count={5} className="mr-4" offset={[-5, 5]}>
             <Button icon={<BellOutlined />} shape="circle" size="large" />

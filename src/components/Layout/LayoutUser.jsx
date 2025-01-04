@@ -21,8 +21,8 @@ const LayoutUser = ({ children }) => {
     <div className="min-h-screen flex flex-col overflow-x-hidden">
       <HeaderUser />
       <main className="flex-grow px-4 lg:px-16 py-2">{children}</main>
-      <PopupClinic />
-      <PopupPromotional />
+      {/* <PopupClinic /> */}
+      {/* <PopupPromotional /> */}
       <ConversationSupport />
       <FooterUser />
     </div>

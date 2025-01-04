@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Input, Button } from "antd";
 import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
-import TableBrand from "@components/Table/TableBrand";
+import TableBrand from "@/pages/ManageBrand/TableBrand";
 import { getBrandList } from "@redux/brand/brand.thunk";
 import debounce from "lodash/debounce";
 import ModalBrandAction from "@components/Modal/ModalBrandAction";

@@ -3,7 +3,6 @@ import { Table, Avatar, Tag, Tooltip, Pagination, Switch, message, Popconfirm } 
 import { UserOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteUser, getUserList, updateUser } from "@redux/user/user.thunk";
-import { setUsers } from "@redux/user/user.slice";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { deleteFile } from "@helpers/uploadCloudinary";
 

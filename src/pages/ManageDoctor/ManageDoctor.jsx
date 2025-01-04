@@ -4,7 +4,7 @@ import { getAllDoctorByAdmin } from "@redux/doctor/doctor.thunk";
 import { debounce } from "lodash";
 import { Button, Input } from "antd";
 import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
-import TableDoctor from "@components/Table/TableDoctor";
+import TableDoctor from "@/pages/ManageDoctor/TableDoctor";
 import { useNavigate } from "react-router-dom";
 
 const ManageDoctor = () => {

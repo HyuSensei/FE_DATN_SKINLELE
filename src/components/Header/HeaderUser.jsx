@@ -9,7 +9,7 @@ import {
 } from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
 import { LiaShoppingBasketSolid } from "react-icons/lia";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { isArray, isEmpty } from "lodash";
 import { getAllBrand } from "@redux/brand/brand.thunk";
@@ -18,6 +18,7 @@ import { logoutUser } from "@redux/auth/auth.slice";
 import { FaRegUserCircle } from "react-icons/fa";
 import SearchHeader from "@components/Search/SearchHeader";
 import { clearCart } from "@redux/cart/cart.slice";
+import LogoSkinLele from "./LogoSkinLeLe";
 
 const HeaderUser = () => {
   const dispatch = useDispatch();
@@ -187,12 +188,10 @@ const HeaderUser = () => {
     },
   ];
 
-  const handleSearch = (value) => {};
-
   return (
     <>
       <header className="bg-white shadow-md">
-        <div className="bg-gradient-to-r from-yellow-300 via-orange-600 to-purple-800 text-white text-center py-2 text-base font-medium">
+        <div className="bg-gradient-to-r from-rose-300 via-[#a64478] to-[#f1b5b5] text-white text-center py-2 text-base font-medium">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -204,21 +203,9 @@ const HeaderUser = () => {
           </motion.div>
         </div>
         <div className="container mx-auto px-12 py-4 flex items-center justify-between">
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            className="cursor-pointer text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 font-extrabold text-2xl m-0 text-center"
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div
-              onClick={() => navigate("/")}
-              className="logo-text zoom-in-zoom-out"
-            >
-              Skin<span>LeLe</span>
-            </div>
-          </motion.div>
+          <Link to={"/"}>
+            <LogoSkinLele />
+          </Link>
           <div className="hidden md:block flex-grow max-w-xl mx-8">
             <SearchHeader />
           </div>
@@ -307,7 +294,6 @@ const HeaderUser = () => {
               prefix={<SearchOutlined />}
               size="large"
               className="rounded-full"
-              onPressEnter={(e) => handleSearch(e.target.value)}
             />
             <Button
               type="text"

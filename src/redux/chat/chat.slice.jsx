@@ -51,7 +51,6 @@ export const chatSlice = createSlice({
       });
       state.customerList = sortedData;
     },
-
     setDoctorList(state, action) {
       const data = action.payload;
       const sortedData = [...data].sort((a, b) => {

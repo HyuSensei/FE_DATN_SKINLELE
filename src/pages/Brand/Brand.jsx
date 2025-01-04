@@ -1,194 +1,177 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Breadcrumb, Checkbox, Select, Collapse } from "antd";
-import useScreen from "@hook/useScreen";
-import ProductList from "@components/Product/ProductList";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState, useCallback, useMemo, Suspense } from "react";
+import { Breadcrumb, Button, Empty, Skeleton } from "antd";
 import { useParams } from "react-router-dom";
-import { debounce } from "lodash";
-import { getProductByBrand } from "@redux/brand/brand.thunk";
+import debounce from "lodash/debounce";
 
-const { Option } = Select;
+import {
+  useGetFilterOptionsQuery,
+  useGetProductFromBrandQuery,
+} from "@/redux/product/product.query";
+import FilterPanelProduct from "@/components/Filter/FilterPanelProduct";
+import ProductHeader from "../../components/Filter/ProductHeader";
+import FilterDrawer from "../../components/Filter/FilterDrawer";
+import Banner from "./Banner";
+import { IoClose } from "react-icons/io5";
 
-const Brand = () => {
-  const { isMobile } = useScreen();
-  const dispatch = useDispatch();
-  const [filters, setFilters] = useState({
-    priceRange: "",
-    sortOrder: "asc",
-    tags: "",
-    categoriesList: "",
-  });
+const ProductList = React.lazy(() =>
+  import("@/components/Product/ProductList")
+);
+
+const ListSkeleton = () => (
+  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    {[...Array(8)].map((_, idx) => (
+      <Skeleton key={idx} active className="h-[300px]" />
+    ))}
+  </div>
+);
+
+const Category = () => {
+  const { slug } = useParams();
   const [paginate, setPaginate] = useState({
     page: 1,
-    pageSize: 10,
-    totalPage: 0,
-    totalItems: 0,
+    pageSize: 12,
   });
-  const { slug } = useParams();
-  const { products, pagination, isLoading, brand } = useSelector(
-    (state) => state.brand
-  );
-  const { priceRanges, categories, tags } = useSelector(
-    (state) => state.brand.filters
-  );
 
-  const fetchProducts = useCallback(
-    debounce(() => {
-      dispatch(
-        getProductByBrand({
-          slug,
-          ...paginate,
-          ...filters,
-        })
-      );
+  const [filters, setFilters] = useState({
+    priceRange: "",
+    brands: [],
+    rating: "",
+    categories: [],
+    tags: [],
+    sortOrder: "asc",
+  });
+
+  const [openFilter, setOpenFilter] = useState(false);
+
+  const debouncedSetFilters = useCallback(
+    debounce((newFilters) => {
+      setFilters(newFilters);
+      setPaginate((prev) => ({ ...prev, page: 1 }));
     }, 300),
-    [slug, filters, paginate.page, paginate.pageSize]
+    []
   );
 
-  useEffect(() => {
-    if (slug) {
-      fetchProducts();
-    }
-  }, [slug, fetchProducts]);
+  const { data: productData, isLoading: isLoadingProducts } =
+    useGetProductFromBrandQuery(
+      { ...paginate, ...filters, slug },
+      {
+        skip: !slug,
+        refetchOnMountOrArgChange: true,
+      }
+    );
 
-  useEffect(() => {
-    if (pagination) {
-      setPaginate((prev) => ({
-        ...prev,
-        page: pagination.page,
-        pageSize: pagination.pageSize,
-        totalPage: pagination.totalPage,
-        totalItems: pagination.totalItems,
-      }));
-    }
-  }, [pagination]);
+  const { data: filterOptions, isLoading: isLoadingFilterOptions } =
+    useGetFilterOptionsQuery(undefined, {
+      skip: !slug,
+    });
 
-  const handlePriceChange = (value) => {
-    setFilters((prev) => ({ ...prev, priceRange: value }));
-  };
+  const {
+    products = [],
+    brand = "",
+    pagination = {},
+  } = useMemo(() => productData || {}, [productData]);
 
-  const handleTagChange = (checkedValues) => {
-    setFilters((prev) => ({ ...prev, tags: checkedValues }));
-  };
+  const hasActiveFilters = useMemo(
+    () =>
+      Object.entries(filters).some(([key, value]) => {
+        if (key === "sortOrder") return false;
+        if (Array.isArray(value)) return value.length > 0;
+        return value !== "";
+      }),
+    [filters]
+  );
 
-  const handleSortChange = (value) => {
+  const handleClearFilters = useCallback(() => {
+    setFilters({
+      priceRange: "",
+      rating: "",
+      categories: [],
+      tags: [],
+      sortOrder: "asc",
+    });
+    setPaginate((prev) => ({ ...prev, page: 1 }));
+  }, []);
+
+  const handleSortChange = useCallback((value) => {
     setFilters((prev) => ({ ...prev, sortOrder: value }));
-  };
+  }, []);
 
-  const handleCategoriesChange = (value) => {
-    setFilters((prev) => ({ ...prev, categoriesList: value }));
-  };
-
-  const FilterSection = () => (
-    <div className="space-y-6">
-      <div>
-        <h3 className="font-bold mb-2">Giá</h3>
-        <Checkbox.Group
-          value={filters.priceRange}
-          onChange={handlePriceChange}
-          className="flex flex-col space-y-2"
-        >
-          {priceRanges &&
-            priceRanges.map((range, index) => (
-              <Checkbox key={index} value={`${range.min}-${range.max}`}>
-                {`${range.min.toLocaleString(
-                  "vi-VN"
-                )}đ - ${range.max.toLocaleString("vi-VN")}đ`}
-              </Checkbox>
-            ))}
-        </Checkbox.Group>
-      </div>
-      {categories && categories.length > 0 && (
-        <div>
-          <h3 className="font-bold mb-2">Danh mục</h3>
-          <Checkbox.Group
-            value={filters.categoriesList}
-            onChange={handleCategoriesChange}
-            className="flex flex-col space-y-2"
-          >
-            {categories.map((category) => (
-              <Checkbox key={category._id} value={category._id}>
-                {category.name}
-              </Checkbox>
-            ))}
-          </Checkbox.Group>
-        </div>
-      )}
-      <div>
-        <h3 className="font-bold mb-2">Tags</h3>
-        {products && products.length > 0 && (
-          <Checkbox.Group
-            value={filters.tags}
-            onChange={handleTagChange}
-            className="flex flex-col space-y-2"
-          >
-            {tags &&
-              tags.map((tag) => (
-                <Checkbox key={tag} value={tag}>
-                  {tag}
-                </Checkbox>
-              ))}
-          </Checkbox.Group>
-        )}
-      </div>
-    </div>
-  );
+  if (!slug) return <Empty description="Không tìm thấy danh mục" />;
 
   return (
-    <div className="space-y-4">
-      <div className="w-full">
-        <img
-          className="rounded-lg w-full h-auto"
-          src="https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565405/upload-static-skinlele/k68i4lhczt3qsm5cg5v8.webp"
-          alt=""
-        />
-      </div>
-      <div>
+    <div className="space-y-6">
+      <div className="mt-6">
         <Breadcrumb
-          className="pb-4"
           items={[
-            { title: "Trang chủ" },
-            { title: "Thương hiệu" },
+            { title: "Trang chủ", href: "/" },
+            { title: "Thương hiệu", href: "/categories" },
             { title: brand },
           ]}
         />
       </div>
-      <div className="flex flex-col md:flex-row">
-        {isMobile ? (
-          <Collapse
-            className="md:hidden mb-4"
-            items={[
-              {
-                key: "1",
-                label: "Bộ lọc",
-                children: <FilterSection />,
-              },
-            ]}
-          />
-        ) : (
-          <div className="hidden md:block md:w-1/4 pr-4">
-            <FilterSection />
+      <Banner />
+      <div className="flex flex-col lg:flex-row gap-4">
+        {/* Desktop Filter */}
+        <div className="hidden lg:block lg:w-[350px]">
+          <div className="bg-white rounded-lg sticky">
+            {hasActiveFilters && (
+              <Button
+                type="text"
+                onClick={handleClearFilters}
+                className="flex items-center gap-1 text-blue-500 hover:text-blue-600"
+              >
+                <IoClose className="text-lg" />
+                Xóa bộ lọc
+              </Button>
+            )}
+            <FilterPanelProduct
+              isShowBrand={false}
+              filterOptions={filterOptions}
+              isLoading={isLoadingFilterOptions}
+              selectedFilters={filters}
+              setSelectedFilters={debouncedSetFilters}
+              handleClearFilters={handleClearFilters}
+            />
           </div>
-        )}
-        <div className="w-full md:w-3/4">
-          <div className="flex flex-col md:flex-row justify-between items-center mb-4">
-            <h2 className="text-xl font-bold mb-2 md:mb-0">
-              Sản phẩm ({pagination?.totalItems || 0})
-            </h2>
-            <Select
-              defaultValue="asc"
-              style={{ width: "100%", maxWidth: 200 }}
-              onChange={handleSortChange}
-            >
-              <Option value="asc">Giá: Thấp đến cao</Option>
-              <Option value="desc">Giá: Cao đến thấp</Option>
-            </Select>
-          </div>
-          <ProductList {...{ products, isLoading, paginate, setPaginate }} />
         </div>
+
+        <div className="flex-1">
+          <ProductHeader
+            totalItems={pagination?.totalItems}
+            sortOrder={filters.sortOrder}
+            onSortChange={handleSortChange}
+            onOpenFilter={() => setOpenFilter(true)}
+          />
+
+          <Suspense fallback={<ListSkeleton />}>
+            <ProductList
+              products={products}
+              isLoading={isLoadingProducts}
+              paginate={{
+                page: pagination?.page,
+                pageSize: pagination?.pageSize,
+                totalItems: pagination?.totalItems,
+                totalPage: pagination?.totalPage,
+              }}
+              setPaginate={setPaginate}
+            />
+          </Suspense>
+        </div>
+
+        {/* Mobile Filter Drawer */}
+        <FilterDrawer
+          open={openFilter}
+          onClose={() => setOpenFilter(false)}
+          hasActiveFilters={hasActiveFilters}
+          handleClearFilters={handleClearFilters}
+          filterOptions={filterOptions}
+          isLoading={isLoadingFilterOptions}
+          selectedFilters={filters}
+          setSelectedFilters={debouncedSetFilters}
+        />
       </div>
     </div>
   );
 };
 
-export default Brand;
+export default Category;

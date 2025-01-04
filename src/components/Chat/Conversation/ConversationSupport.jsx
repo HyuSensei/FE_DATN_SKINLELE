@@ -140,10 +140,10 @@ const ConversationSupport = () => {
             type="primary"
             shape="circle"
             size="large"
-            className={`w-16 h-16 flex items-center justify-center bg-gradient-to-r from-rose-500 to-rose-400 hover:from-rose-600 hover:to-rose-700 border-none shadow-lg transition-all duration-300 hover:scale-110
+            className={`w-16 h-16 flex items-center justify-center bg-gradient-to-r from-rose-300 to-rose-400 hover:from-rose-600 hover:to-rose-700 border-none shadow-lg transition-all duration-300 hover:scale-110
                 ${isShaking ? "animate-shake" : ""}`}
           >
-            <Badge count={unReadCount} color="#e55c76">
+            <Badge count={unReadCount} color="#c13338" offset={[-9, 4]}>
               <BsFillChatFill className="text-4xl text-white" />
             </Badge>
           </Button>
@@ -209,6 +209,8 @@ const ConversationSupport = () => {
       {/* Chat Box */}
       {isChatSupport && (
         <ChatBox
+          socket={socket}
+          isOpen={isChatSupport}
           conversation={conversation}
           onClose={onCloseChat}
           messages={supportMessages}

@@ -84,6 +84,8 @@ const LayoutBooking = ({ children }) => {
         {children}
         {isChatDoctor && conversation && (
           <ChatBox
+            socket={socket}
+            isOpen={isChatDoctor}
             typeMessage="User_Doctor"
             conversation={conversation}
             messages={doctorMessages}

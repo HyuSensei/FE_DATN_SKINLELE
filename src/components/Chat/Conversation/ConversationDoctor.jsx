@@ -67,13 +67,13 @@ const ConversationDoctor = () => {
     }
   }, [isAuthenticated, socket, conversation]);
 
-  const filteredDoctorList = doctorList.filter(({ customer, conversation }) => {
+  const filteredDoctorList = doctorList.filter(({ doctor, conversation }) => {
     const lastMessage = conversation?.lastMessage;
 
     if (searchValue) {
       const matchesSearch =
-        customer.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-        customer.email.toLowerCase().includes(searchValue.toLowerCase());
+        doctor.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+        doctor.email.toLowerCase().includes(searchValue.toLowerCase());
       if (!matchesSearch) return false;
     }
 
@@ -100,7 +100,6 @@ const ConversationDoctor = () => {
           onChange={(e) => setSearchValue(e.target.value)}
         />
         <Tabs
-          activeTab
           activeKey={activeTab}
           onChange={setActiveTab}
           items={[

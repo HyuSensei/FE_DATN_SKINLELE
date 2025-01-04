@@ -17,6 +17,7 @@ import {
 } from "@/helpers/uploadCloudinary";
 
 const ChatBox = ({
+  isOpen = false,
   conversation,
   onClose,
   messages = [],
@@ -27,11 +28,11 @@ const ChatBox = ({
   isAuth = false,
   isClinic = false,
   loading = false,
+  socket = null,
 }) => {
   const [previewFiles, setPreviewFiles] = useState([]);
   const [showEmoji, setShowEmoji] = useState(false);
   const [openMedia, setOpenMedia] = useState(false);
-  const messagesEndRef = useRef(null);
   const { userOnlines } = useSelector((state) => state.socket);
   const [isLoading, setIsLoading] = useState(true);
   const [inputMessage, setInputMessage] = useState({
@@ -44,6 +45,10 @@ const ChatBox = ({
   const [loadingUpload, setLoadingUpload] = useState(false);
   const messagesContainerRef = useRef(null);
   const [shouldScroll, setShouldScroll] = useState(true);
+  const lastMessage = messages[messages.length - 1] || null;
+  const isReceiverUnreanded =
+    lastMessage?.receiver?._id === sender?._id && !lastMessage?.isRead;
+
   const isOnline = () => {
     return userOnlines?.some((item) => item === conversation._id);
   };
@@ -66,6 +71,19 @@ const ChatBox = ({
   }, [typeMessage, sender, receiver]);
 
   useEffect(() => {
+    if (isOpen && socket && isReceiverUnreanded && lastMessage) {
+      socket.emit(
+        "seenMessage",
+        JSON.stringify({
+          conversationId: lastMessage.conversation,
+          sender: sender._id,
+          receiver: receiver._id,
+        })
+      );
+    }
+  }, [isOpen, socket, lastMessage]);
+
+  useEffect(() => {
     if (shouldScroll && messagesContainerRef.current) {
       const scrollContainer = messagesContainerRef.current;
       scrollContainer.scrollTop = scrollContainer.scrollHeight;
@@ -81,11 +99,7 @@ const ChatBox = ({
         }
       });
     }
-  }, [messages, isLoading]);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  }, [messages, isLoading, previewFiles]);
 
   const handleScroll = (e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
@@ -98,12 +112,6 @@ const ChatBox = ({
       ...prev,
       content: prev.content + emojiObject.emoji,
     }));
-  };
-
-  const scrollToBottom = () => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
   };
 
   const handleUpload = (info, type) => {
@@ -130,9 +138,6 @@ const ChatBox = ({
           },
         ],
       });
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
     }
   };
 

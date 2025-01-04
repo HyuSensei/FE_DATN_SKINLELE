@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Input, Select, Card, Button, Tooltip } from "antd";
 import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
 import { debounce } from "lodash";
-import TableProduct from "@components/Table/TableProduct";
+import TableProduct from "@/pages/ManageProduct/TableProduct";
 import { tags } from "@const/tags";
 import { useNavigate } from "react-router-dom";
 import { getBrandByCreatePro } from "@redux/brand/brand.thunk";
@@ -67,8 +67,21 @@ const ManageProduct = () => {
   };
 
   return (
-    <div className="mt-4">
-      <Card className="mb-4 bg-white rounded-md shadow-lg">
+    <div className="mt-4 space-y-4">
+      <div className="flex justify-end items-center">
+        <Tooltip title="Thêm sản phẩm mới">
+          <Button
+            size="middle"
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => navigate("/admin/products/create")}
+            className="bg-indigo-600 hover:bg-indigo-700"
+          >
+            Thêm sản phẩm
+          </Button>
+        </Tooltip>
+      </div>
+      <Card>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           <Input
             placeholder="Tìm kiếm sản phẩm..."
@@ -119,34 +132,14 @@ const ManageProduct = () => {
           </Select>
         </div>
       </Card>
-
-      <Card
-        className="shadow-md"
-        title={
-          <div className="flex justify-end items-center">
-            <Tooltip title="Thêm sản phẩm mới">
-              <Button
-                size="large"
-                type="primary"
-                icon={<PlusOutlined />}
-                onClick={() => navigate("/admin/products/create")}
-                className="bg-indigo-600 hover:bg-indigo-700"
-              >
-                Thêm sản phẩm
-              </Button>
-            </Tooltip>
-          </div>
-        }
-      >
-        <TableProduct
-          products={products}
-          page={paginate.page}
-          pageSize={paginate.pageSize}
-          totalItems={pagination?.totalItems || 0}
-          setPaginate={handlePageChange}
-          isLoading={isLoading}
-        />
-      </Card>
+      <TableProduct
+        products={products}
+        page={paginate.page}
+        pageSize={paginate.pageSize}
+        totalItems={pagination?.totalItems || 0}
+        setPaginate={handlePageChange}
+        isLoading={isLoading}
+      />
     </div>
   );
 };

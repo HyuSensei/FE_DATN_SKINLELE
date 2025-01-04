@@ -36,8 +36,8 @@ const DoctorItem = ({ doctor, conversation }) => {
           "seenMessage",
           JSON.stringify({
             conversationId,
-            sender,
-            receiver,
+            sender: sender._id,
+            receiver: receiver._id,
           })
         );
     }

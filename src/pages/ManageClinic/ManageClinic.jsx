@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { getAllClinicAdmin } from "@redux/clinic/clinic.thunk";
 import { Button, Input } from "antd";
 import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
-import TableClinic from "@components/Table/TableClinic";
+import TableClinic from "@/pages/ManageClinic/TableClinic";
 import { useNavigate } from "react-router-dom";
 
 const ManageClinic = () => {

@@ -101,9 +101,9 @@ const ConversationCustomer = () => {
           prefix={<SearchOutlined />}
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
+          allowClear
         />
         <Tabs
-          activeTab
           activeKey={activeTab}
           onChange={setActiveTab}
           items={[

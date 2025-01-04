@@ -5,7 +5,7 @@ import React, { useMemo, useState } from "react";
 import { GrEdit } from "react-icons/gr";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { useDispatch } from "react-redux";
-import ModelEditDoctor from "../Modal/ModalEditDoctor";
+import ModelEditDoctor from "../../components/Modal/ModalEditDoctor";
 
 const TableDoctor = ({
   doctors = [],

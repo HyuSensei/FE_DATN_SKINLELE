@@ -22,8 +22,42 @@ export const statisticalApi = createApi({
       }),
       transformResponse: (response) => response.data,
     }),
+    getStatsAdminOverview: builder.query({
+      query: ({ year = "", month = "" }) => ({
+        url: `/admin/statistical/overview?year=${year}&month=${month}`,
+        method: "GET",
+      }),
+      transformResponse: (response) => response.data,
+    }),
+    getStatsAdminRevenueOrder: builder.query({
+      query: ({ year = "", month = "", type = "" }) => ({
+        url: `/admin/statistical/revenue-order?year=${year}&month=${month}&type=${type}`,
+        method: "GET",
+      }),
+      transformResponse: (response) => response.data,
+    }),
+    getStatsAdminOrderDetail: builder.query({
+      query: ({ year = "", month = "", type = "" }) => ({
+        url: `/admin/statistical/order-detail?year=${year}&month=${month}&type=${type}`,
+        method: "GET",
+      }),
+      transformResponse: (response) => response.data,
+    }),
+    getStatsAdminReview: builder.query({
+      query: ({ year = "", month = "", type = "" }) => ({
+        url: `/admin/statistical/review-detail?year=${year}&month=${month}&type=${type}`,
+        method: "GET",
+      }),
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
-export const { useGetStatsClinicOverviewQuery, useGetStatsClinicDetailQuery } =
-  statisticalApi;
+export const {
+  useGetStatsClinicOverviewQuery,
+  useGetStatsClinicDetailQuery,
+  useGetStatsAdminOverviewQuery,
+  useGetStatsAdminRevenueOrderQuery,
+  useGetStatsAdminOrderDetailQuery,
+  useGetStatsAdminReviewQuery,
+} = statisticalApi;

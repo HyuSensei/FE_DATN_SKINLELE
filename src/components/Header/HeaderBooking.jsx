@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from "react-redux";
 import ModalAuth from "../Modal/ModalAuth";
 import { logoutUser, setOpenModelAuth } from "@/redux/auth/auth.slice";
 import SearchHeaderBooking from "../Search/SearchHeaderBooking";
-import { LiaFacebookMessenger } from "react-icons/lia";
 import ConversationDoctor from "../Chat/Conversation/ConversationDoctor";
 
 const { Header: AntHeader } = Layout;
@@ -99,14 +98,7 @@ const HeaderBooking = () => {
                   <SearchHeaderBooking />
                 </div>
               )}
-              {!isDoctorOwner && (
-                // <Badge count={1} offset={[-9, 4]} color="cyan">
-                //   <div className="h-10 w-10 bg-slate-50 hover:bg-slate-100 rounded-full flex items-center justify-center cursor-pointer">
-                //     <LiaFacebookMessenger className="text-slate-500 text-2xl" />
-                //   </div>
-                // </Badge>
-                <ConversationDoctor />
-              )}
+              {!isDoctorOwner && <ConversationDoctor />}
               <Badge count={1} offset={[-9, 4]} color="cyan">
                 <div className="h-10 w-10 bg-slate-50 hover:bg-slate-100 rounded-full flex items-center justify-center cursor-pointer">
                   <IoNotificationsOutline className="text-slate-500 text-2xl" />

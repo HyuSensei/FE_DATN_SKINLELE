@@ -3,7 +3,7 @@ import { Layout } from "antd";
 import { motion } from "framer-motion";
 import useScreen from "@/hook/useScreen";
 import HeaderAdmin from "@components/Header/HeaderAdmin";
-import SiderAdmin from "@components/Sider/SiderAdmin";
+import SiderAdmin from "@/components/Layout/SiderAdmin";
 import { useDispatch, useSelector } from "react-redux";
 import ChatBox from "../Chat/ChatBox";
 import { ChatActions } from "@/redux/chat/chat.slice";
@@ -83,6 +83,8 @@ const LayoutAdmin = ({ children, title, className = "bg-white" }) => {
           </motion.div>
           {isChatCustomer && conversation && (
             <ChatBox
+              socket={socket}
+              isOpen={isChatCustomer}
               typeMessage="User_Admin"
               conversation={conversation}
               onClose={onCloseChat}

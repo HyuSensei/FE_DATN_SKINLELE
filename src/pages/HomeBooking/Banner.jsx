@@ -1,10 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import SearchHeaderBooking from "@/components/Search/SearchHeaderBooking";
+import { Link } from "react-router-dom";
 const Banner = () => {
-  const text = "Bắt đầu hành trình chăm sóc làn da của bạn";
-  const characters = text.split("");
-
   return (
     <div className="relative py-20 overflow-hidden h-[550px] lg:h-[600px]">
       {/* Background with animation */}
@@ -104,31 +102,35 @@ const Banner = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              <motion.button
-                className="px-8 py-4 bg-white text-[#4f637e] rounded-full font-semibold shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-all group"
-                whileHover={{ scale: 1.05, backgroundColor: "#f8fafc" }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <span className="group-hover:mr-2 transition-all">
-                  ĐẶT LỊCH KHÁM NGAY
-                </span>
-                <span className="opacity-0 group-hover:opacity-100 transition-all">
-                  →
-                </span>
-              </motion.button>
+              <Link to={"/doctors"}>
+                <motion.button
+                  className="px-8 py-4 bg-white text-[#4f637e] rounded-full font-semibold shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-all group"
+                  whileHover={{ scale: 1.05, backgroundColor: "#f8fafc" }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <span className="group-hover:mr-2 transition-all">
+                    ĐẶT LỊCH KHÁM NGAY
+                  </span>
+                  <span className="opacity-0 group-hover:opacity-100 transition-all">
+                    →
+                  </span>
+                </motion.button>
+              </Link>
 
-              <motion.button
-                className="px-8 py-4 bg-transparent border-2 border-white text-white rounded-full font-semibold hover:bg-white/10 transition-all group"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <span className="group-hover:mr-2 transition-all">
-                  TƯ VẤN MIỄN PHÍ
-                </span>
-                <span className="opacity-0 group-hover:opacity-100 transition-all">
-                  →
-                </span>
-              </motion.button>
+              <Link to={"/online-consultation"}>
+                <motion.button
+                  className="px-8 py-4 bg-transparent border-2 border-white text-white rounded-full font-semibold hover:bg-white/10 transition-all group"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <span className="group-hover:mr-2 transition-all">
+                    TƯ VẤN MIỄN PHÍ
+                  </span>
+                  <span className="opacity-0 group-hover:opacity-100 transition-all">
+                    →
+                  </span>
+                </motion.button>
+              </Link>
             </motion.div>
           </motion.div>
         </div>

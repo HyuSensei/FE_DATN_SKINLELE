@@ -5,18 +5,23 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const SLIDE_IMAGES = [
   "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565403/upload-static-skinlele/iezgb3rrzscr5jslr0fv.webp",
-  "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565403/upload-static-skinlele/zuh6anhr71thwquivdge.webp",
-  "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565403/upload-static-skinlele/wamubzib8tca6bflqpnf.webp",
-  "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565403/upload-static-skinlele/hjycrlvb1d1gqmjhwzcs.webp",
-  "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565403/upload-static-skinlele/zt6wddkbv3nbiiqeg03a.webp",
-  "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565404/upload-static-skinlele/x3vcxgigd8he1fgr0nsm.webp",
-  "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565404/upload-static-skinlele/xbfnmdonmjlpw4p6e3xa.webp",
+  // "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565403/upload-static-skinlele/zuh6anhr71thwquivdge.webp",
+  // "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565403/upload-static-skinlele/wamubzib8tca6bflqpnf.webp",
+  // "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565403/upload-static-skinlele/hjycrlvb1d1gqmjhwzcs.webp",
+  // "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565403/upload-static-skinlele/zt6wddkbv3nbiiqeg03a.webp",
+  // "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565404/upload-static-skinlele/x3vcxgigd8he1fgr0nsm.webp",
+  // "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565404/upload-static-skinlele/xbfnmdonmjlpw4p6e3xa.webp",
+  "https://image.hsv-tech.io/1920x0/bbx/common/6cb4ca54-942a-4d80-8cd9-00c9c6b1805a.webp",
+  "https://image.hsv-tech.io/1920x0/bbx/common/221ff84d-53ce-474f-b80f-34c0e4940115.webp",
+  "https://image.hsv-tech.io/1920x0/bbx/common/f55a6bbb-33a5-42f2-b30a-3efd238699ab.webp",
+  "https://image.hsv-tech.io/1920x0/bbx/common/09440d9e-7afe-4bce-b2e5-310fdc8ca214.webp",
 ];
 
 const SIDE_IMAGES = [
   // https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565404/upload-static-skinlele/lvb1dpx05h0ovxza5uok.webp,
-  "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565404/upload-static-skinlele/oi2yqk6dt0lhbrbhjszt.webp",
-  "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565404/upload-static-skinlele/f2mqihxsuvctvs530egz.webp",
+  // "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565404/upload-static-skinlele/f2mqihxsuvctvs530egz.webp",
+  "https://image.hsv-tech.io/1920x0/bbx/common/7ed68cd9-9688-4c7c-bde9-8c20db418e62.webp",
+  "https://image.hsv-tech.io/1920x0/bbx/common/d55f0235-1798-4407-8de3-f20229773605.webp",
 ];
 
 const arrowStyles = {

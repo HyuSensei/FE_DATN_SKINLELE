@@ -180,5 +180,14 @@ body {
   display: none;
 }
 
+@keyframes flowingLine {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0%); }
+}
+
+.animate-flowingLine {
+  animation: flowingLine 2s linear infinite;
+}
+
 
 

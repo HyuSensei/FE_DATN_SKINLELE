@@ -28,6 +28,97 @@ export const productApi = createApi({
         method: "GET",
       }),
     }),
+    getFilterOptions: builder.query({
+      query: () => ({
+        url: "/products/filter-options",
+        method: "GET",
+      }),
+      transformResponse: (response) => response.data,
+    }),
+    getProductFromCategory: builder.query({
+      query: ({
+        page = 1,
+        pageSize = 12,
+        priceRange = "",
+        brands = [],
+        rating = "",
+        categories = [],
+        tags = [],
+        sortOrder = "",
+        slug,
+      }) => {
+        const queryString = new URLSearchParams({
+          priceRange,
+          brands,
+          rating,
+          categories,
+          tags,
+          sortOrder,
+          page,
+          pageSize,
+        }).toString();
+        return {
+          url: `/products/categories/${slug}?${queryString}`,
+          method: "GET",
+        };
+      },
+      transformResponse: (response) => response.data,
+    }),
+    getProductFromBrand: builder.query({
+      query: ({
+        page = 1,
+        pageSize = 12,
+        priceRange = "",
+        rating = "",
+        categories = [],
+        tags = [],
+        sortOrder = "",
+        slug,
+      }) => {
+        const queryString = new URLSearchParams({
+          priceRange,
+          rating,
+          categories,
+          tags,
+          sortOrder,
+          page,
+          pageSize,
+        }).toString();
+        return {
+          url: `/products/brands/${slug}?${queryString}`,
+          method: "GET",
+        };
+      },
+      transformResponse: (response) => response.data,
+    }),
+    getProductPromtion: builder.query({
+      query: ({
+        page = 1,
+        pageSize = 12,
+        priceRange = "",
+        brands = [],
+        rating = "",
+        categories = [],
+        tags = [],
+        sortOrder = "",
+      }) => {
+        const queryString = new URLSearchParams({
+          priceRange,
+          rating,
+          categories,
+          tags,
+          sortOrder,
+          page,
+          brands,
+          pageSize,
+        }).toString();
+        return {
+          url: `/products/promotions?${queryString}`,
+          method: "GET",
+        };
+      },
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
@@ -35,4 +126,8 @@ export const {
   useGetProductDetailQuery,
   useGetProductHomeQuery,
   useGetProductAddPromotionQuery,
+  useGetFilterOptionsQuery,
+  useGetProductFromCategoryQuery,
+  useGetProductFromBrandQuery,
+  useGetProductPromtionQuery,
 } = productApi;

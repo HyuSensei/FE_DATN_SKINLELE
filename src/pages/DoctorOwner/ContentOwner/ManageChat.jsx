@@ -15,7 +15,18 @@ const ManageChat = () => {
   );
 
   const handleGetMessages = (messages) => {
-    dispatch(ChatActions.setDoctorMessages(messages));
+    if (
+      messages.length > 0 &&
+      conversation &&
+      ((messages[0].sender._id === conversation._id &&
+        messages[0].receiver._id === doctorInfo._id) ||
+        (messages[0].sender._id === doctorInfo._id &&
+          messages[0].receiver._id === conversation._id))
+    ) {
+      dispatch(ChatActions.setDoctorMessages(messages));
+    } else {
+      socket.emit("getAllCustomer", doctorInfo?._id);
+    }
   };
 
   useEffect(() => {
@@ -31,7 +42,7 @@ const ManageChat = () => {
 
   const handleSendMessage = (message) => {
     if (!isAuth) return;
-    
+
     if (socket && message) {
       socket.emit("createMessage", JSON.stringify(message));
     }
@@ -50,6 +61,7 @@ const ManageChat = () => {
             </div>
           ) : (
             <ChatWindow
+              socket={socket}
               typeMessage={"User_Doctor"}
               conversation={conversation}
               messages={doctorMessages}

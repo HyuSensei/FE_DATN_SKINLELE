@@ -203,6 +203,7 @@ const ModalSaveProductPromotion = ({
                   className="w-full sm:w-1/2"
                 >
                   <InputNumber
+                    min={1}
                     placeholder="Giảm giá tối đa"
                     className="w-full"
                   />

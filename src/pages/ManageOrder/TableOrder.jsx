@@ -1,12 +1,24 @@
 import React, { useMemo } from "react";
-import { Pagination, Table, Tooltip, Tag, Select, Popconfirm, message } from "antd";
+import {
+  Pagination,
+  Table,
+  Tooltip,
+  Tag,
+  Select,
+  Popconfirm,
+  message,
+} from "antd";
 import { FaEye } from "react-icons/fa";
 import { formatDateOrder } from "@helpers/formatDate";
 import { formatPrice } from "@helpers/formatPrice";
 import { orderStatus } from "@const/status";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { useDispatch } from "react-redux";
-import { deleteOrder, getOrderListAdmin, updateOrder } from "@redux/order/order.thunk";
+import {
+  deleteOrder,
+  getOrderListAdmin,
+  updateOrder,
+} from "@redux/order/order.thunk";
 import { useNavigate } from "react-router-dom";
 
 const TableOrder = ({
@@ -17,8 +29,8 @@ const TableOrder = ({
   totalItems,
   setPaginate,
 }) => {
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const columns = useMemo(
     () => [
       {
@@ -64,8 +76,8 @@ const TableOrder = ({
               paymentMethod === "COD"
                 ? "#f50"
                 : paymentMethod === "STRIPE"
-                  ? "#ad53ef"
-                  : "#87d068"
+                ? "#ad53ef"
+                : "#87d068"
             }
           >
             {paymentMethod}
@@ -80,17 +92,17 @@ const TableOrder = ({
         render: (status, record) => (
           <Select
             className="w-full"
-            disabled={status === 'cancelled' || status === 'delivered' ? true : false}
+            disabled={
+              status === "cancelled" || status === "delivered" ? true : false
+            }
             value={status}
-            onChange={(value) =>
-              handleUpdateStatus(record._id, value)
-            }
+            onChange={(value) => handleUpdateStatus(record._id, value)}
           >
-            {
-              orderStatus.map((item, index) => (
-                <Select.Option key={index} value={item.value}>{item.name}</Select.Option>
-              ))
-            }
+            {orderStatus.map((item, index) => (
+              <Select.Option key={index} value={item.value}>
+                {item.name}
+              </Select.Option>
+            ))}
           </Select>
         ),
       },
@@ -133,7 +145,9 @@ const TableOrder = ({
               className="max-w-40"
               placement="topLeft"
               title={"Xác nhận xóa thông tin đơn hàng"}
-              description={<div className="font-medium uppercase">OD{record._id}</div>}
+              description={
+                <div className="font-medium uppercase">OD{record._id}</div>
+              }
               onConfirm={() => removeOrder(record._id)}
               okText="Xóa"
               cancelText="Hủy"
@@ -143,9 +157,7 @@ const TableOrder = ({
               destroyTooltipOnHide={true}
             >
               <Tooltip title="Xóa">
-                <button
-                  className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors"
-                >
+                <button className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
                   <MdOutlineDeleteOutline />
                 </button>
               </Tooltip>
@@ -158,28 +170,32 @@ const TableOrder = ({
   );
 
   const handleUpdateStatus = async (id, status) => {
-    const res = await dispatch(updateOrder({ id, data: { status } })).unwrap()
+    const res = await dispatch(updateOrder({ id, data: { status } })).unwrap();
     if (res.success) {
-      message.success(res.message)
-      dispatch(getOrderListAdmin({
-        page,
-        pageSize
-      }))
-      return
+      message.success(res.message);
+      dispatch(
+        getOrderListAdmin({
+          page,
+          pageSize,
+        })
+      );
+      return;
     }
   };
 
   const removeOrder = async (id) => {
-    const res = await dispatch(deleteOrder(id)).unwrap()
+    const res = await dispatch(deleteOrder(id)).unwrap();
     if (res.success) {
-      message.success(res.message)
-      dispatch(getOrderListAdmin({
-        page,
-        pageSize
-      }))
-      return
+      message.success(res.message);
+      dispatch(
+        getOrderListAdmin({
+          page,
+          pageSize,
+        })
+      );
+      return;
     }
-  }
+  };
 
   return (
     <>
