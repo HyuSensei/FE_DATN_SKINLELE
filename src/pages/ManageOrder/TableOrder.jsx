@@ -14,11 +14,7 @@ import { formatPrice } from "@helpers/formatPrice";
 import { orderStatus } from "@const/status";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { useDispatch } from "react-redux";
-import {
-  deleteOrder,
-  getOrderListAdmin,
-  updateOrder,
-} from "@redux/order/order.thunk";
+import { deleteOrder, updateOrder } from "@redux/order/order.thunk";
 import { useNavigate } from "react-router-dom";
 
 const TableOrder = ({
@@ -28,6 +24,7 @@ const TableOrder = ({
   pageSize,
   totalItems,
   setPaginate,
+  refetch,
 }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -172,28 +169,16 @@ const TableOrder = ({
   const handleUpdateStatus = async (id, status) => {
     const res = await dispatch(updateOrder({ id, data: { status } })).unwrap();
     if (res.success) {
+      refetch();
       message.success(res.message);
-      dispatch(
-        getOrderListAdmin({
-          page,
-          pageSize,
-        })
-      );
-      return;
     }
   };
 
   const removeOrder = async (id) => {
     const res = await dispatch(deleteOrder(id)).unwrap();
     if (res.success) {
+      refetch();
       message.success(res.message);
-      dispatch(
-        getOrderListAdmin({
-          page,
-          pageSize,
-        })
-      );
-      return;
     }
   };
 
@@ -205,6 +190,7 @@ const TableOrder = ({
         rowKey={(record) => record._id}
         pagination={false}
         loading={isLoading}
+        scroll={{ x: true }}
       />
       {orders?.length > 0 && (
         <div className="mt-4 flex justify-end">
@@ -215,11 +201,6 @@ const TableOrder = ({
             onChange={(newPage) =>
               setPaginate((prev) => ({ ...prev, page: newPage }))
             }
-            onShowSizeChange={(_, size) =>
-              setPaginate((prev) => ({ ...prev, pageSize: size }))
-            }
-            showSizeChanger
-            showQuickJumper
           />
         </div>
       )}

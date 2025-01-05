@@ -1,24 +1,19 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useState, useCallback } from "react";
+import { useDispatch } from "react-redux";
 import { Input, Select, Row, Col, Card, DatePicker } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { debounce } from "lodash";
 import TableOrder from "@/pages/ManageOrder/TableOrder";
-import { getOrderListAdmin } from "@redux/order/order.thunk";
 import { orderStatus } from "@const/status";
 import locale from "antd/es/date-picker/locale/vi_VN";
+import { useGetAllOrderAdminQuery } from "@/redux/order/order.query";
 
 const { RangePicker } = DatePicker;
 
 const ManageOrder = () => {
-  const dispatch = useDispatch();
-  const { orders, isLoading, pagination } = useSelector((state) => state.order);
-
   const [paginate, setPaginate] = useState({
     page: 1,
     pageSize: 10,
-    totalPage: 0,
-    totalItems: 0,
   });
 
   const [filter, setFilter] = useState({
@@ -29,30 +24,18 @@ const ManageOrder = () => {
     toDate: "",
   });
 
-  useEffect(() => {
-    dispatch(getOrderListAdmin({ ...paginate, ...filter }));
-  }, [paginate.page, paginate.pageSize, filter]);
-
-  useEffect(() => {
-    if (pagination) {
-      setPaginate((prev) => ({
-        ...prev,
-        page: pagination?.page,
-        pageSize: pagination?.pageSize,
-        totalPage: pagination?.totalPage,
-        totalItems: pagination?.totalItems,
-      }));
-    }
-  }, [pagination]);
+  const { data, isLoading, refetch } = useGetAllOrderAdminQuery({
+    ...paginate,
+    ...filter,
+  });
+  const { data: orders = [], pagination = {} } = data || {};
 
   const debouncedSearch = useCallback(
     debounce((key, value) => {
-      setFilter(prev => (
-        {
-          ...prev,
-          [key]: value
-        }
-      ));
+      setFilter((prev) => ({
+        ...prev,
+        [key]: value,
+      }));
     }, 1000),
     []
   );
@@ -130,13 +113,13 @@ const ManageOrder = () => {
       <Card className="shadow-md">
         <TableOrder
           orders={orders}
-          page={paginate.page}
-          pageSize={paginate.pageSize}
-          totalPage={paginate.totalPage}
-          totalItems={paginate.totalItems}
+          page={pagination?.page}
+          pageSize={pagination?.pageSize}
+          totalPage={pagination?.totalPage}
+          totalItems={pagination?.totalItems}
           setPaginate={setPaginate}
           isLoading={isLoading}
-          setFilter={setFilter}
+          refetch={refetch}
         />
       </Card>
     </div>

@@ -119,6 +119,31 @@ export const productApi = createApi({
       },
       transformResponse: (response) => response.data,
     }),
+    getAllProductByAdmin: builder.query({
+      query: ({
+        page = 1,
+        pageSize = 10,
+        name = "",
+        category = "",
+        brand = "",
+        tag = "",
+        sort = "asc",
+      }) => {
+        const queryString = new URLSearchParams({
+          page,
+          pageSize,
+          name,
+          category,
+          brand,
+          tag,
+          sort,
+        }).toString();
+        return {
+          url: `/admin/products?${queryString}`,
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
@@ -130,4 +155,5 @@ export const {
   useGetProductFromCategoryQuery,
   useGetProductFromBrandQuery,
   useGetProductPromtionQuery,
+  useGetAllProductByAdminQuery,
 } = productApi;

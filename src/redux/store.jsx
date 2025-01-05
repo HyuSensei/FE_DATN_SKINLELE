@@ -5,6 +5,10 @@ import { doctorApi } from "./doctor/doctor.query";
 import { bookingApi } from "./booking/booking.query";
 import { statisticalApi } from "./statistical/statistical.query";
 import { productApi } from "./product/product.query";
+import { categoryApi } from "./category/category.query";
+import { brandApi } from "./brand/brand.query";
+import { reviewApi } from "./review/review.query";
+import { orderApi } from "./order/order.query";
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +18,10 @@ export const store = configureStore({
     [bookingApi.reducerPath]: bookingApi.reducer,
     [statisticalApi.reducerPath]: statisticalApi.reducer,
     [productApi.reducerPath]: productApi.reducer,
+    [categoryApi.reducerPath]: categoryApi.reducer,
+    [brandApi.reducerPath]: brandApi.reducer,
+    [reviewApi.reducerPath]: reviewApi.reducer,
+    [orderApi.reducerPath]: orderApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -23,6 +31,10 @@ export const store = configureStore({
       clinicApi.middleware,
       bookingApi.middleware,
       statisticalApi.middleware,
-      productApi.middleware
+      productApi.middleware,
+      categoryApi.middleware,
+      brandApi.middleware,
+      reviewApi.middleware,
+      orderApi.middleware
     ),
 });

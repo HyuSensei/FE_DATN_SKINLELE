@@ -2,9 +2,9 @@ import React, { useMemo, useState } from "react";
 import { Table, Tooltip, Pagination, Popconfirm, message } from "antd";
 import { GrEdit } from "react-icons/gr";
 import { MdOutlineDeleteOutline } from "react-icons/md";
-import ModalBrandAction from "@components/Modal/ModalBrandAction";
+import ModalBrandAction from "@/pages/ManageBrand/ModalBrandAction";
 import { useDispatch } from "react-redux";
-import { deleteBrand, getBrandList } from "@redux/brand/brand.thunk";
+import { deleteBrand } from "@redux/brand/brand.thunk";
 
 const TableBrand = ({
   brands = [],
@@ -13,22 +13,20 @@ const TableBrand = ({
   pageSize,
   totalItems,
   setPaginate,
+  refetch,
 }) => {
   const dispatch = useDispatch();
-  const [brand, setBrand] = useState({})
-  const [open, setOpen] = useState(false)
+  const [brand, setBrand] = useState({});
+  const [open, setOpen] = useState(false);
 
   const removeBrand = async (id) => {
-    const res = await dispatch(deleteBrand(id)).unwrap()
+    const res = await dispatch(deleteBrand(id)).unwrap();
     if (res.success) {
-      dispatch(getBrandList({
-        page,
-        pageSize
-      }))
-      message.success(res.message)
-      return
+      refetch();
+      message.success(res.message);
+      return;
     }
-  }
+  };
 
   const columns = useMemo(
     () => [
@@ -62,10 +60,13 @@ const TableBrand = ({
         render: (_, record) => (
           <div className="flex gap-2 items-center text-[#00246a]">
             <Tooltip title="Sửa">
-              <button onClick={() => {
-                setBrand(record)
-                setOpen(true)
-              }} className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
+              <button
+                onClick={() => {
+                  setBrand(record);
+                  setOpen(true);
+                }}
+                className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors"
+              >
                 <GrEdit />
               </button>
             </Tooltip>
@@ -83,9 +84,7 @@ const TableBrand = ({
               destroyTooltipOnHide={true}
             >
               <Tooltip title="Xóa">
-                <button
-                  className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors"
-                >
+                <button className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
                   <MdOutlineDeleteOutline />
                 </button>
               </Tooltip>
@@ -99,11 +98,14 @@ const TableBrand = ({
 
   return (
     <>
-      <ModalBrandAction {...{
-        open,
-        setOpen,
-        brand
-      }} />
+      <ModalBrandAction
+        {...{
+          refetch,
+          open,
+          setOpen,
+          brand,
+        }}
+      />
       <Table
         columns={columns}
         dataSource={brands}
@@ -125,8 +127,6 @@ const TableBrand = ({
                 pageSize: newPageSize,
               }))
             }
-            showSizeChanger
-            pageSizeOptions={["10", "20", "50", "100"]}
           />
         </div>
       )}

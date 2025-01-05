@@ -1,44 +1,28 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState, useCallback } from "react";
+import { useDispatch } from "react-redux";
 import { Input, Button } from "antd";
 import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
 import TableCategory from "@/pages/ManageCategory/TableCategory";
-import { getCategoryList } from "@redux/category/category.thunk";
 import debounce from "lodash/debounce";
-import ModalCategoryAction from "@components/Modal/ModalCategoryAction";
+import ModalCategoryAction from "@/pages/ManageCategory/ModalCategoryAction";
+import { useGetCategoryListQuery } from "@/redux/category/category.query";
 
 const ManageCategory = () => {
-  const dispatch = useDispatch();
-  const { categories, pagination, isLoading } = useSelector(
-    (state) => state.category
-  );
-
   const [paginate, setPaginate] = useState({
     page: 1,
     pageSize: 10,
-    totalPage: 0,
-    totalItems: 0,
   });
   const [filter, setFilter] = useState({
     name: "",
   });
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    dispatch(getCategoryList({ ...paginate, ...filter }));
-  }, [dispatch, paginate.page, paginate.pageSize, filter]);
+  const { data, isLoading, refetch } = useGetCategoryListQuery({
+    ...paginate,
+    ...filter,
+  });
 
-  useEffect(() => {
-    if (pagination) {
-      setPaginate((prev) => ({
-        ...prev,
-        page: pagination.page,
-        pageSize: pagination.pageSize,
-        totalPage: pagination.totalPage,
-        totalItems: pagination.totalItems,
-      }));
-    }
-  }, [pagination]);
+  const { data: categories = [], pagination = {} } = data || {};
 
   const debouncedFilter = useCallback(
     debounce((value) => {
@@ -60,22 +44,22 @@ const ManageCategory = () => {
     <div className="mt-4">
       <ModalCategoryAction
         {...{
-          page: paginate.page,
-          pageSize: paginate.pageSize,
+          page: pagination?.page,
+          pageSize: pagination?.pageSize,
           open,
           setOpen,
         }}
       />
       <div className="mb-4 bg-white p-4 rounded-md shadow-lg flex gap-4 items-center">
         <Input
-          size="large"
+          size="middle"
           placeholder="Tìm kiếm danh mục..."
           prefix={<SearchOutlined />}
           onChange={handleFilterChange}
           allowClear
         />
         <Button
-          size="large"
+          size="middle"
           onClick={() => setOpen(true)}
           type="primary"
           icon={<PlusOutlined />}
@@ -88,10 +72,11 @@ const ManageCategory = () => {
       <TableCategory
         categories={categories}
         isLoading={isLoading}
-        page={paginate.page}
-        pageSize={paginate.pageSize}
+        page={pagination?.page}
+        pageSize={pagination?.pageSize}
         totalItems={pagination?.totalItems || 0}
         setPaginate={handlePageChange}
+        refetch={refetch}
       />
     </div>
   );

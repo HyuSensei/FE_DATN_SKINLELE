@@ -1,42 +1,25 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useCallback, useState } from "react";
 import { Input, Button } from "antd";
 import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
 import TableBrand from "@/pages/ManageBrand/TableBrand";
-import { getBrandList } from "@redux/brand/brand.thunk";
 import debounce from "lodash/debounce";
-import ModalBrandAction from "@components/Modal/ModalBrandAction";
+import ModalBrandAction from "@/pages/ManageBrand/ModalBrandAction";
+import { useGetBrandListQuery } from "@/redux/brand/brand.query";
 
 const ManageBrand = () => {
-  const dispatch = useDispatch();
-  const { brands, pagination, isLoading } = useSelector((state) => state.brand);
-
   const [paginate, setPaginate] = useState({
     page: 1,
     pageSize: 10,
-    totalPage: 0,
-    totalItems: 0,
   });
   const [filter, setFilter] = useState({
     name: "",
   });
-  const [open, setOpen] = useState(false)
-
-  useEffect(() => {
-    dispatch(getBrandList({ ...paginate, ...filter }));
-  }, [dispatch, paginate.page, paginate.pageSize, filter]);
-
-  useEffect(() => {
-    if (pagination) {
-      setPaginate((prev) => ({
-        ...prev,
-        page: pagination.page,
-        pageSize: pagination.pageSize,
-        totalPage: pagination.totalPage,
-        totalItems: pagination.totalItems,
-      }));
-    }
-  }, [pagination]);
+  const [open, setOpen] = useState(false);
+  const { data, isLoading, refetch } = useGetBrandListQuery({
+    ...paginate,
+    ...filter,
+  });
+  const { data: brands = [], pagination = {} } = data || {};
 
   const debouncedFilter = useCallback(
     debounce((value) => {
@@ -54,20 +37,21 @@ const ManageBrand = () => {
     <div className="mt-4">
       <ModalBrandAction
         {...{
+          refetch,
           open,
           setOpen,
         }}
       />
       <div className="mb-4 bg-white p-4 rounded-md shadow-lg flex gap-4 items-center">
         <Input
-          size="large"
+          size="middle"
           placeholder="Tìm kiếm thương hiệu..."
           prefix={<SearchOutlined />}
           onChange={handleFilterChange}
           allowClear
         />
         <Button
-          size="large"
+          size="middle"
           onClick={() => setOpen(true)}
           type="primary"
           icon={<PlusOutlined />}
@@ -78,11 +62,12 @@ const ManageBrand = () => {
       </div>
 
       <TableBrand
+        refetch={refetch}
         brands={brands}
         isLoading={isLoading}
-        page={paginate.page}
-        pageSize={paginate.pageSize}
-        totalItems={paginate.totalItems}
+        page={pagination?.page}
+        pageSize={pagination?.pageSize}
+        totalItems={pagination?.totalItems}
         setPaginate={setPaginate}
       />
     </div>

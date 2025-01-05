@@ -1,26 +1,18 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { Input, Select, DatePicker, Card, Row, Col } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
 import TableReview from "@/pages/ManageReview/TableReview";
 import locale from "antd/es/date-picker/locale/vi_VN";
-import { getReviewList } from "@redux/review/review.thunk";
 import { FaStar } from "react-icons/fa6";
+import { useGetReviewListAdminQuery } from "@/redux/review/review.query";
 
 const { RangePicker } = DatePicker;
 
 const ManageReview = () => {
-  const dispatch = useDispatch();
-  const { reviews, pagination, isLoading } = useSelector(
-    (state) => state.review
-  );
-
   const [paginate, setPaginate] = useState({
     page: 1,
     pageSize: 10,
-    totalPage: 0,
-    totalItems: 0,
   });
 
   const [filters, setFilters] = useState({
@@ -30,10 +22,11 @@ const ManageReview = () => {
     fromDate: "",
     toDate: "",
   });
-
-  useEffect(() => {
-    dispatch(getReviewList({ ...paginate, ...filters }));
-  }, [dispatch, paginate.page, paginate.pageSize, filters]);
+  const { data, isLoading, refetch } = useGetReviewListAdminQuery({
+    ...paginate,
+    ...filters,
+  });
+  const { data: reviews = [], pagination = {} } = data || {};
 
   const debouncedFilter = useCallback(
     debounce((name, value) => {
@@ -116,15 +109,6 @@ const ManageReview = () => {
                   fromDate: dateStrings[0],
                   toDate: dateStrings[1],
                 }));
-                dispatch(
-                  getReviewList({
-                    ...paginate,
-                    ...filters,
-                    fromDate: dateStrings[0],
-                    toDate: dateStrings[1],
-                    page: 1,
-                  })
-                );
               }}
             />
           </Col>
@@ -134,10 +118,11 @@ const ManageReview = () => {
       <TableReview
         reviews={reviews}
         isLoading={isLoading}
-        page={paginate.page}
-        pageSize={paginate.pageSize}
+        page={pagination?.page}
+        pageSize={pagination?.pageSize}
         totalItems={pagination?.totalItems}
         setPaginate={setPaginate}
+        refetch={refetch}
       />
     </div>
   );

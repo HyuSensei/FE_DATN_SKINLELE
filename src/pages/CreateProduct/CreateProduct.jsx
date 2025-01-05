@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Upload,
   message,
@@ -9,432 +9,226 @@ import {
   Row,
   Col,
   Checkbox,
+  Form,
+  InputNumber,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { SketchPicker } from "react-color";
-import {
-  UPLOAD_SKINLELE_PRESET,
-  uploadFile,
-} from "@helpers/uploadCloudinary";
+import { UPLOAD_SKINLELE_PRESET, uploadFile } from "@helpers/uploadCloudinary";
 import { tags } from "@const/tags";
 import QuillEditor from "@components/QuillEditor";
 import { useDispatch, useSelector } from "react-redux";
-import { getBrandByCreatePro } from "@redux/brand/brand.thunk";
-import { getCategoryByCreatePro } from "@redux/category/category.thunk";
 import { createProduct } from "@redux/product/product.thunk";
-import {
-  validateCreateProductSchema,
-  validateForm,
-} from "@validate/validate";
-import ErrorMessage from "@components/Error/ErrorMessage";
-import moment from "moment";
+import CategorySelector from "./CategorySelector";
+import ProductVariantForm from "./ProductVariantForm";
+import CustomButton from "@/components/CustomButton";
+import dayjs from "@utils/dayjsTz";
+import { useGetAllBrandQuery } from "@/redux/brand/brand.query";
+import { useGetAllCategoryQuery } from "@/redux/category/category.query";
 
 const CreateProduct = () => {
-  const [input, setInput] = useState({
-    name: "",
-    categories: [],
-    brand: "",
-    price: "",
-    description: "",
-    mainImage: {
-      url: "",
-      publicId: "",
-    },
-    images: [],
-    variants: [],
-    enable: true,
-    tags: [],
-    capacity: "",
-    expiry: "",
-  });
-  const [showColorPicker, setShowColorPicker] = useState(false);
-  const [selectedLevel0, setSelectedLevel0] = useState(null);
-  const [selectedLevel1, setSelectedLevel1] = useState(null);
+  const [form] = Form.useForm();
   const [mainImage, setMainImage] = useState(null);
   const [images, setImages] = useState([]);
-  const [validates, setValidates] = useState({});
 
   const dispatch = useDispatch();
-  const { brands } = useSelector((state) => state.brand);
-  const { categories } = useSelector((state) => state.category);
   const { isLoading } = useSelector((state) => state.product);
-  const [loadingUpload, setLoadingUpload] = useState(false);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
 
-  useEffect(() => {
-    dispatch(getBrandByCreatePro());
-    dispatch(getCategoryByCreatePro());
-  }, []);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setInput({ ...input, [name]: value });
-    setValidates((prev) => ({
-      ...prev,
-      [name]: "",
-    }));
-  };
-
-  const handleSelectChange = (name, value) => {
-    setInput({ ...input, [name]: value });
-  };
-
-  const handleLevel0Change = (value) => {
-    setSelectedLevel0(value);
-    setSelectedLevel1(null);
-    setInput((prevInput) => ({
-      ...prevInput,
-      categories: [value],
-    }));
-  };
-
-  const handleLevel1Change = (value) => {
-    setSelectedLevel1(value);
-    setInput((prevInput) => ({
-      ...prevInput,
-      categories: [selectedLevel0, value],
-    }));
-  };
-
-  const handleLevel2Change = (value) => {
-    setInput((prevInput) => ({
-      ...prevInput,
-      categories: [...prevInput.categories.slice(0, 2), ...value],
-    }));
-  };
-
-  const addVariant = () => {
-    setInput({
-      ...input,
-      variants: [
-        ...input.variants,
-        { color: { name: "", code: "", image: null } },
-      ],
-    });
-  };
-
-  const handleVariantChange = (index, field, value) => {
-    const newVariants = [...input.variants];
-    if (field === "image") {
-      newVariants[index].color.image = value;
-    } else {
-      newVariants[index].color[field] = value;
-    }
-    setInput((prev) => ({ ...prev, variants: newVariants }));
-  };
-
-  const removeVariant = (index) => {
-    setInput((prev) => ({
-      ...prev,
-      variants: prev.variants.filter((_, i) => i !== index),
-    }));
-  };
+  const { data: brands = [] } = useGetAllBrandQuery();
+  const { data: categories = [] } = useGetAllCategoryQuery();
 
   const clearInput = () => {
-    setInput({
-      name: "",
-      categories: [],
-      brand: "",
-      price: "",
-      description: "",
-      mainImage: null,
-      images: [],
-      variants: [],
-      enable: true,
-      tags: [],
-      capacity: "",
-      expiry: "",
-    });
-    setSelectedLevel0("");
-    setSelectedLevel1("");
+    form.resetFields();
     setMainImage(null);
     setImages([]);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const validationErrors = await validateForm({
-      input: {
-        ...input,
-        mainImage: mainImage,
-        images: images,
-      },
-      validateSchema: validateCreateProductSchema,
-    });
+  const onFinish = async (values) => {
+    try {
+      setLoadingSubmit(true);
+      const uploadedImages = await Promise.all(
+        images.map(async (file) => {
+          if (file.originFileObj) {
+            const result = await uploadFile({
+              file: file.originFileObj,
+              type: UPLOAD_SKINLELE_PRESET,
+            });
+            if (result && result.secure_url && result.public_id) {
+              return { url: result.secure_url, publicId: result.public_id };
+            }
+          }
+          return null;
+        })
+      );
+      const uploadedMainImage =
+        mainImage && mainImage.originFileObj
+          ? await uploadFile({
+              file: mainImage.originFileObj,
+              type: UPLOAD_SKINLELE_PRESET,
+            })
+          : null;
 
-    if (Object.keys(validationErrors).length > 0) {
-      if (validationErrors.mainImage) {
-        message.warning(validationErrors.mainImage);
-      }
-      if (validationErrors.images) {
-        message.warning(validationErrors.images);
-      }
-      setValidates(validationErrors);
-      return;
+      const uploadedVariants = await Promise.all(
+        values.variants.map(async (variant) => {
+          let uploadedImage = null;
+          if (variant.color.image && variant.color.image.fileList.length > 0) {
+            uploadedImage = await uploadFile({
+              file: variant.color.image.fileList[0].originFileObj,
+              type: UPLOAD_SKINLELE_PRESET,
+            });
+          }
+          return {
+            ...variant,
+            color: {
+              ...variant.color,
+              code: variant.color.code.toHexString(),
+              image: uploadedImage
+                ? {
+                    url: uploadedImage.secure_url,
+                    publicId: uploadedImage.public_id,
+                  }
+                : null,
+            },
+          };
+        })
+      );
+
+      const payload = {
+        ...values,
+        categories: [
+          values.level0,
+          values?.level1,
+          ...(Array.isArray(values?.level2) ? values.level2 : []),
+        ].filter((item) => item !== undefined && item !== null),
+        mainImage: uploadedMainImage
+          ? {
+              url: uploadedMainImage.secure_url,
+              publicId: uploadedMainImage.public_id,
+            }
+          : null,
+        images: uploadedImages.map((img) => ({
+          url: img.url,
+          publicId: img.publicId,
+        })),
+        variants: uploadedVariants || [],
+        expiry: dayjs(values.expiry).format("YYYY-MM-DD"),
+      };
+
+      delete payload.level0;
+      delete payload.level1;
+      delete payload.level2;
+
+      dispatch(createProduct(payload)).then((res) => {
+        if (res.payload.success) {
+          message.success(res.payload.message);
+          clearInput();
+          return;
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoadingSubmit(false);
     }
-
-    const uploadedImages = await Promise.all(
-      images.map(async (file) => {
-        if (file.originFileObj) {
-          const result = await uploadFile({
-            file: file.originFileObj,
-            type: UPLOAD_SKINLELE_PRESET,
-          });
-          if (result && result.secure_url && result.public_id) {
-            return { url: result.secure_url, publicId: result.public_id };
-          }
-        }
-        return null;
-      })
-    );
-    setLoadingUpload(true);
-    const uploadedMainImage =
-      mainImage && mainImage.originFileObj
-        ? await uploadFile({
-            file: mainImage.originFileObj,
-            type: UPLOAD_SKINLELE_PRESET,
-          })
-        : null;
-
-    const uploadedVariants = await Promise.all(
-      input.variants.map(async (variant) => {
-        let uploadedImage = null;
-        if (variant.color.image && variant.color.image.originFileObj) {
-          uploadedImage = await uploadFile({
-            file: variant.color.image.originFileObj,
-            type: UPLOAD_SKINLELE_PRESET,
-          });
-        }
-        return {
-          ...variant,
-          color: {
-            ...variant.color,
-            image: uploadedImage
-              ? {
-                  url: uploadedImage.secure_url,
-                  publicId: uploadedImage.public_id,
-                }
-              : null,
-          },
-        };
-      })
-    );
-    setLoadingUpload(false);
-    const payload = {
-      ...input,
-      mainImage: uploadedMainImage
-        ? {
-            url: uploadedMainImage.secure_url,
-            publicId: uploadedMainImage.public_id,
-          }
-        : null,
-      images: uploadedImages.map((img) => ({
-        url: img.url,
-        publicId: img.publicId,
-      })),
-      variants: uploadedVariants || [],
-    };
-
-    dispatch(createProduct(payload)).then((res) => {
-      if (res.payload.success) {
-        message.success(res.payload.message);
-        clearInput();
-        return;
-      }
-    });
-  };
-
-  const handleChangeQill = (value) => {
-    setInput((prev) => ({
-      ...prev,
-      description: value,
-    }));
-    setValidates((prev) => ({ ...prev, description: "" }));
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 mt-4">
+    <Form
+      requiredMark={false}
+      form={form}
+      onFinish={onFinish}
+      layout="vertical"
+      className="space-y-6 mt-4"
+      initialValues={{
+        enable: true,
+      }}
+    >
       <Card title="Thông tin cơ bản" className="shadow-md">
         <Row gutter={16}>
           <Col span={12}>
-            <div className="mb-4">
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-[#14134f] mb-1"
-              >
-                Tên sản phẩm
-              </label>
-              <Input
-                placeholder="Nhập tên sản phẩm..."
-                size="large"
-                id="name"
-                name="name"
-                value={input.name}
-                onChange={handleInputChange}
-              />
-              {validates.name && <ErrorMessage message={validates.name} />}
-            </div>
+            <Form.Item
+              label="Tên sản phẩm"
+              name="name"
+              rules={[
+                { required: true, message: "Vui lòng nhập tên sản phẩm" },
+              ]}
+            >
+              <Input placeholder="Nhập tên sản phẩm..." size="middle" />
+            </Form.Item>
           </Col>
           <Col span={12}>
-            <div className="mb-4">
-              <label
-                htmlFor="brand"
-                className="block text-sm font-medium text-[#14134f] mb-1"
-              >
-                Thương hiệu
-              </label>
-              <Select
-                name="brand"
-                placeholder="Chọn thương hiệu"
-                size="large"
-                value={input.brand}
-                onChange={(value) => handleSelectChange("brand", value)}
-                className="w-full"
-              >
-                <Select.Option value="" disabled>
-                  <div className="text-gray-500">---</div>
-                </Select.Option>
-                {brands.length > 0 &&
-                  brands?.map((brand) => (
-                    <Select.Option key={brand._id} value={brand._id}>
-                      {brand.name}
-                    </Select.Option>
-                  ))}
+            <Form.Item
+              label="Thương hiệu"
+              name="brand"
+              rules={[{ required: true, message: "Vui lòng chọn thương hiệu" }]}
+            >
+              <Select placeholder="Chọn thương hiệu" size="middle">
+                {brands.map((brand) => (
+                  <Select.Option key={brand._id} value={brand._id}>
+                    {brand.name}
+                  </Select.Option>
+                ))}
               </Select>
-              {validates.brand && <ErrorMessage message={validates.brand} />}
-            </div>
+            </Form.Item>
           </Col>
         </Row>
-        <Row gutter={16}>
-          <Col span={12}>
-            <div className="mb-4">
-              <label
-                htmlFor="price"
-                className="block text-sm font-medium text-[#14134f] mb-1"
-              >
-                Giá
-              </label>
-              <Input
-                placeholder="Nhập giá..."
-                size="large"
-                type="number"
-                id="price"
-                name="price"
-                value={input.price}
-                onChange={handleInputChange}
-              />
-              {validates.price && <ErrorMessage message={validates.price} />}
-            </div>
-          </Col>
-          <Col span={12}>
-            <div className="mb-4">
-              <label
-                htmlFor="capacity"
-                className="block text-sm font-medium text-[#14134f] mb-1"
-              >
-                Dung tích
-              </label>
-              <Input
-                placeholder="Nhập dung tích..."
-                size="large"
-                id="capacity"
-                name="capacity"
-                value={input.capacity}
-                onChange={handleInputChange}
-              />
-            </div>
-          </Col>
-        </Row>
-      </Card>
-
-      <Card title="Danh mục sản phẩm" className="shadow-md mt-6">
-        <div className="mb-4">
-          <label
-            htmlFor="categories"
-            className="block text-sm font-medium text-[#14134f] mb-1"
+        <div className="flex flex-wrap gap-4 items-center">
+          <Form.Item
+            className="flex-1"
+            label="Giá"
+            name="price"
+            rules={[{ required: true, message: "Vui lòng nhập giá" }]}
           >
-            Danh mục (0)
-          </label>
-          <Select
-            placeholder="Chọn danh mục"
-            size="large"
-            value={selectedLevel0}
-            onChange={handleLevel0Change}
-            className="w-full"
+            <Input placeholder="Nhập giá..." size="middle" />
+          </Form.Item>
+          <Form.Item label="Dung tích" name="capacity" className="flex-1">
+            <Input placeholder="Nhập dung tích..." size="middle" />
+          </Form.Item>
+          <Form.Item
+            noStyle
+            shouldUpdate={(prevValues, currentValues) => {
+              return prevValues.variants !== currentValues.variants;
+            }}
           >
-            {categories.length > 0 &&
-              categories?.map((category) => (
-                <Select.Option key={category._id} value={category._id}>
-                  {category.name}
-                </Select.Option>
-              ))}
-          </Select>
-          {validates.categories && (
-            <ErrorMessage message={validates.categories} />
-          )}
+            {({ getFieldValue }) => {
+              const variants = getFieldValue("variants") || [];
+              return variants.length === 0 ? (
+                <Form.Item
+                  className="flex-1"
+                  label="Số lượng"
+                  name="totalQuantity"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập số lượng" },
+                  ]}
+                >
+                  <InputNumber
+                    className="w-full"
+                    placeholder="Nhập số lượng..."
+                    size="middle"
+                    type="number"
+                  />
+                </Form.Item>
+              ) : null;
+            }}
+          </Form.Item>
         </div>
-        {selectedLevel0 && (
-          <div className="mb-4">
-            <label
-              htmlFor="categories"
-              className="block text-sm font-medium text-[#14134f] mb-1"
-            >
-              Danh mục (1)
-            </label>
-            <Select
-              placeholder="Chọn danh mục con"
-              size="large"
-              value={selectedLevel1}
-              onChange={handleLevel1Change}
-              className="w-full"
-            >
-              {categories.length > 0 &&
-                categories
-                  ?.find((category) => category._id === selectedLevel0)
-                  .children?.map((category) => (
-                    <Select.Option key={category._id} value={category._id}>
-                      {category.name}
-                    </Select.Option>
-                  ))}
-            </Select>
-          </div>
-        )}
-        {selectedLevel1 && (
-          <div className="mb-4">
-            <label
-              htmlFor="categories"
-              className="block text-sm font-medium text-[#14134f] mb-1"
-            >
-              Danh mục (2)
-            </label>
-            <Select
-              placeholder="Chọn danh mục con"
-              size="large"
-              mode="multiple"
-              value={input.categories.slice(2)}
-              onChange={handleLevel2Change}
-              className="w-full"
-            >
-              {categories.length > 0 &&
-                categories
-                  ?.find((category) => category._id === selectedLevel0)
-                  .children?.find((category) => category._id === selectedLevel1)
-                  .children.map((category) => (
-                    <Select.Option key={category._id} value={category._id}>
-                      {category.name}
-                    </Select.Option>
-                  ))}
-            </Select>
-          </div>
-        )}
       </Card>
-
+      <Card title="Danh mục sản phẩm" className="shadow-md mt-6">
+        <CategorySelector categories={categories} form={form} />
+      </Card>
       <Card title="Hình ảnh sản phẩm" className="shadow-md mt-6">
         <Row gutter={16}>
           <Col span={12}>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-[#14134f] mb-1">
-                Ảnh hiển thị
-              </label>
+            <Form.Item
+              label="Ảnh hiển thị"
+              name="mainImage"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng tải lên ảnh hiển thị cho sản phẩm",
+                },
+              ]}
+            >
               <Upload
                 accept="image/*"
                 listType="picture-card"
@@ -448,13 +242,19 @@ const CreateProduct = () => {
                   <div className="mt-2">Tải lên</div>
                 </div>
               </Upload>
-            </div>
+            </Form.Item>
           </Col>
           <Col span={12}>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-[#14134f] mb-1">
-                Danh sách ảnh
-              </label>
+            <Form.Item
+              label="Danh sách ảnh"
+              name="images"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng tải lên ít nhất 1 ảnh cho sản phẩm",
+                },
+              ]}
+            >
               <Upload
                 accept="image/*"
                 listType="picture-card"
@@ -469,214 +269,88 @@ const CreateProduct = () => {
                   <div className="mt-2">Tải lên</div>
                 </div>
               </Upload>
-            </div>
+            </Form.Item>
           </Col>
         </Row>
       </Card>
 
       <Card title="Biến thể sản phẩm" className="shadow-md mt-6">
-        {input.variants.map((variant, index) => (
-          <Card
-            key={index}
-            type="inner"
-            title={`Màu sản phẩm ${index + 1}`}
-            extra={
-              <button
-                type="button"
-                onClick={() => removeVariant(index)}
-                className="text-red-600 hover:text-red-800"
-              >
-                Xóa
-              </button>
-            }
-            className="mb-4"
-          >
-            <Row gutter={16}>
-              <Col span={12}>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-[#14134f] mb-1">
-                    Tên màu
-                  </label>
-                  <Input
-                    size="large"
-                    value={variant.color.name}
-                    onChange={(e) =>
-                      handleVariantChange(index, "name", e.target.value)
-                    }
-                  />
-                  {validates?.variants && (
-                    <ErrorMessage
-                      message={
-                        validates?.variants[`variants[${index}].color.name`]
-                      }
-                    />
-                  )}
-                </div>
-              </Col>
-              <Col span={12}>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-[#14134f] mb-1">
-                    Mã màu
-                  </label>
-                  <div className="flex gap-4 items-center">
-                    <Input
-                      className="flex-1"
-                      size="large"
-                      value={variant.color.code}
-                      onChange={(e) =>
-                        handleVariantChange(index, "code", e.target.value)
-                      }
-                    />
-                    {variant.color.code && (
-                      <div
-                        className="w-10 h-10 rounded-full border border-gray-300 flex-shrink-0"
-                        style={{ backgroundColor: variant.color.code }}
-                      ></div>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => setShowColorPicker(!showColorPicker)}
-                      className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    >
-                      Chọn màu
-                    </button>
-                  </div>
-                  {showColorPicker && (
-                    <div className="absolute mt-2 z-10">
-                      <SketchPicker
-                        color={variant.color.code}
-                        onChangeComplete={(color) => {
-                          handleVariantChange(index, "code", color.hex);
-                          setShowColorPicker(false);
-                        }}
-                      />
-                    </div>
-                  )}
-                  {validates.variants && (
-                    <ErrorMessage
-                      message={
-                        validates.variants[`variants[${index}].color.code`]
-                      }
-                    />
-                  )}
-                </div>
-              </Col>
-            </Row>
-            <div className="mb-4">
-              <Upload
-                accept="image/*"
-                listType="picture-card"
-                maxCount={1}
-                beforeUpload={() => false}
-                fileList={variant.color.image ? [variant.color.image] : []}
-                onChange={({ fileList }) =>
-                  handleVariantChange(index, "image", fileList[0])
-                }
-              >
-                <div>
-                  <PlusOutlined />
-                  <div className="mt-2">Tải ảnh màu</div>
-                </div>
-              </Upload>
-              {validates?.variants && (
-                <ErrorMessage
-                  message={
-                    validates?.variants[`variants[${index}].color.image.url`]
-                  }
-                />
-              )}
-            </div>
-          </Card>
-        ))}
-        <button
-          type="button"
-          onClick={addVariant}
-          className="mt-2 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          Thêm màu sản phẩm
-        </button>
+        <ProductVariantForm
+          onChange={(variants) => {
+            form.setFieldValue("variants", variants);
+          }}
+          form={form}
+        />
       </Card>
 
       <Card title="Thông tin bổ sung" className="shadow-md mt-6">
         <Row gutter={16}>
           <Col span={12}>
-            <div className="mb-4">
-              <label
-                htmlFor="tags"
-                className="block text-sm font-medium text-[#14134f] mb-1"
-              >
-                Tags
-              </label>
-              <Select
-                placeholder="Chọn tags"
-                size="large"
-                id="tags"
-                mode="tags"
-                value={input.tags}
-                onChange={(value) => handleSelectChange("tags", value)}
-                className="w-full"
-              >
+            <Form.Item label="Tags" name="tags">
+              <Select placeholder="Chọn tags" size="middle" mode="tags">
                 {tags?.map((item) => (
                   <Select.Option key={item.key} value={item.value}>
                     {item.value}
                   </Select.Option>
                 ))}
               </Select>
-            </div>
+            </Form.Item>
           </Col>
           <Col span={12}>
-            <div className="mb-4">
-              <label
-                htmlFor="expiry"
-                className="block text-sm font-medium text-[#14134f] mb-1"
-              >
-                Hạn sử dụng
-              </label>
+            <Form.Item
+              label="Hạn sử dụng"
+              name="expiry"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn hạn sử dụng",
+                },
+              ]}
+            >
               <DatePicker
-                value={input.expiry ? moment(input.expiry) : ""}
+                disabledDate={(current) =>
+                  current && current.isBefore(dayjs().startOf("day"))
+                }
                 placeholder="Hạn sử dụng"
-                onChange={(_, dateString) => {
-                  setInput((prev) => ({ ...prev, expiry: dateString }));
-                }}
-                size="large"
+                size="middle"
                 className="w-full"
+                format="YYYY-MM-DD"
               />
-            </div>
-            {validates.expiry && <ErrorMessage message={validates.expiry} />}
+            </Form.Item>
           </Col>
         </Row>
-        <div className="mb-4">
-          <Checkbox
-            id="enable"
-            checked={input.enable}
-            onChange={(e) => setInput({ ...input, enable: e.target.checked })}
-          >
-            <span className="ml-2 text-sm text-[#14134f] font-medium">
-              Kích hoạt sản phẩm
-            </span>
-          </Checkbox>
-        </div>
+        <Form.Item
+          name="enable"
+          valuePropName="checked"
+          label="Kích hoạt sản phẩm"
+        >
+          <Checkbox />
+        </Form.Item>
       </Card>
 
       <Card title="Mô tả sản phẩm" className="shadow-md mt-6">
-        <div className="mb-4">
-          <QuillEditor value={input.description} onChange={handleChangeQill} />
-          {validates.description && (
-            <ErrorMessage message={validates.description} />
-          )}
-        </div>
+        <Form.Item
+          name="description"
+          rules={[
+            {
+              required: true,
+              message: "Vui lòng nhập mô tả sản phẩm",
+            },
+          ]}
+        >
+          <QuillEditor />
+        </Form.Item>
       </Card>
 
-      <div className="mt-6">
-        <button
-          type="submit"
-          disabled={isLoading || loadingUpload}
-          className="w-full flex justify-center py-4 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          {isLoading || loadingUpload ? "Đang xử lý..." : "Tạo sản phẩm"}
-        </button>
-      </div>
-    </form>
+      <CustomButton
+        className="w-full"
+        type="submit"
+        disabled={isLoading || loadingSubmit}
+        variant="primary"
+      >
+        {isLoading || loadingSubmit ? "Đang xử lý..." : "Tạo sản phẩm"}
+      </CustomButton>
+    </Form>
   );
 };
 

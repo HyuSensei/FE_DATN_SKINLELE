@@ -5,19 +5,12 @@ import { isEmpty } from "lodash";
 import {
   createCategory,
   getCategoryAdmin,
-  getCategoryList,
   updateCategory,
 } from "@redux/category/category.thunk";
 import { validateCategoryActionSchema, validateForm } from "@validate/validate";
 import ErrorMessage from "@components/Error/ErrorMessage";
 
-const ModalCategoryAction = ({
-  open,
-  setOpen,
-  category = {},
-  page,
-  pageSize,
-}) => {
+const ModalCategoryAction = ({ open, setOpen, category = {}, refetch }) => {
   const dispatch = useDispatch();
   const [input, setInput] = useState({
     name: category.name || "",
@@ -29,7 +22,7 @@ const ModalCategoryAction = ({
 
   useEffect(() => {
     dispatch(getCategoryAdmin());
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (open && !isEmpty(category)) {
@@ -37,28 +30,36 @@ const ModalCategoryAction = ({
         ...prev,
         name: category.name,
         parent: category.parent,
-        level: category.level
+        level: category.level,
       }));
     }
   }, [category, open]);
 
-  const flattenCategories = useCallback((categoriesAll, level = 0, prefix = "", excludeId = null) => {
-    return categoriesAll.reduce((acc, category) => {
-      if (category._id !== excludeId) {
-        acc.push({
-          value: category._id,
-          label: `${prefix}${category.name}`,
-          level: level,
-        });
-        if (category.children && category.children.length > 0) {
-          acc.push(
-            ...flattenCategories(category.children, level + 1, `${prefix}  `, excludeId)
-          );
+  const flattenCategories = useCallback(
+    (categoriesAll, level = 0, prefix = "", excludeId = null) => {
+      return categoriesAll.reduce((acc, category) => {
+        if (category._id !== excludeId) {
+          acc.push({
+            value: category._id,
+            label: `${prefix}${category.name}`,
+            level: level,
+          });
+          if (category.children && category.children.length > 0) {
+            acc.push(
+              ...flattenCategories(
+                category.children,
+                level + 1,
+                `${prefix}  `,
+                excludeId
+              )
+            );
+          }
         }
-      }
-      return acc;
-    }, []);
-  }, []);
+        return acc;
+      }, []);
+    },
+    []
+  );
 
   const parentOptions = useMemo(() => {
     const flattened = flattenCategories(categoriesAll, 0, "", category._id);
@@ -113,13 +114,26 @@ const ModalCategoryAction = ({
 
     let result;
     if (isEmpty(category)) {
-      result = await dispatch(createCategory({ name: input.name, parent: input.parent, level: input.level })).unwrap();
+      result = await dispatch(
+        createCategory({
+          name: input.name,
+          parent: input.parent,
+          level: input.level,
+        })
+      ).unwrap();
     } else {
-      result = await dispatch(updateCategory({ id: category._id, name: input.name, parent: input.parent, level: input.level })).unwrap();
+      result = await dispatch(
+        updateCategory({
+          id: category._id,
+          name: input.name,
+          parent: input.parent,
+          level: input.level,
+        })
+      ).unwrap();
     }
 
     if (result.success) {
-      dispatch(getCategoryList({ page, pageSize }));
+      refetch();
       message.success(result.message);
       setOpen(false);
       clearInput();

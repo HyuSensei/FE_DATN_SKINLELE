@@ -1,33 +1,22 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useState, useCallback } from "react";
 import { Input, Select, Card, Button, Tooltip } from "antd";
 import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
 import { debounce } from "lodash";
 import TableProduct from "@/pages/ManageProduct/TableProduct";
 import { tags } from "@const/tags";
 import { useNavigate } from "react-router-dom";
-import { getBrandByCreatePro } from "@redux/brand/brand.thunk";
-import { getAllCategoryFilter } from "@redux/category/category.thunk";
-import { getProductAdmin } from "@redux/product/product.thunk";
+import { useGetAllBrandQuery } from "@/redux/brand/brand.query";
+import { useGetAllCategoryQuery } from "@/redux/category/category.query";
+import { useGetAllProductByAdminQuery } from "@/redux/product/product.query";
 
 const { Option } = Select;
 
 const ManageProduct = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const {
-    products,
-    isLoading,
-    paginateAdmin: pagination,
-  } = useSelector((state) => state.product);
-  const { categories } = useSelector((state) => state.category);
-  const { brands } = useSelector((state) => state.brand);
-
   const [paginate, setPaginate] = useState({
     page: 1,
     pageSize: 10,
   });
-
   const [filters, setFilters] = useState({
     name: "",
     category: "",
@@ -35,15 +24,14 @@ const ManageProduct = () => {
     tag: "",
     sort: "asc",
   });
+  const { data: brands } = useGetAllBrandQuery();
+  const { data: categories } = useGetAllCategoryQuery();
+  const { data, isLoading, refetch } = useGetAllProductByAdminQuery({
+    ...paginate,
+    ...filters,
+  });
 
-  useEffect(() => {
-    dispatch(getBrandByCreatePro());
-    dispatch(getAllCategoryFilter());
-  }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(getProductAdmin({ ...paginate, ...filters }));
-  }, [dispatch, paginate.page, paginate.pageSize, filters]);
+  const { data: products = [], pagination = {} } = data || {};
 
   const debouncedSearch = useCallback(
     debounce((value) => {
@@ -94,7 +82,7 @@ const ManageProduct = () => {
             onChange={(value) => handleFilterChange(value, "category")}
             allowClear
           >
-            {categories.map((category) => (
+            {categories?.map((category) => (
               <Option key={category._id} value={category._id}>
                 {category.name}
               </Option>
@@ -105,7 +93,7 @@ const ManageProduct = () => {
             onChange={(value) => handleFilterChange(value, "brand")}
             allowClear
           >
-            {brands.map((brand) => (
+            {brands?.map((brand) => (
               <Option key={brand._id} value={brand._id}>
                 {brand.name}
               </Option>
@@ -134,11 +122,12 @@ const ManageProduct = () => {
       </Card>
       <TableProduct
         products={products}
-        page={paginate.page}
-        pageSize={paginate.pageSize}
+        page={pagination?.page}
+        pageSize={pagination?.pageSize}
         totalItems={pagination?.totalItems || 0}
         setPaginate={handlePageChange}
         isLoading={isLoading}
+        refetch={refetch}
       />
     </div>
   );

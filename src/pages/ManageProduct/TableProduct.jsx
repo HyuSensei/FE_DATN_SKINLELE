@@ -12,12 +12,9 @@ import { GrEdit } from "react-icons/gr";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { PiSpinnerBall } from "react-icons/pi";
 import { formatPrice } from "@helpers/formatPrice";
-import ModalEditProduct from "@components/Modal/ModalEditProduct";
+import ModalEditProduct from "./Action/ModalEditProduct";
 import { useDispatch } from "react-redux";
-import {
-  deleteProduct,
-  getProductAdmin,
-} from "@redux/product/product.thunk";
+import { deleteProduct } from "@redux/product/product.thunk";
 import { deleteFile } from "@helpers/uploadCloudinary";
 import { formatDateReview } from "@helpers/formatDate";
 
@@ -43,6 +40,7 @@ const TableProduct = ({
   pageSize,
   totalItems,
   setPaginate,
+  refetch,
 }) => {
   const [productItem, setProductItem] = useState(null);
   const [openEdit, setOpenEdit] = useState(false);
@@ -56,7 +54,6 @@ const TableProduct = ({
         if (deletedProduct.mainImage && deletedProduct.mainImage.publicId) {
           await deleteFile(deletedProduct.mainImage.publicId);
         }
-        y;
         if (deletedProduct.images && deletedProduct.images.length > 0) {
           await Promise.all(
             deletedProduct.images.map(async (image) => {
@@ -78,17 +75,7 @@ const TableProduct = ({
         }
 
         message.success(res.payload.message);
-        dispatch(
-          getProductAdmin({
-            page: 1,
-            pageSize: 10,
-            name: "",
-            category: "",
-            brand: "",
-            tag: "",
-            sort: "asc",
-          })
-        );
+        refetch();
       }
     });
   };
@@ -279,6 +266,7 @@ const TableProduct = ({
     <>
       <ModalEditProduct
         {...{
+          refetch: refetch,
           data: productItem,
           open: openEdit,
           setOpen: setOpenEdit,
@@ -302,8 +290,6 @@ const TableProduct = ({
             onChange={(newPage, newPageSize) =>
               setPaginate(newPage, newPageSize)
             }
-            showSizeChanger
-            pageSizeOptions={["10", "20", "50", "100"]}
           />
         </div>
       )}

@@ -2,10 +2,9 @@ import React, { useMemo, useState } from "react";
 import { Table, Tooltip, Pagination, Tag, Popconfirm, message } from "antd";
 import { GrEdit } from "react-icons/gr";
 import { MdOutlineDeleteOutline } from "react-icons/md";
-import ModalCategoryAction from "@components/Modal/ModalCategoryAction";
+import ModalCategoryAction from "@/pages/ManageCategory/ModalCategoryAction";
 import { useDispatch } from "react-redux";
 import { deleteCategory } from "@redux/category/category.thunk";
-import { setCategories } from "@redux/category/category.slice";
 
 const TableCategory = ({
   categories = [],
@@ -14,22 +13,19 @@ const TableCategory = ({
   pageSize,
   totalItems,
   setPaginate,
+  refetch,
 }) => {
-  const dispatch = useDispatch()
-  const [open, setOpen] = useState(false)
-  const [category, setCategory] = useState({})
+  const dispatch = useDispatch();
+  const [open, setOpen] = useState(false);
+  const [category, setCategory] = useState({});
 
   const removeCategory = async (id) => {
     const res = await dispatch(deleteCategory(id)).unwrap();
     if (res.success) {
-      const newCategories = categories.filter((item) => (
-        item._id !== id
-      ))
-      message.success(res.message)
-      dispatch(setCategories(newCategories))
-      return
+      message.success(res.message);
+      refetch();
     }
-  }
+  };
 
   const columns = useMemo(
     () => [
@@ -88,10 +84,13 @@ const TableCategory = ({
         render: (_, record) => (
           <div className="flex gap-2 items-center text-[#00246a]">
             <Tooltip title="Sửa">
-              <button onClick={() => {
-                setCategory(record)
-                setOpen(true)
-              }} className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
+              <button
+                onClick={() => {
+                  setCategory(record);
+                  setOpen(true);
+                }}
+                className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors"
+              >
                 <GrEdit />
               </button>
             </Tooltip>
@@ -109,9 +108,7 @@ const TableCategory = ({
               destroyTooltipOnHide={true}
             >
               <Tooltip title="Xóa">
-                <button
-                  className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors"
-                >
+                <button className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
                   <MdOutlineDeleteOutline />
                 </button>
               </Tooltip>
@@ -125,14 +122,15 @@ const TableCategory = ({
 
   return (
     <>
-      <ModalCategoryAction {...{
-        page,
-        pageSize,
-        category,
-        setCategory,
-        open,
-        setOpen
-      }} />
+      <ModalCategoryAction
+        {...{
+          refetch,
+          category,
+          setCategory,
+          open,
+          setOpen,
+        }}
+      />
       <Table
         columns={columns}
         dataSource={categories}

@@ -3,11 +3,7 @@ import { Table, Rate, Image, Tooltip, Pagination, Popconfirm, Switch, message } 
 import { createIcon } from "@utils/createIcon";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { useDispatch } from "react-redux";
-import {
-  deleteReview,
-  getReviewList,
-  updateReview,
-} from "@redux/review/review.thunk";
+import { deleteReview, updateReview } from "@redux/review/review.thunk";
 import { deleteFile } from "@helpers/uploadCloudinary";
 
 const TableReview = ({
@@ -17,8 +13,9 @@ const TableReview = ({
   pageSize,
   totalItems,
   setPaginate,
+  refetch,
 }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const columns = useMemo(
     () => [
       {
@@ -41,7 +38,9 @@ const TableReview = ({
               className="object-cover mr-2 rounded-md"
             />
             <Tooltip title={product.name}>
-              <span className="truncate-2-lines max-w-[150px] text-sm">{product.name}</span>
+              <span className="truncate-2-lines max-w-[150px] text-sm">
+                {product.name}
+              </span>
             </Tooltip>
           </div>
         ),
@@ -56,20 +55,22 @@ const TableReview = ({
         title: "Đánh giá",
         dataIndex: "rate",
         key: "rate",
-        render: (rate) => <Rate
-          disabled
-          value={rate}
-          character={({ index }) =>
-            createIcon({
-              index: index + 1,
-              rate: rate,
-              hoverValue: rate,
-              width: "12px",
-              height: "12px",
-            })
-          }
-          className="mt-1"
-        />,
+        render: (rate) => (
+          <Rate
+            disabled
+            value={rate}
+            character={({ index }) =>
+              createIcon({
+                index: index + 1,
+                rate: rate,
+                hoverValue: rate,
+                width: "12px",
+                height: "12px",
+              })
+            }
+            className="mt-1"
+          />
+        ),
       },
       {
         title: "Bình luận",
@@ -78,7 +79,9 @@ const TableReview = ({
         render: (_, record) => (
           <div>
             <Tooltip title={record.comment}>
-              <span className="truncate max-w-[200px] block">{record.comment}</span>
+              <span className="truncate max-w-[200px] block">
+                {record.comment}
+              </span>
             </Tooltip>
             {record.images && record.images.length > 0 && (
               <div className="mt-2">
@@ -129,9 +132,7 @@ const TableReview = ({
               destroyTooltipOnHide={true}
             >
               <Tooltip title="Xóa">
-                <button
-                  className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors"
-                >
+                <button className="p-2 border-2 rounded-md cursor-pointer hover:bg-[#edf1ff] transition-colors">
                   <MdOutlineDeleteOutline />
                 </button>
               </Tooltip>
@@ -144,29 +145,32 @@ const TableReview = ({
   );
 
   const handleToggleStatus = async (id, display) => {
-    const res = await dispatch(updateReview({
-      id, payload: {
-        display
-      }
-    })).unwrap()
+    const res = await dispatch(
+      updateReview({
+        id,
+        payload: {
+          display,
+        },
+      })
+    ).unwrap();
     if (res.success) {
-      dispatch(getReviewList({ page, pageSize }))
-      message.success(res.message)
-      return
+      message.success(res.message);
+      refetch();
     }
   };
 
   const removeReview = async (id, review) => {
-    const res = await dispatch(deleteReview(id)).unwrap()
+    const res = await dispatch(deleteReview(id)).unwrap();
     if (res.success) {
       if (review.images && review.images.length > 0) {
-        await Promise.all(review.images.map(async (image) => await deleteFile(image.publicId)));
+        await Promise.all(
+          review.images.map(async (image) => await deleteFile(image.publicId))
+        );
       }
-      dispatch(getReviewList({ page, pageSize }))
-      message.success(res.message)
-      return
+      message.success(res.message);
+      refetch();
     }
-  }
+  };
 
   return (
     <>
@@ -191,7 +195,6 @@ const TableReview = ({
                 pageSize: newPageSize,
               }))
             }
-            showSizeChanger
           />
         </div>
       )}
