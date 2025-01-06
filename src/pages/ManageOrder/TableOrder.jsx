@@ -17,6 +17,14 @@ import { useDispatch } from "react-redux";
 import { deleteOrder, updateOrder } from "@redux/order/order.thunk";
 import { useNavigate } from "react-router-dom";
 
+const validTransitions = {
+  pending: ["processing", "cancelled"],
+  processing: ["shipping", "cancelled"],
+  shipping: ["delivered", "cancelled"],
+  delivered: [],
+  cancelled: [],
+};
+
 const TableOrder = ({
   orders = [],
   isLoading = false,

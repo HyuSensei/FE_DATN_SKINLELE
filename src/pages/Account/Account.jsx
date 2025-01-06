@@ -1,25 +1,42 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Breadcrumb, Card } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import AccountForm from "@components/Account/AccountForm";
-import OrderTabs from "@components/Account/OrderTabs";
-import UserInfo from "@components/Account/UserInfo";
-import AccountMenu from "@components/Account/AccountMenu";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { logoutUser } from "@redux/auth/auth.slice";
 import { clearCart } from "@redux/cart/cart.slice";
+import AccountForm from "./components/AccountForm";
+import OrderTabs from "./components/OrderTabs";
+import UserInfo from "./components/UserInfo";
+import AccountMenu from "./components/AccountMenu";
+import Cart from "@pages/Cart";
 
 const CONTENT_TYPES = {
-  ACCOUNT: "account",
-  ORDER: "order",
+  PROFILE: "profile",
+  ORDERS: "orders",
+  CARTS: "carts",
 };
 
 const Account = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [contentType, setContentType] = useState(CONTENT_TYPES.ACCOUNT);
+  const location = useLocation();
+  const [contentType, setContentType] = useState(CONTENT_TYPES.PROFILE);
   const { userInfo } = useSelector((state) => state.auth);
   const { products } = useSelector((state) => state.cart.cart);
+  const queryParams = new URLSearchParams(location.search);
+  const tab = queryParams.get("tab") || CONTENT_TYPES.PROFILE;
+
+  const handleSelectedMenu = (tab) => {
+    setContentType(tab);
+    navigate(`/account?tab=${tab}`);
+  };
+
+  useEffect(() => {
+    setContentType(tab);
+    if (!queryParams.get("tab")) {
+      navigate("/account?tab=profile");
+    }
+  }, [navigate]);
 
   const logout = () => {
     dispatch(clearCart());
@@ -29,10 +46,12 @@ const Account = () => {
 
   const renderContent = () => {
     switch (contentType) {
-      case CONTENT_TYPES.ACCOUNT:
+      case CONTENT_TYPES.PROFILE:
         return <AccountForm />;
-      case CONTENT_TYPES.ORDER:
+      case CONTENT_TYPES.ORDERS:
         return <OrderTabs />;
+      case CONTENT_TYPES.CARTS:
+        return <Cart {...{ isHiden: true }} />;
       default:
         return <></>;
     }
@@ -50,8 +69,8 @@ const Account = () => {
         <div className="w-full md:w-1/4">
           <UserInfo user={userInfo} />
           <AccountMenu
+            handleSelectedMenu={handleSelectedMenu}
             cartItemCount={products.length}
-            setContentType={setContentType}
             navigate={navigate}
             logout={logout}
           />

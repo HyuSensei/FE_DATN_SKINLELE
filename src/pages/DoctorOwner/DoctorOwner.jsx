@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Card } from "antd";
 import SidebarMenu from "./SidebarMenu/SidebarMenu";
 import ManageStatistic from "./ContentOwner/ManageStatistic";
 import ManageBooking from "./ContentOwner/ManageBooking";

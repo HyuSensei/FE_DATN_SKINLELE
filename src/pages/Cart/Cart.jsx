@@ -23,7 +23,7 @@ import { getAllProductOther } from "@redux/product/product.thunk";
 
 const { Text } = Typography;
 
-const Cart = () => {
+const Cart = ({ isHiden = false }) => {
   const dispatch = useDispatch();
   const { products } = useSelector((state) => state.cart.cart);
   const {
@@ -119,10 +119,12 @@ const Cart = () => {
     <div className="container mx-auto py-4 sm:py-8 px-4">
       {products.length === 0 ? (
         <>
-          <Breadcrumb
-            className="pb-4"
-            items={[{ title: "Trang chủ" }, { title: "Giỏ hàng" }]}
-          />
+          {!isHiden && (
+            <Breadcrumb
+              className="pb-4"
+              items={[{ title: "Trang chủ" }, { title: "Giỏ hàng" }]}
+            />
+          )}
           <div className="flex items-center justify-center">
             <div>
               <img
@@ -146,11 +148,12 @@ const Cart = () => {
               totalAmount: totalPrice,
             }}
           />
-          <Breadcrumb
-            className="pb-4"
-            items={[{ title: "Trang chủ" }, { title: "Giỏ hàng" }]}
-          />
-
+          {!isHiden && (
+            <Breadcrumb
+              className="pb-4"
+              items={[{ title: "Trang chủ" }, { title: "Giỏ hàng" }]}
+            />
+          )}
           <Card className="mb-4 sm:mb-6 shadow-md hover:shadow-lg transition-shadow duration-300">
             <Checkbox
               checked={
@@ -256,15 +259,17 @@ const Cart = () => {
           </Card>
         </>
       )}
-      <ProductList
-        {...{
-          isLoading,
-          products: productList,
-          title: "Sản phẩm khác",
-          setPaginate,
-          paginate,
-        }}
-      />
+      {!isHiden && (
+        <ProductList
+          {...{
+            isLoading,
+            products: productList,
+            title: "Sản phẩm khác",
+            setPaginate,
+            paginate,
+          }}
+        />
+      )}
     </div>
   );
 };

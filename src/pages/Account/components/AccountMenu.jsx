@@ -7,18 +7,18 @@ import {
 } from "@ant-design/icons";
 import { LiaShoppingBasketSolid } from "react-icons/lia";
 
-const AccountMenu = ({ cartItemCount, setContentType, navigate, logout }) => (
+const AccountMenu = ({ cartItemCount, logout, handleSelectedMenu }) => (
   <Card className="shadow-md rounded-lg">
     <ul className="space-y-6">
       <MenuItem
         icon={<UserOutlined className="text-xl mr-3" />}
         text="Tài khoản"
-        onClick={() => setContentType("account")}
+        onClick={() => handleSelectedMenu("profile")}
       />
       <MenuItem
         icon={<UnorderedListOutlined className="text-xl mr-3" />}
         text="Đơn hàng"
-        onClick={() => setContentType("order")}
+        onClick={() => handleSelectedMenu("orders")}
       />
       <MenuItem
         icon={
@@ -26,7 +26,7 @@ const AccountMenu = ({ cartItemCount, setContentType, navigate, logout }) => (
             <LiaShoppingBasketSolid className="text-2xl" />
           </Badge>
         }
-        onClick={() => navigate("/cart")}
+        onClick={() => handleSelectedMenu("carts")}
         text="Giỏ hàng"
       />
       <MenuItem

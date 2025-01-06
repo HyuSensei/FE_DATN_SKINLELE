@@ -33,7 +33,20 @@ export const orderApi = createApi({
         };
       },
     }),
+    getOrderHistory: builder.query({
+      query: ({ page = 1, pageSize = 10, status = "all" }) => {
+        const queryString = new URLSearchParams({
+          page,
+          pageSize,
+          status,
+        }).toString();
+        return {
+          url: `/orders?${queryString}`,
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
-export const { useGetAllOrderAdminQuery } = orderApi;
+export const { useGetAllOrderAdminQuery, useGetOrderHistoryQuery } = orderApi;
