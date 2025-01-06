@@ -63,9 +63,9 @@ const CreateProduct = () => {
       const uploadedMainImage =
         mainImage && mainImage.originFileObj
           ? await uploadFile({
-              file: mainImage.originFileObj,
-              type: UPLOAD_SKINLELE_PRESET,
-            })
+            file: mainImage.originFileObj,
+            type: UPLOAD_SKINLELE_PRESET,
+          })
           : null;
 
       const uploadedVariants = await Promise.all(
@@ -81,12 +81,15 @@ const CreateProduct = () => {
             ...variant,
             color: {
               ...variant.color,
-              code: variant.color.code.toHexString(),
+              code:
+                typeof variant.color.code !== "string"
+                  ? variant.color.code.toHexString()
+                  : variant.color.code,
               image: uploadedImage
                 ? {
-                    url: uploadedImage.secure_url,
-                    publicId: uploadedImage.public_id,
-                  }
+                  url: uploadedImage.secure_url,
+                  publicId: uploadedImage.public_id,
+                }
                 : null,
             },
           };
@@ -102,9 +105,9 @@ const CreateProduct = () => {
         ].filter((item) => item !== undefined && item !== null),
         mainImage: uploadedMainImage
           ? {
-              url: uploadedMainImage.secure_url,
-              publicId: uploadedMainImage.public_id,
-            }
+            url: uploadedMainImage.secure_url,
+            publicId: uploadedMainImage.public_id,
+          }
           : null,
         images: uploadedImages.map((img) => ({
           url: img.url,

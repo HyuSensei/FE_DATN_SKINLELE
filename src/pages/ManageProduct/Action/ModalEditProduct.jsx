@@ -66,8 +66,8 @@ const ModalEditProduct = ({
             name: variant.color.name,
             code: variant.color.code,
             image: variant.color.image,
-            quantity: variant.color.quantity,
           },
+          quantity: variant.quantity,
         })),
         totalQuantity: data.totalQuantity,
       });

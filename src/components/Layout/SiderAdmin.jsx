@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { Layout, Menu } from "antd";
-import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import useScreen from "@hook/useScreen";
 import {
@@ -168,7 +167,6 @@ const Logo = ({ collapsed, adminInfo }) => (
 );
 
 const SiderAdmin = ({ collapsed, setCollapsed }) => {
-  const navigate = useNavigate();
   const { isMobile } = useScreen();
   const { adminInfo } = useSelector((state) => state.auth);
 
@@ -178,9 +176,9 @@ const SiderAdmin = ({ collapsed, setCollapsed }) => {
 
   const handleLogoClick = () => {
     if (adminInfo?.role === "ADMIN") {
-      navigate("/admin/dashboard");
+      window.location.href = "/admin/dashboard";
     } else {
-      navigate("/admin/dashboard-clinic");
+      window.location.href = "/admin/dashboard-clinic";
     }
   };
 
@@ -190,7 +188,7 @@ const SiderAdmin = ({ collapsed, setCollapsed }) => {
       key
     );
     if (selectedItem?.path) {
-      navigate(selectedItem.path);
+      window.location.href = selectedItem.path;
     }
   };
 

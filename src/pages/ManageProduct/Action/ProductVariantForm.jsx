@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import { Card, Form, Input, Upload, Row, Col, InputNumber } from "antd";
-import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Card, Form, Input, Upload, Row, Col, InputNumber, Tooltip } from "antd";
+import { HiOutlinePlusCircle, HiOutlineTrash } from "react-icons/hi2";
 import { ColorPicker } from "antd";
-import CustomButton from "@/components/CustomButton";
+import { motion, AnimatePresence } from "framer-motion";
 
 const ProductVariantForm = ({ form, variants = [], images, setImages }) => {
   useEffect(() => {
@@ -20,117 +20,145 @@ const ProductVariantForm = ({ form, variants = [], images, setImages }) => {
     });
   }, [form, variants]);
 
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  };
+
   return (
-    <Card title="Biến thể sản phẩm" className="shadow-md">
+    <Card
+      title="Biến thể sản phẩm"
+      className="shadow-lg rounded-xl border-0"
+    >
       <Form.List name="variants">
         {(fields, { add, remove }) => (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <Row gutter={[16, 16]}>
-              {fields.map((field, index) => (
-                <Col key={field.key} xs={24} md={12} lg={8}>
-                  <Card
-                    title={`Biến thể ${index + 1}`}
-                    extra={
-                      <CustomButton
-                        variant="danger"
-                        icon={<DeleteOutlined />}
-                        onClick={() => remove(field.name)}
-                      >
-                        Xóa
-                      </CustomButton>
-                    }
-                  >
-                    <div className="flex items-center gap-2 flex-wrap">
-                      {/* Tên màu */}
-                      <Form.Item
-                        className="flex-1"
-                        name={[field.name, "color", "name"]}
-                        label="Tên màu"
-                        rules={[{ required: true, message: "Nhập tên màu" }]}
-                      >
-                        <Input size="middle" placeholder="Nhập tên màu..." />
-                      </Form.Item>
-
-                      {/* Mã màu */}
-                      <Form.Item
-                        name={[field.name, "color", "code"]}
-                        label="Mã màu"
-                        rules={[{ required: true, message: "Chọn mã màu" }]}
-                      >
-                        <ColorPicker
-                          size="middle"
-                          format="hex"
-                          onChange={(color) => {
-                            form.setFieldValue(
-                              [field.name, "color", "code"],
-                              color.toHexString()
-                            );
-                          }}
-                        />
-                      </Form.Item>
-                    </div>
-
-                    {/* Số lượng */}
-                    <Form.Item
-                      label="Số lượng"
-                      name={[field.name, "quantity"]}
-                      rules={[
-                        { required: true, message: "Vui lòng nhập số lượng" },
-                        {
-                          type: "number",
-                          min: 1,
-                          message: "Số lượng phải lớn hơn 0",
-                        },
-                      ]}
+              <AnimatePresence>
+                {fields.map((field, index) => (
+                  <Col key={field.key} xs={24} lg={12} xl={8}>
+                    <motion.div
+                      variants={cardVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
                     >
-                      <InputNumber
-                        className="w-full"
-                        placeholder="Nhập số lượng..."
-                        size="middle"
-                        min={1}
-                      />
-                    </Form.Item>
-
-                    {/* Ảnh màu sắc */}
-                    <Form.Item
-                      name={[field.name, "color", "image"]}
-                      label="Ảnh màu sắc"
-                      rules={[{ required: true, message: "Chọn ảnh cho màu" }]}
-                    >
-                      <Upload
-                        listType="picture-card"
-                        maxCount={1}
-                        beforeUpload={() => false}
-                        fileList={images[index] ? [images[index]] : []}
-                        onChange={({ fileList }) => {
-                          const updatedImages = [...images];
-                          updatedImages[index] = fileList[0] || null;
-                          setImages(updatedImages);
-                          form.setFieldValue(
-                            [field.name, "color", "image"],
-                            updatedImages[index]
-                          );
-                        }}
+                      <Card
+                        className="hover:shadow-xl transition-shadow duration-300 border border-gray-200"
+                        title={
+                          <span className="text-gray-700 font-medium">
+                            Biến thể {index + 1}
+                          </span>
+                        }
+                        extra={
+                          <Tooltip title="Xóa biến thể">
+                            <button
+                              onClick={() => remove(field.name)}
+                              className="p-2 text-red-500 bg-red-50 rounded-full transition-colors"
+                            >
+                              <HiOutlineTrash className="w-5 h-5" />
+                            </button>
+                          </Tooltip>
+                        }
                       >
-                        <div>
-                          <PlusOutlined /> Tải lên
+                        <div className="space-y-4">
+                          <div className="flex items-start gap-4 flex-wrap">
+                            <Form.Item
+                              className="flex-1"
+                              name={[field.name, "color", "name"]}
+                              label="Tên màu"
+                              rules={[
+                                { required: true, message: "Nhập tên màu" }
+                              ]}
+                            >
+                              <Input
+                                placeholder="Nhập tên màu..."
+                                className="rounded-lg"
+                              />
+                            </Form.Item>
+                            <Form.Item
+                            className="flex-1"
+                              label="Số lượng"
+                              name={[field.name, "quantity"]}
+                              rules={[
+                                { required: true, message: "Nhập số lượng" },
+                                {
+                                  type: "number",
+                                  min: 1,
+                                  message: "Số lượng phải lớn hơn 0",
+                                },
+                              ]}
+                            >
+                              <InputNumber
+                                className="w-full rounded-lg"
+                                placeholder="Nhập số lượng..."
+                                min={1}
+                              />
+                            </Form.Item>
+                            <Form.Item
+                              name={[field.name, "color", "code"]}
+                              label="Mã màu"
+                              rules={[
+                                { required: true, message: "Chọn mã màu" }
+                              ]}
+                            >
+                              <ColorPicker
+                                format="hex"
+                                 size="middle"
+                              />
+                            </Form.Item>
+                          </div>
+                          <Form.Item
+                            name={[field.name, "color", "image"]}
+                            label="Ảnh màu sắc"
+                            rules={[
+                              { required: true, message: "Chọn ảnh cho màu" }
+                            ]}
+                          >
+                            <Upload
+                              listType="picture-card"
+                              maxCount={1}
+                              beforeUpload={() => false}
+                              fileList={images[index] ? [images[index]] : []}
+                              onChange={({ fileList }) => {
+                                const updatedImages = [...images];
+                                updatedImages[index] = fileList[0] || null;
+                                setImages(updatedImages);
+                                form.setFieldValue(
+                                  [field.name, "color", "image"],
+                                  updatedImages[index]
+                                );
+                              }}
+                              className="flex justify-center"
+                            >
+                              <div className="flex flex-col items-center gap-1">
+                                <HiOutlinePlusCircle className="w-6 h-6" />
+                                <span className="text-sm">Tải lên</span>
+                              </div>
+                            </Upload>
+                          </Form.Item>
                         </div>
-                      </Upload>
-                    </Form.Item>
-                  </Card>
-                </Col>
-              ))}
+                      </Card>
+                    </motion.div>
+                  </Col>
+                ))}
+              </AnimatePresence>
             </Row>
 
-            {/* Thêm biến thể */}
             <button
               type="button"
               onClick={() =>
-                add({ color: { name: "", code: "", image: null }, quantity: 0 })
+                add({ color: { name: "", code: "#FFFFFF", image: null }, quantity: 1})
               }
-              className="w-full h-12 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:text-blue-500 transition-colors"
+              className="w-full h-14 border-2 border-dashed border-gray-300 rounded-xl 
+                text-gray-600 font-medium
+                hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50
+                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                transition-all duration-200 flex items-center justify-center gap-2"
             >
-              <PlusOutlined /> Thêm biến thể
+              <HiOutlinePlusCircle className="w-5 h-5" />
+              Thêm biến thể mới
             </button>
           </div>
         )}
