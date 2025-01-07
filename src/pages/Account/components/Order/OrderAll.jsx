@@ -45,54 +45,67 @@ const OrderAll = ({
     switch (order.status) {
       case "pending":
       case "processing":
-        return <Button onClick={() => {
-          setOrderId(order._id)
-          setOpenCancel(true)
-        }} danger>Hủy đơn hàng</Button>;
+        return (
+          <Button
+            onClick={() => {
+              setOrderId(order._id);
+              setOpenCancel(true);
+            }}
+            danger
+          >
+            Hủy đơn hàng
+          </Button>
+        );
       case "shipping":
-        return <Popconfirm
-          className="max-w-40"
-          placement="bottom"
-          title={"Xác nhận giao hàng thành công"}
-          onConfirm={() => handleCompleteOrder(order._id)}
-          okText="Xác nhận"
-          cancelText="Hủy"
-          okButtonProps={{
-            loading: isLoading,
-          }}
-          destroyTooltipOnHide={true}
-        >
-          <Button type="primary">Đã nhận hàng</Button>
-        </Popconfirm>;
-      case "cancelled":
-        return <Button icon={<ShoppingCartOutlined />}>Mua lại</Button>;
+        return (
+          <Popconfirm
+            className="max-w-40"
+            placement="bottom"
+            title={"Xác nhận giao hàng thành công"}
+            onConfirm={() => handleCompleteOrder(order._id)}
+            okText="Xác nhận"
+            cancelText="Hủy"
+            okButtonProps={{
+              loading: isLoading,
+            }}
+            destroyTooltipOnHide={true}
+          >
+            <Button type="primary">Đã nhận hàng</Button>
+          </Popconfirm>
+        );
+      // case "cancelled":
+      //   return <Button >Mua lại</Button>;
       default:
         return <></>;
     }
   };
 
   const handleCompleteOrder = async (orderId) => {
-    const res = await dispatch(updateStatusOrderByUser({
-      id: orderId,
-      data: {
-        status: 'delivered'
-      }
-    })).unwrap()
+    const res = await dispatch(
+      updateStatusOrderByUser({
+        id: orderId,
+        data: {
+          status: "delivered",
+        },
+      })
+    ).unwrap();
     if (res.success) {
-      message.success(res.message)
-      refetch()
+      message.success(res.message);
+      refetch();
     }
-  }
+  };
 
   return (
     <Spin spinning={isLoading}>
-      <ModalReasonCancel {...{
-        open: openCancel,
-        setOpen: setOpenCancel,
-        orderId,
-        setOrderId,
-        refetch
-      }} />
+      <ModalReasonCancel
+        {...{
+          open: openCancel,
+          setOpen: setOpenCancel,
+          orderId,
+          setOrderId,
+          refetch,
+        }}
+      />
       <ModalRate
         {...{
           product: productDetail,
@@ -103,6 +116,7 @@ const OrderAll = ({
           hoverValue,
           setHoverValue,
           order: orderId,
+          refetch,
         }}
       />
       <List
@@ -114,7 +128,9 @@ const OrderAll = ({
               className="mb-4 sm:mb-6 shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
               title={
                 <Space className="flex items-center justify-between flex-wrap py-2">
-                  <Title level={5}>Đơn hàng: <span className="uppercase">OD{order._id}</span></Title>
+                  <Title level={5}>
+                    Đơn hàng: <span className="uppercase">OD{order._id}</span>
+                  </Title>
                   <div className="flex items-center gap-2">
                     {renderOrderActions(order)}
                   </div>
@@ -125,13 +141,15 @@ const OrderAll = ({
                 itemLayout="horizontal"
                 dataSource={groupProductsByProductId(order.products)}
                 renderItem={(product) => (
-                  <OrderProductItem {...{
-                    order,
-                    product,
-                    setOrderId,
-                    setProductDetail,
-                    setOpenRate
-                  }} />
+                  <OrderProductItem
+                    {...{
+                      order,
+                      product,
+                      setOrderId,
+                      setProductDetail,
+                      setOpenRate,
+                    }}
+                  />
                 )}
               />
 

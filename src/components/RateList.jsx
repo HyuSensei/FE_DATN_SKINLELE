@@ -19,23 +19,19 @@ import {
   EyeOutlined,
   HighlightOutlined,
 } from "@ant-design/icons";
-import { useCallback, useState, useEffect } from "react";
+import { useState } from "react";
 import ModalRate from "@components/Modal/ModalRate";
-import { useDispatch, useSelector } from "react-redux";
-import isEmpty from "lodash/isEmpty";
-import { getReviewProduct } from "@redux/review/review.thunk";
+import { useDispatch } from "react-redux";
 import { capitalizeFirstLetter } from "@helpers/formatDate";
 import { FaQuoteLeft, FaQuoteRight } from "react-icons/fa6";
 import { MdVerified } from "react-icons/md";
 import dayjs from "@utils/dayjsTz";
+import { useGetReviewByUserQuery } from "@/redux/review/review.query";
 
 const RateList = ({ product }) => {
-  const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [rate, setRate] = useState(0);
   const [hoverValue, setHoverValue] = useState(0);
-  const { reviews, pagination, isLoading, averageRating, rateDistribution } =
-    useSelector((state) => state.review);
   const [reviewFilter, setReviewFilter] = useState({
     rate: "",
     hasImage: "",
@@ -44,38 +40,19 @@ const RateList = ({ product }) => {
   const [paginate, setPaginate] = useState({
     page: 1,
     pageSize: 10,
-    totalPage: 0,
-    totalItems: 0,
   });
 
-  const fetchReviews = useCallback(() => {
-    if (!isEmpty(product)) {
-      dispatch(
-        getReviewProduct({
-          productId: product._id,
-          page: paginate.page,
-          pageSize: paginate.pageSize,
-          ...reviewFilter,
-        })
-      );
-    }
-  }, [product?._id, paginate.page, paginate.pageSize, reviewFilter, dispatch]);
+  const { data, isLoading, refetch } = useGetReviewByUserQuery(
+    { ...paginate, ...reviewFilter, productId: product?._id },
+    { skip: !product }
+  );
 
-  useEffect(() => {
-    fetchReviews();
-  }, [fetchReviews]);
-
-  useEffect(() => {
-    if (pagination) {
-      setPaginate((prev) => ({
-        ...prev,
-        page: pagination?.page,
-        pageSize: pagination?.pageSize,
-        totalPage: pagination?.totalPage,
-        totalItems: pagination?.totalItems,
-      }));
-    }
-  }, [pagination]);
+  const {
+    data: reviews = [],
+    pagination = {},
+    averageRating = 0,
+    rateDistribution = {},
+  } = data || {};
 
   const handleFilterChange = (type, value) => {
     setReviewFilter((prev) => ({
@@ -109,6 +86,7 @@ const RateList = ({ product }) => {
             setHoverValue,
             hoverValue,
             product,
+            refetch,
           }}
         />
         <div className="md:w-1/3">
@@ -317,14 +295,11 @@ const RateList = ({ product }) => {
               />
               <div className="text-right mt-4">
                 <Pagination
-                  current={paginate.page}
-                  pageSize={paginate.pageSize}
-                  total={paginate.totalItems}
+                  current={pagination?.page}
+                  pageSize={pagination?.pageSize}
+                  total={pagination?.totalItems}
                   onChange={(page) =>
                     setPaginate((prev) => ({ ...prev, page }))
-                  }
-                  onShowSizeChange={(_, pageSize) =>
-                    setPaginate((prev) => ({ ...prev, pageSize }))
                   }
                   showTotal={(total) => `Tổng ${total} đánh giá`}
                 />

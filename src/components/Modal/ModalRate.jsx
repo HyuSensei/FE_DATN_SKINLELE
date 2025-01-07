@@ -28,7 +28,7 @@ const ModalRate = ({
   setRate,
   setHoverValue,
   hoverValue,
-  status = "all"
+  refetch,
 }) => {
   const [review, setReview] = useState({
     order: "",
@@ -43,7 +43,6 @@ const ModalRate = ({
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
   const { isLoading } = useSelector((state) => state.review);
-  const { pagination } = useSelector((state) => state.order);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -185,15 +184,8 @@ const ModalRate = ({
               hasComment: "",
             })
           );
-        } else {
-          dispatch(
-            getOrderHistory({
-              status,
-              page: pagination.page,
-              pageSize: pagination.pageSize,
-            })
-          );
         }
+        refetch();
         setOpen(false);
       }
     });
@@ -311,8 +303,9 @@ const ModalRate = ({
         <div className="mb-6">
           <div className="font-medium mb-2 text-lg">Nội dung đánh giá:</div>
           <textarea
-            className={`w-full p-4 ${validates.comment ? "border-red-500" : "border-2 border-pink-200"
-              } rounded-lg focus:ring-2 focus:ring-purple-300 focus:border-transparent transition duration-300 ease-in-out`}
+            className={`w-full p-4 ${
+              validates.comment ? "border-red-500" : "border-2 border-pink-200"
+            } rounded-lg focus:ring-2 focus:ring-purple-300 focus:border-transparent transition duration-300 ease-in-out`}
             rows="4"
             placeholder="Hãy chia sẻ trải nghiệm của bạn về sản phẩm này..."
             value={review.comment}

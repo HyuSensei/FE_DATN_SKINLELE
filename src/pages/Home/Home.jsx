@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import Banner from "@components/Banner/Banner";
+import Banner from "./Banner";
 import ProductCarousel from "@components/Product/ProductCarousel";
 import ProductSale from "@components/Product/ProductSale";
 import SliderList from "@components/Slider/SliderList";

@@ -6,10 +6,8 @@ import {
   Pagination,
   Typography,
   Space,
-  Tag,
   Steps,
   Button,
-  Tooltip,
 } from "antd";
 import {
   ClockCircleOutlined,
@@ -17,15 +15,13 @@ import {
   CarOutlined,
   CheckCircleOutlined,
   HighlightOutlined,
-  EyeOutlined
 } from "@ant-design/icons";
-import { formatPrice } from "@helpers/formatPrice";
-import { formatDateReview } from "@helpers/formatDate";
-import ModalOrderDetail from "@/pages/Account/components/Order/ModalOrderDetail";
-import isEmpty from "lodash/isEmpty";
-import ModalEditShip from "@components/Modal/ModalEditShip";
+import OrderProductItem from "./OrderProductItem";
+import { groupProductsByProductId } from "@/helpers/order";
+import OrderInfor from "./OrderInfor";
+import ModalEditShip from "@/components/Modal/ModalEditShip";
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 const { Step } = Steps;
 
 const OrderProcess = ({
@@ -33,11 +29,9 @@ const OrderProcess = ({
   orders,
   page,
   pageSize,
-  totalPage,
   totalItems,
   setPaginate,
 }) => {
-  const [open, setOpen] = useState(false);
   const [order, setOrder] = useState({});
   const [openOrder, setOpenEdit] = useState(false);
 
@@ -60,13 +54,6 @@ const OrderProcess = ({
         {...{
           open: openOrder,
           setOpen: setOpenEdit,
-          order
-        }}
-      />
-      <ModalOrderDetail
-        {...{
-          open,
-          setOpen,
           order,
         }}
       />
@@ -81,16 +68,18 @@ const OrderProcess = ({
                 className="mb-4 sm:mb-6 shadow-md hover:shadow-lg transition-shadow duration-300"
                 title={
                   <Space className="flex items-center justify-between flex-wrap py-2">
-                    <Title level={5}>Đơn hàng: <span className="uppercase">OD{order._id}</span></Title>
+                    <Title level={5}>
+                      Đơn hàng: <span className="uppercase">OD{order._id}</span>
+                    </Title>
                     <div className="flex items-center gap-2">
-                      <Button onClick={() => {
-                        setOrder(order)
-                        setOpen(true)
-                      }}><EyeOutlined /></Button>
-                      <Button onClick={() => {
-                        setOrder(order)
-                        setOpenEdit(true)
-                      }}><HighlightOutlined /></Button>
+                      <Button
+                        onClick={() => {
+                          setOrder(order);
+                          setOpenEdit(true);
+                        }}
+                      >
+                        <HighlightOutlined />
+                      </Button>
                     </div>
                   </Space>
                 }
@@ -103,70 +92,33 @@ const OrderProcess = ({
                 </Steps>
                 <List
                   itemLayout="horizontal"
-                  dataSource={order.products}
+                  dataSource={groupProductsByProductId(order.products)}
                   renderItem={(product) => (
-                    <List.Item>
-                      <List.Item.Meta
-                        avatar={
-                          <img
-                            src={product.image}
-                            alt={product.name}
-                            className="w-16 h-16 object-cover rounded-md"
-                          />
-                        }
-                        title={product.name}
-                        description={
-                          <>
-                            <Text>
-                              {formatPrice(product.price)} đ x {product.quantity}
-                            </Text>
-                            {
-                              !isEmpty(product.color) &&
-                              <Tooltip title={product.color.name}>
-                                <div
-                                  style={{ backgroundColor: product.color.code }}
-                                  className={`w-6 h-6 rounded-full border border-gray-300`}
-                                />
-                              </Tooltip>
-                            }
-                          </>
-                        }
-                      />
-                    </List.Item>
+                    <OrderProductItem
+                      {...{
+                        order,
+                        product,
+                      }}
+                    />
                   )}
                 />
-                <Space direction="vertical" className="w-full mt-4">
-                  <Text>
-                    Ngày đặt hàng: {formatDateReview(order.createdAt)}
-                  </Text>
-                  <div className="flex items-center justify-between">
-                    <Tag color={color}>{text}</Tag>
-                    <Text strong>
-                      Tổng tiền: {formatPrice(order.totalAmount)} đ
-                    </Text>
-                  </div>
-                </Space>
+                <OrderInfor {...{ order }} />
               </Card>
             </List.Item>
           );
         }}
       />
-      {
-        orders.length > 0 &&
+      {orders.length > 0 && (
         <div className="text-right mt-4">
           <Pagination
             current={page}
             pageSize={pageSize}
             total={totalItems}
             onChange={(page) => setPaginate((prev) => ({ ...prev, page }))}
-            onShowSizeChange={(_, pageSize) =>
-              setPaginate((prev) => ({ ...prev, pageSize }))
-            }
             showTotal={(total) => `Tổng ${total} đơn hàng đang xử lý`}
           />
         </div>
-      }
-
+      )}
     </Spin>
   );
 };
