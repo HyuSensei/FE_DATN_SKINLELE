@@ -137,7 +137,6 @@ export const getOrderDetail = createAsyncThunk(
   }
 );
 
-
 export const updateOrderByUser = createAsyncThunk(
   "order/updateOrderByUser",
   async ({ id, data }, { rejectWithValue }) => {
@@ -158,6 +157,20 @@ export const updateStatusOrderByUser = createAsyncThunk(
     try {
       return await axios.put(
         `/orders/status/${id}`, data
+      );
+    } catch (error) {
+      message.warning(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const updateStatusOrderByAdmin = createAsyncThunk(
+  "order/updateStatusOrderByAdmin",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      return await axios.put(
+        `/admin/orders/status/${id}`, data
       );
     } catch (error) {
       message.warning(error.response.data.message);

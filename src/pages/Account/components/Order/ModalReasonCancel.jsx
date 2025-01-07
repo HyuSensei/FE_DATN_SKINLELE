@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Modal, Radio, Input, Space, message } from "antd";
-import { getOrderHistory, updateStatusOrderByUser } from "@redux/order/order.thunk";
+import { updateStatusOrderByUser } from "@redux/order/order.thunk";
 
 const cancellationReasons = [
     "Tôi muốn thay đổi địa chỉ giao hàng",
@@ -12,9 +12,8 @@ const cancellationReasons = [
     "Lý do khác"
 ];
 
-const ModalReasonCancel = ({ open, setOpen, orderId, setOrderId, statusPage = "all" }) => {
+const ModalReasonCancel = ({ open, setOpen, orderId, setOrderId, refetch }) => {
     const dispatch = useDispatch();
-    const { page, pageSize } = useSelector(state => state.order)
     const [selectedReason, setSelectedReason] = useState("");
     const [otherReason, setOtherReason] = useState("");
 
@@ -23,11 +22,7 @@ const ModalReasonCancel = ({ open, setOpen, orderId, setOrderId, statusPage = "a
         const res = await dispatch(updateStatusOrderByUser({ id: orderId, data: { status: 'cancelled', cancelReason: finalReason } })).unwrap()
         if (res.success) {
             message.success(res.message)
-            dispatch(getOrderHistory({
-                page,
-                pageSize,
-                status: statusPage
-            }))
+            refetch()
             handleClose()
         }
     };

@@ -66,7 +66,7 @@ const Account = () => {
 
       <div className="flex flex-col md:flex-row gap-6">
         {/* Left Column: User Info and Menu */}
-        <div className="w-full md:w-1/4">
+        <div className="w-full md:w-1/4 top-4 lg:sticky">
           <UserInfo user={userInfo} />
           <AccountMenu
             handleSelectedMenu={handleSelectedMenu}
@@ -78,7 +78,7 @@ const Account = () => {
 
         {/* Right Column: Dynamic Content */}
         <div className="w-full md:w-3/4 min-h-screen">
-          <Card className="shadow-md rounded-lg">{renderContent()}</Card>
+          {renderContent()}
         </div>
       </div>
     </div>

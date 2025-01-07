@@ -14,16 +14,8 @@ import { formatPrice } from "@helpers/formatPrice";
 import { orderStatus } from "@const/status";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { useDispatch } from "react-redux";
-import { deleteOrder, updateOrder } from "@redux/order/order.thunk";
+import { deleteOrder, updateOrder, updateStatusOrderByAdmin } from "@redux/order/order.thunk";
 import { useNavigate } from "react-router-dom";
-
-const validTransitions = {
-  pending: ["processing", "cancelled"],
-  processing: ["shipping", "cancelled"],
-  shipping: ["delivered", "cancelled"],
-  delivered: [],
-  cancelled: [],
-};
 
 const TableOrder = ({
   orders = [],
@@ -175,7 +167,7 @@ const TableOrder = ({
   );
 
   const handleUpdateStatus = async (id, status) => {
-    const res = await dispatch(updateOrder({ id, data: { status } })).unwrap();
+    const res = await dispatch(updateStatusOrderByAdmin({ id, data: { status } })).unwrap();
     if (res.success) {
       refetch();
       message.success(res.message);

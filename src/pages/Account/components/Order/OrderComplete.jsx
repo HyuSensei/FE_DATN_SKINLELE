@@ -14,7 +14,7 @@ import { EyeOutlined, StarOutlined } from "@ant-design/icons";
 import { formatPrice } from "@helpers/formatPrice";
 import { formatDateReview } from "@helpers/formatDate";
 import ModalRate from "@components/Modal/ModalRate";
-import ModalOrderDetail from "@components/Modal/ModalOrderDetail";
+import ModalOrderDetail from "@/pages/Account/components/Order/ModalOrderDetail";
 import isEmpty from "lodash/isEmpty";
 
 const { Title, Text } = Typography;

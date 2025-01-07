@@ -15,7 +15,7 @@ import {
 import { EyeOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { formatPrice } from "@helpers/formatPrice";
 import { formatDateReview } from "@helpers/formatDate";
-import ModalOrderDetail from "@components/Modal/ModalOrderDetail";
+import ModalOrderDetail from "@/pages/Account/components/Order/ModalOrderDetail";
 import isEmpty from "lodash/isEmpty";
 import { useDispatch } from "react-redux";
 import {
@@ -30,7 +30,6 @@ const OrderCancel = ({
   orders,
   page,
   pageSize,
-  totalPage,
   totalItems,
   setPaginate,
 }) => {

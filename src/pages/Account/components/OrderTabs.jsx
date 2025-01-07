@@ -23,7 +23,7 @@ const OrderTabs = () => {
     pageSize: 5,
   });
 
-  const { data, isLoading } = useGetOrderHistoryQuery({
+  const { data, isLoading, refetch } = useGetOrderHistoryQuery({
     ...paginate,
     status,
   });
@@ -48,6 +48,7 @@ const OrderTabs = () => {
             orders,
             ...resPaginate,
             setPaginate,
+            refetch
           }}
         />
       ),
@@ -68,6 +69,7 @@ const OrderTabs = () => {
             orders,
             ...resPaginate,
             setPaginate,
+            refetch
           }}
         />
       ),
@@ -88,6 +90,7 @@ const OrderTabs = () => {
             orders,
             ...resPaginate,
             setPaginate,
+            refetch
           }}
         />
       ),
@@ -108,6 +111,7 @@ const OrderTabs = () => {
             orders,
             ...resPaginate,
             setPaginate,
+            refetch
           }}
         />
       ),
@@ -128,6 +132,7 @@ const OrderTabs = () => {
             orders,
             ...resPaginate,
             setPaginate,
+            refetch
           }}
         />
       ),
@@ -148,6 +153,7 @@ const OrderTabs = () => {
             orders,
             ...resPaginate,
             setPaginate,
+            refetch
           }}
         />
       ),
