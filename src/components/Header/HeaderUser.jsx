@@ -19,6 +19,7 @@ import { FaRegUserCircle } from "react-icons/fa";
 import SearchHeader from "@components/Search/SearchHeader";
 import { clearCart } from "@redux/cart/cart.slice";
 import LogoSkinLele from "./LogoSkinLeLe";
+import NotificationStoreDrop from "./NotificationStoreDrop";
 
 const HeaderUser = () => {
   const dispatch = useDispatch();
@@ -210,7 +211,7 @@ const HeaderUser = () => {
             <SearchHeader />
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-6">
             {isAuthenticated ? (
               <Dropdown
                 className="hidden md:flex"
@@ -240,6 +241,7 @@ const HeaderUser = () => {
                 Đăng nhập
               </Button>
             )}
+            <NotificationStoreDrop />
             <Badge
               onClick={() => navigate("/cart")}
               color="#e28585"

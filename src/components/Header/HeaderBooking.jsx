@@ -9,6 +9,7 @@ import ModalAuth from "../Modal/ModalAuth";
 import { logoutUser, setOpenModelAuth } from "@/redux/auth/auth.slice";
 import SearchHeaderBooking from "../Search/SearchHeaderBooking";
 import ConversationDoctor from "../Chat/Conversation/ConversationDoctor";
+import NotificationBookingDrop from "./NotificationBookingDrop";
 
 const { Header: AntHeader } = Layout;
 
@@ -99,11 +100,7 @@ const HeaderBooking = () => {
                 </div>
               )}
               {!isDoctorOwner && <ConversationDoctor />}
-              <Badge count={1} offset={[-9, 4]} color="cyan">
-                <div className="h-10 w-10 bg-slate-50 hover:bg-slate-100 rounded-full flex items-center justify-center cursor-pointer">
-                  <IoNotificationsOutline className="text-slate-500 text-2xl" />
-                </div>
-              </Badge>
+              <NotificationBookingDrop />
               {!isDoctorOwner && (
                 <Dropdown
                   menu={{

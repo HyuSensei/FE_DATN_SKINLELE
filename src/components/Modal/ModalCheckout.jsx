@@ -24,6 +24,7 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
   const { provinces, districts, wards } = useSelector((state) => state.ship);
+  const { socket } = useSelector((state) => state.socket);
 
   const [order, setOrder] = useState({
     name: "",
@@ -114,6 +115,14 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
                 })
               );
             });
+            socket?.emit(
+              "createOrder",
+              JSON.stringify({
+                order: res.payload.data,
+                model: "User",
+                recipient: res.payload.data.user,
+              })
+            );
             dispatch(setOrderReturn(res.payload.data));
             navigate(`/order-return`);
           }
