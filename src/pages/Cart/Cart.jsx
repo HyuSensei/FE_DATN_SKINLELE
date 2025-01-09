@@ -10,7 +10,7 @@ import {
 } from "antd";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import ProductList from "@components/Product/ProductList";
-import ModalCheckout from "@components/Modal/ModalCheckout";
+import ModalCheckout from "@/pages/Cart/ModalCheckout";
 import { useDispatch, useSelector } from "react-redux";
 import {
   incrementQuantity,
@@ -19,18 +19,13 @@ import {
 } from "@redux/cart/cart.slice";
 import { formatPrice } from "@helpers/formatPrice";
 import { isEmpty } from "lodash";
-import { getAllProductOther } from "@redux/product/product.thunk";
+import { useGetProductOtherQuery } from "@/redux/product/product.query";
 
 const { Text } = Typography;
 
 const Cart = ({ isHiden = false }) => {
   const dispatch = useDispatch();
   const { products } = useSelector((state) => state.cart.cart);
-  const {
-    products: productList,
-    isLoading,
-    pagination,
-  } = useSelector((state) => state.product);
   const [selectedItems, setSelectedItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [open, setOpen] = useState(false);
@@ -47,21 +42,11 @@ const Cart = ({ isHiden = false }) => {
     );
   }, [products, selectedItems]);
 
-  useEffect(() => {
-    dispatch(getAllProductOther({ ...paginate }));
-  }, [paginate.page, paginate.pageSize]);
+  const { data, isLoading, isFetching } = useGetProductOtherQuery({
+    ...paginate,
+  });
 
-  useEffect(() => {
-    if (pagination) {
-      setPaginate((prev) => ({
-        ...prev,
-        page: pagination.page,
-        pageSize: pagination.pageSize,
-        totalPage: pagination.totalPage,
-        totalItems: pagination.totalItems,
-      }));
-    }
-  }, [pagination]);
+  const { data: productList = [], pagination = {} } = data || {};
 
   useEffect(() => {
     const newTotalPrice = selectedItems.reduce((total, itemId) => {
@@ -262,11 +247,16 @@ const Cart = ({ isHiden = false }) => {
       {!isHiden && (
         <ProductList
           {...{
-            isLoading,
+            isLoading: isLoading || isFetching,
             products: productList,
             title: "Sản phẩm khác",
             setPaginate,
-            paginate,
+            paginate: {
+              page: pagination?.page,
+              pageSize: pagination?.pageSize,
+              totalPage: pagination?.totalPage,
+              totalItems: pagination?.totalItems,
+            },
           }}
         />
       )}

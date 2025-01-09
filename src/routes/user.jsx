@@ -18,6 +18,9 @@ const OrderReturn = lazy(() => import("@pages/OrderReturn/OrderReturn"));
 const Category = lazy(() => import("@pages/Category/Category"));
 const Brand = lazy(() => import("@pages/Brand/Brand"));
 const Promotion = lazy(() => import("@pages/Promotion/Promotion"));
+const OrderDetailUser = lazy(() =>
+  import("@pages/OrderDetailUser/OrderDetailUser")
+);
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isLoading } = useSelector((state) => state.auth);
@@ -81,6 +84,12 @@ const routes = [
   { path: "/categories/:slug", element: Category, title: "Danh mục sản phẩm" },
   { path: "/brands/:slug", element: Brand, title: "Thương hiệu" },
   { path: "/promotions", element: Promotion, title: "Khuyến mãi hot" },
+  {
+    path: "/order-detail/:id",
+    element: OrderDetailUser,
+    title: "Thông tin chi tiết đơn hàng",
+    isProtected: true,
+  },
 ];
 
 const UserRoutes = routes.map(

@@ -13,6 +13,7 @@ import socketReducer from "./socket/socket.slice";
 import doctorReducer from "./doctor/doctor.slice";
 import bookingReducer from "./booking/booking.slice";
 import chatReducer from "./chat/chat.slice";
+import notificationReducer from "./notification/notification.slice";
 
 const reducer = {
   product: productReducer,
@@ -30,6 +31,7 @@ const reducer = {
   doctor: doctorReducer,
   booking: bookingReducer,
   chat: chatReducer,
+  notification: notificationReducer,
 };
 
 export default reducer;

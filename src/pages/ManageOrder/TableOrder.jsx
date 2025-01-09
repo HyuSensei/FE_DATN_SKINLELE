@@ -13,8 +13,11 @@ import { formatDateOrder } from "@helpers/formatDate";
 import { formatPrice } from "@helpers/formatPrice";
 import { orderStatus } from "@const/status";
 import { MdOutlineDeleteOutline } from "react-icons/md";
-import { useDispatch } from "react-redux";
-import { deleteOrder, updateOrder, updateStatusOrderByAdmin } from "@redux/order/order.thunk";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  deleteOrder,
+  updateStatusOrderByAdmin,
+} from "@redux/order/order.thunk";
 import { useNavigate } from "react-router-dom";
 
 const TableOrder = ({
@@ -26,6 +29,7 @@ const TableOrder = ({
   setPaginate,
   refetch,
 }) => {
+  const { socketAdmin: socket } = useSelector((state) => state.socket);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const columns = useMemo(
@@ -93,7 +97,9 @@ const TableOrder = ({
               status === "cancelled" || status === "delivered" ? true : false
             }
             value={status}
-            onChange={(value) => handleUpdateStatus(record._id, value)}
+            onChange={(value) =>
+              handleUpdateStatus({ order: record, status: value })
+            }
           >
             {orderStatus.map((item, index) => (
               <Select.Option key={index} value={item.value}>
@@ -166,11 +172,21 @@ const TableOrder = ({
     [page, pageSize]
   );
 
-  const handleUpdateStatus = async (id, status) => {
-    const res = await dispatch(updateStatusOrderByAdmin({ id, data: { status } })).unwrap();
+  const handleUpdateStatus = async ({ status, order }) => {
+    const res = await dispatch(
+      updateStatusOrderByAdmin({ id: order._id, data: { status } })
+    ).unwrap();
     if (res.success) {
-      refetch();
       message.success(res.message);
+      socket?.emit(
+        "updateOrderStatus",
+        JSON.stringify({
+          recipient: order.user._id,
+          model: "User",
+          order: res.data,
+        })
+      );
+      refetch();
     }
   };
 

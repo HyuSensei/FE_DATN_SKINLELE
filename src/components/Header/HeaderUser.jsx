@@ -241,7 +241,9 @@ const HeaderUser = () => {
                 Đăng nhập
               </Button>
             )}
-            <NotificationStoreDrop />
+
+            {isAuthenticated && <NotificationStoreDrop />}
+
             <Badge
               onClick={() => navigate("/cart")}
               color="#e28585"

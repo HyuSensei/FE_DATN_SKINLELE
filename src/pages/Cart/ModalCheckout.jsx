@@ -24,7 +24,7 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
   const { provinces, districts, wards } = useSelector((state) => state.ship);
-  const { socket } = useSelector((state) => state.socket);
+  const { socketCustomer: socket } = useSelector((state) => state.socket);
 
   const [order, setOrder] = useState({
     name: "",
@@ -95,17 +95,20 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
       navigate("/auth");
       return;
     }
+
     const validationErrors = await validateForm({
       input: order,
       validateSchema: validateOrderSchema,
     });
+
     if (Object.keys(validationErrors).length > 0) {
       setValidates(validationErrors);
       return;
     }
+
     switch (order.paymentMethod) {
       case "COD":
-        return dispatch(orderCod(order)).then((res) => {
+        dispatch(orderCod(order)).then((res) => {
           if (res.payload.success) {
             products.forEach((item) => {
               dispatch(
@@ -127,13 +130,16 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
             navigate(`/order-return`);
           }
         });
+        break;
 
       case "VNPAY":
-        return dispatch(orderVnpay(order)).then((res) => {
+        dispatch(orderVnpay(order)).then((res) => {
           if (res.payload.success) {
             window.location.href = res.payload.data;
           }
         });
+        break;
+
       case "STRIPE":
         const stripe = await loadStripe(STRIPE_PUBLIC_KEY);
         dispatch(orderStripe(order)).then(async (res) => {
@@ -144,6 +150,7 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
           }
         });
         break;
+
       default:
         break;
     }

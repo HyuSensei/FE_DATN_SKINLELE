@@ -144,6 +144,18 @@ export const productApi = createApi({
         };
       },
     }),
+    getProductOther: builder.query({
+      query: ({ page = 1, pageSize = 10 }) => {
+        const queryString = new URLSearchParams({
+          page,
+          pageSize,
+        }).toString();
+        return {
+          url: `/products/all-other?${queryString}`,
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
@@ -156,4 +168,5 @@ export const {
   useGetProductFromBrandQuery,
   useGetProductPromtionQuery,
   useGetAllProductByAdminQuery,
+  useGetProductOtherQuery,
 } = productApi;
