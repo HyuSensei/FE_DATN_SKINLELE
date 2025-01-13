@@ -103,18 +103,18 @@ const NotificationDrop = () => {
   };
 
   const notificationList = (
-    <div className="w-[420px] bg-white shadow-2xl">
+    <div className="w-[350px] lg:w-[420px] bg-white shadow-2xl mr-4">
       <div className="p-4 rounded-t-xl  bg-gradient-to-r from-rose-300 to-rose-400 flex justify-between items-center">
         <div className="text-white">
-          <h3 className="font-semibold text-lg flex items-center gap-2">
+          <h3 className="font-semibold text-sm lg:text-lg flex items-center gap-2">
             <IoIosNotifications className="text-xl" /> Thông báo
           </h3>
-          <p className="text-sm">{`Bạn có ${unreadCount} thông báo chưa đọc`}</p>
+          <p className="text-xs lg:text-sm">{`Bạn có ${unreadCount} thông báo chưa đọc`}</p>
         </div>
         <div className="flex gap-3">
           <button
             onClick={handleMarkAllNoti}
-            className="text-white hover:text-slate-50 hover:underline text-sm"
+            className="text-white hover:text-slate-50 underline text-xs lg:text-sm"
           >
             Đánh dấu tất cả đã đọc
           </button>
@@ -204,14 +204,14 @@ const NotificationDrop = () => {
   return (
     <Dropdown
       dropdownRender={() => notificationList}
-      placement="bottomRight"
+      placement="bottom"
       trigger={["click"]}
       arrow={{ pointAtCenter: true }}
       open={dropdownOpen}
       onOpenChange={setDropdownOpen}
     >
       <Badge color="#e28585" count={unreadCount}>
-        <IoNotificationsOutline className="text-3xl cursor-pointer" />
+        <IoNotificationsOutline className="text-xl lg:text-3xl cursor-pointer" />
       </Badge>
     </Dropdown>
   );

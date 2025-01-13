@@ -192,13 +192,13 @@ const HeaderUser = () => {
   return (
     <>
       <header className="bg-white shadow-md">
-        <div className="bg-gradient-to-r from-rose-300 via-[#a64478] to-[#f1b5b5] text-white text-center py-2 text-base font-medium">
+        <div className="bg-gradient-to-r from-rose-300 via-[#a64478] to-[#f1b5b5] text-white text-center py-1 lg:py-2 text-base font-medium">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="animate-bounce">
+            <div className="animate-bounce text-sm lg:text-base">
               Chào mừng bạn đến với SkinLeLe ❤️
             </div>
           </motion.div>
@@ -249,7 +249,7 @@ const HeaderUser = () => {
               color="#e28585"
               count={products.length}
             >
-              <LiaShoppingBasketSolid className="text-3xl cursor-pointer" />
+              <LiaShoppingBasketSolid className="text-xl lg:text-3xl cursor-pointer" />
             </Badge>
             <Button
               type="text"

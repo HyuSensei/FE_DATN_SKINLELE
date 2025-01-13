@@ -127,7 +127,7 @@ const ConversationSupport = () => {
   return (
     <div
       className={`fixed ${
-        isConversationSupport || isChatSupport ? " bottom-8" : " bottom-20"
+        isConversationSupport || isChatSupport ? " bottom-12" : " bottom-20"
       } right-8 z-50`}
     >
       {/* Chat Icon */}
@@ -153,7 +153,7 @@ const ConversationSupport = () => {
 
       {/* Support List */}
       {isConversationSupport && (
-        <div className="w-[350px] bg-white rounded-xl shadow-2xl overflow-hidden animate-slideIn">
+        <div className="w-[320px] lg:w-[400px] bg-white rounded-xl shadow-2xl overflow-hidden animate-slideIn">
           <div className="p-4 bg-gradient-to-r from-rose-500 to-rose-400 text-white flex justify-between">
             <div className="flex flex-col gap-1">
               <h3 className="font-bold text-sm flex items-center gap-2">

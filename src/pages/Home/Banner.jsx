@@ -43,9 +43,9 @@ const CustomArrow = ({ direction, onClick }) => (
     onClick={onClick}
   >
     {direction === "prev" ? (
-      <FaChevronLeft className="text-gray-800 text-2xl" />
+      <FaChevronLeft className="text-gray-800 text-sm lg-text-2xl" />
     ) : (
-      <FaChevronRight className="text-gray-800 text-2xl" />
+      <FaChevronRight className="text-gray-800 text-sm lg-text-2xl" />
     )}
   </motion.div>
 );

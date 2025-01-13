@@ -28,19 +28,17 @@ const Home = () => {
       <Banner />
       <div className="space-y-8">
         <Spin spinning={isLoading} tip="Đang tải...">
-          <div className="mt-8 mb-4">
-            {HOT &&
-              HOT.length >= 5 &&
-              (!isMobile ? (
-                <ProductCarousel
-                  {...{ title: "Sản phẩm nổi bật", products: HOT, isLoading }}
-                />
-              ) : (
-                <ProductList
-                  {...{ title: "Sản phẩm nổi bật", products: HOT, isLoading }}
-                />
-              ))}
-          </div>
+          {HOT &&
+            HOT.length >= 5 &&
+            (!isMobile ? (
+              <ProductCarousel
+                {...{ title: "Sản phẩm nổi bật", products: HOT, isLoading }}
+              />
+            ) : (
+              <ProductList
+                {...{ title: "Sản phẩm nổi bật", products: HOT, isLoading }}
+              />
+            ))}
         </Spin>
         <SliderList {...{ slides: sliderPromotion }} />
         <Spin spinning={isLoading} tip="Đang tải...">
