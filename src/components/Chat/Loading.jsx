@@ -16,7 +16,7 @@ export const LoadingMessage = () => {
           >
             <div
               className={`${
-                index % 2 === 0 ? "w-48" : "w-64"
+                index % 2 === 0 ? "w-48" : "w-60"
               } h-4 rounded-full bg-gray-200`}
             ></div>
             <div

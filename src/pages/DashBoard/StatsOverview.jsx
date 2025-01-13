@@ -50,7 +50,15 @@ const StatCard = ({
             valueStyle={{ color: color, fontWeight: "bold" }}
             formatter={
               typeof value === "number" && !prefix
-                ? (val) => formatPrice(val)
+                ? (val) => {
+                    if (
+                      title.trim() === "Doanh thu" ||
+                      title.trim() === "Thanh toán thành công"
+                    ) {
+                      return formatPrice(val) + " VND";
+                    }
+                    return formatPrice(val);
+                  }
                 : undefined
             }
           />
@@ -71,7 +79,7 @@ const StatCard = ({
           <MdTrendingUp className="text-green-500" />
           {subTitle}:{" "}
           {typeof subValue === "number" && subValue > 100
-            ? formatPrice(subValue)
+            ? formatPrice(subValue) + " VND"
             : subValue}
         </div>
       )}
@@ -142,7 +150,7 @@ const StatsOverview = () => {
           <Col xs={24} sm={12} lg={8}>
             <StatCard
               icon={FaDollarSign}
-              title="Doanh Thu"
+              title="Doanh thu"
               value={order?.revenue || 0}
               subTitle="Doanh số"
               subValue={order?.totalAmount || 0}
@@ -153,7 +161,7 @@ const StatsOverview = () => {
           <Col xs={24} sm={12} lg={8}>
             <StatCard
               icon={FaShoppingBag}
-              title="Đơn Hàng"
+              title="Đơn hàng"
               value={order?.total || 0}
               subTitle="Tỷ lệ hoàn thành"
               subValue={(
@@ -178,7 +186,7 @@ const StatsOverview = () => {
           <Col xs={24} sm={12} lg={8}>
             <StatCard
               icon={MdOutlineInventory}
-              title="Sản Phẩm"
+              title="Sản phẩm"
               value={product?.total || 0}
               subTitle="Sắp hết hạn"
               subValue={product?.almostExpired || 0}
@@ -189,7 +197,7 @@ const StatsOverview = () => {
           <Col xs={24} sm={12} lg={8}>
             <StatCard
               icon={FaUsers}
-              title="Người Dùng"
+              title="Người dùng"
               value={user?.total || 0}
               subTitle="Hoạt động"
               subValue={(
@@ -203,7 +211,7 @@ const StatsOverview = () => {
           <Col xs={24} sm={12} lg={8}>
             <StatCard
               icon={MdStarRate}
-              title="Đánh Giá"
+              title="Đánh giá"
               value={review?.averageRating || 0}
               subTitle="Tổng đánh giá"
               subValue={review?.total || 0}

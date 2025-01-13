@@ -28,8 +28,8 @@ import { PiSpinnerBall } from "react-icons/pi";
 import { formatPrice } from "@helpers/formatPrice";
 import { formatDateReview } from "@helpers/formatDate";
 import { useGetProductAddPromotionQuery } from "@/redux/product/product.query";
-import LoadingContent from "@/components/Loading/LoaingContent";
 import { SearchOutlined } from "@ant-design/icons";
+import Loading from "@/components/Loading/Loading";
 
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
@@ -235,7 +235,7 @@ const PromotionDetail = () => {
 
   // Loading and Empty States
   if (promotionLoading || productsLoading) {
-    return <LoadingContent />;
+    return <Loading />;
   }
 
   if (isEmpty(promotion)) return <Empty className="mt-24" />;

@@ -17,13 +17,13 @@ const LogoSkinLele = () => {
         <div className="flex items-center">
           {/* Enhanced Skin text with shadow layers */}
           <div className="relative">
-            <span className="absolute -left-[2px] -top-[2px] font-serif italic text-3xl lg:text-4xl font-black text-pink-200/50">
+            <span className="absolute -left-[2px] -top-[2px] font-serif italic text-xl lg:text-4xl font-black text-pink-200/50">
               Skin
             </span>
-            <span className="absolute -left-[1px] -top-[1px] font-serif italic text-3xl lg:text-4xl font-black text-pink-300/50">
+            <span className="absolute -left-[1px] -top-[1px] font-serif italic text-xl lg:text-4xl font-black text-pink-300/50">
               Skin
             </span>
-            <span className="relative font-serif italic text-3xl lg:text-4xl font-black bg-gradient-to-br from-pink-400 via-purple-400 to-pink-300 bg-clip-text text-transparent [text-shadow:2px_2px_8px_rgba(236,72,153,0.3)]">
+            <span className="relative font-serif italic text-xl lg:text-4xl font-black bg-gradient-to-br from-pink-400 via-purple-400 to-pink-300 bg-clip-text text-transparent [text-shadow:2px_2px_8px_rgba(236,72,153,0.3)]">
               Skin
             </span>
           </div>
@@ -32,13 +32,13 @@ const LogoSkinLele = () => {
 
           {/* Enhanced LeLe text with shadow layers */}
           <div className="relative">
-            <span className="absolute -left-[2px] -top-[2px] font-serif italic text-3xl lg:text-4xl font-black text-purple-200/50">
+            <span className="absolute -left-[2px] -top-[2px] font-serif italic text-xl lg:text-4xl font-black text-purple-200/50">
               LeLe
             </span>
-            <span className="absolute -left-[1px] -top-[1px] font-serif italic text-3xl lg:text-4xl font-black text-purple-300/50">
+            <span className="absolute -left-[1px] -top-[1px] font-serif italic text-xl lg:text-4xl font-black text-purple-300/50">
               LeLe
             </span>
-            <span className="relative font-serif italic text-3xl lg:text-4xl font-black bg-gradient-to-br from-purple-400 via-pink-400 to-purple-300 bg-clip-text text-transparent [text-shadow:2px_2px_8px_rgba(192,132,252,0.3)]">
+            <span className="relative font-serif italic text-xl lg:text-4xl font-black bg-gradient-to-br from-purple-400 via-pink-400 to-purple-300 bg-clip-text text-transparent [text-shadow:2px_2px_8px_rgba(192,132,252,0.3)]">
               LeLe
             </span>
           </div>

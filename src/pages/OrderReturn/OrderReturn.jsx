@@ -16,10 +16,9 @@ import {
   ClockCircleOutlined,
   CarOutlined,
   SmileOutlined,
-  HomeOutlined,
-  GiftOutlined,
+  ArrowRightOutlined,
 } from "@ant-design/icons";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { orderStripeReturn, orderVnpayReturn } from "@redux/order/order.thunk";
 import { formatDateOrder } from "@helpers/formatDate";
@@ -37,11 +36,57 @@ const OrderReturn = () => {
   const [isSuccess, setIsSuccess] = useState(true);
   const queryParams = new URLSearchParams(location.search);
   const { orderReturn, isLoading, error } = useSelector((state) => state.order);
+  const { socketCustomer: socket } = useSelector((state) => state.socket);
+  const [payload, setPayload] = useState({});
 
   const orderId = queryParams.get("vnp_TxnRef");
   const code = queryParams.get("vnp_ResponseCode");
   const stripeSessionId = queryParams.get("session_id");
   const orderSessionId = queryParams.get("order_session") || "";
+
+  const handleOrderVnpayReturn = async () => {
+    const res = await dispatch(orderVnpayReturn({ orderId, code })).unwrap();
+    if (res.success) {
+      const { products, user } = res.data;
+      products.forEach((item) => {
+        dispatch(
+          removeProductAfterOrderSuccess({
+            productId: item.productId,
+            color: item.color,
+          })
+        );
+      });
+      setIsSuccess(true);
+      navigate("/order-return");
+      setPayload(res.data);
+    } else {
+      setIsSuccess(false);
+      navigate("/order-return");
+    }
+  };
+
+  const handleOrderStripeReturn = async () => {
+    const res = await dispatch({ stripeSessionId, orderSessionId }).unwrap();
+    if (res.success) {
+      const { products, user } = res.data;
+      if (products.length > 0) {
+        products.forEach((item) => {
+          dispatch(
+            removeProductAfterOrderSuccess({
+              productId: item.productId,
+              color: item.color,
+            })
+          );
+        });
+      }
+      setIsSuccess(true);
+      navigate("/order-return");
+      setPayload(res.data);
+    } else {
+      setIsSuccess(false);
+      navigate("/order-return");
+    }
+  };
 
   useEffect(() => {
     if (
@@ -58,63 +103,28 @@ const OrderReturn = () => {
 
   useEffect(() => {
     if (orderId && code) {
-      dispatch(orderVnpayReturn({ orderId, code })).then((res) => {
-        if (res.payload.success) {
-          const products = res.payload.data.products;
-          if (products.length > 0) {
-            products.forEach((item) => {
-              dispatch(
-                removeProductAfterOrderSuccess({
-                  productId: item.productId,
-                  color: item.color,
-                })
-              );
-            });
-          }
-          setIsSuccess(true);
-          navigate("/order-return");
-        } else {
-          setIsSuccess(false);
-          navigate("/order-return");
-        }
-      });
+      handleOrderVnpayReturn();
     }
-  }, []);
+  }, [orderId, code]);
 
   useEffect(() => {
     if (stripeSessionId || orderSessionId) {
-      dispatch(orderStripeReturn({ stripeSessionId, orderSessionId })).then(
-        (res) => {
-          if (res.payload.success) {
-            const products = res.payload.data.products;
-            if (products.length > 0) {
-              products.forEach((item) => {
-                dispatch(
-                  removeProductAfterOrderSuccess({
-                    productId: item.productId,
-                    color: item.color,
-                  })
-                );
-              });
-            }
-            setIsSuccess(true);
-            navigate("/order-return");
-          } else {
-            setIsSuccess(false);
-            navigate("/order-return");
-          }
-        }
+      handleOrderStripeReturn();
+    }
+  }, [stripeSessionId, orderSessionId]);
+
+  useEffect(() => {
+    if (!isEmpty(payload) && socket) {
+      socket.emit(
+        "createOrder",
+        JSON.stringify({
+          order: payload,
+          model: "User",
+          recipient: payload.user,
+        })
       );
     }
-  }, []);
-
-  const handleHomePage = () => {
-    navigate("/");
-  };
-
-  const handleContinueShopping = () => {
-    navigate("/cart");
-  };
+  }, [payload, socket]);
 
   const OrderStatus = () => (
     <Steps
@@ -171,25 +181,27 @@ const OrderReturn = () => {
     <div className="min-h-screen bg-gradient-to-r from-pink-100 to-purple-100 py-12 px-4 sm:px-6 lg:px-8 rounded-xl">
       <Card className="max-w-4xl mx-auto shadow-2xl rounded-lg overflow-hidden">
         <div
-          className={`text-center ${isSuccess ? "text-pink-600" : "text-red-600"
-            }`}
+          className={`text-center ${
+            isSuccess ? "text-pink-600" : "text-red-600"
+          }`}
         >
           {isSuccess ? (
             <CheckCircleFilled style={{ fontSize: 80 }} className="mb-4" />
           ) : (
             <CloseCircleFilled style={{ fontSize: 80 }} className="mb-4" />
           )}
-          <Title
-            level={2}
-            className={isSuccess ? "text-pink-600" : "text-red-600"}
+          <div
+            className={`text-xl lg:text-3xl ${
+              isSuccess ? "text-pink-600" : "text-red-600"
+            }`}
           >
             {isSuccess ? "Đặt hàng thành công!" : "Đặt hàng thất bại"}
-          </Title>
-          <Text className="text-gray-600 text-lg">
+          </div>
+          <div className="text-gray-600 text-base lg:text-lg">
             {isSuccess
               ? "Cảm ơn bạn đã đặt hàng. Đơn hàng của bạn đang được xử lý."
               : "Rất tiếc, đã xảy ra lỗi khi xử lý đơn hàng của bạn. Vui lòng thử lại."}
-          </Text>
+          </div>
         </div>
 
         {isSuccess && !isEmpty(orderReturn) && (
@@ -201,7 +213,8 @@ const OrderReturn = () => {
                   Thông tin đơn hàng
                 </Title>
                 <p className="mb-2">
-                  <strong>Mã đơn hàng:</strong> <span className="uppercase">OD{orderReturn._id}</span>
+                  <strong>Mã đơn hàng:</strong>{" "}
+                  <span className="uppercase">OD{orderReturn._id}</span>
                 </p>
                 <p className="mb-2">
                   <strong>Ngày đặt:</strong>{" "}
@@ -218,7 +231,7 @@ const OrderReturn = () => {
                   {orderReturn.paymentMethod}
                 </p>
                 <Tag color="pink" className="mt-2">
-                  {orderReturn.status === "pendding" ? "Đang chờ" : ""}
+                  {orderReturn.status === "pending" ? "Đang chờ" : ""}
                 </Tag>
               </div>
               <div className="bg-purple-50 p-6 rounded-lg shadow-md">
@@ -251,23 +264,16 @@ const OrderReturn = () => {
         )}
 
         <Divider className="my-8" />
-        <div className="flex justify-center space-x-4">
-          <Button
-            icon={<HomeOutlined />}
-            size="large"
-            onClick={handleHomePage}
-            className="bg-pink-600 hover:bg-pink-700 border-pink-600 hover:border-pink-700 text-white"
-          >
-            Trang chủ
-          </Button>
-          <Button
-            icon={<GiftOutlined />}
-            size="large"
-            onClick={handleContinueShopping}
-            className="border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white"
-          >
-            Tiếp tục mua sắm
-          </Button>
+        <div className="flex justify-center gap-4 flex-wrap">
+          <Link to={`/order-detail/${orderReturn._id}`}>
+            <Button
+              type="link"
+              className="text-lg"
+              icon={<ArrowRightOutlined />}
+            >
+              Chi tiết thông tin đơn hàng
+            </Button>
+          </Link>
         </div>
       </Card>
     </div>

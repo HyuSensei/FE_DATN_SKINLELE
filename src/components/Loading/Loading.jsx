@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 const Loading = ({ isClinic = false }) => {
   return (
     <div
-      className={`flex justify-center items-center h-screen ${
+      className={`fixed inset-0 flex justify-center items-center z-50 ${
         isClinic ? "bg-sky-50" : "bg-pink-50"
       }`}
     >
@@ -30,7 +30,7 @@ const Loading = ({ isClinic = false }) => {
         <motion.div
           className={`${
             isClinic ? "text-[#A4DEC6]" : "text-pink-600"
-          }  font-semibold text-xl`}
+          } font-semibold text-xl`}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}

@@ -12,20 +12,19 @@ import { LiaShoppingBasketSolid } from "react-icons/lia";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { isArray, isEmpty } from "lodash";
-import { getAllBrand } from "@redux/brand/brand.thunk";
-import { getAllCategory } from "@redux/category/category.thunk";
 import { logoutUser } from "@redux/auth/auth.slice";
 import { FaRegUserCircle } from "react-icons/fa";
 import SearchHeader from "@components/Search/SearchHeader";
 import { clearCart } from "@redux/cart/cart.slice";
 import LogoSkinLele from "./LogoSkinLeLe";
 import NotificationStoreDrop from "./NotificationStoreDrop";
+import { useGetAllCategoryUserQuery } from "@/redux/category/category.query";
+import { useGetAllBrandByUserQuery } from "@/redux/brand/brand.query";
+import Loading from "../Loading/Loading";
 
 const HeaderUser = () => {
   const dispatch = useDispatch();
   const location = useLocation();
-  const { brands } = useSelector((state) => state.brand);
-  const { categories } = useSelector((state) => state.category);
   const { isAuthenticated, userInfo } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const [current, setCurrent] = useState("");
@@ -33,10 +32,16 @@ const HeaderUser = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { products } = useSelector((state) => state.cart.cart);
 
-  useEffect(() => {
-    dispatch(getAllBrand());
-    dispatch(getAllCategory());
-  }, []);
+  const {
+    data: categories = [],
+    isLoading: isLoadingCategories,
+    isFetching: isFetchingCategories,
+  } = useGetAllCategoryUserQuery();
+  const {
+    data: brands = [],
+    isLoading: isLoadingBrands,
+    isFetching: isFetchingBrands,
+  } = useGetAllBrandByUserQuery();
 
   const createMenuCategoryItems = (items) => {
     const menu = items.map((item) => {
@@ -167,6 +172,14 @@ const HeaderUser = () => {
     setCurrent(currentItem ? currentItem.key : "");
   }, [location.pathname, menuItems]);
 
+  if (
+    isLoadingCategories ||
+    isLoadingBrands ||
+    isFetchingCategories ||
+    isFetchingBrands
+  )
+    return <Loading />;
+
   const accoutItems = [
     {
       key: "1",
@@ -192,13 +205,13 @@ const HeaderUser = () => {
   return (
     <>
       <header className="bg-white shadow-md">
-        <div className="bg-gradient-to-r from-rose-300 via-[#a64478] to-[#f1b5b5] text-white text-center py-2 text-base font-medium">
+        <div className="bg-gradient-to-r from-rose-300 via-[#a64478] to-[#f1b5b5] text-white text-center py-1 lg:py-2 text-base font-medium">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="animate-bounce">
+            <div className="animate-bounce text-sm lg:text-base">
               Chào mừng bạn đến với SkinLeLe ❤️
             </div>
           </motion.div>
@@ -249,7 +262,7 @@ const HeaderUser = () => {
               color="#e28585"
               count={products.length}
             >
-              <LiaShoppingBasketSolid className="text-3xl cursor-pointer" />
+              <LiaShoppingBasketSolid className="text-xl lg:text-3xl cursor-pointer" />
             </Badge>
             <Button
               type="text"

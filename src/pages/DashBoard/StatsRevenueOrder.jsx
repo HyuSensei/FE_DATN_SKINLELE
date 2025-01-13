@@ -49,7 +49,7 @@ const StatsRevenueOrder = () => {
               <span className="font-medium">
                 {entry.name === "Số đơn"
                   ? entry.value
-                  : formatPrice(entry.value)}
+                  : formatPrice(entry.value) + " VND"}
               </span>
             </div>
           ))}
@@ -162,7 +162,11 @@ const StatsRevenueOrder = () => {
               <div className="h-[400px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={data?.stats}>
-                    <CartesianGrid strokeDasharray="3 3" />
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      vertical={false}
+                      stroke="#e55c76"
+                    />
                     <XAxis
                       dataKey="name"
                       height={60}
@@ -176,9 +180,9 @@ const StatsRevenueOrder = () => {
                       type="monotone"
                       dataKey="revenue"
                       name="Doanh thu"
-                      stroke="#1677ff"
-                      strokeWidth={2}
-                      dot={false}
+                      stroke="#f25055"
+                      strokeWidth={3}
+                      dot={true}
                     />
                     <Line
                       type="monotone"
@@ -214,7 +218,11 @@ const StatsRevenueOrder = () => {
               <div className="h-[400px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={data?.stats}>
-                    <CartesianGrid strokeDasharray="3 3" />
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      vertical={false}
+                      stroke="#b7dce7"
+                    />
                     <XAxis
                       dataKey="name"
                       height={60}

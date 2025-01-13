@@ -8,10 +8,11 @@ import useScreen from "@hook/useScreen";
 import ProductList from "@components/Product/ProductList";
 import { useGetProductHomeQuery } from "@/redux/product/product.query";
 import { Spin } from "antd";
+import Loading from "@/components/Loading/Loading";
 
 const Home = () => {
   const { isMobile } = useScreen();
-  const { data, isLoading } = useGetProductHomeQuery();
+  const { data, isLoading, isFetching } = useGetProductHomeQuery();
 
   const productData = useMemo(() => {
     if (data?.length === 0) return {};
@@ -23,24 +24,24 @@ const Home = () => {
 
   const { HOT = [], SELLING = [], NEW = [], SALE = [] } = productData || {};
 
+  if (isLoading || isFetching) return <Loading />;
+
   return (
     <>
       <Banner />
       <div className="space-y-8">
         <Spin spinning={isLoading} tip="Đang tải...">
-          <div className="mt-8 mb-4">
-            {HOT &&
-              HOT.length >= 5 &&
-              (!isMobile ? (
-                <ProductCarousel
-                  {...{ title: "Sản phẩm nổi bật", products: HOT, isLoading }}
-                />
-              ) : (
-                <ProductList
-                  {...{ title: "Sản phẩm nổi bật", products: HOT, isLoading }}
-                />
-              ))}
-          </div>
+          {HOT &&
+            HOT.length >= 5 &&
+            (!isMobile ? (
+              <ProductCarousel
+                {...{ title: "Sản phẩm nổi bật", products: HOT, isLoading }}
+              />
+            ) : (
+              <ProductList
+                {...{ title: "Sản phẩm nổi bật", products: HOT, isLoading }}
+              />
+            ))}
         </Spin>
         <SliderList {...{ slides: sliderPromotion }} />
         <Spin spinning={isLoading} tip="Đang tải...">

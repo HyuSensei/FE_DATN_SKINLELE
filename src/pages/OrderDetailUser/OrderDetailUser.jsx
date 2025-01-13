@@ -1,5 +1,5 @@
 import { useGetOrderDetailByUserQuery } from "@/redux/order/order.query";
-import { Breadcrumb, Timeline, Skeleton, Empty, Card } from "antd";
+import { Breadcrumb, Timeline, Empty, Card } from "antd";
 import { useSelector } from "react-redux";
 import { useParams, Link } from "react-router-dom";
 import {
@@ -12,6 +12,7 @@ import {
 import dayjs from "@utils/dayjsTz";
 import { getStatusColor } from "@/helpers/order";
 import { formatPrice } from "@/helpers/formatPrice";
+import Loading from "@/components/Loading/Loading";
 
 const getStatusBg = (status) => {
   switch (status) {
@@ -42,7 +43,7 @@ const OrderDetailUser = () => {
   const { data: order = {} } = data || {};
 
   if (isLoading || isFetching) {
-    return <Skeleton active className="mx-auto mt-8" />;
+    return <Loading />;
   }
 
   if (error) {
@@ -55,7 +56,7 @@ const OrderDetailUser = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="mx-auto px-4 py-8">
+      <div className="mx-auto py-8">
         <div className="mb-8">
           <Breadcrumb
             items={[
@@ -75,14 +76,14 @@ const OrderDetailUser = () => {
             <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
               <div>
                 <div className="text-gray-500 mb-1">Mã đơn hàng</div>
-                <div className="font-medium">OD{order._id}</div>
+                <div className="font-medium uppercase">OD{order._id}</div>
               </div>
               <div
                 className={`px-4 py-2 rounded-full text-sm font-medium ${getStatusBg(
                   order.status
                 )}`}
               >
-                {order.status === "pending" && "Đơn hàng mới"}
+                {order.status === "pending" && "Đang chờ xac nhận"}
                 {order.status === "processing" && "Đang xử lý"}
                 {order.status === "shipping" && "Đang giao hàng"}
                 {order.status === "delivered" && "Đã giao hàng"}
@@ -128,7 +129,7 @@ const OrderDetailUser = () => {
                   key={index}
                   className="flex gap-6 p-4 hover:bg-gray-50 rounded-xl transition"
                 >
-                  <div className="w-24 h-24 flex-shrink-0">
+                  <div className="w-16 lg:w-24 h-16 lg:h-24 flex-shrink-0">
                     <img
                       src={product.image}
                       alt={product.name}
@@ -136,7 +137,7 @@ const OrderDetailUser = () => {
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-gray-900 mb-2">
+                    <h3 className="font-medium text-gray-900 mb-2 text-xs lg:text-base">
                       {product.name}
                     </h3>
                     {product.color && (
@@ -160,7 +161,7 @@ const OrderDetailUser = () => {
                           {product.quantity}
                         </span>
                       </div>
-                      <div className="font-medium">
+                      <div className="font-medium text-xs lg:text-base">
                         {formatPrice(product.price)} đ
                       </div>
                     </div>
@@ -171,7 +172,7 @@ const OrderDetailUser = () => {
               <div className="border-t pt-6 mt-6">
                 <div className="flex justify-between items-center">
                   <div className="text-gray-500">Tổng tiền</div>
-                  <div className="text-lg font-medium">
+                  <div className="text-base lg:text-lg font-medium">
                     {formatPrice(order.totalAmount)} đ
                   </div>
                 </div>

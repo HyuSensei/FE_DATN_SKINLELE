@@ -33,9 +33,9 @@ import { GiDiamondTrophy } from "react-icons/gi";
 import { addToCart } from "@redux/cart/cart.slice";
 import confetti from "canvas-confetti";
 import { useGetProductDetailQuery } from "@/redux/product/product.query";
-import LoadingContent from "@/components/Loading/LoaingContent";
 import { useGetDoctorRecommendQuery } from "@/redux/doctor/doctor.query";
 import RecommendedDoctors from "./RecommendedDoctors";
+import Loading from "@/components/Loading/Loading";
 
 const Detail = () => {
   const navigate = useNavigate();
@@ -103,7 +103,7 @@ const Detail = () => {
 
   if (errorProduct) return <Empty className="mt-24" />;
 
-  if (loadingProduct) return <LoadingContent />;
+  if (loadingProduct) return <Loading />;
 
   if (!dataProduct) return <Empty className="mt-24" />;
 
@@ -124,7 +124,7 @@ const Detail = () => {
 
     notification.success({
       message: (
-        <div className="text-xs md:text-lg mb-2 animate-pulse text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-rose-700 font-extrabold">
+        <div className="text-base md:text-lg mb-2 animate-pulse text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-rose-700 font-extrabold">
           Thông báo thêm giỏ hàng thành công
         </div>
       ),
@@ -179,7 +179,7 @@ const Detail = () => {
         </>
       ),
       icon: <IoNotifications className="animate-pulse text-[#f59c23]" />,
-      placement: "topRight",
+      placement: "top",
       duration: 5,
       className: "custom-notification",
       style: {
@@ -207,7 +207,7 @@ const Detail = () => {
   ].filter(Boolean);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div className="max-w-7xl mx-auto">
       <Breadcrumb
         className="py-2"
         items={[

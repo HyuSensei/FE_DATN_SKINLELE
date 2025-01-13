@@ -229,8 +229,8 @@ const ChatBox = ({
   );
 
   return (
-    <div className="fixed bottom-8 right-8 z-50">
-      <div className="animate-slideIn rounded-xl shadow-2xl w-[350px] sm:w-[400px] max-h-[600px] flex flex-col bg-white">
+    <div className="fixed bottom-10 lg:bottom-8 right-8 z-50">
+      <div className="animate-slideIn rounded-xl shadow-2xl w-[320px] lg:w-[400px] max-h-[600px] flex flex-col bg-white">
         {/* Header */}
         <div
           className={`p-4 ${
@@ -286,7 +286,7 @@ const ChatBox = ({
           ref={messagesContainerRef}
           className={`flex-1 p-4 overflow-y-auto space-y-4 ${
             isAuth && messages.length > 0
-              ? "min-h-[400px] max-h-[500px]"
+              ? "min-h-[350px] lg:min-h-[400px] max-h-[450px]"
               : "min-h-[350px] max-h-[400px]"
           }`}
           onScroll={handleScroll}

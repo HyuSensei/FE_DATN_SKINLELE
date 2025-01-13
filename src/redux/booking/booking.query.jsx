@@ -70,8 +70,19 @@ export const bookingApi = createApi({
       },
       transformResponse: (response) => response.data,
     }),
+    getBookingDetailByUser: builder.query({
+      query: ({ id }) => ({
+        url: `/bookings/detail-customer/${id}`,
+        method: "GET",
+      }),
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
-export const { useGetBookingsByDoctorQuery, useGetBookingsByCustomerQuery, useGetBookingByClinicQuery } =
-  bookingApi;
+export const {
+  useGetBookingsByDoctorQuery,
+  useGetBookingsByCustomerQuery,
+  useGetBookingByClinicQuery,
+  useGetBookingDetailByUserQuery,
+} = bookingApi;

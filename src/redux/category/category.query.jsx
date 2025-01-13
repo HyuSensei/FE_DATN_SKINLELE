@@ -28,7 +28,18 @@ export const categoryApi = createApi({
         };
       },
     }),
+    getAllCategoryUser: builder.query({
+      query: () => ({
+        url: `/categories`,
+        method: "GET",
+      }),
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
-export const { useGetAllCategoryQuery, useGetCategoryListQuery } = categoryApi;
+export const {
+  useGetAllCategoryQuery,
+  useGetCategoryListQuery,
+  useGetAllCategoryUserQuery,
+} = categoryApi;

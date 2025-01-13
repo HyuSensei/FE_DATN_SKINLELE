@@ -128,9 +128,9 @@ const OrderAll = ({
               className="mb-4 sm:mb-6 shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
               title={
                 <Space className="flex items-center justify-between flex-wrap py-2">
-                  <Title level={5}>
+                  <div className="font-medium text-xs lg:text-base">
                     Đơn hàng: <span className="uppercase">OD{order._id}</span>
-                  </Title>
+                  </div>
                   <div className="flex items-center gap-2">
                     {renderOrderActions(order)}
                   </div>
