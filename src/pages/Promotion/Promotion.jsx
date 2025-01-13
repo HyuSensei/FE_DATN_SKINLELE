@@ -7,15 +7,14 @@ import {
   useGetProductPromtionQuery,
 } from "@/redux/product/product.query";
 import FilterPanelProduct from "@/components/Filter/FilterPanelProduct";
-import ProductHeader from "../../components/Filter/ProductHeader";
-import FilterDrawer from "../../components/Filter/FilterDrawer";
+import ProductHeader from "@/components/Filter/ProductHeader";
+import FilterDrawer from "@/components/Filter/FilterDrawer";
 import Banner from "./Banner";
 import { IoClose } from "react-icons/io5";
 
 const ProductList = React.lazy(() =>
   import("@/components/Product/ProductList")
 );
-
 const ListSkeleton = () => (
   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
     {[...Array(8)].map((_, idx) => (

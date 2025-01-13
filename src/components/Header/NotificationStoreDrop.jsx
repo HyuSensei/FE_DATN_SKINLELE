@@ -82,11 +82,18 @@ const NotificationDrop = () => {
       navigate(notification.metadata.link);
     }
 
-    try {
-      // Đánh dấu thông báo là đã đọc
-      
-    } catch (error) {
-      console.error("Failed to mark notification as read:", error);
+    const res = await dispatch(
+      markNotificationAsRead({
+        id: notification._id,
+        recipient: notification.recipient,
+      })
+    ).unwrap();
+
+    if (res.success) {
+      refetch();
+      if (isNavigate && notification.metadata?.link) {
+        navigate(notification.metadata.link);
+      }
     }
   };
 
