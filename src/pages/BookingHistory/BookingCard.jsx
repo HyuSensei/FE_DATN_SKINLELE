@@ -1,4 +1,4 @@
-import { Avatar, Badge, Card, Divider, Tag, Tooltip } from "antd";
+import { Avatar, Badge, Button, Card, Divider, Tag, Tooltip } from "antd";
 import React, { useState } from "react";
 import {
   CalendarOutlined,
@@ -22,6 +22,7 @@ import { TbCalendarCancel } from "react-icons/tb";
 import BookingUpdateInfo from "./BookingUpdateInfo";
 import BookingCancel from "./BookingCancel";
 import BookingReviewAction from "./BookingReviewAction";
+import { Link } from "react-router-dom";
 
 const BookingCard = ({ booking, refetch }) => {
   const statusConfig = {
@@ -228,6 +229,9 @@ const BookingCard = ({ booking, refetch }) => {
                     </div>
                   ))}
                 </div>
+                <Link to={`/booking-detail/${booking._id}`}>
+                  <Button type="link" className="mt-4">Xem thêm</Button>
+                </Link>
               </div>
             )}
           </div>
@@ -298,7 +302,7 @@ const BookingCard = ({ booking, refetch }) => {
                       icon={<TbCalendarCancel size={20} />}
                       className="shadow-sm"
                     >
-                      Hủy lịch
+                      Hủy lịch khám
                     </CustomButton>
                     <CustomButton
                       onClick={() => setIsEdit(true)}

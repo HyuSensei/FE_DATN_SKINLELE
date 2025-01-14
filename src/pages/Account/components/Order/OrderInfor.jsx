@@ -38,7 +38,7 @@ const OrderInfor = ({ order }) => {
                             <div className="flex flex-col gap-1">
                                 <div className="space-y-2">
                                     <div className="flex gap-2 items-center">
-                                        {item.updatedByModel === "User" ? item.updatedBy.name : "ADMIN"}
+                                        {item.updatedByModel === "User" && item.updatedBy && item.updatedBy.name ? item.updatedBy.name : "ADMIN"}
                                     </div>
                                     {
                                         !item.prevStatus && <div className="space-y-1">

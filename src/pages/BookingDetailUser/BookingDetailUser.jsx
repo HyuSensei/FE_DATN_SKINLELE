@@ -1,7 +1,7 @@
-import React from "react";
-import { Steps, Timeline, Tag, Avatar } from "antd";
+import React, { useState } from "react";
+import { Steps, Timeline, Tag, Avatar, Breadcrumb } from "antd";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useGetBookingDetailByUserQuery } from "@/redux/booking/booking.query";
 import EmptyData from "@/components/Error/EmptyData";
 import LoadingClinic from "@/components/Loading/LoadingClinic";
@@ -14,7 +14,16 @@ import {
   FaRegEnvelope,
   FaRegMoneyBillAlt,
   FaStickyNote,
+  FaMapMarkerAlt,
+  FaBirthdayCake,
+  FaTransgender,
+  FaPrint,
+  FaRegCommentDots,
 } from "react-icons/fa";
+import { formatPrice } from "@/helpers/formatPrice";
+import CustomButton from "@/components/CustomButton";
+import { TbCalendarCancel } from "react-icons/tb";
+import BookingCancel from "../BookingHistory/BookingCancel";
 
 const statusColors = {
   pending: "#f97316",
@@ -37,20 +46,19 @@ const statusSteps = {
   cancelled: 3,
 };
 
-const InfoCard = ({ title, children, className = "" }) => (
-  <div
-    className={`bg-white rounded-xl p-6 mb-6 shadow-lg border border-gray-100 ${className}`}
-  >
-    <h2 className="text-lg font-semibold mb-6">{title}</h2>
+const InfoCard = ({ title, children, className = "", extra = null }) => (
+  <div className={`bg-white rounded-xl p-6 mb-6 shadow-lg border border-gray-100 ${className}`}>
+    <div className="flex justify-between items-center mb-6">
+      <h2 className="text-lg font-semibold">{title}</h2>
+      {extra}
+    </div>
     {children}
   </div>
 );
 
 const InfoItem = ({ icon: Icon, label, value, className = "" }) => (
-  <div
-    className={`flex items-start gap-3 p-4 rounded-lg transition-all duration-200 hover:bg-gray-50 ${className}`}
-  >
-    <Icon className="text-blue-500 mt-1 flex-shrink-0 w-5 h-5" />
+  <div className={`flex items-start gap-3 p-4 rounded-lg transition-all duration-200 hover:bg-gray-50 ${className}`}>
+    <Icon className="text-slate-400 mt-1 flex-shrink-0 w-4 h-4" />
     <div className="flex-1 min-w-0">
       <p className="text-gray-500 text-sm font-medium mb-1">{label}</p>
       <p className="text-gray-900 font-medium break-words">{value}</p>
@@ -59,31 +67,52 @@ const InfoItem = ({ icon: Icon, label, value, className = "" }) => (
 );
 
 const BookingDetailUser = () => {
+  const navigate = useNavigate();
   const { isAuthenticated } = useSelector((state) => state.auth);
   const { id } = useParams();
+  const [openCancel, setOpenCancel] = useState(false);
 
-  const {
-    data: booking,
-    isLoading,
-    isFetching,
-  } = useGetBookingDetailByUserQuery({ id }, { skip: !isAuthenticated || !id });
+  const { data: booking, isLoading, isFetching, refetch } = useGetBookingDetailByUserQuery(
+    { id },
+    { skip: !isAuthenticated || !id }
+  );
+
+  const handlePrint = () => {
+    window.print();
+  };
 
   if (isLoading || isFetching) return <LoadingClinic />;
-  if (!isLoading && !booking)
-    return <EmptyData description="Không tìm thấy lịch khám" />;
+  if (!isLoading && !booking) return <EmptyData description="Không tìm thấy lịch khám" />;
+
+  const renderActions = () => (
+    <div className="flex gap-4 mb-6">
+      <CustomButton
+        icon={<FaPrint className="mr-2" />}
+        onClick={handlePrint}
+      >
+        In phiếu khám
+      </CustomButton>
+      {booking.status === 'pending' && (
+        <CustomButton
+          onClick={() => setOpenCancel(true)}
+          variant="danger"
+          icon={<TbCalendarCancel size={20} />}
+          className="shadow-sm"
+        >
+          Hủy lịch khám
+        </CustomButton>
+      )}
+    </div>
+  );
 
   const renderStatus = () => {
     const statuses = ["Chờ xác nhận", "Đã xác nhận", "Hoàn thành", "Đã hủy"];
     const items = statuses.map((title) => ({ title }));
 
     return (
-      <div className="bg-white rounded-xl p-6 mb-6 shadow-lg border border-gray-100">
+      <InfoCard title="Trạng thái lịch khám">
         <div className="mb-4">
-          <Tag
-            className={`px-4 py-1 border-2 font-medium ${
-              statusStyles[booking.status]
-            }`}
-          >
+          <Tag className={`px-4 py-1 border-2 font-medium ${statusStyles[booking.status]}`}>
             {booking.status === "pending" && "Chờ xác nhận"}
             {booking.status === "confirmed" && "Đã xác nhận"}
             {booking.status === "completed" && "Hoàn thành"}
@@ -97,47 +126,49 @@ const BookingDetailUser = () => {
           className="px-4"
           progressDot
         />
-      </div>
+      </InfoCard>
     );
   };
 
   const renderClinicAndDoctor = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-      <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+      <div onClick={() => navigate(`/clinic/${booking.clinic.slug}`)}
+        className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 cursor-pointer hover:shadow-xl transition-shadow">
         <div className="flex items-start space-x-4">
           <Avatar
             size={64}
             src={booking.clinic.logo?.url}
             alt={booking.clinic.name}
-            className="flex-shrink-0 border-2 border-gray-100"
+            className="flex-shrink-0 border-2 border-sky-500"
           />
           <div className="flex-1 min-w-0">
-            <h3 className="text-lg font-semibold text-gray-900 mb-1">
+            <h3 className="text-lg font-semibold text-gray-900 mb-1 hover:text-blue-600">
               {booking.clinic.name}
             </h3>
-            <p
-              className="text-gray-500 text-sm mb-2"
+            <p className="text-gray-500 text-sm mb-2 line-clamp-2"
               dangerouslySetInnerHTML={{ __html: booking.clinic.address }}
             />
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+      <div onClick={() => navigate(`/doctor/${booking.doctor.slug}`)}
+        className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 cursor-pointer hover:shadow-xl transition-shadow">
         <div className="flex items-start space-x-4">
           <Avatar
             size={64}
             src={booking.doctor.avatar?.url}
             alt={booking.doctor.name}
-            className="flex-shrink-0 border-2 border-gray-100"
+            className="flex-shrink-0 border-2 border-sky-500"
           />
           <div className="flex-1 min-w-0">
-            <h3 className="text-lg font-semibold text-gray-900 mb-1">
+            <h3 className="text-lg font-semibold text-gray-900 mb-1 hover:text-blue-600">
               BS. {booking.doctor.name}
             </h3>
-            <p className="text-gray-500 text-sm mb-2">
-              {booking.doctor.specialty}
-            </p>
+            <p className="text-gray-500 text-sm mb-2"><span className="font-medium">Chuyên khoa:</span> {booking.doctor.specialty}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-gray-500 text-sm mb-2"><span className="font-medium">Số điện thoại:</span> {booking.doctor.phone}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -160,10 +191,7 @@ const BookingDetailUser = () => {
         <InfoItem
           icon={FaRegMoneyBillAlt}
           label="Chi phí khám"
-          value={new Intl.NumberFormat("vi-VN", {
-            style: "currency",
-            currency: "VND",
-          }).format(booking.price)}
+          value={formatPrice(booking.price) + " VND"}
         />
         {booking.note && (
           <InfoItem
@@ -171,6 +199,14 @@ const BookingDetailUser = () => {
             label="Ghi chú"
             value={booking.note}
             className="md:col-span-2"
+          />
+        )}
+        {booking.cancelReason && (
+          <InfoItem
+            icon={FaRegCommentDots}
+            label="Lý do hủy"
+            value={booking.cancelReason}
+            className="md:col-span-2 bg-red-50"
           />
         )}
       </div>
@@ -194,6 +230,21 @@ const BookingDetailUser = () => {
           icon={FaRegEnvelope}
           label="Email"
           value={booking.customer.email}
+        />
+        <InfoItem
+          icon={FaBirthdayCake}
+          label="Ngày sinh"
+          value={dayjs(booking.customer.dateOfBirth).format("DD/MM/YYYY")}
+        />
+        <InfoItem
+          icon={FaTransgender}
+          label="Giới tính"
+          value={booking.customer.gender === 'male' ? 'Nam' : booking.customer.gender === 'female' ? 'Nữ' : 'Khác'}
+        />
+        <InfoItem
+          icon={FaMapMarkerAlt}
+          label="Địa chỉ"
+          value={booking.customer.address}
           className="md:col-span-2"
         />
       </div>
@@ -216,6 +267,11 @@ const BookingDetailUser = () => {
               <div className="text-sm text-gray-500">
                 {dayjs(history.date).format("HH:mm - DD/MM/YYYY")}
               </div>
+              {history.status === "cancelled" && history.cancelReason && (
+                <div className="text-sm text-red-500 mt-1">
+                  Lý do: {history.cancelReason}
+                </div>
+              )}
             </div>
           ),
         }))}
@@ -224,13 +280,33 @@ const BookingDetailUser = () => {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-28 ">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-28">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Chi tiết lịch khám
-        </h1>
-        <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-50 text-blue-700">
-          Mã lịch khám: <span className="uppercase px-2"> BK{booking._id}</span>
+        <Breadcrumb
+          className="pb-4"
+          items={[
+            { title: "Trang chủ", href: '/home-booking' },
+            { title: "Lịch sử đặt lịch khám", href: '/booking-history' },
+            { title: "Chi tiết thông tin lịch khám" }
+          ]}
+        />
+        <BookingCancel
+          {...{
+            open: openCancel,
+            booking,
+            onClose: (isFetch) => {
+              if (isFetch) {
+                refetch();
+              }
+              setOpenCancel(false);
+            },
+          }}
+        />
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-50 text-blue-700">
+            Mã lịch khám: <span className="uppercase px-2">BK{booking._id}</span>
+          </div>
+          {renderActions()}
         </div>
       </div>
 

@@ -45,6 +45,7 @@ export const bookingApi = createApi({
         };
       },
       transformResponse: (response) => response.data,
+      keepUnusedDataFor: 0,
     }),
     getBookingByClinic: builder.query({
       query: ({

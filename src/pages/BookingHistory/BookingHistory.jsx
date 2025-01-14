@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Button, Card, Empty, Radio, Spin, Tooltip } from "antd";
+import { Breadcrumb, Button, Card, Empty, Radio, Spin, Tooltip } from "antd";
 import {
   CheckCircleFilled,
   CalendarOutlined,
@@ -7,15 +7,11 @@ import {
   CheckOutlined,
   CloseCircleFilled,
 } from "@ant-design/icons";
-import moment from "moment/moment";
-import "moment/locale/vi";
 import BookingCard from "./BookingCard";
 import { useSelector } from "react-redux";
 import { useGetBookingsByCustomerQuery } from "@/redux/booking/booking.query";
 import EmptyData from "@/components/Error/EmptyData";
 import LoadingContent from "@/components/Loading/LoaingContent";
-
-moment.locale("vi");
 
 const filterOptions = [
   { label: "Tất cả", value: "" },
@@ -80,15 +76,11 @@ const BookingHistory = () => {
   };
 
   return (
-    <div className="mx-auto lg:px-16 mt-28 mb-10">
-      <Card
-        title={
-          <div className="flex items-center justify-between">
-            <span className="text-lg font-medium">Lịch sử đặt khám</span>
-          </div>
-        }
-        className="mb-6 shadow-sm"
-      >
+    <div className="mx-auto lg:px-16 mt-28 mb-10 space-y-4">
+      <Breadcrumb
+        items={[{ title: "Trang chủ", href: '/home-booking' }, { title: "Lịch sử đặt khám" }]}
+      />
+      <Card>
         <Radio.Group
           value={activeStatus}
           onChange={(e) => {

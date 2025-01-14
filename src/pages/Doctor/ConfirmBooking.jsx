@@ -22,6 +22,7 @@ const ConfirmBooking = ({
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
+  const { socketCustomer: socket } = useSelector((state) => state.socket);
   const [isLoading, setIsLoading] = useState(false);
 
   if (!selectedTime || !selectedDate || !doctor) return null;
@@ -48,6 +49,16 @@ const ConfirmBooking = ({
       };
       const res = await dispatch(createBooking(payload)).unwrap();
       if (res.success) {
+        socket?.emit("createBooking", JSON.stringify({
+          recipient: doctor._id,
+          model: "Doctor",
+          booking: res.data,
+        }));
+        socket?.emit("createBooking", JSON.stringify({
+          recipient: res.data.user,
+          model: "User",
+          booking: res.data,
+        }));
         message.success(res.message);
         form.resetFields();
         handleClearTime();
