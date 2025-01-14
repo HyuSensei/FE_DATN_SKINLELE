@@ -52,7 +52,7 @@ const DoctorOwner = () => {
   }, [navigate]);
 
   return (
-    <div className=" bg-slate-50 p-4 md:p-6 lg:pt-20">
+    <div className="p-4 md:p-6 lg:pt-20">
       <div className="flex flex-col lg:flex-row max-w-[1900px] mx-auto h-full gap-6 mt-6">
         <div className="w-full lg:w-80 lg:h-full lg:sticky lg:top-[72px]">
           <SidebarMenu
@@ -60,7 +60,11 @@ const DoctorOwner = () => {
             onMenuSelect={handleSelectedMenu}
           />
         </div>
-        <div className="flex-1">
+        <div
+          className={`flex-1 ${
+            tab !== "messages" ? "shadow-lg p-6 rounded-lg" : ""
+          }`}
+        >
           <div className="flex flex-col w-full h-full min-h-screen">
             <div className="m-0 text-gray-800 flex items-center gap-2 uppercase text-2xl font-bold">
               {title}

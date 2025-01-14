@@ -1,10 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { Tag, Badge, Card } from "antd";
-import {
-  PhoneOutlined,
-  MailOutlined,
-  EnvironmentOutlined,
-} from "@ant-design/icons";
+import React, { useState } from "react";
+import { Tag, Badge } from "antd";
+import { PhoneOutlined, MailOutlined } from "@ant-design/icons";
 import { formatPrice } from "@/helpers/formatPrice";
 import { isEmpty } from "lodash";
 import { useSelector } from "react-redux";
@@ -32,8 +28,8 @@ const ManageProfile = () => {
     <div className="space-y-6 mt-4">
       {/* Profile Info */}
       {!isEdit ? (
-        <>
-          <Card className="shadow-sm">
+        <div className="space-y-4">
+          <div className="mt-4">
             <div className="flex flex-col md:flex-row gap-6">
               <img
                 src={avatar.url}
@@ -41,7 +37,7 @@ const ManageProfile = () => {
                 className="w-32 h-32 rounded-full object-cover shadow-md border-4 border-[#e6f0ff]"
               />
               <div className="flex-1">
-                <h2 className="text-2xl font-bold text-gray-800">{name}</h2>
+                <h2 className="text-2xl font-bold text-gray-800">BS.{name}</h2>
                 <Badge color="blue" text={specialty} className="mt-2" />
                 <div className="flex flex-wrap gap-2 mt-3 w-full">
                   <Tag color="blue" className="text-sm rounded-full p-2">
@@ -74,23 +70,21 @@ const ManageProfile = () => {
                 Chỉnh sửa và bảo mật
               </CustomButton>
             </div>
-          </Card>
+          </div>
           {/* About */}
-          <Card className="shadow-sm">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">Giới thiệu</h3>
-            <div
-              className="text-gray-600 leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: about }}
-            />
-          </Card>
-        </>
+          <h3 className="text-xl font-bold text-gray-800 mb-4">Giới thiệu</h3>
+          <div
+            className="text-gray-600 leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: about }}
+          />
+        </div>
       ) : (
         <EditInfor {...{ setIsEdit }} />
       )}
 
       {/* Clinic Info */}
       {!isEmpty(clinic) && (
-        <Card className="shadow-sm">
+        <>
           <h3 className="text-xl font-bold text-gray-800 mb-4">
             Thông tin phòng khám
           </h3>
@@ -104,7 +98,6 @@ const ManageProfile = () => {
               <div>
                 <h4 className="text-lg font-semibold">{clinic.name}</h4>
                 <div className="flex items-center gap-2 text-gray-600 mt-1">
-                  <EnvironmentOutlined />
                   <span
                     className="text-gray-600 leading-relaxed"
                     dangerouslySetInnerHTML={{ __html: clinic.address }}
@@ -127,7 +120,7 @@ const ManageProfile = () => {
               />
             </div>
           </div>
-        </Card>
+        </>
       )}
     </div>
   );

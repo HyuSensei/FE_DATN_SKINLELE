@@ -49,9 +49,9 @@ const ManageChat = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-100px)] flex flex-col bg-white rounded-xl shadow-lg">
-      <div className="flex-1 flex overflow-hidden ">
-        <div className="w-1/3 border-r-2 border-gray-200">
+    <div className="h-[calc(100vh-100px)] flex flex-col rounded-xl shadow-lg border-2 border-[#c1c8f4]">
+      <div className="flex-1 flex overflow-hidden">
+        <div className="w-1/3 border-r-2 border-[#c1c8f4]">
           <ConversationCustomerByDoctor />
         </div>
         <div className="w-2/3 overflow-hidden rounded-r-xl">

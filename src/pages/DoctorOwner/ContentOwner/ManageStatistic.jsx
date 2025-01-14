@@ -45,12 +45,16 @@ const StatCard = ({ icon, title, value, subValue, color }) => (
 );
 
 const StatisticsChart = ({ data }) => (
-  <div className="mt-6 bg-white rounded-lg shadow-lg p-6">
+  <div className="mt-6">
     <h3 className="text-lg font-semibold mb-4">Thống kê theo ngày</h3>
     <div className="h-[400px] w-full">
       <ResponsiveContainer>
         <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+          <CartesianGrid
+            strokeDasharray="3 3"
+            vertical={false}
+            stroke="#09957a"
+          />
           <XAxis
             dataKey="day"
             stroke="#64748b"

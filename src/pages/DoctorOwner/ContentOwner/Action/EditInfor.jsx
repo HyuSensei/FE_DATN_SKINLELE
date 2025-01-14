@@ -104,7 +104,7 @@ const EditInfor = ({ setIsEdit }) => {
       }}
     >
       {/* Basic Info */}
-      <Card title="Thông tin cơ bản" className="mb-6 shadow-md">
+      <>
         <Form.Item
           name="avatar"
           label="Ảnh đại diện"
@@ -228,10 +228,10 @@ const EditInfor = ({ setIsEdit }) => {
         >
           <Input className="rounded-lg" size="large" />
         </Form.Item>
-      </Card>
+      </>
 
       {/* Professional Info */}
-      <Card title="Thông tin chuyên môn" className="mb-6 shadow-md">
+      <>
         <Row gutter={16}>
           <Col xs={24} md={6}>
             <Form.Item
@@ -244,7 +244,8 @@ const EditInfor = ({ setIsEdit }) => {
                 className="rounded-lg"
                 placeholder="Chọn chuyên khoa"
               >
-                {clinic && clinic.specialties &&
+                {clinic &&
+                  clinic.specialties &&
                   clinic.specialties.length > 0 &&
                   clinic.specialties.map((item, index) => (
                     <Select.Option value={item} key={index}>
@@ -319,10 +320,12 @@ const EditInfor = ({ setIsEdit }) => {
             )}
           </Form.Item>
         </Form.Item>
-      </Card>
+      </>
 
       <div className="flex items-center justify-end gap-2">
-        <CustomButton variant="default" onClick={() => setIsEdit(false)}>Xong</CustomButton>
+        <CustomButton variant="default" onClick={() => setIsEdit(false)}>
+          Xong
+        </CustomButton>
         <CustomButton loading={loading} type="submit" variant="primary">
           Cập nhật thông tin
         </CustomButton>

@@ -229,7 +229,7 @@ const ChatWindow = ({
   return (
     <div className="h-full flex flex-col">
       <div className="py-4">
-        <div className="flex items-center gap-3 shadow-lg p-4">
+        <div className="flex items-center gap-3 shadow-md p-4">
           <Badge dot status={isOnline() ? "success" : "default"}>
             <Avatar
               src={conversation.avatar.url}
@@ -252,7 +252,7 @@ const ChatWindow = ({
 
       <div
         ref={messagesContainerRef}
-        className={`flex-1 overflow-y-auto p-4 bg-white`}
+        className={`flex-1 overflow-y-auto p-4 bg-white hide-scrollbar-custom`}
         onScroll={handleScroll}
       >
         {isLoading ? (

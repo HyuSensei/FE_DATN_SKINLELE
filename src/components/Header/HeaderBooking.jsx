@@ -54,7 +54,7 @@ const HeaderBooking = () => {
       <ModalAuth open={openAuth} onClose={() => setOpenAuth(false)} />
       <div className="shadow-lg">
         <div className="max-w-[1536px] mx-auto">
-          <div className="flex items-center justify-between gap-8 px-6">
+          <div className="flex items-center justify-between gap-6 px-6">
             {/* Logo */}
             <motion.div
               className="flex items-center gap-3 cursor-pointer"
@@ -68,7 +68,7 @@ const HeaderBooking = () => {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="font-extrabold text-xl text-[#2464ec] font-[Bungee]">
+                <div className="font-extrabold text-sm lg:text-xl text-[#2464ec] font-[Bungee]">
                   SkinLeLe <span className="text-gray-500">Clinic</span>
                 </div>
               </Link>
@@ -92,6 +92,10 @@ const HeaderBooking = () => {
               </ul>
             </nav>
 
+            <div className="flex items-center gap-4">
+              {!isDoctorOwner && <ConversationDoctor />}
+              <NotificationBookingDrop />
+            </div>
             {/* Actions */}
             <div className="hidden md:flex items-center gap-4">
               {location.pathname !== "/home-booking" && (
@@ -99,8 +103,6 @@ const HeaderBooking = () => {
                   <SearchHeaderBooking />
                 </div>
               )}
-              {!isDoctorOwner && <ConversationDoctor />}
-              <NotificationBookingDrop />
               {!isDoctorOwner && (
                 <Dropdown
                   menu={{
@@ -158,7 +160,7 @@ const HeaderBooking = () => {
 
             {/* Mobile Menu Button */}
             <button
-              className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="md:hidden hover:bg-gray-100 rounded-lg transition-colors"
               onClick={() => setIsDrawerOpen(true)}
             >
               <FaBars className="w-5 h-5 text-gray-600" />

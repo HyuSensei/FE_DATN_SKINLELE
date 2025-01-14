@@ -1,63 +1,153 @@
-import { Badge, Button, Dropdown, Empty } from "antd";
-import React, { useState } from "react";
+import { useGetAllNotiStoreByUserQuery } from "@/redux/notification/notification.query";
+import { Badge, Button, Dropdown, Empty, Skeleton } from "antd";
+import React, { useCallback, useEffect, useState } from "react";
 import { IoNotificationsOutline } from "react-icons/io5";
-
-const mockNotifications = [
-  {
-    _id: "1",
-    title: "Đơn hàng mới",
-    content:
-      "Đơn hàng SK-II Facial Treatment Essence #123 đã được đặt thành công",
-    createdAt: "2024-01-09T10:30:00Z",
-    isRead: false,
-    type: "order",
-  },
-  {
-    _id: "2",
-    title: "Xác nhận thanh toán",
-    content:
-      "Thanh toán đơn hàng Sulwhasoo First Care Activating Serum EX #124 đã được xác nhận",
-    createdAt: "2024-01-09T09:15:00Z",
-    isRead: true,
-    type: "payment",
-  },
-  {
-    _id: "3",
-    title: "Khuyến mãi đặc biệt",
-    content: "Ưu đãi 25% cho bộ sản phẩm La Mer trong tuần này",
-    createdAt: "2024-01-09T08:00:00Z",
-    isRead: false,
-    type: "promotion",
-  },
-];
+import { useDispatch, useSelector } from "react-redux";
+import dayjs from "@utils/dayjsTz";
+import { useNavigate } from "react-router-dom";
+import {
+  markAllNotificationsAsRead,
+  markNotificationAsRead,
+} from "@/redux/notification/notification.thunk";
 
 const NotificationBookingDrop = () => {
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [paginate, setPaginate] = useState({
+    page: 1,
+    limit: 10,
+  });
+  const { socketCustomer: socket } = useSelector((state) => state.socket);
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  const [unreadCount, setUnreadCount] = useState(0);
 
-  const loadMore = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setHasMore(false);
-    }, 1000);
+  const handleNewNotification = (notification) => {
+    setNotifications((prev) => [notification, ...prev]);
+    setUnreadCount((prev) => prev + 1);
+  };
+
+  const {
+    data: dataCustomer,
+    isLoading: isLoadingCustomer,
+    isFetching: isFetchingCustomer,
+    refetch: refetchCustomer,
+  } = useGetAllNotiStoreByUserQuery(
+    {
+      ...paginate,
+      type: "BOOKING",
+    },
+    { skip: !isAuthenticated }
+  );
+  const [notifications, setNotifications] = useState(
+    dataCustomer?.notifications || []
+  );
+
+  const { hasMore: hasMoreCustomer = false } = dataCustomer || {};
+
+  useEffect(() => {
+    if (isAuthenticated && socket) {
+      socket.on("resNewNotiFromBooking", handleNewNotification);
+
+      return () => {
+        socket.off("resNewNotiFromBooking", handleNewNotification);
+      };
+    }
+  }, [isAuthenticated, socket]);
+
+  useEffect(() => {
+    if (dataCustomer?.notifications) {
+      if (paginate.page === 1) {
+        setNotifications(dataCustomer?.notifications);
+        setUnreadCount(dataCustomer?.unreadCount);
+      } else {
+        setNotifications((prev) => {
+          const existingIds = new Set(prev.map((noti) => noti._id));
+          const newNotifications = dataCustomer.notifications.filter(
+            (noti) => !existingIds.has(noti._id)
+          );
+          return [...prev, ...newNotifications];
+        });
+      }
+    }
+  }, [dataCustomer?.notifications, paginate.page]);
+
+  const handleSeeMoreCustomer = useCallback(() => {
+    if (dataCustomer?.hasMore) {
+      setPaginate((prev) => ({
+        ...prev,
+        page: prev.page + 1,
+      }));
+    }
+  }, [dataCustomer?.hasMore]);
+
+  const handleClickNofi = async (notification, isNavigate = false) => {
+    if (notification.isRead && !isNavigate) return;
+
+    if (notification.metadata?.link) {
+      navigate(notification.metadata.link);
+    }
+
+    const res = await dispatch(
+      markNotificationAsRead({
+        id: notification._id,
+        recipient: notification.recipient,
+      })
+    ).unwrap();
+
+    if (res.success) {
+      refetchCustomer();
+      if (isNavigate && notification.metadata?.link) {
+        navigate(notification.metadata.link);
+      }
+    }
+  };
+
+  const handleMarkAllNoti = async () => {
+    const res = await dispatch(
+      markAllNotificationsAsRead({
+        type: "BOOKING",
+      })
+    ).unwrap();
+
+    if (res.success) {
+      refetch();
+    }
   };
 
   const notificationList = (
-    <div className="w-[420px] bg-white rounded-xl shadow-2xl">
+    <div className="w-[350px] lg:w-[420px] bg-white rounded-xl shadow-2xl mr-4 mt-2">
       <div className="p-4 border-b border-gray-100 flex justify-between items-center">
         <div>
-          <h3 className="font-semibold text-lg text-gray-800">Thông báo</h3>
-          <p className="text-gray-500 text-sm">Bạn có 2 thông báo chưa đọc</p>
+          <h3 className="font-semibold text-base text-gray-800">
+            📢 Thông báo
+          </h3>
+          <p className="text-gray-500 text-xs lg:text-sm">
+            Bạn có {unreadCount} thông báo chưa đọc
+          </p>
         </div>
         <div className="flex gap-3">
-          <Button type="link">Đánh dấu tất cả đã đọc</Button>
+          <Button
+            onClick={handleMarkAllNoti}
+            type="link"
+            className="text-xs underline lg:text-sm"
+          >
+            Đánh dấu tất cả đã đọc
+          </Button>
         </div>
       </div>
 
       <div className="max-h-[460px] overflow-auto">
-        {mockNotifications.length === 0 ? (
+        {isLoadingCustomer ||
+          (isFetchingCustomer && (
+            <div className="space-y-4">
+              <Skeleton />
+              <Skeleton />
+            </div>
+          ))}
+        {!isLoadingCustomer &&
+        !isFetchingCustomer &&
+        notifications.length === 0 ? (
           <Empty
             description="Không có thông báo mới"
             className="py-12"
@@ -66,8 +156,9 @@ const NotificationBookingDrop = () => {
         ) : (
           <>
             <div className="divide-y divide-gray-100">
-              {mockNotifications.map((notification) => (
+              {notifications.map((notification) => (
                 <div
+                  onClick={() => handleClickNofi(notification, true)}
                   key={notification._id}
                   className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors duration-200
                     ${!notification.isRead ? "bg-blue-50/40" : ""}
@@ -88,10 +179,18 @@ const NotificationBookingDrop = () => {
                       </p>
                       <div className="flex justify-between items-center mt-2">
                         <span className="text-gray-400 text-xs">
-                          {new Date(notification.createdAt).toLocaleString()}
+                          {dayjs(notification.createdAt).format(
+                            "DD/MM/YYYY HH:mm:ss"
+                          )}
                         </span>
                         {!notification.isRead && (
-                          <Button type="link"> Đánh dấu đã đọc</Button>
+                          <Button
+                            onClick={() => handleClickNofi(notification)}
+                            type="link"
+                          >
+                            {" "}
+                            Đánh dấu đã đọc
+                          </Button>
                         )}
                       </div>
                     </div>
@@ -100,15 +199,17 @@ const NotificationBookingDrop = () => {
               ))}
             </div>
 
-            {hasMore && (
+            {hasMoreCustomer && (
               <div className="p-4 text-center border-t border-gray-100">
                 <button
-                  onClick={loadMore}
-                  disabled={loading}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 
+                  onClick={handleSeeMoreCustomer}
+                  disabled={isLoadingCustomer || isFetchingCustomer}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700
                     transition-colors duration-200 text-sm font-medium disabled:opacity-70"
                 >
-                  {loading ? "Đang tải..." : "Xem thêm thông báo"}
+                  {isLoadingCustomer || isFetchingCustomer
+                    ? "Đang tải..."
+                    : "Xem thêm thông báo"}
                 </button>
               </div>
             )}
@@ -121,13 +222,13 @@ const NotificationBookingDrop = () => {
   return (
     <Dropdown
       dropdownRender={() => notificationList}
-      placement="bottomRight"
+      placement="bottom"
       trigger={["click"]}
       arrow={{ pointAtCenter: true }}
       open={dropdownOpen}
       onOpenChange={setDropdownOpen}
     >
-      <Badge count={1} offset={[-9, 4]} color="cyan">
+      <Badge count={unreadCount} offset={[-9, 4]} color="cyan">
         <div className="h-10 w-10 bg-slate-50 hover:bg-slate-100 rounded-full flex items-center justify-center cursor-pointer">
           <IoNotificationsOutline className="text-slate-500 text-2xl" />
         </div>

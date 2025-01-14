@@ -1,8 +1,8 @@
 import { ChatActions } from "@/redux/chat/chat.slice";
-import { Badge, Button, Empty, Input, Popover, Tabs } from "antd";
+import { Badge, Empty, Input, Dropdown, Tabs } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { MessageOutlined, SearchOutlined } from "@ant-design/icons";
+import { SearchOutlined } from "@ant-design/icons";
 import { LoadingConversation } from "../Loading";
 import DoctorItem from "../Item/DoctorItem";
 import { LiaFacebookMessenger } from "react-icons/lia";
@@ -87,8 +87,8 @@ const ConversationDoctor = () => {
     return true;
   });
 
-  const content = (
-    <div className="w-96">
+  const dropdownContent = (
+    <div className="w-[350px] lg:w-[450px] p-3 bg-white rounded-lg shadow-lg mr-4 mt-4">
       <h3 className="text-lg font-semibold">Cuộc trò chuyện</h3>
       <div className="space-y-2 mt-2">
         <Input
@@ -135,29 +135,26 @@ const ConversationDoctor = () => {
   );
 
   return (
-    <>
-      <Popover
-        content={content}
-        trigger="click"
-        open={isConversationDoctor}
-        onOpenChange={(open) =>
-          dispatch(
-            ChatActions.setOpenChat({
-              key: "isConversationDoctor",
-              value: open,
-            })
-          )
-        }
-        placement="bottomRight"
-        arrow={false}
-      >
-        <Badge count={unReadCount} offset={[-9, 4]} color="cyan">
-          <div className="h-10 w-10 bg-slate-50 hover:bg-slate-100 rounded-full flex items-center justify-center cursor-pointer">
-            <LiaFacebookMessenger className="text-slate-500 text-2xl" />
-          </div>
-        </Badge>
-      </Popover>
-    </>
+    <Dropdown
+      dropdownRender={() => dropdownContent}
+      trigger={["click"]}
+      placement="bottom"
+      open={isConversationDoctor}
+      onOpenChange={(open) =>
+        dispatch(
+          ChatActions.setOpenChat({
+            key: "isConversationDoctor",
+            value: open,
+          })
+        )
+      }
+    >
+      <Badge count={unReadCount} offset={[-9, 4]} color="cyan">
+        <div className="h-10 w-10 bg-slate-50 hover:bg-slate-100 rounded-full flex items-center justify-center cursor-pointer">
+          <LiaFacebookMessenger className="text-slate-500 text-2xl" />
+        </div>
+      </Badge>
+    </Dropdown>
   );
 };
 

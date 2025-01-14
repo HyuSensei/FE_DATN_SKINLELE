@@ -1,7 +1,6 @@
 import { useGetAllNotiStoreByUserQuery } from "@/redux/notification/notification.query";
 import { Badge, Button, Dropdown, Empty, Skeleton, Tooltip } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
-import { IoIosNotifications } from "react-icons/io";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import dayjs from "@utils/dayjsTz";
@@ -114,7 +113,7 @@ const NotificationDrop = () => {
       <div className="p-4 rounded-t-xl  bg-gradient-to-r from-rose-300 to-rose-400 flex justify-between items-center">
         <div className="text-white">
           <h3 className="font-semibold text-sm lg:text-lg flex items-center gap-1">
-            <IoIosNotifications className="text-2xl" /> Thông báo
+            📢 Thông báo
           </h3>
           <p className="text-xs lg:text-sm">{`Bạn có ${unreadCount} thông báo chưa đọc`}</p>
         </div>

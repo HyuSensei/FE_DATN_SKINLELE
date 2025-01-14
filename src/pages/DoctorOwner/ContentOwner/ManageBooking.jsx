@@ -1,5 +1,14 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Table, Tag, Card, Select, Input, DatePicker, Empty, message } from "antd";
+import {
+  Table,
+  Tag,
+  Card,
+  Select,
+  Input,
+  DatePicker,
+  Empty,
+  message,
+} from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { bookingStatus } from "@const/status";
 import locale from "antd/es/date-picker/locale/vi_VN";
@@ -171,68 +180,64 @@ const ManageBooking = () => {
   };
 
   return (
-    <>
-      <Card className="my-4 bg-white rounded-md shadow-lg">
-        <div className="flex items-center gap-4 flex-wrap">
-          <Input
-            className="w-full lg:flex-1"
-            placeholder="Tìm kiếm..."
-            prefix={<SearchOutlined className="text-gray-400" />}
-            allowClear
-            onChange={(e) => handleFilterChange(e.target.value, "search")}
-          />
-          <Select
-            placeholder="Trạng thái"
-            allowClear
-            className="w-full lg:w-56"
-            onChange={(value) => handleFilterChange(value, "status")}
-          >
-            {bookingStatus.length > 0 &&
-              bookingStatus.map((item, index) => (
-                <Select.Option key={index} value={item.value}>
-                  {item.name}
-                </Select.Option>
-              ))}
-          </Select>
-          <RangePicker
-            className="w-full lg:flex-1"
-            locale={locale}
-            onChange={(_, dateStrings) => {
-              setFilters((prev) => ({
-                ...prev,
-                fromDate: dateStrings[0],
-                toDate: dateStrings[1],
-              }));
-              setPaginate((prev) => ({
-                ...prev,
-                page: 1,
-                pageSize: 10,
-              }));
-            }}
-          />
-        </div>
-      </Card>
-      <Card className="mt-6 shadow-lg" title="Danh sách lịch khám">
-        <Table
-          scroll={{ x: true }}
-          columns={columns}
-          dataSource={bookings}
-          rowKey={(record) => record._id}
-          pagination={{
-            current: paginate.page,
-            pageSize: paginate.pageSize,
-            total: paginate.totalItems,
-            onChange: (page, pageSize) =>
-              setPaginate((prev) => ({
-                ...prev,
-                page,
-                pageSize,
-              })),
-          }}
-          loading={isLoading}
+    <div className="space-y-6 mt-4">
+      <div className="flex items-center gap-4 flex-wrap">
+        <Input
+          className="w-full lg:flex-1"
+          placeholder="Tìm kiếm..."
+          prefix={<SearchOutlined className="text-gray-400" />}
+          allowClear
+          onChange={(e) => handleFilterChange(e.target.value, "search")}
         />
-      </Card>
-    </>
+        <Select
+          placeholder="Trạng thái"
+          allowClear
+          className="w-full lg:w-56"
+          onChange={(value) => handleFilterChange(value, "status")}
+        >
+          {bookingStatus.length > 0 &&
+            bookingStatus.map((item, index) => (
+              <Select.Option key={index} value={item.value}>
+                {item.name}
+              </Select.Option>
+            ))}
+        </Select>
+        <RangePicker
+          className="w-full lg:flex-1"
+          locale={locale}
+          onChange={(_, dateStrings) => {
+            setFilters((prev) => ({
+              ...prev,
+              fromDate: dateStrings[0],
+              toDate: dateStrings[1],
+            }));
+            setPaginate((prev) => ({
+              ...prev,
+              page: 1,
+              pageSize: 10,
+            }));
+          }}
+        />
+      </div>
+      <Table
+        scroll={{ x: true }}
+        columns={columns}
+        dataSource={bookings}
+        rowKey={(record) => record._id}
+        pagination={{
+          current: paginate.page,
+          pageSize: paginate.pageSize,
+          total: paginate.totalItems,
+          onChange: (page, pageSize) =>
+            setPaginate((prev) => ({
+              ...prev,
+              page,
+              pageSize,
+            })),
+        }}
+        loading={isLoading}
+      />
+    </div>
   );
 };
 

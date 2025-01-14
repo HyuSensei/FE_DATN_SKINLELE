@@ -154,11 +154,9 @@ const SidebarMenu = ({ activeMenu, onMenuSelect }) => {
         transition={{ duration: 0.3 }}
         className="hidden lg:block w-80 rounded-xl bg-white shadow-md p-6 h-full"
       >
-        <div className="border-b-2 border-gray-200 mb-2">
-          <div className="text-gray-800 flex items-center gap-3 px-2 pb-4">
-            <FiGrid className="text-blue-500 text-2xl" />
-            <span className="uppercase font-bold text-2xl">Dashboard</span>
-          </div>
+        <div className="text-gray-800 flex items-center gap-3 px-2 pb-4">
+          <FiGrid className="text-blue-500 text-2xl" />
+          <span className="uppercase font-bold text-2xl">Dashboard</span>
         </div>
         <MenuContent activeMenu={activeMenu} onMenuSelect={onMenuSelect} />
       </motion.div>

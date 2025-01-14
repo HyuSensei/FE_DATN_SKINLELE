@@ -15,6 +15,8 @@ import {
   UPLOAD_SKINLELE_CHAT_PRESET,
   uploadFile,
 } from "@/helpers/uploadCloudinary";
+import useVideoCall from "@/hook/useVideoCall";
+import VideoCallModal from "./VideoCallModal";
 
 const ChatBox = ({
   isOpen = false,
@@ -53,6 +55,17 @@ const ChatBox = ({
     return userOnlines?.some((item) => item === conversation._id);
   };
   const isEmptyChat = messages.length === 0 && previewFiles.length === 0;
+
+  // const {
+  //   callState,
+  //   localStream,
+  //   remoteStream,
+  //   callData,
+  //   startCall,
+  //   acceptCall,
+  //   rejectCall,
+  //   endCall,
+  // } = useVideoCall(socket, currentUser._id);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -228,8 +241,31 @@ const ChatBox = ({
     </div>
   );
 
+  // const handleStartVideoCall = () => {
+  //   startCall(conversation._id, conversation._id, true);
+  // };
+
+  // const handleStartVoiceCall = () => {
+  //   startCall(conversation._id, conversation._id, false);
+  // };
+
   return (
     <div className="fixed bottom-10 lg:bottom-8 right-8 z-50">
+      {/* <VideoCallModal
+        visible={callState !== "idle"}
+        callState={callState}
+        localStream={localStream}
+        remoteStream={remoteStream}
+        onAccept={acceptCall}
+        onReject={rejectCall}
+        onEnd={endCall}
+        caller={
+          callData?.from === currentUser._id
+            ? conversation.receiver
+            : conversation.sender
+        }
+      /> */}
+
       <div className="animate-slideIn rounded-xl shadow-2xl w-[320px] lg:w-[400px] max-h-[600px] flex flex-col bg-white">
         {/* Header */}
         <div

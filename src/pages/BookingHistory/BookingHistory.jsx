@@ -76,9 +76,12 @@ const BookingHistory = () => {
   };
 
   return (
-    <div className="mx-auto lg:px-16 mt-28 mb-10 space-y-4">
+    <div className="mx-auto px-6 lg:px-16 mt-28 mb-10 space-y-4">
       <Breadcrumb
-        items={[{ title: "Trang chủ", href: '/home-booking' }, { title: "Lịch sử đặt khám" }]}
+        items={[
+          { title: "Trang chủ", href: "/home-booking" },
+          { title: "Lịch sử đặt khám" },
+        ]}
       />
       <Card>
         <Radio.Group
