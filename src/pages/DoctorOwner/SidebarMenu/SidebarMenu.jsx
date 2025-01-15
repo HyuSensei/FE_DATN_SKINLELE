@@ -1,9 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { FiChevronRight, FiGrid } from "react-icons/fi";
+import { FiChevronRight } from "react-icons/fi";
 import { RiDashboard3Line } from "react-icons/ri";
 import { FaRegCalendarCheck, FaRegUser } from "react-icons/fa6";
-import { MdOutlineReviews } from "react-icons/md";
+import { MdOutlineDashboardCustomize, MdOutlineReviews } from "react-icons/md";
 import { Avatar, Collapse, Divider } from "antd";
 import { IoSettingsOutline } from "react-icons/io5";
 import { IoIosArrowRoundBack, IoIosLogOut } from "react-icons/io";
@@ -155,7 +155,7 @@ const SidebarMenu = ({ activeMenu, onMenuSelect }) => {
         className="hidden lg:block w-80 rounded-xl bg-white shadow-md p-6 h-full"
       >
         <div className="text-gray-800 flex items-center gap-3 px-2 pb-4">
-          <FiGrid className="text-blue-500 text-2xl" />
+          <MdOutlineDashboardCustomize className="text-blue-500 text-2xl" />
           <span className="uppercase font-bold text-2xl">Dashboard</span>
         </div>
         <MenuContent activeMenu={activeMenu} onMenuSelect={onMenuSelect} />

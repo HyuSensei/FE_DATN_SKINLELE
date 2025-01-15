@@ -17,8 +17,9 @@ import { getStatusBooking } from "@/helpers/getStatus";
 import { formatPrice } from "@/helpers/formatPrice";
 import moment from "@utils/monentTz";
 import { debounce } from "lodash";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateStatusBooking } from "@/redux/booking/booking.thunk";
+import BookingCancelByDoctor from "./Action/BookingCancelByDoctor";
 
 const { RangePicker } = DatePicker;
 
@@ -50,6 +51,9 @@ const ManageBooking = () => {
     pageSize: paginate.pageSize,
     ...filters,
   });
+  const { socketDoctor: socket } = useSelector((state) => state.socket);
+  const [open, setOpen] = useState(false)
+  const [bookingDetail, setBookingDetail] = useState(null)
 
   useEffect(() => {
     if (data && data.pagination) {
@@ -167,21 +171,46 @@ const ManageBooking = () => {
   };
 
   const handleChangeStatus = async ({ booking, status }) => {
-    const res = await dispatch(
-      updateStatusBooking({
-        id: booking._id,
-        data: { status, model: "Doctor" },
-      })
-    ).unwrap();
-    if (res.success) {
-      message.success(res.message);
-      refetch();
+    if (status === "cancelled") {
+      setBookingDetail(booking)
+      setOpen(true)
     }
+
+    // const res = await dispatch(
+    //   updateStatusBooking({
+    //     id: booking._id,
+    //     data: { status, model: "Doctor" },
+    //   })
+    // ).unwrap();
+
+    // if (res.success) {
+    //   message.success(res.message);
+    //   socket?.emit(
+    //     "updateBookingStatus",
+    //     JSON.stringify({
+    //       recipient: res.data.user,
+    //       model: "User",
+    //       booking: res.data,
+    //     })
+    //   );
+    //   refetch();
+    // }
   };
 
   return (
     <div className="space-y-6 mt-4">
       <div className="flex items-center gap-4 flex-wrap">
+        <BookingCancelByDoctor {...{
+          open,
+          booking: bookingDetail,
+          onClose: (isFetch) => {
+            if(isFetch){
+              refetch();
+            }
+            setBookingDetail(null)
+            setOpen(false)
+          }
+        }} />
         <Input
           className="w-full lg:flex-1"
           placeholder="Tìm kiếm..."

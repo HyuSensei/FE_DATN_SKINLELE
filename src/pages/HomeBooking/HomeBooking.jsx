@@ -8,6 +8,7 @@ import { useGetDoctorsByCustomerQuery } from "@/redux/doctor/doctor.query";
 import SliderDoctors from "@/components/Slider/SliderDoctors";
 import SliderClinics from "@/components/Slider/SliderClinics";
 import Banner from "./Banner";
+import LoadingClinic from "@/components/Loading/LoadingClinic";
 
 const HomeBooking = () => {
   const services = [
@@ -44,6 +45,8 @@ const HomeBooking = () => {
     isLoading: isLoadingDoctors,
     error: errorDoctors,
   } = useGetDoctorsByCustomerQuery({});
+
+  if (isLoadingClinics || isLoadingDoctors) return <LoadingClinic />;
 
   const clinics = dataClinics ? dataClinics.clinics : [];
   const doctors = dataDoctors ? dataDoctors.doctors : [];

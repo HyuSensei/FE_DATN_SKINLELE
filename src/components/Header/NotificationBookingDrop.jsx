@@ -111,7 +111,7 @@ const NotificationBookingDrop = () => {
     ).unwrap();
 
     if (res.success) {
-      refetch();
+      refetchCustomer();
     }
   };
 
@@ -138,16 +138,14 @@ const NotificationBookingDrop = () => {
       </div>
 
       <div className="max-h-[460px] overflow-auto">
-        {isLoadingCustomer ||
-          (isFetchingCustomer && (
-            <div className="space-y-4">
-              <Skeleton />
-              <Skeleton />
-            </div>
-          ))}
+        {isLoadingCustomer && (
+          <div className="space-y-4">
+            <Skeleton />
+            <Skeleton />
+          </div>
+        )}
         {!isLoadingCustomer &&
-        !isFetchingCustomer &&
-        notifications.length === 0 ? (
+          notifications.length === 0 ? (
           <Empty
             description="Không có thông báo mới"
             className="py-12"
@@ -203,7 +201,7 @@ const NotificationBookingDrop = () => {
               <div className="p-4 text-center border-t border-gray-100">
                 <button
                   onClick={handleSeeMoreCustomer}
-                  disabled={isLoadingCustomer || isFetchingCustomer}
+                  disabled={isLoadingCustomer}
                   className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700
                     transition-colors duration-200 text-sm font-medium disabled:opacity-70"
                 >

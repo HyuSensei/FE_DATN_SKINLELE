@@ -17,10 +17,10 @@ import { MdVerified } from "react-icons/md";
 import { useParams } from "react-router-dom";
 import { useGetDoctorDetailQuery } from "@/redux/doctor/doctor.query";
 import { formatPrice } from "@/helpers/formatPrice";
-import LoadingContent from "@/components/Loading/LoaingContent";
 import { RiMapPinFill } from "react-icons/ri";
 import useScrollToSection from "@/hook/useScrollToSection";
 import StarReview from "@/components/StarReview";
+import LoadingClinic from "@/components/Loading/LoadingClinic";
 
 const Doctor = () => {
   const { slug } = useParams();
@@ -42,7 +42,7 @@ const Doctor = () => {
       />
     );
 
-  if (isLoading) return <LoadingContent />;
+  if (isLoading) return <LoadingClinic />;
 
   if (!doctor)
     return (

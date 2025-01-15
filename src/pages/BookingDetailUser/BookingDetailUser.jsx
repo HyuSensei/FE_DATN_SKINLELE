@@ -152,7 +152,7 @@ const BookingDetailUser = () => {
         </div>
       </div>
 
-      <div onClick={() => navigate(`/doctor/${booking.doctor.slug}`)}
+      <div onClick={() => navigate(`/doctor-detail/${booking.doctor.slug}`)}
         className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 cursor-pointer hover:shadow-xl transition-shadow">
         <div className="flex items-start space-x-4">
           <Avatar

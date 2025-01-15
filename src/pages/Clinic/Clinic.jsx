@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Tabs, Button, Empty, Spin, Dropdown } from "antd";
+import { Tabs, Button, Empty, Dropdown } from "antd";
 import {
   RiMapPinFill,
   RiPhoneFill,
@@ -15,7 +15,6 @@ import ClinicReview from "./ClinicReview";
 import CustomButton from "@/components/CustomButton";
 import { useParams } from "react-router-dom";
 import { useGetClinicDetailBySlugQuery } from "@/redux/clinic/clinic.query";
-import LoadingContent from "@/components/Loading/LoaingContent";
 import {
   FaFacebook,
   FaLinkedin,
@@ -24,6 +23,7 @@ import {
 } from "react-icons/fa6";
 import { socialShare } from "@/utils/socialShare";
 import { FaWhatsappSquare } from "react-icons/fa";
+import LoadingClinic from "@/components/Loading/LoadingClinic";
 
 const FE_URL = import.meta.env.VITE_APP_FE_URL;
 
@@ -46,7 +46,7 @@ const Clinic = () => {
     );
   }
 
-  if (isLoadingClinic) return <LoadingContent />;
+  if (isLoadingClinic) return <LoadingClinic />;
 
   if (!clinic) {
     return (
