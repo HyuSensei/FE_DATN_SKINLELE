@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 import { LoadingMessage } from "./Loading";
 import PreviewUpload from "./PreviewUpload";
 import { HiGif } from "react-icons/hi2";
-import { IoIosSend, IoMdImages } from "react-icons/io";
+import { IoIosCall, IoIosSend, IoMdImages } from "react-icons/io";
 import VoiceRecorder from "./VoiceRecorder";
 import {
   UPLOAD_SKINLELE_CHAT_PRESET,
@@ -17,6 +17,7 @@ import {
 } from "@/helpers/uploadCloudinary";
 import useVideoCall from "@/hook/useVideoCall";
 import VideoCallModal from "./VideoCallModal";
+import { FaVideo } from "react-icons/fa6";
 
 const ChatBox = ({
   isOpen = false,
@@ -56,16 +57,20 @@ const ChatBox = ({
   };
   const isEmptyChat = messages.length === 0 && previewFiles.length === 0;
 
-  // const {
-  //   callState,
-  //   localStream,
-  //   remoteStream,
-  //   callData,
-  //   startCall,
-  //   acceptCall,
-  //   rejectCall,
-  //   endCall,
-  // } = useVideoCall(socket, currentUser._id);
+  const {
+    callState,
+    localStream,
+    remoteStream,
+    callData,
+    videoEnabled,
+    audioEnabled,
+    startCall,
+    acceptCall,
+    rejectCall,
+    endCall,
+    toggleVideo,
+    toggleAudio,
+  } = useVideoCall(socket, sender?._id);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -241,32 +246,35 @@ const ChatBox = ({
     </div>
   );
 
-  // const handleStartVideoCall = () => {
-  //   startCall(conversation._id, conversation._id, true);
-  // };
+  const handleStartVideoCall = () => {
+    startCall(receiver?._id, conversation?.conversationId, true);
+  };
 
-  // const handleStartVoiceCall = () => {
-  //   startCall(conversation._id, conversation._id, false);
-  // };
+  const handleStartVoiceCall = () => {
+    startCall(receiver?._id, conversation?.conversationId, false);
+  };
 
   return (
-    <div className="fixed bottom-10 lg:bottom-8 right-8 z-50">
-      {/* <VideoCallModal
+    <div className="fixed bottom-10 lg:bottom-8 right-5 lg:right-8 z-50">
+      <VideoCallModal
         visible={callState !== "idle"}
         callState={callState}
         localStream={localStream}
         remoteStream={remoteStream}
+        caller={{
+          name: conversation?.name,
+          avatar: conversation?.avatar,
+        }}
         onAccept={acceptCall}
         onReject={rejectCall}
         onEnd={endCall}
-        caller={
-          callData?.from === currentUser._id
-            ? conversation.receiver
-            : conversation.sender
-        }
-      /> */}
+        videoEnabled={videoEnabled}
+        onToggleVideo={toggleVideo}
+        audioEnabled={audioEnabled}
+        onToggleAudio={toggleAudio}
+      />
 
-      <div className="animate-slideIn rounded-xl shadow-2xl w-[320px] lg:w-[400px] max-h-[600px] flex flex-col bg-white">
+      <div className="animate-slideIn rounded-xl shadow-2xl w-[350px] lg:w-[400px] max-h-[600px] flex flex-col bg-white">
         {/* Header */}
         <div
           className={`p-4 ${
@@ -275,34 +283,46 @@ const ChatBox = ({
               : "bg-gradient-to-r from-rose-300 to-rose-400"
           } text-white rounded-t-xl flex items-center justify-between`}
         >
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
-              <img
-                src={conversation.avatar.url}
-                alt="Support Avatar"
-                className="w-10 h-10 rounded-full object-cover"
-              />
-            </div>
-            <div>
-              <h3 className="font-bold text-lg">{conversation.name}</h3>
-              <div className="flex items-center gap-2">
-                <span
-                  className={`w-2 h-2 rounded-full ${
-                    isOnline() ? "bg-green-400 animate-pulse" : "bg-yellow-200"
-                  }`}
-                ></span>
-                <span className="text-sm text-blue-100">
-                  {isOnline() ? "Online" : "Offline"}
-                </span>
+          <div className="flex items-center gap-3 justify-between w-full">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
+                <img
+                  src={conversation.avatar.url}
+                  alt="Support Avatar"
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              </div>
+              <div>
+                <h3 className="font-bold text-lg">{conversation.name}</h3>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`w-2 h-2 rounded-full ${
+                      isOnline()
+                        ? "bg-green-400 animate-pulse"
+                        : "bg-yellow-200"
+                    }`}
+                  ></span>
+                  <span className="text-sm text-blue-100">
+                    {isOnline() ? "Online" : "Offline"}
+                  </span>
+                </div>
               </div>
             </div>
+            <div className="flex gap-2 px-2 lg:gap-4 ">
+              <IoIosCall
+                className="text-2xl cursor-pointer hover:text-gray-200"
+                onClick={handleStartVideoCall}
+              />
+              <FaVideo
+                className="text-2xl cursor-pointer hover:text-gray-200"
+                onClick={handleStartVoiceCall}
+              />
+              <IoClose
+                className="text-2xl hover:text-gray-200 cursor-pointer"
+                onClick={onClose}
+              />
+            </div>
           </div>
-          <Button
-            type="text"
-            className="text-white hover:text-gray-200 hover:rotate-90 transition-all duration-300"
-            onClick={onClose}
-            icon={<IoClose className="text-2xl hover:text-gray-200" />}
-          />
         </div>
 
         {/* Messages Area */}

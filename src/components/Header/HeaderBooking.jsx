@@ -1,8 +1,8 @@
-import { Layout, Dropdown, Avatar, Badge } from "antd";
+import { Layout, Dropdown, Avatar } from "antd";
 import { FaBars, FaUserCircle } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
-import { IoLogOutOutline, IoNotificationsOutline } from "react-icons/io5";
+import { IoLogOutOutline } from "react-icons/io5";
 import { Link, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import ModalAuth from "../Modal/ModalAuth";

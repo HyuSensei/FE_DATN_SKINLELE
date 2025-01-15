@@ -172,29 +172,30 @@ const ManageBooking = () => {
 
   const handleChangeStatus = async ({ booking, status }) => {
     if (status === "cancelled") {
-      setBookingDetail(booking)
-      setOpen(true)
+      setBookingDetail(booking);
+      setOpen(true);
+      return;
     }
 
-    // const res = await dispatch(
-    //   updateStatusBooking({
-    //     id: booking._id,
-    //     data: { status, model: "Doctor" },
-    //   })
-    // ).unwrap();
+    const res = await dispatch(
+      updateStatusBooking({
+        id: booking._id,
+        data: { status, model: "Doctor" },
+      })
+    ).unwrap();
 
-    // if (res.success) {
-    //   message.success(res.message);
-    //   socket?.emit(
-    //     "updateBookingStatus",
-    //     JSON.stringify({
-    //       recipient: res.data.user,
-    //       model: "User",
-    //       booking: res.data,
-    //     })
-    //   );
-    //   refetch();
-    // }
+    if (res.success) {
+      message.success(res.message);
+      socket?.emit(
+        "updateBookingStatus",
+        JSON.stringify({
+          recipient: res.data.user,
+          model: "User",
+          booking: res.data,
+        })
+      );
+      refetch();
+    }
   };
 
   return (

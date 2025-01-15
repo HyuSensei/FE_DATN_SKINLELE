@@ -5,7 +5,11 @@ const useVideoCall = (socket, userId) => {
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
   const [callData, setCallData] = useState(null);
+  const [videoEnabled, setVideoEnabled] = useState(true);
+  const [audioEnabled, setAudioEnabled] = useState(true);
+
   const peerConnection = useRef(null);
+  const localStreamRef = useRef(null);
 
   // Cấu hình STUN/TURN servers
   const servers = {
@@ -22,11 +26,25 @@ const useVideoCall = (socket, userId) => {
   // Khởi tạo media stream
   const initLocalStream = async (video = true) => {
     try {
+      // Dừng stream cũ nếu có
+      if (localStreamRef.current) {
+        localStreamRef.current.getTracks().forEach((track) => track.stop());
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
-        video,
+        video: video
+          ? {
+              width: { ideal: 1280 },
+              height: { ideal: 720 },
+            }
+          : false,
       });
+
+      localStreamRef.current = stream;
       setLocalStream(stream);
+      setVideoEnabled(video);
+      setAudioEnabled(true);
       return stream;
     } catch (error) {
       console.error("Error accessing media devices:", error);
@@ -40,9 +58,9 @@ const useVideoCall = (socket, userId) => {
       const pc = new RTCPeerConnection(servers);
 
       // Add local stream tracks
-      if (localStream) {
-        localStream.getTracks().forEach((track) => {
-          pc.addTrack(track, localStream);
+      if (localStreamRef.current) {
+        localStreamRef.current.getTracks().forEach((track) => {
+          pc.addTrack(track, localStreamRef.current);
         });
       }
 
@@ -54,11 +72,21 @@ const useVideoCall = (socket, userId) => {
       // Handle ICE candidates
       pc.onicecandidate = (event) => {
         if (event.candidate) {
-          socket.emit("iceCandidate", {
+          socket?.emit("iceCandidate", {
             to: callData?.to || callData?.from,
             from: userId,
             candidate: event.candidate,
           });
+        }
+      };
+
+      // Handle connection state changes
+      pc.onconnectionstatechange = () => {
+        if (
+          pc.connectionState === "disconnected" ||
+          pc.connectionState === "failed"
+        ) {
+          cleanup();
         }
       };
 
@@ -68,7 +96,77 @@ const useVideoCall = (socket, userId) => {
       console.error("Error creating peer connection:", error);
       throw error;
     }
-  }, [localStream, socket, userId, callData]);
+  }, [localStreamRef.current, socket, userId, callData]);
+
+  // Dọn dẹp resources
+  const cleanup = useCallback(() => {
+    // Dừng và xóa local stream
+    if (localStreamRef.current) {
+      const tracks = localStreamRef.current.getTracks();
+      tracks.forEach((track) => {
+        track.stop();
+        localStreamRef.current.removeTrack(track);
+      });
+      localStreamRef.current = null;
+    }
+    setLocalStream(null);
+
+    // Dừng remote stream
+    if (remoteStream) {
+      const tracks = remoteStream.getTracks();
+      tracks.forEach((track) => {
+        track.stop();
+      });
+      setRemoteStream(null);
+    }
+
+    // Đóng peer connection
+    if (peerConnection.current) {
+      // Xóa tất cả tracks
+      const senders = peerConnection.current.getSenders();
+      senders.forEach((sender) => {
+        if (sender.track) {
+          sender.track.stop();
+        }
+      });
+
+      peerConnection.current.close();
+      peerConnection.current = null;
+    }
+
+    setCallData(null);
+    setCallState("idle");
+    setVideoEnabled(true);
+    setAudioEnabled(true);
+  }, [remoteStream]);
+
+  useEffect(() => {
+    return () => {
+      cleanup();
+    };
+  }, [cleanup]);
+
+  // Bật/tắt video
+  const toggleVideo = useCallback(() => {
+    if (localStreamRef.current) {
+      const videoTrack = localStreamRef.current.getVideoTracks()[0];
+      if (videoTrack) {
+        videoTrack.enabled = !videoTrack.enabled;
+        setVideoEnabled(videoTrack.enabled);
+      }
+    }
+  }, []);
+
+  // Bật/tắt audio
+  const toggleAudio = useCallback(() => {
+    if (localStreamRef.current) {
+      const audioTrack = localStreamRef.current.getAudioTracks()[0];
+      if (audioTrack) {
+        audioTrack.enabled = !audioTrack.enabled;
+        setAudioEnabled(audioTrack.enabled);
+      }
+    }
+  }, []);
 
   // Bắt đầu cuộc gọi
   const startCall = async (receiverId, conversationId, withVideo = true) => {
@@ -82,11 +180,12 @@ const useVideoCall = (socket, userId) => {
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
 
-      socket.emit("initiateCall", {
+      socket?.emit("initiateCall", {
         to: receiverId,
         from: userId,
         offer,
         conversationId,
+        withVideo,
       });
     } catch (error) {
       console.error("Error starting call:", error);
@@ -97,17 +196,14 @@ const useVideoCall = (socket, userId) => {
   // Nhận cuộc gọi
   const acceptCall = async () => {
     try {
-      await initLocalStream();
+      await initLocalStream(true);
       const pc = await createPeerConnection();
 
-      // Set remote description (offer)
       await pc.setRemoteDescription(callData.offer);
-
-      // Create and send answer
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
 
-      socket.emit("acceptCall", {
+      socket?.emit("acceptCall", {
         to: callData.from,
         from: userId,
         answer,
@@ -122,7 +218,7 @@ const useVideoCall = (socket, userId) => {
 
   // Từ chối cuộc gọi
   const rejectCall = () => {
-    socket.emit("rejectCall", {
+    socket?.emit("rejectCall", {
       to: callData.from,
       from: userId,
     });
@@ -131,47 +227,20 @@ const useVideoCall = (socket, userId) => {
 
   // Kết thúc cuộc gọi
   const endCall = () => {
-    socket.emit("endCall", {
+    socket?.emit("endCall", {
       to: callData?.to || callData?.from,
       from: userId,
     });
     cleanup();
   };
 
-  // Dọn dẹp resources
-  const cleanup = () => {
-    if (localStream) {
-      localStream.getTracks().forEach((track) => track.stop());
-      setLocalStream(null);
-    }
-    if (peerConnection.current) {
-      peerConnection.current.close();
-      peerConnection.current = null;
-    }
-    setRemoteStream(null);
-    setCallData(null);
-    setCallState("idle");
-  };
-
-  const requestMediaPermissions = async () => {
-    try {
-      await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-      return true;
-    } catch (error) {
-      console.error("Media permissions denied:", error);
-      return false;
-    }
-  };
-
   useEffect(() => {
-    // Handle incoming call
-    socket.on("incomingCall", (data) => {
+    socket?.on("incomingCall", (data) => {
       setCallData(data);
       setCallState("receiving");
     });
 
-    // Handle call accepted
-    socket.on("callAccepted", async (data) => {
+    socket?.on("callAccepted", async (data) => {
       const pc = peerConnection.current;
       if (pc) {
         await pc.setRemoteDescription(data.answer);
@@ -179,44 +248,43 @@ const useVideoCall = (socket, userId) => {
       }
     });
 
-    // Handle call rejected
-    socket.on("callRejected", () => {
-      cleanup();
-    });
+    socket?.on("callRejected", cleanup);
+    socket?.on("callEnded", cleanup);
 
-    // Handle call ended
-    socket.on("callEnded", () => {
-      cleanup();
-    });
-
-    // Handle ICE candidates
-    socket.on("iceCandidate", async (data) => {
+    socket?.on("iceCandidate", async (data) => {
       const pc = peerConnection.current;
       if (pc) {
-        await pc.addIceCandidate(data.candidate);
+        try {
+          await pc.addIceCandidate(data.candidate);
+        } catch (err) {
+          console.error("Error adding ICE candidate:", err);
+        }
       }
     });
 
     return () => {
       cleanup();
-      socket.off("incomingCall");
-      socket.off("callAccepted");
-      socket.off("callRejected");
-      socket.off("callEnded");
-      socket.off("iceCandidate");
+      socket?.off("incomingCall");
+      socket?.off("callAccepted");
+      socket?.off("callRejected");
+      socket?.off("callEnded");
+      socket?.off("iceCandidate");
     };
-  }, [socket]);
+  }, [socket, cleanup]);
 
   return {
     callState,
     localStream,
     remoteStream,
     callData,
+    videoEnabled,
+    audioEnabled,
     startCall,
     acceptCall,
     rejectCall,
     endCall,
-    requestMediaPermissions,
+    toggleVideo,
+    toggleAudio,
   };
 };
 

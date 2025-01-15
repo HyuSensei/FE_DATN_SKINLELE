@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { DatePicker, Spin, Empty, Card } from "antd";
+import { DatePicker, Empty } from "antd";
 import {
   CalendarOutlined,
   CheckOutlined,
@@ -11,118 +11,201 @@ import {
   LineChartOutlined,
 } from "@ant-design/icons";
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   Legend,
   ResponsiveContainer,
+  Area,
+  AreaChart,
 } from "recharts";
 import dayjs from "dayjs";
 import locale from "antd/locale/vi_VN";
 import { useGetStatisticalDoctorQuery } from "@/redux/doctor/doctor.query";
 import { formatPrice } from "@/helpers/formatPrice";
+import LoadingClinic from "@/components/Loading/LoadingClinic";
 
-// Stat Card Component - Improved layout
 const StatCard = ({ icon, title, value, subValue, color }) => (
-  <Card
-    bordered={false}
-    className="h-full transition-all duration-300 hover:shadow-lg group"
-  >
-    <div className="flex flex-col h-full">
-      <div className={`p-2 rounded-lg bg-${color}-50 w-fit`}>{icon}</div>
-      <div className="flex flex-col justify-between flex-grow mt-4">
-        <div>
-          <h3 className="text-sm font-medium text-gray-600">{title}</h3>
-          <p className="mt-2 text-2xl font-bold text-gray-900">{value}</p>
+  <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-gray-50 dark:from-slate-800 dark:to-slate-900 p-1">
+    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 dark:from-blue-400/5 dark:to-purple-400/5" />
+    <div className="relative p-6 h-full">
+      <div className="flex justify-between items-start">
+        <div
+          className={`w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br ${
+            color === "emerald"
+              ? "from-emerald-400 to-teal-500"
+              : color === "violet"
+              ? "from-violet-400 to-purple-500"
+              : color === "blue"
+              ? "from-blue-400 to-indigo-500"
+              : color === "yellow"
+              ? "from-amber-400 to-yellow-500"
+              : color === "red"
+              ? "from-red-400 to-rose-500"
+              : color === "purple"
+              ? "from-purple-400 to-fuchsia-500"
+              : "from-gray-400 to-gray-500"
+          }`}
+        >
+          <span className="text-white text-xl">{icon}</span>
         </div>
-        {subValue && <p className="mt-2 text-sm text-gray-500">{subValue}</p>}
       </div>
-    </div>
-  </Card>
-);
-
-const StatisticsChart = ({ data }) => (
-  <div className="mt-6">
-    <h3 className="text-lg font-semibold mb-4">Thống kê theo ngày</h3>
-    <div className="h-[400px] w-full">
-      <ResponsiveContainer>
-        <LineChart data={data}>
-          <CartesianGrid
-            strokeDasharray="3 3"
-            vertical={false}
-            stroke="#09957a"
-          />
-          <XAxis
-            dataKey="day"
-            stroke="#64748b"
-            fontSize={12}
-            tickLine={false}
-          />
-          <YAxis
-            stroke="#64748b"
-            fontSize={12}
-            tickLine={false}
-            axisLine={false}
-            tickFormatter={(value) => formatPrice(value, true)}
-          />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: "rgba(255, 255, 255, 0.98)",
-              border: "none",
-              borderRadius: "8px",
-              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-            }}
-            tickFormatter={(value) => formatPrice(value, true)}
-          />
-          <Legend />
-          <Line
-            type="monotone"
-            dataKey="totalSales"
-            stroke="#2464ec"
-            strokeWidth={2}
-            dot={{ stroke: "#2464ec", strokeWidth: 2, r: 4 }}
-            name="Doanh số"
-          />
-          <Line
-            type="monotone"
-            dataKey="revenue"
-            stroke="#10b981"
-            strokeWidth={2}
-            dot={{ stroke: "#10b981", strokeWidth: 2, r: 4 }}
-            name="Doanh thu thực"
-          />
-          <Line
-            type="monotone"
-            dataKey="completed"
-            stroke="#8b5cf6"
-            strokeWidth={2}
-            dot={{ stroke: "#8b5cf6", strokeWidth: 2, r: 4 }}
-            name="Hoàn thành"
-          />
-          <Line
-            type="monotone"
-            dataKey="pending"
-            stroke="#f59e0b"
-            strokeWidth={2}
-            dot={{ stroke: "#f59e0b", strokeWidth: 2, r: 4 }}
-            name="Chờ xử lý"
-          />
-          <Line
-            type="monotone"
-            dataKey="cancelled"
-            stroke="#ef4444"
-            strokeWidth={2}
-            dot={{ stroke: "#ef4444", strokeWidth: 2, r: 4 }}
-            name="Đã hủy"
-          />
-        </LineChart>
-      </ResponsiveContainer>
+      <div className="mt-4">
+        <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">
+          {title}
+        </h3>
+        <p className="mt-3 text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+          {value}
+        </p>
+        {subValue && (
+          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            {subValue}
+          </p>
+        )}
+      </div>
     </div>
   </div>
 );
+
+const StatisticsChart = ({ data }) => {
+  const [chartType, setChartType] = useState("revenue");
+
+  const chartTypes = {
+    revenue: {
+      title: "Doanh thu & Doanh số",
+      data: [
+        {
+          key: "totalSales",
+          name: "Doanh số",
+          gradient: ["#3B82F6", "#1D4ED8"],
+        },
+        {
+          key: "revenue",
+          name: "Doanh thu thực",
+          gradient: ["#10B981", "#047857"],
+        },
+      ],
+    },
+    bookings: {
+      title: "Lượng đặt lịch",
+      data: [
+        {
+          key: "completed",
+          name: "Hoàn thành",
+          gradient: ["#8B5CF6", "#6D28D9"],
+        },
+        { key: "pending", name: "Chờ xử lý", gradient: ["#F59E0B", "#B45309"] },
+        { key: "cancelled", name: "Đã hủy", gradient: ["#EF4444", "#B91C1C"] },
+      ],
+    },
+  };
+
+  return (
+    <div className="mt-8">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-xl shadow-gray-200/50 dark:shadow-none">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+            {chartTypes[chartType].title}
+          </h3>
+          <div className="flex gap-2 bg-gray-100 dark:bg-slate-700 p-1 rounded-xl">
+            {Object.entries(chartTypes).map(([type, config]) => (
+              <button
+                key={type}
+                onClick={() => setChartType(type)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                  chartType === type
+                    ? "bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm"
+                    : "text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                }`}
+              >
+                {config.title}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="h-[400px] mt-4">
+          <ResponsiveContainer>
+            <AreaChart data={data}>
+              <defs>
+                {chartTypes[chartType].data.map(({ key, gradient }) => (
+                  <linearGradient
+                    key={key}
+                    id={`gradient-${key}`}
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop
+                      offset="0%"
+                      stopColor={gradient[0]}
+                      stopOpacity={0.3}
+                    />
+                    <stop
+                      offset="100%"
+                      stopColor={gradient[1]}
+                      stopOpacity={0.05}
+                    />
+                  </linearGradient>
+                ))}
+              </defs>
+              <CartesianGrid
+                strokeDasharray="3 3"
+                vertical={false}
+                stroke="#E5E7EB"
+              />
+              <XAxis
+                dataKey="day"
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+                stroke="#9CA3AF"
+              />
+              <YAxis
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+                stroke="#9CA3AF"
+                tickFormatter={(value) => formatPrice(value, true)}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "rgba(255, 255, 255, 0.98)",
+                  border: "none",
+                  borderRadius: "12px",
+                  boxShadow:
+                    "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                }}
+                formatter={(value) => formatPrice(value, true)}
+              />
+              <Legend />
+              {chartTypes[chartType].data.map(({ key, name, gradient }) => (
+                <Area
+                  key={key}
+                  type="monotone"
+                  dataKey={key}
+                  name={name}
+                  stroke={gradient[0]}
+                  strokeWidth={2}
+                  fill={`url(#gradient-${key})`}
+                  dot={{ fill: gradient[0], strokeWidth: 2, r: 4 }}
+                  activeDot={{
+                    fill: gradient[0],
+                    stroke: "white",
+                    strokeWidth: 2,
+                    r: 6,
+                  }}
+                />
+              ))}
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function ManageStatistic({ activeMenu }) {
   const [year, setYear] = useState(new Date().getFullYear());
@@ -137,11 +220,7 @@ export default function ManageStatistic({ activeMenu }) {
   );
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-[50vh]">
-        <Spin size="large" />
-      </div>
-    );
+    return <LoadingClinic />;
   }
 
   if (error || !data) {
@@ -154,81 +233,75 @@ export default function ManageStatistic({ activeMenu }) {
 
   const { averageRating, totalReviews, stats, totalStats } = data;
 
-  // Group stats for better layout
-  const statGroups = [
-    // Top row - Key metrics
-    [
-      {
-        icon: <DollarOutlined className="text-emerald-600 text-xl" />,
-        title: "Doanh thu thực",
-        value: `${formatPrice(totalStats.revenue, true)} VND`,
-        subValue: `${totalStats.revenueRate} Tỷ lệ chuyển đổi`,
-        color: "emerald",
-      },
-      {
-        icon: <LineChartOutlined className="text-violet-600 text-xl" />,
-        title: "Doanh số",
-        value: `${formatPrice(totalStats.totalSales, true)} VND`,
-        color: "violet",
-      },
-    ],
-    // Middle row - Booking stats
-    [
-      {
-        icon: <CalendarOutlined className="text-blue-600 text-xl" />,
-        title: "Tổng lịch hẹn",
-        value: totalStats.totalBookings,
-        subValue: `${totalStats.conversionRate} Tỷ lệ hoàn thành`,
-        color: "blue",
-      },
-      {
-        icon: <CheckOutlined className="text-green-600 text-xl" />,
-        title: "Hoàn thành",
-        value: totalStats.completed,
-        color: "green",
-      },
-    ],
-    // Bottom row - Additional metrics
-    [
-      {
-        icon: <ClockCircleOutlined className="text-amber-600 text-xl" />,
-        title: "Chờ xử lý",
-        value: totalStats.pending + totalStats.confirmed,
-        subValue: `${totalStats.pending} chờ và ${totalStats.confirmed} xác nhận`,
-        color: "amber",
-      },
-      {
-        icon: <CloseOutlined className="text-red-600 text-xl" />,
-        title: "Đã hủy",
-        value: totalStats.cancelled,
-        color: "red",
-      },
-    ],
-    // Last row - Performance metrics
-    [
-      {
-        icon: <PercentageOutlined className="text-purple-600 text-xl" />,
-        title: "Tỷ lệ chuyển đổi",
-        value: totalStats.conversionRate,
-        color: "purple",
-      },
-      {
-        icon: <StarOutlined className="text-yellow-600 text-xl" />,
-        title: "Đánh giá",
-        value: `${averageRating} /5`,
-        subValue: `${totalReviews} lượt đánh giá`,
-        color: "yellow",
-      },
-    ],
+  const statCards = [
+    {
+      icon: <DollarOutlined />,
+      title: "Doanh thu thực",
+      value: `${formatPrice(totalStats.revenue, true)} VND`,
+      subValue: `${totalStats.revenueRate} Tỷ lệ chuyển đổi`,
+      color: "emerald",
+    },
+    {
+      icon: <LineChartOutlined />,
+      title: "Doanh số",
+      value: `${formatPrice(totalStats.totalSales, true)} VND`,
+      color: "violet",
+    },
+    {
+      icon: <CalendarOutlined />,
+      title: "Tổng lịch hẹn",
+      value: totalStats.totalBookings,
+      subValue: `${totalStats.conversionRate} Tỷ lệ hoàn thành`,
+      color: "blue",
+    },
+    {
+      icon: <CheckOutlined />,
+      title: "Hoàn thành",
+      value: totalStats.completed,
+      color: "emerald",
+    },
+    {
+      icon: <ClockCircleOutlined />,
+      title: "Chờ xử lý",
+      value: totalStats.pending + totalStats.confirmed,
+      subValue: `${totalStats.pending} chờ và ${totalStats.confirmed} xác nhận`,
+      color: "yellow",
+      trend: -3.4,
+    },
+    {
+      icon: <CloseOutlined />,
+      title: "Đã hủy",
+      value: totalStats.cancelled,
+      color: "red",
+      trend: -8.9,
+    },
+    {
+      icon: <PercentageOutlined />,
+      title: "Tỷ lệ chuyển đổi",
+      value: totalStats.conversionRate,
+      color: "purple",
+      trend: 6.4,
+    },
+    {
+      icon: <StarOutlined />,
+      title: "Đánh giá",
+      value: `${averageRating} /5`,
+      subValue: `${totalReviews} lượt đánh giá`,
+      color: "yellow",
+      trend: 4.2,
+    },
   ];
 
   return (
     <div className="min-h-screen">
-      <div className="mb-6 flex justify-between items-center">
-        <p className="text-sm text-gray-500 mt-1">
-          Chi tiết hoạt động đặt lịch và doanh thu trong tháng
-        </p>
+      <div className="mb-8 flex justify-between items-center">
+        <div>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">
+            Chi tiết hoạt động đặt lịch và doanh thu trong tháng
+          </p>
+        </div>
         <DatePicker
+          size="large"
           locale={locale}
           picker="month"
           value={dayjs(`${year}-${month}`)}
@@ -240,17 +313,13 @@ export default function ManageStatistic({ activeMenu }) {
           }}
           format="MM/YYYY"
           allowClear={false}
-          className="border-2 hover:border-blue-500 transition-colors"
+          className="border-0 bg-white dark:bg-slate-800 shadow-lg rounded-xl px-4 hover:border-blue-500 transition-all"
         />
       </div>
 
-      <div className="grid gap-6">
-        {statGroups.map((group, groupIndex) => (
-          <div key={groupIndex} className="grid md:grid-cols-2 gap-6">
-            {group.map((stat, statIndex) => (
-              <StatCard key={`${groupIndex}-${statIndex}`} {...stat} />
-            ))}
-          </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {statCards.map((stat, index) => (
+          <StatCard key={index} {...stat} />
         ))}
       </div>
 

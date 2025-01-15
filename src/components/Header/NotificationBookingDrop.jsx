@@ -1,16 +1,17 @@
 import { useGetAllNotiStoreByUserQuery } from "@/redux/notification/notification.query";
-import { Badge, Button, Dropdown, Empty, Skeleton } from "antd";
+import { Badge, Button, Dropdown, Empty, Skeleton, Tooltip } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import dayjs from "@utils/dayjsTz";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   markAllNotificationsAsRead,
   markNotificationAsRead,
 } from "@/redux/notification/notification.thunk";
 
 const NotificationBookingDrop = () => {
+  const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -21,6 +22,7 @@ const NotificationBookingDrop = () => {
   const { socketCustomer: socket } = useSelector((state) => state.socket);
   const { isAuthenticated } = useSelector((state) => state.auth);
   const [unreadCount, setUnreadCount] = useState(0);
+  const path = location.pathname;
 
   const handleNewNotification = (notification) => {
     setNotifications((prev) => [notification, ...prev]);
@@ -37,7 +39,7 @@ const NotificationBookingDrop = () => {
       ...paginate,
       type: "BOOKING",
     },
-    { skip: !isAuthenticated }
+    { skip: !isAuthenticated || path === "doctor-owner" }
   );
   const [notifications, setNotifications] = useState(
     dataCustomer?.notifications || []
@@ -144,8 +146,7 @@ const NotificationBookingDrop = () => {
             <Skeleton />
           </div>
         )}
-        {!isLoadingCustomer &&
-          notifications.length === 0 ? (
+        {!isLoadingCustomer && notifications.length === 0 ? (
           <Empty
             description="Không có thông báo mới"
             className="py-12"
@@ -172,9 +173,11 @@ const NotificationBookingDrop = () => {
                           <span className="w-[6px] h-[6px] rounded-full bg-blue-600 mt-2" />
                         )}
                       </div>
-                      <p className="text-gray-600 text-sm mt-1 line-clamp-2">
-                        {notification.content}
-                      </p>
+                      <Tooltip title={notification.content}>
+                        <p className="text-gray-600 text-sm mt-1 line-clamp-2">
+                          {notification.content}
+                        </p>
+                      </Tooltip>
                       <div className="flex justify-between items-center mt-2">
                         <span className="text-gray-400 text-xs">
                           {dayjs(notification.createdAt).format(

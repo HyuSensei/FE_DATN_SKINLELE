@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Pagination,
   Table,
@@ -19,6 +19,7 @@ import {
   updateStatusOrderByAdmin,
 } from "@redux/order/order.thunk";
 import { useNavigate } from "react-router-dom";
+import OrderCancelByAdmin from "./OrderCancelByAdmin";
 
 const TableOrder = ({
   orders = [],
@@ -32,6 +33,9 @@ const TableOrder = ({
   const { socketAdmin: socket } = useSelector((state) => state.socket);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [openCancel, setOpenCancel] = useState(false);
+  const [orderDetail, setOrderDetail] = useState(null);
+
   const columns = useMemo(
     () => [
       {
@@ -173,9 +177,16 @@ const TableOrder = ({
   );
 
   const handleUpdateStatus = async ({ status, order }) => {
+    if (status === "cancelled") {
+      setOrderDetail(order);
+      setOpenCancel(true);
+      return;
+    }
+
     const res = await dispatch(
       updateStatusOrderByAdmin({ id: order._id, data: { status } })
     ).unwrap();
+
     if (res.success) {
       message.success(res.message);
       socket?.emit(
@@ -200,6 +211,20 @@ const TableOrder = ({
 
   return (
     <>
+      <OrderCancelByAdmin
+        {...{
+          socket,
+          open: openCancel,
+          order: orderDetail,
+          onClose: (isFetch) => {
+            if (isFetch) {
+              refetch();
+            }
+            setOpenCancel(false);
+            setOrderDetail(null);
+          },
+        }}
+      />
       <Table
         columns={columns}
         dataSource={orders}
