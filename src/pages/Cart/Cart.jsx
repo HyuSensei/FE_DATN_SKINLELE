@@ -57,12 +57,26 @@ const Cart = ({ isHiden = false }) => {
   }, [selectedItems, products]);
 
   const handleQuantityChange = (productId, newQuantity) => {
+    if (newQuantity <= 0) return;
     const currentItem = products.find((p) => p.productId === productId);
     if (!currentItem) return;
-    if (newQuantity > currentItem.quantity) {
-      dispatch(incrementQuantity({ productId }));
-    } else if (newQuantity < currentItem.quantity) {
-      dispatch(decrementQuantity({ productId }));
+    
+    if (newQuantity !== currentItem.quantity) {
+      if (newQuantity > currentItem.quantity) {
+        dispatch(
+          incrementQuantity({
+            productId,
+            amount: newQuantity - currentItem.quantity,
+          })
+        );
+      } else {
+        dispatch(
+          decrementQuantity({
+            productId,
+            amount: currentItem.quantity - newQuantity,
+          })
+        );
+      }
     }
   };
 
@@ -208,9 +222,12 @@ const Cart = ({ isHiden = false }) => {
                         min={1}
                         max={99}
                         value={variant.quantity}
-                        onChange={(value) =>
-                          handleQuantityChange(variant.productId, value)
-                        }
+                        onChange={(value) => {
+                          console.log("====================================");
+                          console.log(value);
+                          console.log("====================================");
+                          handleQuantityChange(variant.productId, value);
+                        }}
                         className="w-24 h-8 text-sm lg:h-10 lg:text-base"
                       />
                       <button

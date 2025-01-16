@@ -49,16 +49,12 @@ const ConfirmBooking = ({
       };
       const res = await dispatch(createBooking(payload)).unwrap();
       if (res.success) {
-        socket?.emit("createBooking", JSON.stringify({
-          recipient: doctor._id,
-          model: "Doctor",
-          booking: res.data,
-        }));
-        socket?.emit("createBooking", JSON.stringify({
-          recipient: res.data.user,
-          model: "User",
-          booking: res.data,
-        }));
+        socket?.emit(
+          "createBooking",
+          JSON.stringify({
+            booking: res.data,
+          })
+        );
         message.success(res.message);
         form.resetFields();
         handleClearTime();

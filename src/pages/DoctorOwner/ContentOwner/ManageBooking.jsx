@@ -1,14 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
-import {
-  Table,
-  Tag,
-  Card,
-  Select,
-  Input,
-  DatePicker,
-  Empty,
-  message,
-} from "antd";
+import React, { useCallback, useState } from "react";
+import { Table, Tag, Select, Input, DatePicker, Empty, message } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { bookingStatus } from "@const/status";
 import locale from "antd/es/date-picker/locale/vi_VN";
@@ -20,6 +11,9 @@ import { debounce } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 import { updateStatusBooking } from "@/redux/booking/booking.thunk";
 import BookingCancelByDoctor from "./Action/BookingCancelByDoctor";
+import { useLocation, useNavigate } from "react-router-dom";
+import CustomButton from "@/components/CustomButton";
+import { TfiReload } from "react-icons/tfi";
 
 const { RangePicker } = DatePicker;
 
@@ -31,6 +25,7 @@ const statusTransitionRules = {
 };
 
 const ManageBooking = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [filters, setFilters] = useState({
     search: "",
@@ -38,35 +33,28 @@ const ManageBooking = () => {
     fromDate: "",
     toDate: "",
   });
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const bookingId = queryParams.get("id") || "";
 
   const [paginate, setPaginate] = useState({
     page: 1,
     pageSize: 10,
-    totalPage: 0,
-    totalItems: 0,
-  });
-
-  const { data, isLoading, error, refetch } = useGetBookingsByDoctorQuery({
-    page: paginate.page,
-    pageSize: paginate.pageSize,
-    ...filters,
   });
   const { socketDoctor: socket } = useSelector((state) => state.socket);
-  const [open, setOpen] = useState(false)
-  const [bookingDetail, setBookingDetail] = useState(null)
+  const [open, setOpen] = useState(false);
+  const [bookingDetail, setBookingDetail] = useState(null);
 
-  useEffect(() => {
-    if (data && data.pagination) {
-      setPaginate((prev) => ({
-        ...prev,
-        ...data.pagination,
-      }));
-    }
-  }, [data]);
+  const { data, isLoading, error, refetch, isFetching } =
+    useGetBookingsByDoctorQuery({
+      bookingId,
+      ...paginate,
+      ...filters,
+    });
 
   if (error) return <Empty description="Không tìm thấy thông tin lịch khám" />;
 
-  const { bookings } = data || [];
+  const { bookings = [], pagination = {} } = data || [];
 
   const getAvailableStatuses = (currentStatus) => {
     const allowedNextStatuses = statusTransitionRules[currentStatus] || [];
@@ -198,21 +186,40 @@ const ManageBooking = () => {
     }
   };
 
+  const handleReset = () => {
+    if (bookingId) {
+      navigate(`/doctor-owner?tab=bookings`);
+    }
+    setFilters({
+      search: "",
+      status: "",
+      fromDate: "",
+      toDate: "",
+    });
+    setPaginate({
+      page: 1,
+      pageSize: 10,
+    });
+  };
+
   return (
     <div className="space-y-6 mt-4">
       <div className="flex items-center gap-4 flex-wrap">
-        <BookingCancelByDoctor {...{
-          open,
-          booking: bookingDetail,
-          onClose: (isFetch) => {
-            if(isFetch){
-              refetch();
-            }
-            setBookingDetail(null)
-            setOpen(false)
-          }
-        }} />
+        <BookingCancelByDoctor
+          {...{
+            open,
+            booking: bookingDetail,
+            onClose: (isFetch) => {
+              if (isFetch) {
+                refetch();
+              }
+              setBookingDetail(null);
+              setOpen(false);
+            },
+          }}
+        />
         <Input
+          size="large"
           className="w-full lg:flex-1"
           placeholder="Tìm kiếm..."
           prefix={<SearchOutlined className="text-gray-400" />}
@@ -220,6 +227,7 @@ const ManageBooking = () => {
           onChange={(e) => handleFilterChange(e.target.value, "search")}
         />
         <Select
+          size="large"
           placeholder="Trạng thái"
           allowClear
           className="w-full lg:w-56"
@@ -233,6 +241,7 @@ const ManageBooking = () => {
             ))}
         </Select>
         <RangePicker
+          size="large"
           className="w-full lg:flex-1"
           locale={locale}
           onChange={(_, dateStrings) => {
@@ -248,6 +257,9 @@ const ManageBooking = () => {
             }));
           }}
         />
+        <CustomButton onClick={handleReset} icon={<TfiReload />} size={"small"}>
+          Làm mới
+        </CustomButton>
       </div>
       <Table
         scroll={{ x: true }}
@@ -255,9 +267,9 @@ const ManageBooking = () => {
         dataSource={bookings}
         rowKey={(record) => record._id}
         pagination={{
-          current: paginate.page,
-          pageSize: paginate.pageSize,
-          total: paginate.totalItems,
+          current: pagination?.page,
+          pageSize: pagination?.pageSize,
+          total: pagination?.totalItems,
           onChange: (page, pageSize) =>
             setPaginate((prev) => ({
               ...prev,
@@ -265,7 +277,7 @@ const ManageBooking = () => {
               pageSize,
             })),
         }}
-        loading={isLoading}
+        loading={isLoading || isFetching}
       />
     </div>
   );

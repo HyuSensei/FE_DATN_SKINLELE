@@ -11,7 +11,7 @@ import BookingCard from "./BookingCard";
 import { useSelector } from "react-redux";
 import { useGetBookingsByCustomerQuery } from "@/redux/booking/booking.query";
 import EmptyData from "@/components/Error/EmptyData";
-import LoadingContent from "@/components/Loading/LoaingContent";
+import LoadingClinic from "@/components/Loading/LoadingClinic";
 
 const filterOptions = [
   { label: "Tất cả", value: "" },
@@ -62,7 +62,7 @@ const BookingHistory = () => {
     }
   }, [data?.hasMore]);
 
-  if (isLoading) return <LoadingContent />;
+  if (isLoading) return <LoadingClinic />;
 
   if (error) return <EmptyData description="Không tìm thấy lich sử đặt khám" />;
 

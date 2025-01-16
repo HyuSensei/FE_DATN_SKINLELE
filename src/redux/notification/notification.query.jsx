@@ -22,7 +22,24 @@ export const notificationApi = createApi({
       },
       transformResponse: (res) => res.data,
     }),
+    getAllNotiBookingByDoctor: builder.query({
+      query: ({ page = 1, limit = 10, type = "BOOKING" }) => {
+        const queryString = new URLSearchParams({
+          page,
+          limit,
+          type,
+        }).toString();
+        return {
+          url: `/notifications/by-doctor?${queryString}`,
+          method: "GET",
+        };
+      },
+      transformResponse: (res) => res.data,
+    }),
   }),
 });
 
-export const { useGetAllNotiStoreByUserQuery } = notificationApi;
+export const {
+  useGetAllNotiStoreByUserQuery,
+  useGetAllNotiBookingByDoctorQuery,
+} = notificationApi;

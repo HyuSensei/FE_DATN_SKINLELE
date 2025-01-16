@@ -4,9 +4,9 @@ import axios from "@axios/axios";
 
 export const markNotificationAsRead = createAsyncThunk(
   "notification/markNotificationAsRead",
-  async ({ id, recipient }, { rejectWithValue }) => {
+  async ({ id, recipient, path = "mark-as-read" }, { rejectWithValue }) => {
     try {
-      return await axios.put(`/notifications/mark-as-read/${id}`, {
+      return await axios.put(`/notifications/${path}/${id}`, {
         recipient,
       });
     } catch (error) {
@@ -18,9 +18,9 @@ export const markNotificationAsRead = createAsyncThunk(
 
 export const markAllNotificationsAsRead = createAsyncThunk(
   "notification/markAllNotificationsAsRead",
-  async ({ type }, { rejectWithValue }) => {
+  async ({ type, path = "mark-all-as-read" }, { rejectWithValue }) => {
     try {
-      return await axios.post("/notifications/mark-all-as-read", { type });
+      return await axios.post(`/notifications/${path}`, { type });
     } catch (error) {
       message.error(error.response.data.message);
       return rejectWithValue(error.response.data);

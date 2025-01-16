@@ -29,8 +29,9 @@ const BookingResult = ({ open, onClose }) => {
     >
       <div className="text-center mb-8 mt-4">
         <div className="flex justify-center mb-6">
-          <div className="w-20 h-20 rounded-full bg-green-50 flex items-center justify-center">
-            <FaCircleCheck className="w-10 h-10 text-green-500" />
+          <div className="relative w-20 h-20 rounded-full bg-green-50 flex items-center justify-center">
+            <FaCircleCheck className="w-10 h-10 text-green-500 animate-bounce" />
+            <div className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-25"></div>
           </div>
         </div>
         <h2 className="text-2xl font-bold text-gray-800 mb-2">

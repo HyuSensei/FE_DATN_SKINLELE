@@ -54,18 +54,47 @@ export const cartSlice = createSlice({
       set("cart", state.cart);
     },
 
+    // incrementQuantity: (state, action) => {
+    //   const { productId } = action.payload;
+    //   const item = state.cart.products.find(
+    //     (item) => item.productId === productId
+    //   );
+    //   if (item) {
+    //     item.quantity += 1;
+    //     state.cart.totalAmount = calculateTotalAmount(state.cart.products);
+    //     set("cart", state.cart);
+    //   }
+    // },
+
+    // decrementQuantity: (state, action) => {
+    //   const { productId } = action.payload;
+    //   const item = state.cart.products.find(
+    //     (item) => item.productId === productId
+    //   );
+    //   if (item) {
+    //     if (item.quantity > 1) {
+    //       item.quantity -= 1;
+    //     } else {
+    //       state.cart.products = state.cart.products.filter(
+    //         (item) => item.productId !== productId
+    //       );
+    //     }
+    //     state.cart.totalAmount = calculateTotalAmount(state.cart.products);
+    //     set("cart", state.cart);
+    //   }
+    // },
+
     incrementQuantity: (state, action) => {
-      const { productId } = action.payload;
+      const { productId, amount = 1 } = action.payload;
       const item = state.cart.products.find(
-        (item) => item.productId === productId
+        (product) => product.productId === productId
       );
       if (item) {
-        item.quantity += 1;
+        item.quantity += amount;
         state.cart.totalAmount = calculateTotalAmount(state.cart.products);
         set("cart", state.cart);
       }
     },
-
     decrementQuantity: (state, action) => {
       const { productId } = action.payload;
       const item = state.cart.products.find(

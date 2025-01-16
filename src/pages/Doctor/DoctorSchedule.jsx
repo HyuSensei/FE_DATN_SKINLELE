@@ -35,13 +35,14 @@ const DoctorSchedule = ({ doctor }) => {
     dayjs.locale("vi");
   }, []);
 
-  const { data, isLoading, error, refetch } = useGetScheduleBookingDoctorQuery(
-    {
-      doctorId: doctor._id,
-      date: selectedDate.format("YYYY-MM-DD"),
-    },
-    { skip: !doctor }
-  );
+  const { data, isLoading, error, refetch, isFetching } =
+    useGetScheduleBookingDoctorQuery(
+      {
+        doctorId: doctor._id,
+        date: selectedDate.format("YYYY-MM-DD"),
+      },
+      { skip: !doctor }
+    );
 
   useEffect(() => {
     if (data) {
@@ -51,7 +52,7 @@ const DoctorSchedule = ({ doctor }) => {
 
   if (error) return <Empty description="Chưa có thông tin lịch khám!" />;
 
-  if (isLoading) return <LoadingContent />;
+  if (isLoading || isFetching) return <LoadingContent />;
 
   if (!data) return <Empty description="Chưa có thông tin lịch khám!" />;
 

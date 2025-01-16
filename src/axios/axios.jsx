@@ -2,7 +2,7 @@ import axios from "axios";
 import { get } from "@storage/storage";
 
 const API_URL = import.meta.env.VITE_APP_API_URl;
-const TIMEOUT = 5000;
+const TIMEOUT = 15000;
 
 const createAxiosInstance = () => {
   const instance = axios.create({

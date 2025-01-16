@@ -1,4 +1,7 @@
-import { useGetAllNotiStoreByUserQuery } from "@/redux/notification/notification.query";
+import {
+  useGetAllNotiBookingByDoctorQuery,
+  useGetAllNotiStoreByUserQuery,
+} from "@/redux/notification/notification.query";
 import { Badge, Button, Dropdown, Empty, Skeleton, Tooltip } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 import { IoNotificationsOutline } from "react-icons/io5";
@@ -19,14 +22,18 @@ const NotificationBookingDrop = () => {
     page: 1,
     limit: 10,
   });
-  const { socketCustomer: socket } = useSelector((state) => state.socket);
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { socketCustomer, socketDoctor } = useSelector((state) => state.socket);
+  const { isAuthenticated, isAuthenticatedDoctor, userInfo, doctorInfo } =
+    useSelector((state) => state.auth);
   const [unreadCount, setUnreadCount] = useState(0);
   const path = location.pathname;
+  const currentUser = path !== "/doctor-owner" ? userInfo : doctorInfo;
 
   const handleNewNotification = (notification) => {
-    setNotifications((prev) => [notification, ...prev]);
-    setUnreadCount((prev) => prev + 1);
+    if (currentUser?._id === notification.recipient) {
+      setNotifications((prev) => [notification, ...prev]);
+      setUnreadCount((prev) => prev + 1);
+    }
   };
 
   const {
@@ -39,26 +46,56 @@ const NotificationBookingDrop = () => {
       ...paginate,
       type: "BOOKING",
     },
-    { skip: !isAuthenticated || path === "doctor-owner" }
+    { skip: !isAuthenticated || path === "/doctor-owner" }
   );
-  const [notifications, setNotifications] = useState(
-    dataCustomer?.notifications || []
+  const {
+    data: dataDoctor,
+    isLoading: isLoadingDoctor,
+    isFetching: isFetchingDoctor,
+    refetch: refetchDoctor,
+  } = useGetAllNotiBookingByDoctorQuery(
+    {
+      ...paginate,
+      type: "BOOKING",
+    },
+    {
+      skip: !isAuthenticatedDoctor || path !== "/doctor-owner",
+    }
   );
+
+  const [notifications, setNotifications] = useState([]);
 
   const { hasMore: hasMoreCustomer = false } = dataCustomer || {};
+  const { hasMore: hasMoreDoctor = false } = dataDoctor || {};
 
   useEffect(() => {
-    if (isAuthenticated && socket) {
-      socket.on("resNewNotiFromBooking", handleNewNotification);
+    if (isAuthenticated) {
+      refetchCustomer();
+    }
+  }, [location.pathname, isAuthenticated]);
+
+  useEffect(() => {
+    if (socketCustomer && isAuthenticated) {
+      socketCustomer.on("resNewNotiFromBooking", handleNewNotification);
 
       return () => {
-        socket.off("resNewNotiFromBooking", handleNewNotification);
+        socketCustomer.off("resNewNotiFromBooking", handleNewNotification);
       };
     }
-  }, [isAuthenticated, socket]);
+  }, [socketCustomer, isAuthenticated]);
 
   useEffect(() => {
-    if (dataCustomer?.notifications) {
+    if (socketDoctor && isAuthenticatedDoctor) {
+      socketDoctor.on("resNewNotiFromBooking", handleNewNotification);
+
+      return () => {
+        socketDoctor.off("resNewNotiFromBooking", handleNewNotification);
+      };
+    }
+  }, [socketDoctor, isAuthenticatedDoctor]);
+
+  useEffect(() => {
+    if (dataCustomer?.notifications && path !== "/doctor-owner") {
       if (paginate.page === 1) {
         setNotifications(dataCustomer?.notifications);
         setUnreadCount(dataCustomer?.unreadCount);
@@ -72,7 +109,24 @@ const NotificationBookingDrop = () => {
         });
       }
     }
-  }, [dataCustomer?.notifications, paginate.page]);
+  }, [dataCustomer?.notifications, paginate.page, path]);
+
+  useEffect(() => {
+    if (dataDoctor?.notifications && path === "/doctor-owner") {
+      if (paginate.page === 1) {
+        setNotifications(dataDoctor?.notifications);
+        setUnreadCount(dataDoctor?.unreadCount);
+      } else {
+        setNotifications((prev) => {
+          const existingIds = new Set(prev.map((noti) => noti._id));
+          const newNotifications = dataDoctor.notifications.filter(
+            (noti) => !existingIds.has(noti._id)
+          );
+          return [...prev, ...newNotifications];
+        });
+      }
+    }
+  }, [dataDoctor?.notifications, paginate.page, path]);
 
   const handleSeeMoreCustomer = useCallback(() => {
     if (dataCustomer?.hasMore) {
@@ -83,22 +137,34 @@ const NotificationBookingDrop = () => {
     }
   }, [dataCustomer?.hasMore]);
 
+  const handleSeeMoreDoctor = useCallback(() => {
+    if (dataDoctor?.hasMore) {
+      setPaginate((prev) => ({
+        ...prev,
+        page: prev.page + 1,
+      }));
+    }
+  }, [dataDoctor?.hasMore]);
+
   const handleClickNofi = async (notification, isNavigate = false) => {
     if (notification.isRead && !isNavigate) return;
 
-    if (notification.metadata?.link) {
-      navigate(notification.metadata.link);
-    }
+    const payload =
+      path !== "/doctor-owner"
+        ? {
+            id: notification._id,
+            recipient: notification.recipient,
+          }
+        : {
+            id: notification._id,
+            recipient: notification.recipient,
+            path: "mark-as-read-doctor",
+          };
 
-    const res = await dispatch(
-      markNotificationAsRead({
-        id: notification._id,
-        recipient: notification.recipient,
-      })
-    ).unwrap();
+    const res = await dispatch(markNotificationAsRead(payload)).unwrap();
 
     if (res.success) {
-      refetchCustomer();
+      path === "/doctor-owner" ? refetchDoctor() : refetchCustomer();
       if (isNavigate && notification.metadata?.link) {
         navigate(notification.metadata.link);
       }
@@ -106,14 +172,19 @@ const NotificationBookingDrop = () => {
   };
 
   const handleMarkAllNoti = async () => {
-    const res = await dispatch(
-      markAllNotificationsAsRead({
-        type: "BOOKING",
-      })
-    ).unwrap();
+    const payload =
+      path !== "/doctor-owner"
+        ? {
+            type: "BOOKING",
+          }
+        : {
+            type: "BOOKING",
+            path: "mark-all-as-read-doctor",
+          };
+    const res = await dispatch(markAllNotificationsAsRead(payload)).unwrap();
 
     if (res.success) {
-      refetchCustomer();
+      path === "/doctor-owner" ? refetchDoctor() : refetchCustomer();
     }
   };
 
@@ -140,13 +211,15 @@ const NotificationBookingDrop = () => {
       </div>
 
       <div className="max-h-[460px] overflow-auto">
-        {isLoadingCustomer && (
-          <div className="space-y-4">
-            <Skeleton />
-            <Skeleton />
-          </div>
-        )}
-        {!isLoadingCustomer && notifications.length === 0 ? (
+        {isLoadingCustomer ||
+          (isLoadingDoctor && (
+            <div className="space-y-4">
+              <Skeleton />
+              <Skeleton />
+            </div>
+          ))}
+        {(!isLoadingCustomer || !isLoadingDoctor) &&
+        notifications.length === 0 ? (
           <Empty
             description="Không có thông báo mới"
             className="py-12"
@@ -200,15 +273,22 @@ const NotificationBookingDrop = () => {
               ))}
             </div>
 
-            {hasMoreCustomer && (
+            {(hasMoreCustomer || hasMoreDoctor) && (
               <div className="p-4 text-center border-t border-gray-100">
                 <button
-                  onClick={handleSeeMoreCustomer}
+                  onClick={
+                    path === "/doctor-owner"
+                      ? handleSeeMoreDoctor
+                      : handleSeeMoreCustomer
+                  }
                   disabled={isLoadingCustomer}
                   className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700
                     transition-colors duration-200 text-sm font-medium disabled:opacity-70"
                 >
-                  {isLoadingCustomer || isFetchingCustomer
+                  {isLoadingCustomer ||
+                  isFetchingCustomer ||
+                  isLoadingDoctor ||
+                  isFetchingDoctor
                     ? "Đang tải..."
                     : "Xem thêm thông báo"}
                 </button>

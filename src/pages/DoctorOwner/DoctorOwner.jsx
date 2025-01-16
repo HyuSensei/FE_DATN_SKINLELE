@@ -49,7 +49,7 @@ const DoctorOwner = () => {
     if (!queryParams.get("tab")) {
       navigate("/doctor-owner?tab=statistics");
     }
-  }, [navigate]);
+  }, [navigate, tab]);
 
   return (
     <div className="p-4 md:p-6 lg:pt-20">

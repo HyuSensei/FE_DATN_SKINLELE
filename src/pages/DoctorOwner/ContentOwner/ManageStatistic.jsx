@@ -103,105 +103,99 @@ const StatisticsChart = ({ data }) => {
 
   return (
     <div className="mt-8">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-xl shadow-gray-200/50 dark:shadow-none">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-          <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-            {chartTypes[chartType].title}
-          </h3>
-          <div className="flex gap-2 bg-gray-100 dark:bg-slate-700 p-1 rounded-xl">
-            {Object.entries(chartTypes).map(([type, config]) => (
-              <button
-                key={type}
-                onClick={() => setChartType(type)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
-                  chartType === type
-                    ? "bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm"
-                    : "text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
-                }`}
-              >
-                {config.title}
-              </button>
-            ))}
-          </div>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+          {chartTypes[chartType].title}
+        </h3>
+        <div className="flex gap-2 bg-gray-100 dark:bg-slate-700 p-1 rounded-xl">
+          {Object.entries(chartTypes).map(([type, config]) => (
+            <button
+              key={type}
+              onClick={() => setChartType(type)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                chartType === type
+                  ? "bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm"
+                  : "text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+              }`}
+            >
+              {config.title}
+            </button>
+          ))}
         </div>
+      </div>
 
-        <div className="h-[400px] mt-4">
-          <ResponsiveContainer>
-            <AreaChart data={data}>
-              <defs>
-                {chartTypes[chartType].data.map(({ key, gradient }) => (
-                  <linearGradient
-                    key={key}
-                    id={`gradient-${key}`}
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop
-                      offset="0%"
-                      stopColor={gradient[0]}
-                      stopOpacity={0.3}
-                    />
-                    <stop
-                      offset="100%"
-                      stopColor={gradient[1]}
-                      stopOpacity={0.05}
-                    />
-                  </linearGradient>
-                ))}
-              </defs>
-              <CartesianGrid
-                strokeDasharray="3 3"
-                vertical={false}
-                stroke="#E5E7EB"
-              />
-              <XAxis
-                dataKey="day"
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-                stroke="#9CA3AF"
-              />
-              <YAxis
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-                stroke="#9CA3AF"
-                tickFormatter={(value) => formatPrice(value, true)}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "rgba(255, 255, 255, 0.98)",
-                  border: "none",
-                  borderRadius: "12px",
-                  boxShadow:
-                    "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-                }}
-                formatter={(value) => formatPrice(value, true)}
-              />
-              <Legend />
-              {chartTypes[chartType].data.map(({ key, name, gradient }) => (
-                <Area
+      <div className="h-[400px] mt-4">
+        <ResponsiveContainer>
+          <AreaChart data={data}>
+            <defs>
+              {chartTypes[chartType].data.map(({ key, gradient }) => (
+                <linearGradient
                   key={key}
-                  type="monotone"
-                  dataKey={key}
-                  name={name}
-                  stroke={gradient[0]}
-                  strokeWidth={2}
-                  fill={`url(#gradient-${key})`}
-                  dot={{ fill: gradient[0], strokeWidth: 2, r: 4 }}
-                  activeDot={{
-                    fill: gradient[0],
-                    stroke: "white",
-                    strokeWidth: 2,
-                    r: 6,
-                  }}
-                />
+                  id={`gradient-${key}`}
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop offset="0%" stopColor={gradient[0]} stopOpacity={0.3} />
+                  <stop
+                    offset="100%"
+                    stopColor={gradient[1]}
+                    stopOpacity={0.05}
+                  />
+                </linearGradient>
               ))}
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
+            </defs>
+            <CartesianGrid
+              strokeDasharray="3 3"
+              vertical={false}
+              stroke="#E5E7EB"
+            />
+            <XAxis
+              dataKey="day"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              stroke="#9CA3AF"
+            />
+            <YAxis
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              stroke="#9CA3AF"
+              tickFormatter={(value) => formatPrice(value, true)}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "rgba(255, 255, 255, 0.98)",
+                border: "none",
+                borderRadius: "12px",
+                boxShadow:
+                  "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+              }}
+              formatter={(value) => formatPrice(value, true)}
+            />
+            <Legend />
+            {chartTypes[chartType].data.map(({ key, name, gradient }) => (
+              <Area
+                key={key}
+                type="monotone"
+                dataKey={key}
+                name={name}
+                stroke={gradient[0]}
+                strokeWidth={2}
+                fill={`url(#gradient-${key})`}
+                dot={{ fill: gradient[0], strokeWidth: 2, r: 4 }}
+                activeDot={{
+                  fill: gradient[0],
+                  stroke: "white",
+                  strokeWidth: 2,
+                  r: 6,
+                }}
+              />
+            ))}
+          </AreaChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );

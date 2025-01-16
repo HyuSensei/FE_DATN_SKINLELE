@@ -10,6 +10,7 @@ export const bookingApi = createApi({
   endpoints: (builder) => ({
     getBookingsByDoctor: builder.query({
       query: ({
+        bookingId = "",
         search = "",
         status = "",
         fromDate = "",
@@ -24,6 +25,7 @@ export const bookingApi = createApi({
           toDate,
           page,
           pageSize,
+          bookingId,
         }).toString();
         return {
           url: `/bookings/by-doctor?${queryParams}`,

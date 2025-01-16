@@ -21,11 +21,13 @@ import { RiMapPinFill } from "react-icons/ri";
 import useScrollToSection from "@/hook/useScrollToSection";
 import StarReview from "@/components/StarReview";
 import LoadingClinic from "@/components/Loading/LoadingClinic";
+import { useSelector } from "react-redux";
 
 const Doctor = () => {
   const { slug } = useParams();
   const [activeTab, setActiveTab] = useState("1");
   const sectionRef = useScrollToSection();
+  const { usersOnline } = useSelector((state) => state.socket);
 
   const {
     data: doctor,
@@ -50,6 +52,7 @@ const Doctor = () => {
     );
 
   const { clinic } = doctor;
+  const isOnline = usersOnline?.includes(doctor?._id);
 
   return (
     <div className="mx-auto lg:px-16 mt-28 mb-10">
@@ -65,7 +68,9 @@ const Doctor = () => {
                   size={240}
                   className="w-full rounded-full shadow-lg border-4 border-[#b4dfeb]"
                 />
-                <span className="absolute top-4 right-4 bg-green-500 w-4 h-4 rounded-full shadow-lg ring-2 ring-white"></span>
+                {isOnline && (
+                  <span className="absolute top-4 right-4 bg-green-500 w-4 h-4 rounded-full shadow-lg ring-2 ring-white"></span>
+                )}
               </div>
 
               <div className="bg-gray-50 rounded-lg p-4 space-y-3">
