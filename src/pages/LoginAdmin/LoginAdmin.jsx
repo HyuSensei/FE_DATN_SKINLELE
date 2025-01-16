@@ -84,7 +84,7 @@ const LoginAdmin = () => {
 
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
-                Size="large"
+                size="large"
                 type="primary"
                 htmlType="submit"
                 className="w-full py-4 px-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-md flex items-center justify-center space-x-2 hover:from-blue-600 hover:to-purple-700 transition duration-300"

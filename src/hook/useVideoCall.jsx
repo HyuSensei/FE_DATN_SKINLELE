@@ -1,3 +1,4 @@
+import { message } from "antd";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const useVideoCall = (socket, userId) => {
@@ -47,6 +48,7 @@ const useVideoCall = (socket, userId) => {
       setAudioEnabled(true);
       return stream;
     } catch (error) {
+      message.warning("Xin lỗi thiết bị của bạn không hỗ trợ tính năng hiện tại");
       console.error("Error accessing media devices:", error);
       throw error;
     }

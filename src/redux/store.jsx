@@ -10,6 +10,7 @@ import { brandApi } from "./brand/brand.query";
 import { reviewApi } from "./review/review.query";
 import { orderApi } from "./order/order.query";
 import { notificationApi } from "./notification/notification.query";
+import { shipApi } from "./ship/ship.query";
 
 export const store = configureStore({
   reducer: {
@@ -24,6 +25,7 @@ export const store = configureStore({
     [reviewApi.reducerPath]: reviewApi.reducer,
     [orderApi.reducerPath]: orderApi.reducer,
     [notificationApi.reducerPath]: notificationApi.reducer,
+    [shipApi.reducerPath]: shipApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -38,6 +40,7 @@ export const store = configureStore({
       brandApi.middleware,
       reviewApi.middleware,
       orderApi.middleware,
-      notificationApi.middleware
+      notificationApi.middleware,
+      shipApi.middleware
     ),
 });

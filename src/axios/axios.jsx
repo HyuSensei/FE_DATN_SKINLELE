@@ -59,13 +59,14 @@ const createAxiosInstance = () => {
 
 let axiosInstance = createAxiosInstance();
 
-export const baseQuery = async ({ url, method = "GET", data, params }) => {
+export const baseQuery = async ({ url, method = "GET", data, params, config = {} }) => {
   try {
     const response = await axiosInstance({
       url,
       method,
       data,
       params,
+      ...config
     });
 
     return { data: response };
