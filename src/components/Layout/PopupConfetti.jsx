@@ -129,7 +129,7 @@ const PopupConfetti = () => {
             initial={{ scale: 0.5, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.5, opacity: 0 }}
-            className="relative bg-gradient-to-br from-rose-500 to-rose-400 rounded-xl shadow-2xl p-8 max-w-md w-full "
+            className="relative bg-gradient-to-br from-rose-500 to-rose-400 rounded-xl shadow-2xl p-8 max-w-md w-full"
           >
             {/* Close Button */}
             <button
@@ -152,7 +152,7 @@ const PopupConfetti = () => {
             {/* Badges */}
             <div className="flex justify-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm flex items-center">
-                <GiStarShuriken className="mr-1" /> Freeship 
+                <GiStarShuriken className="mr-1" /> Freeship
               </span>
               <span className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm flex items-center">
                 <GiStarShuriken className="mr-1" /> Giao hàng toàn quốc

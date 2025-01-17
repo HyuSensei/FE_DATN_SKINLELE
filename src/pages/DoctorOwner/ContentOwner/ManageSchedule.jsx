@@ -100,6 +100,7 @@ const ManageSchedule = () => {
         className={`
           h-20 flex flex-col items-center justify-center rounded-lg transition-all cursor-pointer
           ${isPast ? "opacity-50 bg-gray-100" : "hover:shadow-lg"}
+          ${!isOpen && !isPast ? "bg-rose-100" : "hover:shadow-lg"}
           ${status.className}
         `}
       >
@@ -113,12 +114,12 @@ const ManageSchedule = () => {
               isClinicHoliday && isDoctorHoliday
                 ? "Cả phòng khám và bác sĩ đều nghỉ lễ"
                 : isClinicHoliday
-                  ? "Phòng khám nghỉ lễ"
-                  : isDoctorHoliday
-                    ? "Bác sĩ nghỉ phép"
-                    : isOpen
-                      ? "Có lịch khám"
-                      : "Không có lịch khám"
+                ? "Phòng khám nghỉ lễ"
+                : isDoctorHoliday
+                ? "Bác sĩ nghỉ phép"
+                : isOpen
+                ? "Có lịch khám"
+                : "Không có lịch khám"
             }
           >
             <span className={`text-xs ${status.textColor}`}>{status.text}</span>
@@ -133,8 +134,8 @@ const ManageSchedule = () => {
       moment(h).startOf("day").isSame(moment(date).startOf("day"))
     )
       ? holidaysDoctor.filter(
-        (h) => !moment(h).startOf("day").isSame(moment(date).startOf("day"))
-      )
+          (h) => !moment(h).startOf("day").isSame(moment(date).startOf("day"))
+        )
       : [...holidaysDoctor, date];
 
     const res = await dispatch(
@@ -158,7 +159,9 @@ const ManageSchedule = () => {
           <div
             key={index}
             className={`p-4 transition-colors ${
-              !slot.isOpen ? "bg-gray-50" : "hover:bg-blue-50"
+              !slot.isOpen
+                ? "bg-rose-50 hover:bg-rose-100"
+                : "hover:bg-gray-100"
             }`}
           >
             {/* Header */}

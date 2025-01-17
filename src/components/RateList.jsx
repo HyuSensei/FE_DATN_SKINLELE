@@ -30,8 +30,6 @@ import { useGetReviewByUserQuery } from "@/redux/review/review.query";
 
 const RateList = ({ product }) => {
   const [open, setOpen] = useState(false);
-  const [rate, setRate] = useState(0);
-  const [hoverValue, setHoverValue] = useState(0);
   const [reviewFilter, setReviewFilter] = useState({
     rate: "",
     hasImage: "",
@@ -81,10 +79,6 @@ const RateList = ({ product }) => {
           {...{
             open,
             setOpen,
-            rate,
-            setRate,
-            setHoverValue,
-            hoverValue,
             product,
             refetch,
           }}
@@ -129,6 +123,16 @@ const RateList = ({ product }) => {
                 <span className="ml-2 w-12 text-right">({count})</span>
               </div>
             ))}
+          </div>
+          <div className="flex items-start justify-center">
+            <Button
+              className="text-slate-900 font-medium"
+              size="large"
+              onClick={() => setOpen(true)}
+              type="link"
+            >
+              ✍ Viết đánh giá
+            </Button>
           </div>
         </div>
         <div className="md:w-2/3">
@@ -181,13 +185,6 @@ const RateList = ({ product }) => {
                 }
               >
                 <CommentOutlined /> Có bình luận
-              </Button>
-              <Button
-                onClick={() => setOpen(true)}
-                type="default"
-                className="bg-[#313438] text-white"
-              >
-                <HighlightOutlined /> Viết đánh giá
               </Button>
             </Space>
           </div>

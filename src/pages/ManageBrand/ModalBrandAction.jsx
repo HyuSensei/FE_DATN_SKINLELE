@@ -115,7 +115,7 @@ const ModalBrandAction = ({ open, setOpen, brand = {}, refetch }) => {
             value={input.name}
             onChange={handleInputChange}
             size="large"
-            className="mt-1 shadow-lg"
+            className="mt-1"
           />
           {validates.name && <ErrorMessage message={validates.name} />}
         </div>

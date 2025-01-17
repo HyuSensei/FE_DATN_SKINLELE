@@ -23,7 +23,7 @@ const ManageOrder = () => {
     toDate: "",
   });
 
-  const { data, isLoading, refetch } = useGetAllOrderAdminQuery({
+  const { data, isLoading, refetch, isFetching } = useGetAllOrderAdminQuery({
     ...paginate,
     ...filter,
   });
@@ -109,18 +109,16 @@ const ManageOrder = () => {
         </Row>
       </Card>
 
-      <Card className="shadow-md">
-        <TableOrder
-          orders={orders}
-          page={pagination?.page}
-          pageSize={pagination?.pageSize}
-          totalPage={pagination?.totalPage}
-          totalItems={pagination?.totalItems}
-          setPaginate={setPaginate}
-          isLoading={isLoading}
-          refetch={refetch}
-        />
-      </Card>
+      <TableOrder
+        orders={orders}
+        page={pagination?.page}
+        pageSize={pagination?.pageSize}
+        totalPage={pagination?.totalPage}
+        totalItems={pagination?.totalItems}
+        setPaginate={setPaginate}
+        isLoading={isLoading || isFetching}
+        refetch={refetch}
+      />
     </div>
   );
 };

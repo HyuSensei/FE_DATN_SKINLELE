@@ -255,9 +255,9 @@ const StatisticalOverView = () => {
                   className="bg-white rounded-full h-6 transition-all duration-500 flex items-center justify-end pr-3"
                   style={{ width: `${stats.bookings.completionRate}%` }}
                 >
-                  <span className="text-indigo-700 text-sm font-semibold">
+                  {/* <span className="text-indigo-700 text-sm font-semibold">
                     {Math.round(stats.bookings.completionRate)}%
-                  </span>
+                  </span> */}
                 </div>
               </div>
             </div>

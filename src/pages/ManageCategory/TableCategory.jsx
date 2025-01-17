@@ -14,6 +14,7 @@ const TableCategory = ({
   totalItems,
   setPaginate,
   refetch,
+  setIsfetch,
 }) => {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
@@ -23,6 +24,7 @@ const TableCategory = ({
     const res = await dispatch(deleteCategory(id)).unwrap();
     if (res.success) {
       message.success(res.message);
+      setIsfetch((prev) => !prev);
       refetch();
     }
   };

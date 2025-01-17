@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Rate, Tabs, Tag, Avatar, Card, Empty } from "antd";
 import {
   UserOutlined,
@@ -21,13 +21,35 @@ import { RiMapPinFill } from "react-icons/ri";
 import useScrollToSection from "@/hook/useScrollToSection";
 import StarReview from "@/components/StarReview";
 import LoadingClinic from "@/components/Loading/LoadingClinic";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { FaFacebookMessenger } from "react-icons/fa6";
+import { TbBrandBooking } from "react-icons/tb";
+import { ChatActions } from "@/redux/chat/chat.slice";
+import { setOpenModelAuth } from "@/redux/auth/auth.slice";
 
 const Doctor = () => {
+  const dispatch = useDispatch();
   const { slug } = useParams();
   const [activeTab, setActiveTab] = useState("1");
   const sectionRef = useScrollToSection();
-  const { usersOnline } = useSelector((state) => state.socket);
+  const { socketCustomer: socket, usersOnline } = useSelector(
+    (state) => state.socket
+  );
+  const { openChat, doctorConversationSelected: conversation } = useSelector(
+    (state) => state.chat
+  );
+  const { isAuthenticated, userInfo } = useSelector((state) => state.auth);
+
+  const handleGetConversation = (res) => {
+    if (res) {
+      dispatch(
+        ChatActions.setDoctorConversationSelected({
+          ...doctor,
+          conversationId: res._id,
+        })
+      );
+    }
+  };
 
   const {
     data: doctor,
@@ -35,6 +57,13 @@ const Doctor = () => {
     error,
     refetch,
   } = useGetDoctorDetailQuery({ slug }, { skip: !slug });
+
+  useEffect(() => {
+    if (socket && conversation?._id === doctor?._id) {
+      socket.on("resConversation", handleGetConversation);
+      return () => socket.off("resConversation", handleGetConversation);
+    }
+  }, [socket, conversation?._id, doctor?._id]);
 
   if (error)
     return (
@@ -53,6 +82,27 @@ const Doctor = () => {
 
   const { clinic } = doctor;
   const isOnline = usersOnline?.includes(doctor?._id);
+
+  const handleStartChat = () => {
+    if (!isAuthenticated) {
+      dispatch(setOpenModelAuth(true));
+      return;
+    }
+    if (socket) {
+      socket.emit(
+        "getConversation",
+        JSON.stringify([doctor._id, userInfo?._id])
+      );
+      dispatch(ChatActions.setDoctorConversationSelected(doctor));
+      dispatch(
+        ChatActions.setOpenChatAll({
+          ...openChat,
+          isChatDoctor: true,
+          isConversationDoctor: false,
+        })
+      );
+    }
+  };
 
   return (
     <div className="mx-auto lg:px-16 mt-28 mb-10">
@@ -115,16 +165,28 @@ const Doctor = () => {
                   </Tag>
                 </div>
               </div>
-              <CustomButton
-                onClick={() => {
-                  setActiveTab("1");
-                  sectionRef.scrollToSection();
-                }}
-                variant="primary"
-                className="mt-4 md:mt-0 px-6 py-2 text-lg"
-              >
-                Đặt lịch khám
-              </CustomButton>
+              <div className="flex items-center gap-4">
+                <CustomButton
+                  onClick={handleStartChat}
+                  icon={
+                    <FaFacebookMessenger className="text-xl text-gray-500 mr-0.5" />
+                  }
+                  className="mt-4 md:mt-0 px-6 py-2 text-lg"
+                >
+                  Liên hệ
+                </CustomButton>
+                <CustomButton
+                  icon={<TbBrandBooking className="text-xl" />}
+                  onClick={() => {
+                    setActiveTab("1");
+                    sectionRef.scrollToSection();
+                  }}
+                  variant="primary"
+                  className="mt-4 md:mt-0 px-6 py-2 text-lg"
+                >
+                  Đặt lịch khám
+                </CustomButton>
+              </div>
             </div>
             <Card className="mb-8">
               <div className="flex flex-col md:flex-row items-center gap-6">

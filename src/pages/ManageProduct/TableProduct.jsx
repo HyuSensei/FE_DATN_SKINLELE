@@ -106,15 +106,17 @@ const TableProduct = ({
       },
       {
         title: "Tên",
-        dataIndex: "name",
-        key: "name",
+        key: "info",
         width: 250,
-        render: (text) => (
-          <Tooltip title={text}>
-            <div className="max-w-64 break-words font-medium truncate-2-lines text-sm">
-              {text}
-            </div>
-          </Tooltip>
+        render: (record) => (
+          <div className="space-y-1">
+            <Tooltip title={record.name}>
+              <div className="max-w-64 break-words font-medium truncate-2-lines text-sm">
+                {record.name}
+              </div>
+            </Tooltip>
+            <div className="text-base">Còn lại: {record.totalQuantity}</div>
+          </div>
         ),
       },
       {

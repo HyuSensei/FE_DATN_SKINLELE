@@ -11,7 +11,7 @@ const PageTitle = ({
   title,
   description = DEFAULT_DESCRIPTION,
   keywords = DEFAULT_KEYWORDS,
-  ogImage = "https://skinlele.vercel.app/images/og/default.png",
+  ogImage = "https://skinlele.vercel.app/images/og/og-default.png",
   children,
 }) => {
   const fullTitle = title;

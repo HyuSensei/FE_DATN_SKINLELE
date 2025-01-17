@@ -1,14 +1,64 @@
 import React from "react";
+import Slider from "react-slick";
 import { Skeleton } from "antd";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { GiSparkles } from "react-icons/gi";
 import { MdOutlineArrowOutward, MdVerified } from "react-icons/md";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
 const RecommendedDoctors = ({ data, loading, error }) => {
   if (error) return null;
   if (loading) return <Skeleton active className="my-2" />;
   if (!data?.length) return null;
+
+  // Custom arrows
+  const NextArrow = ({ onClick }) => (
+    <div
+      className="absolute top-1/2 right-4 transform -translate-y-1/2 z-10 cursor-pointer text-gray-500 hover:text-gray-800"
+      onClick={onClick}
+    >
+      <FaArrowRight size={24} />
+    </div>
+  );
+
+  const PrevArrow = ({ onClick }) => (
+    <div
+      className="absolute top-1/2 left-4 transform -translate-y-1/2 z-10 cursor-pointer text-gray-500 hover:text-gray-800"
+      onClick={onClick}
+    >
+      <FaArrowLeft size={24} />
+    </div>
+  );
+
+  // Slick settings
+  const settings = {
+    dots: false,
+    infinite: true,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    rows: 2,
+    nextArrow: <NextArrow />,
+    prevArrow: <PrevArrow />,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 2,
+          rows: 2,
+        },
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 1,
+          rows: 1,
+        },
+      },
+    ],
+  };
 
   return (
     <motion.div
@@ -38,36 +88,20 @@ const RecommendedDoctors = ({ data, loading, error }) => {
             </h2>
             <p className="text-xs md:text-sm text-gray-500">
               Dựa trên danh mục sản phẩm có thể bạn sẽ quan tâm hãy tìm hiểu
-              ngay !
+              ngay!
             </p>
           </div>
         </div>
       </motion.div>
 
       {/* Doctor List */}
-      <motion.div
-        className="flex gap-4 md:gap-6 overflow-x-auto hide-scrollbar-custom pb-4 -mx-4 px-4 md:-mx-6 md:px-6"
-        initial="hidden"
-        animate="visible"
-        variants={{
-          hidden: { opacity: 0 },
-          visible: {
-            opacity: 1,
-            transition: { staggerChildren: 0.1 },
-          },
-        }}
-      >
+      <Slider {...settings} className="relative">
         {data.map((doctor) => (
-          <motion.div
-            key={doctor._id}
-            className="flex-shrink-0 w-[400px] md:w-[450px]"
-            variants={{
-              hidden: { x: 50, opacity: 0 },
-              visible: { x: 0, opacity: 1 },
-            }}
-            whileHover={{ y: -5 }}
-          >
-            <div className="flex items-start gap-3 p-3 md:p-4 rounded-2xl bg-white shadow-sm hover:shadow-md transition-all duration-300">
+          <div key={doctor._id} className="px-2 py-2">
+            <motion.div
+              className="flex items-start gap-3 p-3 md:p-4 rounded-2xl bg-white shadow-sm hover:shadow-md transition-all duration-300"
+              whileHover={{ y: -5 }}
+            >
               {/* Avatar */}
               <motion.div
                 whileHover={{ scale: 1.05 }}
@@ -113,10 +147,10 @@ const RecommendedDoctors = ({ data, loading, error }) => {
                   <MdOutlineArrowOutward className="ml-1 group-hover:rotate-45 transition-transform duration-300" />
                 </Link>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         ))}
-      </motion.div>
+      </Slider>
     </motion.div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, DatePicker, Empty, Skeleton } from "antd";
+import { Card, Col, DatePicker, Empty, Row, Skeleton } from "antd";
 import {
   AreaChart,
   Area,
@@ -70,111 +70,118 @@ const StatisticalDetail = () => {
         </div>
 
         <div className="space-y-8">
-          {/* Booking & Revenue Chart */}
-          <Card className="shadow-lg rounded-xl">
-            <h3 className="text-lg font-semibold mb-6">
-              Lịch khám và Doanh thu
-            </h3>
-            <div className="h-[400px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={stats.charts.booking}
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="label" />
-                  <YAxis yAxisId="left" />
-                  <YAxis yAxisId="right" orientation="right" />
-                  <Tooltip
-                    formatter={(value, name) => {
-                      if (name === "Doanh thu" || name === "Doanh số") {
-                        return formatPrice(value, true);
-                      }
-                      return value;
-                    }}
-                  />
-                  <Legend />
-                  <Line
-                    yAxisId="left"
-                    type="monotone"
-                    dataKey="total"
-                    name="Số lượng"
-                    stroke="#8884d8"
-                    strokeWidth={2}
-                  />
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="revenue.actual"
-                    name="Doanh thu"
-                    stroke="#82ca9d"
-                    strokeWidth={2}
-                  />
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="revenue.potential"
-                    name="Doanh số"
-                    stroke="#ffc658"
-                    strokeWidth={2}
-                    strokeDasharray="5 5"
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </Card>
+          <Row gutter={[16, 16]}>
+            <Col sm={24} lg={12}>
+              {/* Booking & Revenue Chart */}
+              <Card className="shadow-lg rounded-xl">
+                <h3 className="text-lg font-semibold mb-6">
+                  Lịch khám và Doanh thu
+                </h3>
+                <div className="h-[400px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart
+                      data={stats.charts.booking}
+                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="label" />
+                      <YAxis yAxisId="left" />
+                      <YAxis yAxisId="right" orientation="right" />
+                      <Tooltip
+                        formatter={(value, name) => {
+                          if (name === "Doanh thu" || name === "Doanh số") {
+                            return formatPrice(value, true);
+                          }
+                          return value;
+                        }}
+                      />
+                      <Legend />
+                      <Line
+                        yAxisId="left"
+                        type="monotone"
+                        dataKey="total"
+                        name="Số lượng"
+                        stroke="#8884d8"
+                        strokeWidth={2}
+                      />
+                      <Line
+                        yAxisId="right"
+                        type="monotone"
+                        dataKey="revenue.actual"
+                        name="Doanh thu"
+                        stroke="#82ca9d"
+                        strokeWidth={2}
+                      />
+                      <Line
+                        yAxisId="right"
+                        type="monotone"
+                        dataKey="revenue.potential"
+                        name="Doanh số"
+                        stroke="#ffc658"
+                        strokeWidth={2}
+                        strokeDasharray="5 5"
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </Card>
+            </Col>
 
-          {/* Booking Status Chart */}
-          <Card className="shadow-lg rounded-xl">
-            <h3 className="text-lg font-semibold mb-6">Trạng thái lịch khám</h3>
-            <div className="h-[400px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart
-                  data={stats.charts.booking}
-                  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="label" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Area
-                    type="monotone"
-                    dataKey="completed"
-                    name="Hoàn thành"
-                    stackId="1"
-                    stroke="#82ca9d"
-                    fill="#82ca9d"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="confirmed"
-                    name="Xác nhận"
-                    stackId="1"
-                    stroke="#8884d8"
-                    fill="#8884d8"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="pending"
-                    name="Chờ xử lý"
-                    stackId="1"
-                    stroke="#ffc658"
-                    fill="#ffc658"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="cancelled"
-                    name="Đã hủy"
-                    stackId="1"
-                    stroke="#ff8042"
-                    fill="#ff8042"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </Card>
-
+            <Col sm={24} lg={12}>
+              {/* Booking Status Chart */}
+              <Card className="shadow-lg rounded-xl">
+                <h3 className="text-lg font-semibold mb-6">
+                  Trạng thái lịch khám
+                </h3>
+                <div className="h-[400px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart
+                      data={stats.charts.booking}
+                      margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="label" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Area
+                        type="monotone"
+                        dataKey="completed"
+                        name="Hoàn thành"
+                        stackId="1"
+                        stroke="#82ca9d"
+                        fill="#82ca9d"
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="confirmed"
+                        name="Xác nhận"
+                        stackId="1"
+                        stroke="#8884d8"
+                        fill="#8884d8"
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="pending"
+                        name="Chờ xử lý"
+                        stackId="1"
+                        stroke="#ffc658"
+                        fill="#ffc658"
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="cancelled"
+                        name="Đã hủy"
+                        stackId="1"
+                        stroke="#ff8042"
+                        fill="#ff8042"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </Card>
+            </Col>
+          </Row>
           {/* Reviews Chart */}
           <Card className="shadow-lg rounded-xl">
             <h3 className="text-lg font-semibold mb-6">Đánh giá</h3>

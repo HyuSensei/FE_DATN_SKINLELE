@@ -184,9 +184,9 @@ const CreateProduct = () => {
           >
             <Input placeholder="Nhập giá..." size="middle" />
           </Form.Item>
-          <Form.Item label="Dung tích" name="capacity" className="flex-1">
+          {/* <Form.Item label="Dung tích" name="capacity" className="flex-1">
             <Input placeholder="Nhập dung tích..." size="middle" />
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item
             noStyle
             shouldUpdate={(prevValues, currentValues) => {

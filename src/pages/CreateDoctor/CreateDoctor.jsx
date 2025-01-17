@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { createDoctorByAdmin } from "@redux/doctor/doctor.thunk";
 import SkinLeLeEditor from "@/components/SkinLeLeEditor";
 import { DURATION_OPTIONS } from "@/const/dataDefault";
+import CustomButton from "@/components/CustomButton";
 
 const CreateDoctor = () => {
   const dispatch = useDispatch();
@@ -260,17 +261,14 @@ const CreateDoctor = () => {
           </Upload>
         </Form.Item>
       </Card>
-
-      <div className="w-full">
-        <Button
-          loading={loading}
-          type="submit"
-          size="large"
-          className="w-full text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none rounded-full"
-        >
-          Tạo ngay
-        </Button>
-      </div>
+      <CustomButton
+        loading={loading}
+        type="submit"
+        variant="primary"
+        className="w-full !rounded-full"
+      >
+        Tạo ngay
+      </CustomButton>
     </Form>
   );
 };

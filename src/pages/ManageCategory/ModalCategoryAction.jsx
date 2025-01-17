@@ -9,8 +9,15 @@ import {
 } from "@redux/category/category.thunk";
 import { validateCategoryActionSchema, validateForm } from "@validate/validate";
 import ErrorMessage from "@components/Error/ErrorMessage";
+import { useGetAllCategoryQuery } from "@/redux/category/category.query";
 
-const ModalCategoryAction = ({ open, setOpen, category = {}, refetch }) => {
+const ModalCategoryAction = ({
+  open,
+  setOpen,
+  category = {},
+  refetch,
+  isFetch,
+}) => {
   const dispatch = useDispatch();
   const [input, setInput] = useState({
     name: category.name || "",
@@ -18,7 +25,15 @@ const ModalCategoryAction = ({ open, setOpen, category = {}, refetch }) => {
     level: category.level || 0,
   });
   const [validates, setValidates] = useState({});
-  const { categoriesAll, isLoading } = useSelector((state) => state.category);
+  const {
+    data: categories = [],
+    isLoading,
+    refetch: refetchCategories,
+  } = useGetAllCategoryQuery();
+
+  useEffect(() => {
+    if (!open) refetchCategories();
+  }, [open, isFetch]);
 
   useEffect(() => {
     dispatch(getCategoryAdmin());
@@ -36,8 +51,8 @@ const ModalCategoryAction = ({ open, setOpen, category = {}, refetch }) => {
   }, [category, open]);
 
   const flattenCategories = useCallback(
-    (categoriesAll, level = 0, prefix = "", excludeId = null) => {
-      return categoriesAll.reduce((acc, category) => {
+    (categories, level = 0, prefix = "", excludeId = null) => {
+      return categories.reduce((acc, category) => {
         if (category._id !== excludeId) {
           acc.push({
             value: category._id,
@@ -62,14 +77,14 @@ const ModalCategoryAction = ({ open, setOpen, category = {}, refetch }) => {
   );
 
   const parentOptions = useMemo(() => {
-    const flattened = flattenCategories(categoriesAll, 0, "", category._id);
+    const flattened = flattenCategories(categories, 0, "", category._id);
     if (input.level === 1) {
       return flattened.filter((cat) => cat.level === 0);
     } else if (input.level === 2) {
       return flattened.filter((cat) => cat.level === 1);
     }
     return [];
-  }, [categoriesAll, input.level, category._id, flattenCategories]);
+  }, [categories, input.level, category._id, flattenCategories]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -184,7 +199,7 @@ const ModalCategoryAction = ({ open, setOpen, category = {}, refetch }) => {
             value={input.name}
             onChange={handleInputChange}
             size="large"
-            className="mt-1 shadow-lg"
+            className="mt-1"
           />
           {validates.name && <ErrorMessage message={validates.name} />}
         </div>
@@ -198,7 +213,7 @@ const ModalCategoryAction = ({ open, setOpen, category = {}, refetch }) => {
             onChange={handleLevelChange}
             placeholder={<div className="text-sm">Chọn cấp độ danh mục</div>}
             size="large"
-            className="w-full mt-1 shadow-lg"
+            className="w-full mt-1"
           >
             <Select.Option value={0}>Danh mục (0)</Select.Option>
             <Select.Option value={1}>Danh mục (1)</Select.Option>
@@ -220,7 +235,7 @@ const ModalCategoryAction = ({ open, setOpen, category = {}, refetch }) => {
                 <div className="text-sm">Danh sách danh mục cha</div>
               }
               size="large"
-              className="w-full mt-1 shadow-lg"
+              className="w-full mt-1"
               allowClear
             >
               {parentOptions.map((option) => (

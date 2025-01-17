@@ -1,115 +1,105 @@
-import React, { useState } from "react";
-import { validateForm, validateResetPasswordSchema } from "@validate/validate";
-import ErrorValidate from "@components/Error/ErrorMessage";
+import React from "react";
+import { Form, Input, message } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { resetPassword } from "@redux/auth/auth.thunk";
-import { message } from "antd";
 import { setEmailVerify } from "@redux/auth/auth.slice";
-
-const STYLE_INPUT =
-  "mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 transition-colors duration-300";
-const STYLE_LABEL = "block text-sm font-medium text-gray-700";
+import CustomButton from "../CustomButton";
 
 const ResetPassword = ({ setStep, setIsReset }) => {
   const dispatch = useDispatch();
   const { emailVerify } = useSelector((state) => state.auth);
-  const [input, setInput] = useState({
-    password: "",
-    rePassword: "",
-  });
-  const [validates, setValidates] = useState({});
 
-  const handleChangeInput = (key, value) => {
-    setInput((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
-  };
+  const handleSubmit = async (values) => {
+    const { password, rePassword } = values;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (input.password !== input.rePassword) {
-      message.error("Mật khẩu nhập lại không trùng khớp");
+    if (password !== rePassword) {
+      message.error("Mật khẩu nhập lại không trùng khớp!");
       return;
     }
-    const validationErrors = await validateForm({
-      input,
-      validateSchema: validateResetPasswordSchema,
-    });
-    if (Object.keys(validationErrors).length > 0) {
-      setValidates(validationErrors);
-      return;
-    }
-    dispatch(
-      resetPassword({
-        email: emailVerify,
-        password: input.password,
-      })
-    ).then((res) => {
-      if (res.payload.success) {
-        message.success(res.payload.message);
+
+    try {
+      const res = await dispatch(
+        resetPassword({
+          email: emailVerify,
+          password,
+        })
+      ).unwrap();
+
+      if (res.success) {
+        message.success(res.message);
         dispatch(setEmailVerify(""));
         setStep("login");
         setIsReset(false);
-        return;
       }
-    });
+    } catch (error) {
+      message.error("Đã xảy ra lỗi khi đặt lại mật khẩu.");
+    }
   };
 
   return (
-    <form className="space-y-6" onSubmit={handleSubmit}>
+    <div className="space-y-6">
       <div className="text-xl font-bold text-center">ĐẶT LẠI MẬT KHẨU</div>
-      <div>
-        <label className={STYLE_LABEL}>Mật khẩu mới:</label>
-        <input
-          value={input.password}
-          onFocus={() => setValidates((prev) => ({ ...prev, password: "" }))}
-          onChange={(e) => handleChangeInput("password", e.target.value)}
-          type="password"
-          className={`${STYLE_INPUT} ${
-            validates.password ? "border-red-500" : ""
-          }`}
-        />
-        {validates.password ? (
-          <ErrorValidate message={validates.password} />
-        ) : (
-          ""
-        )}
-      </div>
-      <div>
-        <label className={STYLE_LABEL}>Xác nhận mật khẩu mới:</label>
-        <input
-          value={input.rePassword}
-          onFocus={() => setValidates((prev) => ({ ...prev, rePassword: "" }))}
-          onChange={(e) => handleChangeInput("rePassword", e.target.value)}
-          type="password"
-          className={`${STYLE_INPUT} ${
-            validates.rePassword ? "border-red-500" : ""
-          }`}
-        />
-        {validates.rePassword ? (
-          <ErrorValidate message={validates.rePassword} />
-        ) : (
-          ""
-        )}
-      </div>
-      <div>
-        <button
+      <Form
+        layout="vertical"
+        requiredMark={false}
+        onFinish={handleSubmit}
+        className="space-y-4"
+      >
+        <Form.Item
+          name="password"
+          label="Mật khẩu mới"
+          rules={[
+            {
+              required: true,
+              message: "Vui lòng nhập mật khẩu mới!",
+            },
+            {
+              min: 6,
+              message: "Mật khẩu phải có ít nhất 6 ký tự!",
+            },
+          ]}
+        >
+          <Input.Password placeholder="Nhập mật khẩu mới" size="large" />
+        </Form.Item>
+
+        <Form.Item
+          name="rePassword"
+          label="Xác nhận mật khẩu mới"
+          dependencies={["password"]}
+          rules={[
+            {
+              required: true,
+              message: "Vui lòng xác nhận lại mật khẩu!",
+            },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue("password") === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(
+                  new Error("Mật khẩu nhập lại không trùng khớp!")
+                );
+              },
+            }),
+          ]}
+        >
+          <Input.Password placeholder="Xác nhận mật khẩu mới" size="large" />
+        </Form.Item>
+
+        <CustomButton
           type="submit"
-          className="w-full font-bold bg-gradient-to-r from-yellow-300 via-orange-600 to-purple-800 text-white p-2 rounded-md hover:bg-sky-800 focus:outline-none"
+          className="w-full font-bold bg-gradient-to-r from-yellow-300 via-orange-600 to-purple-800 text-white hover:bg-sky-800 focus:outline-none"
         >
           Đặt lại mật khẩu
-        </button>
-      </div>
-      <div className="mt-4 text-sm text-gray-600 text-center font-bold">
-        <span
-          onClick={() => setStep("login")}
-          className="underline cursor-pointer"
-        >
+        </CustomButton>
+      </Form>
+
+      <div className="mt-4 text-base text-gray-600 text-center font-bold">
+        <span onClick={() => setStep("login")} className="cursor-pointer">
           Quay lại đăng nhập
         </span>
       </div>
-    </form>
+    </div>
   );
 };
 

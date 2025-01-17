@@ -100,107 +100,106 @@ const ScheduleSection = () => {
           </span>{" "}
           (Ngày nghỉ)
         </Checkbox>
-
-        <div className="flex flex-col sm:flex-row gap-4 mb-4">
-          <Form.Item
-            label="Giờ mở cửa"
-            name={["workingHours", day.value, "startTime"]}
-            rules={[
-              {
-                required: true,
-                message: "Vui lòng chọn giờ mở cửa",
-              },
-              {
-                validator: (rule, value) =>
-                  validateTime(rule, value, day.value, "startTime"),
-              },
-            ]}
-            className="flex-1 mb-0"
-          >
-            <TimePicker
-              locale={locale}
-              format="HH:mm"
-              className="w-full"
-              minuteStep={15}
-              placeholder="Chọn giờ"
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Giờ đóng cửa"
-            name={["workingHours", day.value, "endTime"]}
-            rules={[
-              {
-                required: true,
-                message: "Vui lòng chọn giờ đóng cửa",
-              },
-              {
-                validator: (rule, value) =>
-                  validateTime(rule, value, day.value, "endTime"),
-              },
-            ]}
-            className="flex-1 mb-0"
-          >
-            <TimePicker
-              locale={locale}
-              format="HH:mm"
-              className="w-full"
-              minuteStep={15}
-              placeholder="Chọn giờ"
-            />
-          </Form.Item>
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-4">
-          <Form.Item
-            label="Bắt đầu giờ nghỉ"
-            name={["workingHours", day.value, "breakTimeStart"]}
-            rules={[
-              {
-                required: true,
-                message: "Vui lòng chọn giờ bắt đầu nghỉ",
-              },
-              {
-                validator: (rule, value) =>
-                  validateTime(rule, value, day.value, "breakTimeStart", true),
-              },
-            ]}
-            className="flex-1 mb-0"
-          >
-            <TimePicker
-              locale={locale}
-              format="HH:mm"
-              className="w-full"
-              minuteStep={15}
-              placeholder="Chọn giờ"
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Kết thúc giờ nghỉ"
-            name={["workingHours", day.value, "breakTimeEnd"]}
-            rules={[
-              {
-                required: true,
-                message: "Vui lòng chọn giờ kết thúc nghỉ",
-              },
-              {
-                validator: (rule, value) =>
-                  validateTime(rule, value, day.value, "breakTimeEnd", true),
-              },
-            ]}
-            className="flex-1 mb-0"
-          >
-            <TimePicker
-              locale={locale}
-              format="HH:mm"
-              className="w-full"
-              minuteStep={15}
-              placeholder="Chọn giờ"
-            />
-          </Form.Item>
-        </div>
       </Form.Item>
+      <div className="flex flex-col sm:flex-row gap-4 mb-4">
+        <Form.Item
+          label="Giờ mở cửa"
+          name={["workingHours", day.value, "startTime"]}
+          rules={[
+            {
+              required: true,
+              message: "Vui lòng chọn giờ mở cửa",
+            },
+            {
+              validator: (rule, value) =>
+                validateTime(rule, value, day.value, "startTime"),
+            },
+          ]}
+          className="flex-1 mb-0"
+        >
+          <TimePicker
+            locale={locale}
+            format="HH:mm"
+            className="w-full"
+            minuteStep={15}
+            placeholder="Chọn giờ"
+          />
+        </Form.Item>
+
+        <Form.Item
+          label="Giờ đóng cửa"
+          name={["workingHours", day.value, "endTime"]}
+          rules={[
+            {
+              required: true,
+              message: "Vui lòng chọn giờ đóng cửa",
+            },
+            {
+              validator: (rule, value) =>
+                validateTime(rule, value, day.value, "endTime"),
+            },
+          ]}
+          className="flex-1 mb-0"
+        >
+          <TimePicker
+            locale={locale}
+            format="HH:mm"
+            className="w-full"
+            minuteStep={15}
+            placeholder="Chọn giờ"
+          />
+        </Form.Item>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-4">
+        <Form.Item
+          label="Bắt đầu giờ nghỉ"
+          name={["workingHours", day.value, "breakTimeStart"]}
+          rules={[
+            {
+              required: true,
+              message: "Vui lòng chọn giờ bắt đầu nghỉ",
+            },
+            {
+              validator: (rule, value) =>
+                validateTime(rule, value, day.value, "breakTimeStart", true),
+            },
+          ]}
+          className="flex-1 mb-0"
+        >
+          <TimePicker
+            locale={locale}
+            format="HH:mm"
+            className="w-full"
+            minuteStep={15}
+            placeholder="Chọn giờ"
+          />
+        </Form.Item>
+
+        <Form.Item
+          label="Kết thúc giờ nghỉ"
+          name={["workingHours", day.value, "breakTimeEnd"]}
+          rules={[
+            {
+              required: true,
+              message: "Vui lòng chọn giờ kết thúc nghỉ",
+            },
+            {
+              validator: (rule, value) =>
+                validateTime(rule, value, day.value, "breakTimeEnd", true),
+            },
+          ]}
+          className="flex-1 mb-0"
+        >
+          <TimePicker
+            locale={locale}
+            format="HH:mm"
+            className="w-full"
+            minuteStep={15}
+            placeholder="Chọn giờ"
+          />
+        </Form.Item>
+      </div>
     </div>
   ));
 };

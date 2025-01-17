@@ -16,6 +16,7 @@ const ManageCategory = () => {
     name: "",
   });
   const [open, setOpen] = useState(false);
+  const [isFetch, setIsfetch] = useState(false);
 
   const { data, isLoading, refetch } = useGetCategoryListQuery({
     ...paginate,
@@ -48,6 +49,8 @@ const ManageCategory = () => {
           pageSize: pagination?.pageSize,
           open,
           setOpen,
+          refetch,
+          isFetch,
         }}
       />
       <div className="mb-4 bg-white p-4 rounded-md shadow-lg flex gap-4 items-center">
@@ -77,6 +80,7 @@ const ManageCategory = () => {
         totalItems={pagination?.totalItems || 0}
         setPaginate={handlePageChange}
         refetch={refetch}
+        setIsfetch={setIsfetch}
       />
     </div>
   );

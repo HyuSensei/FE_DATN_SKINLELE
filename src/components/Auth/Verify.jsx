@@ -3,6 +3,7 @@ import { sendOtp, verifyAccount } from "@redux/auth/auth.thunk";
 import { useDispatch, useSelector } from "react-redux";
 import { message } from "antd";
 import { setEmailVerify } from "@redux/auth/auth.slice";
+import CustomButton from "../CustomButton";
 
 const Verify = ({ setStep, isReset }) => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -99,12 +100,12 @@ const Verify = ({ setStep, isReset }) => {
             );
           })}
         </div>
-        <button
+        <CustomButton
           type="submit"
-          className="w-full font-bold bg-gradient-to-r from-yellow-300 via-orange-600 to-purple-800 text-white p-3 rounded-md hover:bg-sky-800 focus:outline-none"
+          className="w-full font-bold bg-gradient-to-r from-yellow-300 via-orange-600 to-purple-800 text-white hover:bg-sky-800 focus:outline-none"
         >
           Xác thực
-        </button>
+        </CustomButton>
       </form>
       <p className="text-center mt-6 text-sm text-gray-600">
         Bạn không nhập được mã OTP?
@@ -120,3 +121,4 @@ const Verify = ({ setStep, isReset }) => {
 };
 
 export default Verify;
+

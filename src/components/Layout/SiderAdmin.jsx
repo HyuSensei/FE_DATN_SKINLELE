@@ -42,31 +42,31 @@ const MENU_ITEMS = [
     label: "Sản phẩm",
     children: [
       {
-        key: "2",
+        key: "sub1-2",
         icon: <AppstoreOutlined />,
         label: "Tất cả sản phẩm",
         path: "/admin/products",
       },
       {
-        key: "3",
+        key: "sub1-3",
         icon: <ShopOutlined />,
         label: "Danh mục",
         path: "/admin/categories",
       },
       {
-        key: "4",
+        key: "sub1-4",
         icon: <TagOutlined />,
         label: "Thương hiệu",
         path: "/admin/brands",
       },
       {
-        key: "5",
+        key: "sub1-5",
         icon: <GiftOutlined />,
         label: "Khuyến mãi",
         path: "/admin/promotions",
       },
       {
-        key: "6",
+        key: "sub1-6",
         icon: <StarOutlined />,
         label: "Đánh giá",
         path: "/admin/reviews",
@@ -211,7 +211,6 @@ const SiderAdmin = ({ collapsed, setCollapsed }) => {
       <Menu
         onClick={handleMenuClick}
         mode="inline"
-        defaultSelectedKeys={["1"]}
         defaultOpenKeys={["sub1"]}
         className="h-screen bg-white"
         items={adminInfo.role === "ADMIN" ? MENU_ITEMS : MENU_CLINIC_ITEMS}

@@ -1,6 +1,7 @@
 import React from "react";
 import { FaFacebookF, FaInstagram, FaTiktok } from "react-icons/fa";
 import verifyImage from "@assets/images/skinlele-verified.png";
+import LogoSkinLele from "../Header/LogoSkinLeLe";
 
 const FooterUser = () => {
   return (
@@ -35,12 +36,8 @@ const FooterUser = () => {
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
           <div className="col-span-2 md:col-span-1">
-            <div className="py-4 cursor-pointer text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 font-extrabold text-3xl m-0">
-              <div className="logo-text">
-                Skin<span>LeLe</span>
-              </div>
-            </div>
-            <div className="flex space-x-4 mb-4">
+            <LogoSkinLele />
+            <div className="flex space-x-4 my-4">
               <FaFacebookF className="text-2xl" />
               <FaInstagram className="text-2xl" />
               <FaTiktok className="text-2xl" />

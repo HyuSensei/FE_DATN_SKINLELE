@@ -17,8 +17,6 @@ const OrderComplete = ({
   refetch,
 }) => {
   const [open, setOpen] = useState(false);
-  const [hoverValue, setHoverValue] = useState(0);
-  const [rate, setRate] = useState(0);
   const [orderId, setOrderId] = useState("");
   const [productDetail, setProductDetail] = useState({});
 
@@ -29,10 +27,6 @@ const OrderComplete = ({
           product: productDetail,
           open,
           setOpen,
-          rate,
-          setRate,
-          hoverValue,
-          setHoverValue,
           order: orderId,
           refetch,
         }}

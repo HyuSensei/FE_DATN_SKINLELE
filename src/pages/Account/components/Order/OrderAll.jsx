@@ -33,13 +33,11 @@ const OrderAll = ({
   setPaginate,
   refetch
 }) => {
-  const dispatch = useDispatch()
-  const [hoverValue, setHoverValue] = useState(0);
-  const [rate, setRate] = useState(0);
+  const dispatch = useDispatch();
   const [orderId, setOrderId] = useState("");
   const [productDetail, setProductDetail] = useState({});
   const [openRate, setOpenRate] = useState(false);
-  const [openCancel, setOpenCancel] = useState(false)
+  const [openCancel, setOpenCancel] = useState(false);
 
   const renderOrderActions = (order) => {
     switch (order.status) {
@@ -111,10 +109,6 @@ const OrderAll = ({
           product: productDetail,
           open: openRate,
           setOpen: setOpenRate,
-          rate,
-          setRate,
-          hoverValue,
-          setHoverValue,
           order: orderId,
           refetch,
         }}

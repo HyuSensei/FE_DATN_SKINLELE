@@ -22,7 +22,7 @@ const ManageReview = () => {
     fromDate: "",
     toDate: "",
   });
-  const { data, isLoading, refetch } = useGetReviewListAdminQuery({
+  const { data, isLoading, refetch, isFetching } = useGetReviewListAdminQuery({
     ...paginate,
     ...filters,
   });
@@ -117,7 +117,7 @@ const ManageReview = () => {
 
       <TableReview
         reviews={reviews}
-        isLoading={isLoading}
+        isLoading={isLoading || isFetching}
         page={pagination?.page}
         pageSize={pagination?.pageSize}
         totalItems={pagination?.totalItems}

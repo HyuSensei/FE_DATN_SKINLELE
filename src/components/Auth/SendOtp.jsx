@@ -1,69 +1,58 @@
-import React, { useState } from "react";
-import { validateForm, validateSendOtpSchema } from "@validate/validate";
-import ErrorValidate from "@components/Error/ErrorMessage";
+import React from "react";
+import { Form, Input, message } from "antd";
 import { useDispatch } from "react-redux";
 import { sendOtp } from "@redux/auth/auth.thunk";
 import { setEmailVerify } from "@redux/auth/auth.slice";
-import { message } from "antd";
+import CustomButton from "../CustomButton";
 
 const SendOtp = ({ setStep, setIsReset }) => {
-  const [input, setInput] = useState({ email: "" });
-  const [validates, setValidates] = useState({});
   const dispatch = useDispatch();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const validationErrors = await validateForm({
-      input,
-      validateSchema: validateSendOtpSchema,
-    });
-    if (Object.keys(validationErrors).length > 0) {
-      setValidates(validationErrors);
-      return;
-    }
-    dispatch(sendOtp({ email: input.email })).then((res) => {
-      if (res.payload.success) {
-        message.success(res.payload.message);
-        dispatch(setEmailVerify(input.email));
+  const handleSubmit = async (values) => {
+    const { email } = values;
+
+    try {
+      const res = await dispatch(sendOtp({ email })).unwrap();
+
+      if (res.success) {
+        message.success(res.message);
+        dispatch(setEmailVerify(email));
         setIsReset(true);
         setStep("verify");
-        return;
       }
-    });
+    } catch (error) {
+      message.error("Gửi OTP thất bại. Vui lòng thử lại.");
+    }
   };
 
   return (
-    <form className="space-y-6" onSubmit={handleSubmit}>
+    <div className="space-y-6">
       <div className="text-xl font-bold text-center">GỬI MÃ OTP</div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Email:
-        </label>
-        <input
-          type="email"
-          value={input.email}
-          onFocus={() => setValidates((prev) => ({ ...prev, email: "" }))}
-          onChange={(e) =>
-            setInput((prev) => ({
-              ...prev,
-              ["email"]: e.target.value,
-            }))
-          }
-          className={`${
-            validates.email ? "border-red-500" : ""
-          } mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 transition-colors duration-300`}
-        />
-        {validates.email ? <ErrorValidate message={validates.email} /> : ""}
-      </div>
-      <div>
-        <button
+      <Form
+        name="sendOtpForm"
+        layout="vertical"
+        requiredMark={false}
+        onFinish={handleSubmit}
+        className="space-y-4"
+      >
+        <Form.Item
+          name="email"
+          label="Email"
+          rules={[
+            { required: true, message: "Vui lòng nhập email!" },
+            { type: "email", message: "Email không hợp lệ!" },
+          ]}
+        >
+          <Input placeholder="Nhập email của bạn" size="large" />
+        </Form.Item>
+        <CustomButton
           type="submit"
-          className="w-full font-bold bg-gradient-to-r from-yellow-300 via-orange-600 to-purple-800 text-white p-2 rounded-md hover:bg-sky-800 focus:outline-none"
+          className="w-full font-bold bg-gradient-to-r from-yellow-300 via-orange-600 to-purple-800 text-white hover:bg-sky-800 focus:outline-none"
         >
           Gửi OTP
-        </button>
-      </div>
-    </form>
+        </CustomButton>
+      </Form>
+    </div>
   );
 };
 

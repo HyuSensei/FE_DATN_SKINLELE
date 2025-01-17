@@ -48,7 +48,7 @@ const OrderTabs = () => {
             orders,
             ...resPaginate,
             setPaginate,
-            refetch
+            refetch,
           }}
         />
       ),
@@ -69,7 +69,7 @@ const OrderTabs = () => {
             orders,
             ...resPaginate,
             setPaginate,
-            refetch
+            refetch,
           }}
         />
       ),
@@ -90,7 +90,7 @@ const OrderTabs = () => {
             orders,
             ...resPaginate,
             setPaginate,
-            refetch
+            refetch,
           }}
         />
       ),
@@ -111,7 +111,7 @@ const OrderTabs = () => {
             orders,
             ...resPaginate,
             setPaginate,
-            refetch
+            refetch,
           }}
         />
       ),
@@ -132,7 +132,7 @@ const OrderTabs = () => {
             orders,
             ...resPaginate,
             setPaginate,
-            refetch
+            refetch,
           }}
         />
       ),
@@ -141,7 +141,7 @@ const OrderTabs = () => {
       key: "cancelled",
       label: (
         <TabLabel
-          icon={<CloseCircleOutlined />}
+          icon={<CloseCircleOutlined/>}
           text="Đã hủy"
           badgeCount={statusCounts?.cancelled}
         />
@@ -153,7 +153,7 @@ const OrderTabs = () => {
             orders,
             ...resPaginate,
             setPaginate,
-            refetch
+            refetch,
           }}
         />
       ),

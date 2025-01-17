@@ -431,7 +431,7 @@ const ModalEditProduct = ({ open = false, setOpen, data = {}, setData }) => {
                   )}
                 </div>
               </Col>
-              <Col span={12}>
+              {/* <Col span={12}>
                 <div className="mb-4">
                   <label
                     htmlFor="capacity"
@@ -448,7 +448,7 @@ const ModalEditProduct = ({ open = false, setOpen, data = {}, setData }) => {
                     onChange={handleInputChange}
                   />
                 </div>
-              </Col>
+              </Col> */}
             </Row>
           </Card>
 

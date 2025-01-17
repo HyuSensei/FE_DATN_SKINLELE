@@ -5,6 +5,7 @@ import FooterUser from "@components/Footer/FooterUser";
 import PopupClinic from "./PopupClinic";
 import PopupPromotional from "./PopupConfetti";
 import ConversationSupport from "../Chat/Conversation/ConversationSupport";
+import CherryBlossomEffect from "./CherryBlossomEffect";
 
 const LayoutUser = ({ children }) => {
   const location = useLocation();
@@ -21,9 +22,10 @@ const LayoutUser = ({ children }) => {
     <div className="min-h-screen flex flex-col overflow-x-hidden">
       <HeaderUser />
       <main className="flex-grow px-4 lg:px-16 py-2">{children}</main>
-      {/* <PopupClinic /> */}
-      {/* <PopupPromotional /> */}
+      <PopupClinic />
+      <PopupPromotional />
       <ConversationSupport />
+      {/* <CherryBlossomEffect /> */}
       <FooterUser />
     </div>
   );

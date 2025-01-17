@@ -26,10 +26,12 @@ const ManageProduct = () => {
   });
   const { data: brands } = useGetAllBrandQuery();
   const { data: categories } = useGetAllCategoryQuery();
-  const { data, isLoading, refetch } = useGetAllProductByAdminQuery({
-    ...paginate,
-    ...filters,
-  });
+  const { data, isLoading, refetch, isFetching } = useGetAllProductByAdminQuery(
+    {
+      ...paginate,
+      ...filters,
+    }
+  );
 
   const { data: products = [], pagination = {} } = data || {};
 
@@ -126,7 +128,7 @@ const ManageProduct = () => {
         pageSize={pagination?.pageSize}
         totalItems={pagination?.totalItems || 0}
         setPaginate={handlePageChange}
-        isLoading={isLoading}
+        isLoading={isLoading || isFetching}
         refetch={refetch}
       />
     </div>

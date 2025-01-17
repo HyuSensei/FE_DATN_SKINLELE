@@ -68,6 +68,9 @@ const Detail = () => {
 
   const categoryIds =
     dataProduct?.categories?.map((category) => category._id) || [];
+  
+  console.log(categoryIds);
+  console.log(dataProduct);
 
   const {
     data: dataDoctors,

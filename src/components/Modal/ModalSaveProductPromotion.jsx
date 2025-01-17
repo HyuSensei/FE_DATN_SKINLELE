@@ -17,6 +17,7 @@ import { createPromotion } from "@redux/promotion/promotion.thunk";
 import { useDispatch } from "react-redux";
 import { getProductAlmostExpired } from "@redux/product/product.thunk";
 import { formatPrice } from "@/helpers/formatPrice";
+import dayjs from "@utils/dayjsTz";
 
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
@@ -138,7 +139,14 @@ const ModalSaveProductPromotion = ({
             { required: true, message: "Vui lòng chọn thời gian áp dụng" },
           ]}
         >
-          <RangePicker size="middle" locale={locale} className="w-full" />
+          <RangePicker
+            size="middle"
+            locale={locale}
+            className="w-full"
+            disabledDate={(current) =>
+              current && current < dayjs().startOf("day")
+            }
+          />
         </Form.Item>
         <div>
           <h3 className="text-sm font-medium mb-2">Sản phẩm được chọn</h3>

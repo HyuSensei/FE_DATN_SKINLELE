@@ -106,47 +106,68 @@ const SettingAdmin = () => {
         <Input
           size="large"
           placeholder="Nhập họ tên..."
-          className="w-full mt-1 shadow-lg"
+          className="w-full mt-1"
         />
       </Form.Item>
       <Form.Item
         name="password"
-        label="Mật khẩu"
+        label="Mật khẩu cũ"
         className="w-full lg:flex-1"
-        rules={[{ min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự" }]}
+        dependencies={["newPassword"]}
+        rules={[
+          ({ getFieldValue }) => ({
+            validator(_, value) {
+              if (!value && getFieldValue("newPassword")) {
+                return Promise.reject(
+                  new Error("Vui lòng nhập mật khẩu cũ nếu muốn đổi mật khẩu")
+                );
+              }
+              return Promise.resolve();
+            },
+          }),
+          { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự" },
+        ]}
       >
         <Input.Password
           size="large"
-          placeholder="Nhập mật khẩu..."
-          className="w-full mt-1 shadow-lg"
+          placeholder="Nhập mật khẩu cũ..."
+          className="w-full mt-1"
         />
       </Form.Item>
 
       <Form.Item
         name="newPassword"
-        label="Nhập mật khẩu mới"
+        label="Mật khẩu mới"
         className="w-full lg:flex-1"
         dependencies={["password"]}
         rules={[
-          { min: 6, message: "Mật khẩu mới phải có ít nhất 6 ký tự" },
           ({ getFieldValue }) => ({
             validator(_, value) {
-              if (!value || getFieldValue("password") !== value) {
-                return Promise.resolve();
+              if (!value && getFieldValue("password")) {
+                return Promise.reject(
+                  new Error(
+                    "Vui lòng nhập mật khẩu mới nếu đã nhập mật khẩu cũ"
+                  )
+                );
               }
-              return Promise.reject(
-                new Error("Mật khẩu mới không được giống với mật khẩu cũ")
-              );
+              if (value && value === getFieldValue("password")) {
+                return Promise.reject(
+                  new Error("Mật khẩu mới không được giống với mật khẩu cũ")
+                );
+              }
+              return Promise.resolve();
             },
           }),
+          { min: 6, message: "Mật khẩu mới phải có ít nhất 6 ký tự" },
         ]}
       >
         <Input.Password
           size="large"
           placeholder="Nhập mật khẩu mới..."
-          className="w-full mt-1 shadow-lg"
+          className="w-full mt-1"
         />
       </Form.Item>
+
       <CustomButton
         isLoading={loading}
         variant="primary"
