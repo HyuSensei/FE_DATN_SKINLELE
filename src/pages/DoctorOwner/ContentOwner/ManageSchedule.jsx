@@ -87,7 +87,7 @@ const ManageSchedule = () => {
       }
       return {
         text: "Nghỉ",
-        className: "border border-gray-200 bg-white",
+        className: "border border-gray-200 bg-rose-50",
         textColor: "text-gray-500",
       };
     };

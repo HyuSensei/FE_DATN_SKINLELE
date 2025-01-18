@@ -21,6 +21,7 @@ import NotificationStoreDrop from "./NotificationStoreDrop";
 import { useGetAllCategoryUserQuery } from "@/redux/category/category.query";
 import { useGetAllBrandByUserQuery } from "@/redux/brand/brand.query";
 import Loading from "../Loading/Loading";
+import { IoCartOutline } from "react-icons/io5";
 
 const HeaderUser = () => {
   const dispatch = useDispatch();
@@ -139,6 +140,11 @@ const HeaderUser = () => {
             path: "/account",
           },
           {
+            label: "Lịch sử đơn hàng",
+            key: "orderHistory",
+            path: "/account?tab=orders",
+          },
+          {
             label: "Đăng xuất",
             key: "logout",
             path: "/logout",
@@ -194,6 +200,17 @@ const HeaderUser = () => {
     },
     {
       key: "2",
+      label: (
+        <div
+          className="flex items-center gap-4"
+          onClick={() => navigate("/account?tab=orders")}
+        >
+          <IoCartOutline /> <span>Lịch sử đơn hàng</span>
+        </div>
+      ),
+    },
+    {
+      key: "3",
       label: (
         <div className="flex items-center gap-4" onClick={handleLogout}>
           <LogoutOutlined /> <span>Đăng xuất</span>

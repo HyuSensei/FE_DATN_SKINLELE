@@ -2,7 +2,7 @@ import React, { useMemo, useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { createPromotion } from "@redux/promotion/promotion.thunk";
-import { SearchOutlined } from "@ant-design/icons";
+import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import {
   Button,
   DatePicker,
@@ -16,6 +16,7 @@ import {
   Tooltip,
   Tag,
   Select,
+  Upload,
 } from "antd";
 import locale from "antd/es/date-picker/locale/vi_VN";
 import { PiSpinnerBall } from "react-icons/pi";
@@ -24,6 +25,7 @@ import { formatDateReview } from "@helpers/formatDate";
 import { useGetProductAddPromotionQuery } from "@/redux/product/product.query";
 import { debounce } from "lodash";
 import dayjs from "@utils/dayjsTz";
+import { UPLOAD_SKINLELE_PRESET, uploadFile } from "@/helpers/uploadCloudinary";
 
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
@@ -37,6 +39,7 @@ const CreatePromotion = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [uploadedImage, setUploadedImage] = useState(null);
   const [filters, setFilters] = useState({ name: "", sort: "asc" });
   const { data, isLoading } = useGetProductAddPromotionQuery(filters);
   const { data: products = [] } = data || {};
@@ -159,8 +162,21 @@ const CreatePromotion = () => {
           return;
         }
 
+        let banner = null;
+        if (uploadedImage?.originFileObj) {
+          const result = await uploadFile({
+            file: uploadedImage.originFileObj,
+            type: UPLOAD_SKINLELE_PRESET,
+          });
+          banner = {
+            url: result.secure_url,
+            publicId: result.public_id,
+          };
+        }
+
         const formattedValues = {
           ...values,
+          banner,
           products: selectedProducts.map((product) => ({
             product: product.product,
             discountPercentage:
@@ -255,6 +271,26 @@ const CreatePromotion = () => {
             ]}
           >
             <Input size="middle" placeholder="Nhập tên khuyến mãi..." />
+          </Form.Item>
+
+          <Form.Item
+            label="Banner khuyến mãi"
+            name="banner"
+            rules={[{ required: true, message: "Vui lòng tải lên banner" }]}
+          >
+            <Upload
+              accept="image/*"
+              listType="picture-card"
+              maxCount={1}
+              beforeUpload={() => false}
+              fileList={uploadedImage ? [uploadedImage] : []}
+              onChange={({ fileList }) => setUploadedImage(fileList[0])}
+            >
+              <div>
+                <PlusOutlined />
+                <div className="mt-2">Tải lên</div>
+              </div>
+            </Upload>
           </Form.Item>
 
           <Form.Item

@@ -9,7 +9,6 @@ const StarReview = ({
   nonActiveColor = "#E4E9EC",
   className = "",
 }) => {
-
   const getSingleStarFill = () => {
     return Math.min((rate / 5) * 100, 100);
   };

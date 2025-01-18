@@ -22,7 +22,6 @@ import { FaRegHandPointDown } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { createReviewDoctor } from "@/redux/doctor/doctor.thunk";
 import { capitalizeFirstLetter } from "@/helpers/formatDate";
-import StarReview from "@/components/StarReview";
 import { motion } from "framer-motion";
 
 const RatingSelect = ({ value, onChange }) => (
@@ -62,7 +61,11 @@ const StatisticCard = ({ stats }) => {
                 ? Number(stats.averageRating).toFixed(1)
                 : "0.0"}
             </div>
-            <StarReview rate={stats.averageRating || 0} singleMode={false} />
+            <Rate
+              allowHalf
+              disabled
+              value={parseFloat(stats.averageRating) || 0}
+            />
             <div className="text-gray-500 font-medium">
               {stats.totalReviews.toLocaleString()} đánh giá
             </div>
@@ -107,7 +110,7 @@ const StatisticCard = ({ stats }) => {
   );
 };
 
-const DoctorReview = ({ doctor }) => {
+const DoctorReview = ({ doctor, refetchDoctor }) => {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
   const [reviews, setReviews] = useState([]);
@@ -189,6 +192,7 @@ const DoctorReview = ({ doctor }) => {
         message.success(res.message);
         form.resetFields();
         refetch();
+        refetchDoctor();
       }
     } catch (error) {
       console.log(error);

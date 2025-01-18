@@ -20,6 +20,7 @@ import {
   Tooltip,
   Checkbox,
   Select,
+  Upload,
 } from "antd";
 import { debounce, isEmpty } from "lodash";
 import moment from "moment";
@@ -28,8 +29,13 @@ import { PiSpinnerBall } from "react-icons/pi";
 import { formatPrice } from "@helpers/formatPrice";
 import { formatDateReview } from "@helpers/formatDate";
 import { useGetProductAddPromotionQuery } from "@/redux/product/product.query";
-import { SearchOutlined } from "@ant-design/icons";
+import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import Loading from "@/components/Loading/Loading";
+import {
+  deleteFile,
+  UPLOAD_SKINLELE_PRESET,
+  uploadFile,
+} from "@/helpers/uploadCloudinary";
 
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
@@ -53,6 +59,7 @@ const PromotionDetail = () => {
   const { data: products = [] } = data || [];
   const [promotion, setPromotion] = useState(null);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState(null);
 
   // Fetch promotion details
   useEffect(() => {
@@ -72,10 +79,38 @@ const PromotionDetail = () => {
         maxQty: item.maxQty,
         maxDiscountAmount: item.maxDiscountAmount,
       }));
+      if (promotionDetail.banner) {
+        setUploadedImage({
+          uid: "-1",
+          name: "banner.png",
+          status: "done",
+          url: promotionDetail.banner.url,
+        });
+      }
       setSelectedProducts(newData);
       setPromotion(promotionDetail);
     }
   }, [promotionDetail]);
+
+  // Update form values dynamically when data changes
+  useEffect(() => {
+    if (promotion && selectedProducts.length > 0) {
+      form.setFieldsValue({
+        products: selectedProducts.reduce((acc, product) => {
+          acc[product.product] = {
+            discountPercentage: product.discountPercentage,
+            maxQty: product.maxQty,
+            maxDiscountAmount: product.maxDiscountAmount,
+          };
+          return acc;
+        }, {}),
+        name: promotion.name,
+        description: promotion.description,
+        date: [moment(promotion.startDate), moment(promotion.endDate)],
+        isActive: promotion.isActive,
+      });
+    }
+  }, [promotion, selectedProducts, form]);
 
   // Memoize product data with promotion info
   const productsWithPromoInfo = useMemo(() => {
@@ -93,6 +128,20 @@ const PromotionDetail = () => {
   const handleSubmit = async (values) => {
     try {
       setLoadingSubmit(true);
+
+      let banner = promotionDetail?.banner || null;
+      if (uploadedImage?.originFileObj) {
+        const result = await uploadFile({
+          file: uploadedImage.originFileObj,
+          type: UPLOAD_SKINLELE_PRESET,
+        });
+        banner = {
+          url: result.secure_url,
+          publicId: result.public_id,
+        };
+        await deleteFile(promotionDetail?.banner?.publicId);
+      }
+
       const formattedProducts = selectedProducts.map((product) => ({
         product: product.product,
         discountPercentage: form.getFieldValue([
@@ -110,6 +159,7 @@ const PromotionDetail = () => {
 
       const formattedValues = {
         ...values,
+        banner,
         products: formattedProducts,
         startDate: values.date[0].format("YYYY-MM-DD HH:mm:ss"),
         endDate: values.date[1].format("YYYY-MM-DD HH:mm:ss"),
@@ -320,6 +370,25 @@ const PromotionDetail = () => {
             ]}
           >
             <Input size="middle" placeholder="Nhập tên khuyến mãi..." />
+          </Form.Item>
+          <Form.Item
+            label="Banner khuyến mãi"
+            name="banner"
+            className="col-span-2"
+          >
+            <Upload
+              accept="image/*"
+              listType="picture-card"
+              maxCount={1}
+              beforeUpload={() => false}
+              fileList={uploadedImage ? [uploadedImage] : []}
+              onChange={({ fileList }) => setUploadedImage(fileList[0])}
+            >
+              <div>
+                <PlusOutlined />
+                <div className="mt-2">Tải lên</div>
+              </div>
+            </Upload>
           </Form.Item>
           <Form.Item
             name="description"

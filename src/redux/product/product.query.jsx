@@ -156,6 +156,13 @@ export const productApi = createApi({
         };
       },
     }),
+    getPromotionActive: builder.query({
+      query: () => ({
+        url: "/products/promotions-info",
+        method: "GET",
+      }),
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
@@ -169,4 +176,5 @@ export const {
   useGetProductPromtionQuery,
   useGetAllProductByAdminQuery,
   useGetProductOtherQuery,
+  useGetPromotionActiveQuery,
 } = productApi;

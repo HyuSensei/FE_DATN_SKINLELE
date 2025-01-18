@@ -6,7 +6,7 @@ import { useGetScheduleBookingDoctorQuery } from "@/redux/doctor/doctor.query";
 import { monthsDefault } from "@/const/dataDefault";
 import LoadingContent from "@/components/Loading/LoaingContent";
 import ConfirmBooking from "./ConfirmBooking";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import BookingResult from "./BookingResult";
 import { BookingActions } from "@/redux/booking/booking.slice";
 

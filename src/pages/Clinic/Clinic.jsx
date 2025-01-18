@@ -5,14 +5,12 @@ import {
   RiPhoneFill,
   RiMailFill,
   RiUserStarFill,
-  RiHeartFill,
 } from "react-icons/ri";
 import { IoShareSocial } from "react-icons/io5";
 import { GiRoundStar } from "react-icons/gi";
 import { MdEmail, MdVerified } from "react-icons/md";
 import ClinicAbout from "./ClinicAbout";
 import ClinicReview from "./ClinicReview";
-import CustomButton from "@/components/CustomButton";
 import { useParams } from "react-router-dom";
 import { useGetClinicDetailBySlugQuery } from "@/redux/clinic/clinic.query";
 import {
@@ -35,6 +33,7 @@ const Clinic = () => {
     data: clinic,
     isLoading: isLoadingClinic,
     error: errorClinic,
+    refetch,
   } = useGetClinicDetailBySlugQuery({ slug }, { skip: !slug });
 
   if (errorClinic) {
@@ -180,7 +179,6 @@ const Clinic = () => {
                   </div>
                 </div>
               </div>
-              <CustomButton variant="primary"> Đặt lịch khám</CustomButton>
             </div>
           </div>
         </div>
@@ -265,7 +263,9 @@ const Clinic = () => {
               label: (
                 <span className="flex items-center gap-2 px-2">Đánh giá</span>
               ),
-              children: <ClinicReview {...{ clinic }} />,
+              children: (
+                <ClinicReview {...{ clinic, refetchClinic: refetch }} />
+              ),
             },
           ]}
         />

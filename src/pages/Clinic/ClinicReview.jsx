@@ -16,13 +16,13 @@ import {
   Rate,
 } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
-import { RiHeartFill, RiStarFill } from "react-icons/ri";
+import { RiStarFill } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import dayjs from "@utils/dayjsTz";
 import StarReview from "@/components/StarReview";
 import { motion } from "framer-motion";
 
-const ClinicReview = ({ clinic }) => {
+const ClinicReview = ({ clinic, refetchClinic }) => {
   const dispatch = useDispatch();
   const [paginate, setPaginate] = useState({
     page: 1,
@@ -82,6 +82,7 @@ const ClinicReview = ({ clinic }) => {
       if (res.success) {
         message.success(res.message);
         form.resetFields();
+        refetchClinic();
         refetch();
       }
     } catch (error) {

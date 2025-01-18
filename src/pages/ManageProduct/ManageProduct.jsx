@@ -6,8 +6,12 @@ import TableProduct from "@/pages/ManageProduct/TableProduct";
 import { tags } from "@const/tags";
 import { useNavigate } from "react-router-dom";
 import { useGetAllBrandQuery } from "@/redux/brand/brand.query";
-import { useGetAllCategoryQuery } from "@/redux/category/category.query";
+import {
+  useGetAllCategoriesByAdminQuery,
+  useGetAllCategoryQuery,
+} from "@/redux/category/category.query";
 import { useGetAllProductByAdminQuery } from "@/redux/product/product.query";
+import Loading from "@/components/Loading/Loading";
 
 const { Option } = Select;
 
@@ -25,7 +29,8 @@ const ManageProduct = () => {
     sort: "asc",
   });
   const { data: brands } = useGetAllBrandQuery();
-  const { data: categories } = useGetAllCategoryQuery();
+  const { data: categories = [], isLoading: isLoadingCategories } =
+    useGetAllCategoriesByAdminQuery();
   const { data, isLoading, refetch, isFetching } = useGetAllProductByAdminQuery(
     {
       ...paginate,
@@ -80,6 +85,7 @@ const ManageProduct = () => {
             allowClear
           />
           <Select
+            isLoading={isLoadingCategories}
             placeholder="Danh mục"
             onChange={(value) => handleFilterChange(value, "category")}
             allowClear

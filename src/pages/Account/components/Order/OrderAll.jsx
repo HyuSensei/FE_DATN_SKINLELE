@@ -148,11 +148,6 @@ const OrderAll = ({
               />
 
               <OrderInfor {...{ order }} />
-              <div className="flex items-center mt-4 justify-end">
-                <Text strong>
-                  Tổng tiền: {formatPrice(order.totalAmount)} đ
-                </Text>
-              </div>
             </Card>
           </List.Item>
         )}

@@ -4,6 +4,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
 const SLIDE_IMAGES = [
+  "https://image.hsv-tech.io/1920x0/bbx/common/dd533968-9690-4266-8fc7-c13518281acf.webp",
   "https://image.hsv-tech.io/1920x0/bbx/common/6cb4ca54-942a-4d80-8cd9-00c9c6b1805a.webp",
   "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565403/upload-static-skinlele/iezgb3rrzscr5jslr0fv.webp",
   // "https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565403/upload-static-skinlele/zuh6anhr71thwquivdge.webp",

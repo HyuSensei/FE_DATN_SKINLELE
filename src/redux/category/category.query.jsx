@@ -35,6 +35,13 @@ export const categoryApi = createApi({
       }),
       transformResponse: (response) => response.data,
     }),
+    getAllCategoriesByAdmin: builder.query({
+      query: () => ({
+        url: `/admin/categories/all`,
+        method: "GET",
+      }),
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
@@ -42,4 +49,5 @@ export const {
   useGetAllCategoryQuery,
   useGetCategoryListQuery,
   useGetAllCategoryUserQuery,
+  useGetAllCategoriesByAdminQuery,
 } = categoryApi;

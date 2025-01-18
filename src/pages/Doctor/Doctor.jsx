@@ -130,7 +130,11 @@ const Doctor = () => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Đánh giá</p>
-                    <StarReview rate={doctor.rating} singleMode={false} />
+                    <Rate
+                      value={doctor?.statistics?.averageRating}
+                      disabled
+                      allowHalf
+                    />
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -312,7 +316,9 @@ const Doctor = () => {
                     label: (
                       <span className="flex items-center gap-2">Đánh giá</span>
                     ),
-                    children: <DoctorReview doctor={doctor} />,
+                    children: (
+                      <DoctorReview doctor={doctor} refetchDoctor={refetch} />
+                    ),
                   },
                 ]}
                 className="p-4"

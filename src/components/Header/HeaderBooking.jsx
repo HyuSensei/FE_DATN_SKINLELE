@@ -68,8 +68,8 @@ const HeaderBooking = () => {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="font-extrabold text-sm lg:text-xl text-[#2464ec] font-[Bungee]">
-                  SkinLeLe <span className="text-gray-500">Clinic</span>
+                <div className="font-extrabold text-sm lg:text-xl text-[#0c9584] font-[Bungee]">
+                  SkinLeLe <span className="text-[#5b636a]">Clinic</span>
                 </div>
               </Link>
             </motion.div>

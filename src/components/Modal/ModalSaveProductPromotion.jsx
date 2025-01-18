@@ -10,14 +10,17 @@ import {
   message,
   Modal,
   Tooltip,
+  Upload,
 } from "antd";
 import locale from "antd/es/date-picker/locale/vi_VN";
-import React from "react";
+import React, { useState } from "react";
 import { createPromotion } from "@redux/promotion/promotion.thunk";
 import { useDispatch } from "react-redux";
 import { getProductAlmostExpired } from "@redux/product/product.thunk";
 import { formatPrice } from "@/helpers/formatPrice";
 import dayjs from "@utils/dayjsTz";
+import { PlusOutlined } from "@ant-design/icons";
+import { UPLOAD_SKINLELE_PRESET, uploadFile } from "@/helpers/uploadCloudinary";
 
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
@@ -32,8 +35,20 @@ const ModalSaveProductPromotion = ({
 }) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
+  const [uploadedImage, setUploadedImage] = useState(null);
 
   const handleSubmit = async (values) => {
+    let banner = null;
+    if (uploadedImage?.originFileObj) {
+      const result = await uploadFile({
+        file: uploadedImage.originFileObj,
+        type: UPLOAD_SKINLELE_PRESET,
+      });
+      banner = {
+        url: result.secure_url,
+        publicId: result.public_id,
+      };
+    }
     const formattedProducts = selectedProducts.map((product) => ({
       product: product.product,
       discountPercentage: form.getFieldValue([
@@ -50,6 +65,7 @@ const ModalSaveProductPromotion = ({
     }));
     const formattedValues = {
       ...values,
+      banner,
       products: formattedProducts,
       startDate: values.date[0].format("YYYY-MM-DD HH:mm:ss"),
       endDate: values.date[1].format("YYYY-MM-DD HH:mm:ss"),
@@ -124,6 +140,25 @@ const ModalSaveProductPromotion = ({
           rules={[{ required: true, message: "Vui lòng nhập tên khuyến mãi" }]}
         >
           <Input size="middle" placeholder="Nhập tên khuyến mãi..." />
+        </Form.Item>
+        <Form.Item
+          label="Banner khuyến mãi"
+          name="banner"
+          rules={[{ required: true, message: "Vui lòng tải lên banner" }]}
+        >
+          <Upload
+            accept="image/*"
+            listType="picture-card"
+            maxCount={1}
+            beforeUpload={() => false}
+            fileList={uploadedImage ? [uploadedImage] : []}
+            onChange={({ fileList }) => setUploadedImage(fileList[0])}
+          >
+            <div>
+              <PlusOutlined />
+              <div className="mt-2">Tải lên</div>
+            </div>
+          </Upload>
         </Form.Item>
         <Form.Item
           name="description"

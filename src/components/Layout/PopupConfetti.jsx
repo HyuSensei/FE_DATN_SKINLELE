@@ -1,14 +1,30 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import confetti from 'canvas-confetti';
-import { Link } from 'react-router-dom';
-import { MdClose } from 'react-icons/md';
-import { GiStarShuriken } from 'react-icons/gi';
+import { motion, AnimatePresence } from "framer-motion";
+import confetti from "canvas-confetti";
+import { Link } from "react-router-dom";
+import { MdClose } from "react-icons/md";
+import { useGetPromotionActiveQuery } from "@/redux/product/product.query";
+import Loading from "../Loading/Loading";
+import { formatPrice } from "@/helpers/formatPrice";
+import { useEffect, useRef, useState } from "react";
 
 const PopupConfetti = () => {
+  const { data: promotions, isLoading } = useGetPromotionActiveQuery();
   const [isVisible, setIsVisible] = useState(false);
+  const [randomPromotion, setRandomPromotion] = useState(null);
   const popupRef = useRef(null);
   const animationFrameRef = useRef(null);
+
+  const getRandomPromotion = (promotions) => {
+    if (!promotions?.length) return null;
+    const index = Math.floor(Math.random() * promotions.length);
+    return promotions[index];
+  };
+
+  useEffect(() => {
+    if (promotions?.length) {
+      setRandomPromotion(getRandomPromotion(promotions));
+    }
+  }, [promotions]);
 
   const getPopupBounds = () => {
     if (!popupRef.current) return null;
@@ -24,7 +40,7 @@ const PopupConfetti = () => {
       width: bounds.width,
       height: bounds.height,
       centerX: (bounds.left + bounds.width / 2) / viewportWidth,
-      centerY: (bounds.top + bounds.height / 2) / viewportHeight
+      centerY: (bounds.top + bounds.height / 2) / viewportHeight,
     };
   };
 
@@ -37,11 +53,11 @@ const PopupConfetti = () => {
       startVelocity: 25,
       gravity: 0.8,
       ticks: 150,
-      shapes: ['square', 'circle'],
+      shapes: ["square", "circle"],
       scalar: 0.8,
       zIndex: 100,
       colors,
-      disableForReducedMotion: true
+      disableForReducedMotion: true,
     });
   };
 
@@ -49,47 +65,28 @@ const PopupConfetti = () => {
     const bounds = getPopupBounds();
     if (!bounds) return;
 
-    // Màu sắc chủ đạo
     const colors = [
-      '#FFD700', // Gold
-      '#FFA500', // Orange
-      '#FF69B4', // Hot Pink
-      '#ff718d', // Rose
-      '#ff8fa3', // Light Rose
-      '#ffb3c1'  // Pale Rose
+      "#FFD700",
+      "#FFA500",
+      "#FF69B4",
+      "#ff718d",
+      "#ff8fa3",
+      "#ffb3c1",
     ];
 
     const animate = () => {
-      // Bắn từ góc trái dưới
       createConfetti(
         { x: bounds.left - 0.1, y: bounds.bottom + 0.1 },
         60,
         60,
         colors
       );
-
-      // Bắn từ góc phải dưới
       createConfetti(
         { x: bounds.right + 0.1, y: bounds.bottom + 0.1 },
         120,
         60,
         colors
       );
-
-      // Bắn từ hai bên cạnh
-      createConfetti(
-        { x: bounds.left - 0.1, y: bounds.centerY },
-        0,
-        80,
-        colors
-      );
-      createConfetti(
-        { x: bounds.right + 0.1, y: bounds.centerY },
-        180,
-        80,
-        colors
-      );
-
       animationFrameRef.current = setTimeout(animate, 300);
     };
 
@@ -120,6 +117,16 @@ const PopupConfetti = () => {
     };
   }, [isVisible]);
 
+  if (isLoading) return <Loading />;
+  if (!randomPromotion) return null;
+
+  const remainingTimeMs =
+    new Date(randomPromotion.endDate).getTime() - new Date().getTime();
+  const days = Math.floor(remainingTimeMs / (1000 * 60 * 60 * 24));
+  const hours = Math.floor(
+    (remainingTimeMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+  );
+
   return (
     <AnimatePresence>
       {isVisible && (
@@ -129,9 +136,8 @@ const PopupConfetti = () => {
             initial={{ scale: 0.5, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.5, opacity: 0 }}
-            className="relative bg-gradient-to-br from-rose-500 to-rose-400 rounded-xl shadow-2xl p-8 max-w-md w-full"
+            className="relative p-8 max-w-lg w-full bg-white rounded-2xl shadow-2xl bg-gradient-to-r from-rose-100 via-rose-200 to-rose-300"
           >
-            {/* Close Button */}
             <button
               onClick={() => setIsVisible(false)}
               className="absolute -top-3 -right-3 bg-white rounded-full p-1.5 shadow-lg hover:bg-gray-100"
@@ -139,58 +145,70 @@ const PopupConfetti = () => {
               <MdClose size={24} className="text-rose-500" />
             </button>
 
-            {/* Title */}
+            {/* Thông tin khuyến mãi */}
             <div className="text-center mb-6">
               <div className="inline-flex items-center bg-rose-50 rounded-full px-6 py-2 mb-3">
-                <h2 className="text-xl font-medium">
-                  🎁 Khuyến mãi hot cùng SkinLeLe
+                <h2 className="text-xl font-bold text-rose-600">
+                  🎁 {randomPromotion.name}
                 </h2>
               </div>
             </div>
 
-            {/* Badges */}
-            {/* Badges */}
-            <div className="flex justify-center gap-3 mb-6">
-              <span className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm flex items-center">
-                <GiStarShuriken className="mr-1" /> Freeship
-              </span>
-              <span className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm flex items-center">
-                <GiStarShuriken className="mr-1" /> Giao hàng toàn quốc
-              </span>
+            {/* Countdown */}
+            <div className="text-center mb-6">
+              <p className="text-2xl font-bold text-rose-500">
+                {days} ngày {hours} giờ
+              </p>
             </div>
 
-            {/* Offers */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              {[
-                { min: "299k", gift: "Son lì", value: "229k" },
-                { min: "499k", gift: "Kem chống nắng", value: "380k" },
-                { min: "799k", gift: "Bộ dưỡng da", value: "900k" },
-                { min: "1500k", gift: "Son dưỡng", value: "380k" },
-              ].map((offer, index) => (
+            {/* Banner */}
+            {randomPromotion.banner?.url && (
+              <div className="mb-6">
+                <img
+                  src={randomPromotion.banner.url}
+                  alt={randomPromotion.name}
+                  className="w-full rounded-lg shadow-md"
+                />
+              </div>
+            )}
+
+            {/* Sản phẩm khuyến mãi */}
+            <div className="mb-6 max-h-48 overflow-y-auto hide-scrollbar-custom">
+              {randomPromotion.products.slice(0, 3).map((item) => (
                 <div
-                  key={index}
-                  className="bg-rose-50 p-4 rounded-lg text-center transform hover:scale-105 transition-transform duration-200"
+                  key={item.product._id}
+                  className="flex items-center gap-4 mb-4 p-3 bg-gray-50 rounded-lg"
                 >
-                  <p className="font-bold text-gray-800">Đơn từ {offer.min}</p>
-                  <p className="text-gray-600">{offer.gift}</p>
-                  <p className="text-rose-500 font-bold mt-1">
-                    Trị giá {offer.value}
-                  </p>
+                  <img
+                    src={item.product.mainImage.url}
+                    alt={item.product.name}
+                    className="w-16 h-16 object-cover rounded"
+                  />
+                  <div className="flex-1">
+                    <h3 className="font-medium text-gray-800 line-clamp-1">
+                      {item.product.name}
+                    </h3>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-rose-500 font-bold">
+                        {formatPrice(item.discountedPrice)}đ
+                      </span>
+                      <span className="text-gray-500 text-sm line-through">
+                        {formatPrice(item.product.price)}đ
+                      </span>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
 
             {/* CTA Button */}
             <Link
-              to="/shop"
-              className="block w-full bg-rose-500 hover:bg-rose-600 text-white text-center py-3 rounded-lg font-bold text-lg transition-colors transform hover:scale-105 duration-200 shadow-lg hover:shadow-xl"
+              to="/promotions"
+              className="block w-full bg-rose-500 hover:bg-rose-600 text-white text-center py-3 rounded-lg font-bold text-lg transition-colors duration-200 shadow-lg hover:shadow-xl"
             >
-              Mua ngay
+              Mua ngay - Giảm đến{" "}
+              {randomPromotion.products[0].discountPercentage}%
             </Link>
-
-            <p className="text-center text-white text-sm mt-4 font-medium">
-              Chỉ có tại SkinLeLe !
-            </p>
           </motion.div>
         </div>
       )}
