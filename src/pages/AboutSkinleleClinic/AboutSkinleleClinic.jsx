@@ -42,14 +42,14 @@ const AboutSkinleleClinic = () => {
             khách hàng với nền tảng quản lý phòng khám thông minh
           </p>
 
-          <div className="flex flex-wrap justify-center gap-6">
+          {/* <div className="flex flex-wrap justify-center gap-6">
             <button className="px-8 py-4 bg-white text-teal-600 rounded-xl font-medium hover:bg-teal-50 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
               Liên hệ hợp tác
             </button>
             <button className="px-8 py-4 bg-teal-500 text-white rounded-xl font-medium hover:bg-teal-400 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
               Xem demo
             </button>
-          </div>
+          </div> */}
 
           <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-sm">
             <div>

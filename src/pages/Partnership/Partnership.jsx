@@ -112,7 +112,7 @@ const Partnership = () => {
       </div>
 
       {/* Contact Form Section */}
-      <div className="mx-auto px-4 sm:px-6 lg:px-20 pb-24">
+      {/* <div className="mx-auto px-4 sm:px-6 lg:px-20 pb-24">
         <div className="relative bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
           <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-blue-50 to-transparent" />
 
@@ -165,7 +165,7 @@ const Partnership = () => {
             <ContactForm />
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* CTA Section */}
       <div className="bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-16">
