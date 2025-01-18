@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { HiOutlineGift, HiOutlineClock } from "react-icons/hi";
 import { RiPriceTag3Line } from "react-icons/ri";
 
-const Banner = () => {
+const Banner = ({ discountPercentage }) => {
   return (
     <div className="relative bg-gradient-to-br from-red-50 via-orange-100 to-red-200 rounded-xl overflow-hidden">
       {/* Animated background elements */}
@@ -70,7 +70,7 @@ const Banner = () => {
                     transition={{ duration: 2, repeat: Infinity }}
                     className="text-3xl md:text-4xl font-bold text-red-600"
                   >
-                    70%
+                    {discountPercentage}%
                   </motion.span>
                 </div>
                 <p className="text-gray-700 text-base max-w-2xl leading-relaxed">
@@ -152,7 +152,9 @@ const Banner = () => {
                   className="absolute -top-6 -right-6 w-24 h-24 bg-red-600 rounded-full flex items-center justify-center shadow-lg"
                 >
                   <div className="text-white text-center">
-                    <div className="text-2xl font-bold">-70%</div>
+                    <div className="text-2xl font-bold">
+                      -{discountPercentage}%
+                    </div>
                     <div className="text-sm">OFF</div>
                   </div>
                 </motion.div>

@@ -6,8 +6,13 @@ import PopupClinic from "./PopupClinic";
 import PopupPromotional from "./PopupConfetti";
 import ConversationSupport from "../Chat/Conversation/ConversationSupport";
 import CherryBlossomEffect from "./CherryBlossomEffect";
+import ModalAuth from "../Modal/ModalAuth";
+import { useDispatch, useSelector } from "react-redux";
+import { setOpenModelAuth } from "@/redux/auth/auth.slice";
 
 const LayoutUser = ({ children }) => {
+  const dispatch = useDispatch();
+  const { openModelAuth } = useSelector((state) => state.auth);
   const location = useLocation();
 
   useEffect(() => {
@@ -20,10 +25,16 @@ const LayoutUser = ({ children }) => {
 
   return (
     <div className="min-h-screen flex flex-col overflow-x-hidden">
+      <ModalAuth
+        {...{
+          open: openModelAuth,
+          onClose: () => dispatch(setOpenModelAuth(false)),
+        }}
+      />
       <HeaderUser />
       <main className="flex-grow px-4 lg:px-16 py-2">{children}</main>
       <PopupClinic />
-      <PopupPromotional />
+      {/* <PopupPromotional /> */}
       <ConversationSupport />
       {/* <CherryBlossomEffect /> */}
       <FooterUser />

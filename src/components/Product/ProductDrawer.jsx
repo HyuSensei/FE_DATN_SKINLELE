@@ -30,7 +30,6 @@ const ProductDrawer = ({ open, onClose, product = null }) => {
   );
   const [quantity, setQuantity] = useState(1);
 
-  const maxQuantity = selectedColor?.quantity || product.totalQuantity || 0;
   const discountPercentage = product.promotion?.discountPercentage || 0;
   const discountedPrice = product.promotion
     ? product.finalPrice
@@ -110,7 +109,6 @@ const ProductDrawer = ({ open, onClose, product = null }) => {
       },
     });
   };
-
   const handleAddToCart = () => {
     const cartItem = {
       productId: product._id,
@@ -124,7 +122,6 @@ const ProductDrawer = ({ open, onClose, product = null }) => {
 
     dispatch(addToCart(cartItem));
     openNotification(cartItem);
-    onClose();
   };
 
   return (
@@ -141,22 +138,27 @@ const ProductDrawer = ({ open, onClose, product = null }) => {
           <h2 className="text-xl font-bold cursor-pointer hover:text-sky-800">
             {product.name}
           </h2>
-          <div className="flex items-center gap-2">
-            <Rate
-              disabled
-              value={parseFloat(product.averageRating)}
-              character={({ index }) =>
-                createAverageRate({
-                  index: index + 1,
-                  rate: parseFloat(product.averageRating),
-                  width: "16px",
-                  height: "16px",
-                })
-              }
-            />
-            <span className="text-sm text-gray-500">
-              ({product.totalReviews} đánh giá)
-            </span>
+          <div className="flex items-center gap-2 justify-between">
+            <div className="flex items-center gap-2">
+              <Rate
+                disabled
+                value={parseFloat(product.averageRating)}
+                character={({ index }) =>
+                  createAverageRate({
+                    index: index + 1,
+                    rate: parseFloat(product.averageRating),
+                    width: "16px",
+                    height: "16px",
+                  })
+                }
+              />
+              <span className="text-sm text-gray-500">
+                ({product.totalReviews} đánh giá)
+              </span>
+            </div>
+            <Button type="link" href={`/detail/${product.slug}`}>
+              Xem thêm
+            </Button>
           </div>
 
           <div className="flex items-center gap-4">
@@ -204,13 +206,13 @@ const ProductDrawer = ({ open, onClose, product = null }) => {
             <div className="flex items-center gap-4">
               <InputNumber
                 min={1}
-                max={maxQuantity}
+                max={product.totalQuantity}
                 value={quantity}
                 onChange={setQuantity}
                 className="w-32"
               />
               <span className="text-sm text-gray-500">
-                Còn lại: {maxQuantity} sản phẩm
+                Còn lại: {product.totalQuantity} sản phẩm
               </span>
             </div>
           </div>

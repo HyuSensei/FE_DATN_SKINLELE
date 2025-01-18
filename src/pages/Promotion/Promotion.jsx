@@ -11,6 +11,7 @@ import ProductHeader from "@/components/Filter/ProductHeader";
 import FilterDrawer from "@/components/Filter/FilterDrawer";
 import Banner from "./Banner";
 import { IoClose } from "react-icons/io5";
+import Loading from "@/components/Loading/Loading";
 
 const ProductList = React.lazy(() =>
   import("@/components/Product/ProductList")
@@ -90,6 +91,11 @@ const Promotion = () => {
     setFilters((prev) => ({ ...prev, sortOrder: value }));
   }, []);
 
+  if (isLoadingProducts || isLoadingFilterOptions) return <Loading />;
+
+  const discountPercentage =
+    products.length > 0 ? products[0]?.promotion?.discountPercentage : 0;
+
   return (
     <div className="space-y-6">
       <div className="mt-6">
@@ -100,7 +106,7 @@ const Promotion = () => {
           ]}
         />
       </div>
-      <Banner />
+      <Banner {...{ discountPercentage }} />
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Desktop Filter */}
         <div className="hidden lg:block lg:w-[350px]">

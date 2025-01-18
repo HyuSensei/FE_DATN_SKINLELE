@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { Badge, List, Pagination, Rate, Skeleton, Tag } from "antd";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { formatPrice } from "@helpers/formatPrice";
 import { createAverageRate } from "@utils/createIcon";
 import ImageCarousel from "@components/ImageCarousel";
 import ProductDrawer from "./ProductDrawer";
-import QuickViewOverlay from "./QuickViewOverlay";
 
 const ProductList = ({
   isLoading,
@@ -16,8 +15,7 @@ const ProductList = ({
   paginate = { page: 1, pageSize: 10, totalPage: 0, totalItems: 0 },
   isPagination = true,
 }) => {
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [drawerVisible, setDrawerVisible] = useState(false);
+  const navigate = useNavigate();
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -42,7 +40,9 @@ const ProductList = ({
   };
 
   const renderItem = (item) => {
-    const discountPercentage = item.promotion?.discountPercentage || 0;
+    const discountPercentage = item.promotion
+      ? item.promotion.discountPercentage
+      : 0;
     const discountedPrice = item.promotion ? item.finalPrice : item.price;
 
     return (
@@ -51,57 +51,29 @@ const ProductList = ({
           variants={itemVariants}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="cursor-pointer flex flex-col h-full relative group"
+          className="cursor-pointer flex flex-col h-full"
+          onClick={() => navigate(`/detail/${item.slug}`)}
         >
-          {item.totalQuantity <= 0 ? (
-            <Badge.Ribbon text="Hết hàng" color="red">
-              <div className="relative">
-                <ImageCarousel
-                  images={[item.mainImage, ...(item.images || [])].filter(
-                    (img) => img && img.url
-                  )}
-                  name={item.name}
-                />
-                {discountPercentage > 0 && (
-                  <Tag color="#f50" className="absolute top-2 left-2 z-10">
-                    -{discountPercentage}%
-                  </Tag>
-                )}
-              </div>
-            </Badge.Ribbon>
-          ) : (
-            <div className="relative">
-              <ImageCarousel
-                images={[item.mainImage, ...(item.images || [])].filter(
-                  (img) => img && img.url
-                )}
-                name={item.name}
-              />
-              {discountPercentage > 0 && (
-                <Tag color="#f50" className="absolute top-2 left-2 z-10">
-                  -{discountPercentage}%
-                </Tag>
+          <div className="relative">
+            <ImageCarousel
+              images={[item.mainImage, ...(item.images || [])].filter(
+                (img) => img && img.url
               )}
-              <QuickViewOverlay
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedProduct(item);
-                  setDrawerVisible(true);
-                }}
-              />
-            </div>
-          )}
-
-          <div className="pt-2 text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 font-extrabold text-sm text-center uppercase">
-            {item?.brand?.name || item?.brandInfo?.name}
+              name={item.name}
+            />
+            {discountPercentage > 0 && (
+              <Tag color="#f50" className="absolute top-2 left-2 z-10">
+                -{discountPercentage}%
+              </Tag>
+            )}
           </div>
-
+          <div className="pt-2 text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 font-extrabold text-sm text-center uppercase">
+            {item.brand.name || item?.brandInfo?.name}
+          </div>
           <div className="mt-2 flex-grow">
-            <Link to={`/detail/${item.slug}`}>
-              <h3 className="text-xs line-clamp-2 items-center leading-5">
-                {item.name}
-              </h3>
-            </Link>
+            <h3 className="text-xs line-clamp-2 items-center leading-5">
+              {item.name}
+            </h3>
             <div
               className={`flex items-center ${
                 discountPercentage > 0 ? "justify-between" : "justify-center"
@@ -117,7 +89,6 @@ const ProductList = ({
             <div className="py-2 flex items-center justify-center gap-2">
               <Rate
                 disabled
-                value={parseFloat(item.averageRating)}
                 character={({ index }) =>
                   createAverageRate({
                     index: index + 1,
@@ -134,6 +105,12 @@ const ProductList = ({
       </List.Item>
     );
   };
+
+  const Loading = () => (
+    <div className="flex items-center justify-center py-4">
+      <Spin size="large" />
+    </div>
+  );
 
   if (products.length === 0 && !isLoading) {
     return (
@@ -153,16 +130,6 @@ const ProductList = ({
     );
   }
 
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {[...Array(8)].map((_, idx) => (
-          <Skeleton key={idx} active className="h-[300px]" />
-        ))}
-      </div>
-    );
-  }
-
   return (
     <motion.div
       initial="hidden"
@@ -170,16 +137,6 @@ const ProductList = ({
       variants={containerVariants}
       className="mx-auto px-4 py-8 md:px-8"
     >
-      <ProductDrawer
-        {...{
-          open: drawerVisible,
-          product: selectedProduct,
-          onClose: () => {
-            setDrawerVisible(false);
-            setSelectedProduct(null);
-          },
-        }}
-      />
       {title && (
         <motion.h2
           initial={{ opacity: 0, y: -20 }}
@@ -191,7 +148,6 @@ const ProductList = ({
         </motion.h2>
       )}
       <List
-        loading={isLoading}
         grid={{
           gutter: [24, 32],
           xs: 2,
@@ -202,7 +158,7 @@ const ProductList = ({
           xxl: 5,
         }}
         dataSource={isLoading ? Array(10).fill({}) : products}
-        renderItem={renderItem}
+        renderItem={isLoading ? Loading : renderItem}
       />
       {!isLoading &&
         products?.length > 0 &&
@@ -224,4 +180,3 @@ const ProductList = ({
     </motion.div>
   );
 };
-export default ProductList;

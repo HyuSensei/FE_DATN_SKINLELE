@@ -1,13 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import Slider from "react-slick";
 import { defaultProduct } from "@const/defaultProduct";
 import { formatPrice } from "@helpers/formatPrice";
-import { Rate, Spin, Tag } from "antd";
+import { Badge, Rate, Tag } from "antd";
 import { createAverageRate } from "@utils/createIcon";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { motion } from "framer-motion";
 import ImageCarousel from "@components/ImageCarousel";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import QuickViewOverlay from "./QuickViewOverlay";
+import Loading from "../Loading/Loading";
+import ProductDrawer from "./ProductDrawer";
 
 const ProductCarousel = ({
   products = defaultProduct,
@@ -17,7 +20,8 @@ const ProductCarousel = ({
   auto = true,
   scroll = 1,
 }) => {
-  const navigate = useNavigate();
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [drawerVisible, setDrawerVisible] = useState(false);
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -75,7 +79,7 @@ const ProductCarousel = ({
     ],
   };
 
-  if (isLoading) return <LoadingContent />;
+  if (isLoading) return <Loading />;
 
   if (products.length === 0 && !isLoading) return null;
 
@@ -87,30 +91,54 @@ const ProductCarousel = ({
 
     return (
       <div className="px-2 py-2">
-        <div
-          onClick={() => navigate(`/detail/${item.slug}`)}
-          className="cursor-pointer flex flex-col h-full bg-white shadow-md rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl"
-        >
-          <div className="relative">
-            <ImageCarousel
-              images={[item.mainImage, ...(item.images || [])].filter(
-                (img) => img && img.url
+        <div className="cursor-pointer flex flex-col h-full overflow-hidden transition-all duration-300 relative group">
+          {item.totalQuantity <= 0 ? (
+            <Badge.Ribbon text="Hết hàng" color="red">
+              <div className="relative">
+                <ImageCarousel
+                  images={[item.mainImage, ...(item.images || [])].filter(
+                    (img) => img && img.url
+                  )}
+                  name={item.name}
+                />
+                {discountPercentage > 0 && (
+                  <Tag color="#f50" className="absolute top-2 left-2 z-10">
+                    -{discountPercentage}%
+                  </Tag>
+                )}
+              </div>
+            </Badge.Ribbon>
+          ) : (
+            <div className="relative">
+              <ImageCarousel
+                images={[item.mainImage, ...(item.images || [])].filter(
+                  (img) => img && img.url
+                )}
+                name={item.name}
+              />
+              {discountPercentage > 0 && (
+                <Tag color="#f50" className="absolute top-2 left-2 z-10">
+                  -{discountPercentage}%
+                </Tag>
               )}
-              name={item.name}
-            />
-            {discountPercentage > 0 && (
-              <Tag color="#f50" className="absolute top-2 left-2 z-10">
-                -{discountPercentage}%
-              </Tag>
-            )}
-          </div>
+              <QuickViewOverlay
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedProduct(item);
+                  setDrawerVisible(true);
+                }}
+              />
+            </div>
+          )}
           <div className="p-4">
             <div className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 font-extrabold text-sm text-center uppercase">
               {item.brand.name}
             </div>
-            <h3 className="text-xs line-clamp-2 items-center leading-5 mb-1">
-              {item.name}
-            </h3>
+            <Link to={`/detail/${item.slug}`}>
+              <h3 className="text-xs line-clamp-2 items-center leading-5">
+                {item.name}
+              </h3>
+            </Link>
             <div
               className={`flex items-center ${
                 discountPercentage > 0 ? "justify-between" : "justify-center"
@@ -148,6 +176,16 @@ const ProductCarousel = ({
 
   return (
     <div className="relative px-6 py-8">
+      <ProductDrawer
+        {...{
+          open: drawerVisible,
+          product: selectedProduct,
+          onClose: () => {
+            setDrawerVisible(false);
+            setSelectedProduct(null);
+          },
+        }}
+      />
       <motion.div
         initial="hidden"
         animate="visible"

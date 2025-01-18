@@ -61,7 +61,16 @@ const Home = () => {
           {SALE &&
             SALE.length >= 5 &&
             (!isMobile ? (
-              <ProductSale {...{ products: SALE, isLoading }} />
+              <>
+                <div className="flex gap-8 items-center justify-center zoom-in-zoom-out">
+                  <img
+                    src="https://res.cloudinary.com/dt8cdxgji/image/upload/v1733565405/upload-static-skinlele/w8upeohqhgrzuvjpmzpa.webp"
+                    alt="Sale"
+                    className="w-48 lg:w-80"
+                  />
+                </div>
+                <ProductCarousel {...{ products: SALE, isLoading }} />
+              </>
             ) : (
               <ProductList {...{ products: SALE, isLoading }} />
             ))}

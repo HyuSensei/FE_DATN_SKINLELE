@@ -57,14 +57,14 @@ const ImageCarousel = ({ images, name }) => {
 
   return (
     <div
-      className="relative pb-[100%] overflow-hidden rounded-t-lg bg-gray-100"
+      className="relative pb-[100%]"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <AnimatePresence mode="wait">
         <motion.img
           key={currentImageIndex}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 hover:scale-105 rounded-t-lg"
           src={images[currentImageIndex]?.url || images[currentImageIndex]}
           alt={`${name} - Image ${currentImageIndex + 1}`}
           initial={{ opacity: 0 }}
@@ -79,10 +79,11 @@ const ImageCarousel = ({ images, name }) => {
           {images.map((_, index) => (
             <div
               key={index}
-              className={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${index === currentImageIndex
+              className={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${
+                index === currentImageIndex
                   ? "bg-white shadow-md"
                   : "bg-white/50"
-                }`}
+              }`}
             />
           ))}
         </div>
