@@ -6,6 +6,7 @@ import { loginUser, sendOtp } from "@redux/auth/auth.thunk";
 import { set } from "@storage/storage";
 import { setEmailVerify } from "@redux/auth/auth.slice";
 import Cookies from "js-cookie";
+import CustomButton from "../CustomButton";
 
 const BE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 
@@ -95,14 +96,14 @@ const Login = ({ setStep, isModel, onClose }) => {
           </div>
         </div>
       </Form.Item>
-
       <Form.Item>
-        <button
+        <CustomButton
+          variant="primary"
           type="submit"
-          className="w-full font-bold bg-gradient-to-r from-yellow-300 via-orange-600 to-purple-800 text-white p-3 rounded-md hover:bg-sky-800 focus:outline-none"
+          className="w-full mt-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600"
         >
           Đăng nhập
-        </button>
+        </CustomButton>
       </Form.Item>
 
       <div className="mt-4 text-sm text-gray-600 text-center">

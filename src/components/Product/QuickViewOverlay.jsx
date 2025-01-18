@@ -9,9 +9,10 @@ const QuickViewOverlay = ({ onClick }) => {
       <CustomButton
         onClick={onClick}
         icon={<EyeOutlined />}
-        className="text-white bg-gradient-to-r from-yellow-300 via-orange-400 to-purple-600 hover:opacity-95 !rounded-full"
+        variant="primary"
+        className="!rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600"
       >
-        Xem nhanh
+        Xem ngay
       </CustomButton>
     </div>
   );

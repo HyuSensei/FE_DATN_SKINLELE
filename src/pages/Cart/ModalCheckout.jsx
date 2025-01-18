@@ -525,6 +525,7 @@ import CartOrder from "./CartOrder";
 import { formatPrice } from "@helpers/formatPrice";
 import CustomButton from "@/components/CustomButton";
 import { useGetDistrictQuery, useGetProvinceQuery, useGetWardQuery } from "@/redux/ship/ship.query";
+import { setOpenModelAuth } from "@/redux/auth/auth.slice";
 const { Option } = Select;
 
 const STRIPE_PUBLIC_KEY = import.meta.env.VITE_APP_STRIPE_PUBLIC_KEY;
@@ -536,7 +537,7 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
   const [location, setLoacation] = useState({
     province: {
       id: "",
-      name: ""
+      name: "",
     },
     district: {
       id: "",
@@ -546,27 +547,36 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
       id: "",
       name: "",
     },
-  })
+  });
   const { socketCustomer: socket } = useSelector((state) => state.socket);
-  const { data: provinces = [], isLoading: isLoadingProvinces } = useGetProvinceQuery();
-  const { data: districts = [], isLoading: isLoadingDistricts } = useGetDistrictQuery({ payload: location.province.id }, { skip: !location.province.id });
-  const { data: wards = [], isLoading: isLoadingWards } = useGetWardQuery({ payload: location.district.id }, { skip: !location.district.id });
+  const { data: provinces = [], isLoading: isLoadingProvinces } =
+    useGetProvinceQuery();
+  const { data: districts = [], isLoading: isLoadingDistricts } =
+    useGetDistrictQuery(
+      { payload: location.province.id },
+      { skip: !location.province.id }
+    );
+  const { data: wards = [], isLoading: isLoadingWards } = useGetWardQuery(
+    { payload: location.district.id },
+    { skip: !location.district.id }
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [form] = Form.useForm();
 
   const handleChangeLocation = (key, value) => {
-    setLoacation((prev) => (
-      {
-        ...prev,
-        [key]: value
-      }
-    ))
-  }
+    setLoacation((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
 
   const handleProvinceChange = (value) => {
     const selected = provinces.find((p) => p.ProvinceID === value);
     if (selected) {
-      handleChangeLocation("province", { id: selected.ProvinceID, name: selected.ProvinceName })
+      handleChangeLocation("province", {
+        id: selected.ProvinceID,
+        name: selected.ProvinceName,
+      });
       form.setFieldsValue({ district: undefined, ward: undefined });
     }
   };
@@ -574,7 +584,10 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
   const handleDistrictChange = (value) => {
     const selected = districts.find((d) => d.DistrictID === value);
     if (selected) {
-      handleChangeLocation("district", { id: selected.DistrictID, name: selected.DistrictName })
+      handleChangeLocation("district", {
+        id: selected.DistrictID,
+        name: selected.DistrictName,
+      });
       form.setFieldsValue({ ward: undefined });
     }
   };
@@ -582,17 +595,20 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
   const handleWardChange = (value) => {
     const selected = wards.find((w) => w.WardCode === value);
     if (selected) {
-      handleChangeLocation("ward", { id: selected.WardCode, name: selected.WardName })
+      handleChangeLocation("ward", {
+        id: selected.WardCode,
+        name: selected.WardName,
+      });
     }
   };
 
   const handleSubmit = async (values) => {
     try {
-      if (!isAuthenticated || !products.length) {
-        navigate("/auth");
+      if (!isAuthenticated) {
+        dispatch(setOpenModelAuth(true));
         return;
       }
-      setIsLoading(true)
+      setIsLoading(true);
       const order = {
         ...values,
         ...location,
@@ -624,7 +640,7 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
                 ...prev,
                 province: {
                   id: "",
-                  name: ""
+                  name: "",
                 },
                 district: {
                   id: "",
@@ -634,7 +650,7 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
                   id: "",
                   name: "",
                 },
-              }))
+              }));
               form.resetFields();
               dispatch(setOrderReturn(res.payload.data));
               navigate(`/order-return`);
@@ -665,7 +681,7 @@ const ModalCheckout = ({ open, setOpen, products = [], totalAmount = 0 }) => {
     } catch (error) {
       console.log(error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
 

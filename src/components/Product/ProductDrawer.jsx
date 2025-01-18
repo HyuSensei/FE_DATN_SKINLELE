@@ -22,7 +22,6 @@ import confetti from "canvas-confetti";
 import CustomButton from "../CustomButton";
 
 const ProductDrawer = ({ open, onClose, product = null }) => {
-  if (!product) return null;
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [selectedColor, setSelectedColor] = useState(
@@ -90,14 +89,16 @@ const ProductDrawer = ({ open, onClose, product = null }) => {
               </div>
             </div>
           </div>
-          <button
+          <CustomButton
+            icon={<LiaShoppingBasketSolid className="mr-2 text-xl" />}
             onClick={() => {
               navigate("/cart");
             }}
-            className="mt-4 w-full bg-gradient-to-r from-yellow-300 via-orange-600 to-purple-800 text-white px-4 py-2 rounded-full text-sm font-medium flex items-center justify-center transition-all duration-300 transform hover:scale-105 shadow-md"
+            variant="primary"
+            className="w-full mt-4 bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600"
           >
-            <LiaShoppingBasketSolid className="mr-2 text-xl" /> Xem giỏ hàng
-          </button>
+            Xem giỏ hàng
+          </CustomButton>
         </>
       ),
       icon: <IoNotifications className="animate-pulse text-[#f59c23]" />,
@@ -135,14 +136,11 @@ const ProductDrawer = ({ open, onClose, product = null }) => {
         />
 
         <div className="space-y-4">
-          <h2 className="text-xl font-bold cursor-pointer hover:text-sky-800">
-            {product.name}
-          </h2>
+          <h2 className="text-xl font-bold">{product.name}</h2>
           <div className="flex items-center gap-2 justify-between">
             <div className="flex items-center gap-2">
               <Rate
                 disabled
-                value={parseFloat(product.averageRating)}
                 character={({ index }) =>
                   createAverageRate({
                     index: index + 1,
@@ -218,11 +216,11 @@ const ProductDrawer = ({ open, onClose, product = null }) => {
           </div>
 
           <Divider />
-
           <CustomButton
-            className="w-full py-4 bg-gradient-to-r from-yellow-300 via-orange-600 to-purple-800 text-white hover:opacity-90"
             onClick={handleAddToCart}
-            icon={<LiaShoppingBasketSolid className="text-xl" />}
+            icon={<LiaShoppingBasketSolid className="mr-2 text-xl" />}
+            variant="primary"
+            className="w-full mt-4 bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600"
           >
             Thêm vào giỏ hàng
           </CustomButton>

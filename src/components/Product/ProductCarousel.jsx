@@ -176,16 +176,18 @@ const ProductCarousel = ({
 
   return (
     <div className="relative px-6 py-8">
-      <ProductDrawer
-        {...{
-          open: drawerVisible,
-          product: selectedProduct,
-          onClose: () => {
-            setDrawerVisible(false);
-            setSelectedProduct(null);
-          },
-        }}
-      />
+      {open && selectedProduct && (
+        <ProductDrawer
+          {...{
+            open: drawerVisible,
+            product: selectedProduct,
+            onClose: () => {
+              setDrawerVisible(false);
+              setSelectedProduct(null);
+            },
+          }}
+        />
+      )}
       <motion.div
         initial="hidden"
         animate="visible"

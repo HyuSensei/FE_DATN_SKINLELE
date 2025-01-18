@@ -7,7 +7,14 @@ import { createReview } from "@redux/review/review.thunk";
 import CustomButton from "../CustomButton";
 import { setOpenModelAuth } from "@/redux/auth/auth.slice";
 
-const ModalRate = ({ product = {}, order = "", open, setOpen, refetch }) => {
+const ModalRate = ({
+  product = {},
+  order = "",
+  open,
+  setOpen,
+  refetch,
+  refetchProduct,
+}) => {
   const [fileList, setFileList] = useState([]);
   const [uploading, setUploading] = useState(false);
 
@@ -66,6 +73,9 @@ const ModalRate = ({ product = {}, order = "", open, setOpen, refetch }) => {
           setOpen(false);
         }
       });
+      if (!order) {
+        refetchProduct();
+      }
     } catch (error) {
       console.log(error);
       message.error("Đã xảy ra lỗi khi gửi đánh giá.");

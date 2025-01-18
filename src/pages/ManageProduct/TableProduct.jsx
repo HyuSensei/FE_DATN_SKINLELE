@@ -154,11 +154,17 @@ const TableProduct = ({
       },
       {
         title: "Giá",
-        dataIndex: "price",
-        key: "price",
-        width: 120,
-        render: (price) => (
-          <p className="font-medium text-[#820813]">{formatPrice(price)} đ</p>
+        key: "priceInfo",
+        width: 150,
+        render: (record) => (
+          <div>
+            <p className="flex gap-1 font-medium text-[#820813]">
+              Giá: {formatPrice(record.price)} đ
+            </p>
+            <p className="flex gap-1 font-medium text-[#820813]">
+              Giá gốc: {formatPrice(record.cost)} đ
+            </p>
+          </div>
         ),
       },
       {

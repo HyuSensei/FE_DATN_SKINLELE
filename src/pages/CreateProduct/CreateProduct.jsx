@@ -184,6 +184,14 @@ const CreateProduct = () => {
           >
             <Input placeholder="Nhập giá..." size="middle" />
           </Form.Item>
+          <Form.Item
+            className="flex-1"
+            label="Giá gốc"
+            name="cost"
+            rules={[{ required: true, message: "Vui lòng nhập giá gốc" }]}
+          >
+            <Input placeholder="Nhập giá gốc..." size="middle" />
+          </Form.Item>
           {/* <Form.Item label="Dung tích" name="capacity" className="flex-1">
             <Input placeholder="Nhập dung tích..." size="middle" />
           </Form.Item> */}

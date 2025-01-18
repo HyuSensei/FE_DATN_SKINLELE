@@ -53,6 +53,7 @@ const ModalEditProduct = ({
         name: data.name,
         brand: data.brand._id,
         price: data.price,
+        cost: data.cost,
         capacity: data.capacity,
         level0: data.categories[0]?._id,
         level1: data.categories[1]?._id,
@@ -288,10 +289,20 @@ const ModalEditProduct = ({
               </Form.Item>
             </Col>
             <Col span={12}>
+              <Form.Item
+                className="flex-1"
+                label="Giá gốc"
+                name="cost"
+                rules={[{ required: true, message: "Vui lòng nhập giá gốc" }]}
+              >
+                <Input placeholder="Nhập giá gốc..." size="middle" />
+              </Form.Item>
+            </Col>
+            {/* <Col span={12}>
               <Form.Item label="Dung tích" name="capacity">
                 <Input placeholder="Nhập dung tích..." size="middle" />
               </Form.Item>
-            </Col>
+            </Col> */}
           </Row>
           <Form.Item
             noStyle

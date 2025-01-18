@@ -47,7 +47,7 @@ const OrderReturn = () => {
   const handleOrderVnpayReturn = async () => {
     const res = await dispatch(orderVnpayReturn({ orderId, code })).unwrap();
     if (res.success) {
-      const { products, user } = res.data;
+      const { products } = res.data;
       products.forEach((item) => {
         dispatch(
           removeProductAfterOrderSuccess({
@@ -66,9 +66,11 @@ const OrderReturn = () => {
   };
 
   const handleOrderStripeReturn = async () => {
-    const res = await dispatch({ stripeSessionId, orderSessionId }).unwrap();
+    const res = await dispatch(
+      orderStripeReturn({ stripeSessionId, orderSessionId })
+    ).unwrap();
     if (res.success) {
-      const { products, user } = res.data;
+      const { products } = res.data;
       if (products.length > 0) {
         products.forEach((item) => {
           dispatch(

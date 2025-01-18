@@ -28,7 +28,7 @@ import { MdVerified } from "react-icons/md";
 import dayjs from "@utils/dayjsTz";
 import { useGetReviewByUserQuery } from "@/redux/review/review.query";
 
-const RateList = ({ product }) => {
+const RateList = ({ product, refetchProduct }) => {
   const [open, setOpen] = useState(false);
   const [reviewFilter, setReviewFilter] = useState({
     rate: "",
@@ -81,6 +81,7 @@ const RateList = ({ product }) => {
             setOpen,
             product,
             refetch,
+            refetchProduct,
           }}
         />
         <div className="md:w-1/3">

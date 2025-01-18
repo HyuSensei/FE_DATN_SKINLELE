@@ -116,8 +116,8 @@ const ProductList = ({
             </div>
             <div className="py-2 flex items-center justify-center gap-2">
               <Rate
+                allowHalf
                 disabled
-                value={parseFloat(item.averageRating)}
                 character={({ index }) =>
                   createAverageRate({
                     index: index + 1,
@@ -170,16 +170,18 @@ const ProductList = ({
       variants={containerVariants}
       className="mx-auto px-4 py-8 md:px-8"
     >
-      <ProductDrawer
-        {...{
-          open: drawerVisible,
-          product: selectedProduct,
-          onClose: () => {
-            setDrawerVisible(false);
-            setSelectedProduct(null);
-          },
-        }}
-      />
+      {open && selectedProduct && (
+        <ProductDrawer
+          {...{
+            open: drawerVisible,
+            product: selectedProduct,
+            onClose: () => {
+              setDrawerVisible(false);
+              setSelectedProduct(null);
+            },
+          }}
+        />
+      )}
       {title && (
         <motion.h2
           initial={{ opacity: 0, y: -20 }}

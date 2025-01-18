@@ -7,7 +7,7 @@ const FooterUser = () => {
   return (
     <footer className="py-8 mt-auto">
       <div className="container mx-auto px-8 py-8">
-        <div className="text-white bg-gradient-to-r from-yellow-400 to-purple-600 rounded-xl px-4 sm:px-8 py-6 mb-8">
+        <div className="hover:bg-gradient-to-r hover:from-pink-600 hover:to-purple-600 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-xl px-4 sm:px-8 py-6 mb-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="text-center sm:text-left">
               <h2 className="text-xl sm:text-2xl font-bold">

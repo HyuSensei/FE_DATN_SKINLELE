@@ -46,11 +46,10 @@ const CategoryTreeItem = memo(
 
 const CategoryTree = memo(
   ({ categories, selectedCategories, onCategoryChange }) => {
-    // Lọc ra các category gốc (không có parent)
     const rootCategories = categories.filter((cat) => !cat.parent);
 
     return (
-      <div className="max-h-[300px] overflow-y-auto pr-2">
+      <div className="max-h-[500px] overflow-y-auto pr-2">
         {rootCategories.map((category) => (
           <CategoryTreeItem
             key={category._id}

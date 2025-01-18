@@ -1,19 +1,19 @@
 {
-  "name": "Skinlele - Mỹ phẩm chăm sóc da hoàn hảo",
+  "name": "Skinlele - Mỹ phẩm chăm sóc da hoàn hảo - Dịch vụ đặt lịch khám tiện ích",
   "short_name": "Skinlele",
-  "description": "Trang web chuyên cung cấp mỹ phẩm và dịch vụ chăm sóc da tốt nhất",
+  "description": "Trang web chuyên cung cấp mỹ phẩm và dịch vụ chăm sóc da tốt nhất, đặt lịch khám da liễu cùng từ các đối tác phòng khám lớn và uy tín",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "/images/og/default.png",
+      "src": "/images/og/og-default.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/images/og/default.png",
+      "src": "/images/og/og-default.png",
       "sizes": "512x512",
       "type": "image/png"
     }

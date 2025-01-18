@@ -101,8 +101,9 @@ const Verify = ({ setStep, isReset }) => {
           })}
         </div>
         <CustomButton
+          variant="primary"
           type="submit"
-          className="w-full font-bold bg-gradient-to-r from-yellow-300 via-orange-600 to-purple-800 text-white hover:bg-sky-800 focus:outline-none"
+          className="w-full mt-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600"
         >
           Xác thực
         </CustomButton>
@@ -121,4 +122,3 @@ const Verify = ({ setStep, isReset }) => {
 };
 
 export default Verify;
-

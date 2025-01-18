@@ -85,13 +85,15 @@ const ResetPassword = ({ setStep, setIsReset }) => {
         >
           <Input.Password placeholder="Xác nhận mật khẩu mới" size="large" />
         </Form.Item>
-
-        <CustomButton
-          type="submit"
-          className="w-full font-bold bg-gradient-to-r from-yellow-300 via-orange-600 to-purple-800 text-white hover:bg-sky-800 focus:outline-none"
-        >
-          Đặt lại mật khẩu
-        </CustomButton>
+        <Form.Item>
+          <CustomButton
+            variant="primary"
+            type="submit"
+            className="w-full mt-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600"
+          >
+            Đặt lại mật khẩu
+          </CustomButton>
+        </Form.Item>
       </Form>
 
       <div className="mt-4 text-base text-gray-600 text-center font-bold">

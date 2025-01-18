@@ -20,6 +20,7 @@ import {
 import { formatPrice } from "@helpers/formatPrice";
 import { isEmpty } from "lodash";
 import { useGetProductOtherQuery } from "@/redux/product/product.query";
+import CustomButton from "@/components/CustomButton";
 
 const { Text } = Typography;
 
@@ -60,7 +61,7 @@ const Cart = ({ isHiden = false }) => {
     if (newQuantity <= 0) return;
     const currentItem = products.find((p) => p.productId === productId);
     if (!currentItem) return;
-    
+
     if (newQuantity !== currentItem.quantity) {
       if (newQuantity > currentItem.quantity) {
         dispatch(
@@ -252,12 +253,13 @@ const Cart = ({ isHiden = false }) => {
                 {formatPrice(totalPrice)} đ
               </Text>
             </div>
-            <button
+            <CustomButton
               onClick={handleCheckout}
-              className="w-full hover:opacity-80 bg-gradient-to-r from-yellow-300 via-orange-600 to-purple-800 text-white py-2 sm:py-3 rounded-md text-sm sm:text-lg font-bold flex items-center justify-center gap-2"
+              variant="primary"
+              className="w-full py-4 bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600"
             >
               Tiến hành thanh toán
-            </button>
+            </CustomButton>
           </Card>
         </>
       )}

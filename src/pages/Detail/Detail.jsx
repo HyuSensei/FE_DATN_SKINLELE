@@ -36,10 +36,13 @@ import { useGetProductDetailQuery } from "@/redux/product/product.query";
 import { useGetDoctorRecommendQuery } from "@/redux/doctor/doctor.query";
 import RecommendedDoctors from "./RecommendedDoctors";
 import Loading from "@/components/Loading/Loading";
+import CustomButton from "@/components/CustomButton";
 
 const Detail = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [selectedVariant, setSelectedVariant] = useState(null);
+  const [quantity, setQuantity] = useState(1);
   const [product, setProduct] = useState({
     productId: "",
     name: "",
@@ -64,13 +67,11 @@ const Detail = () => {
     data: dataProduct,
     isLoading: loadingProduct,
     error: errorProduct,
+    refetch,
   } = useGetProductDetailQuery({ slug }, { skip: !slug });
 
   const categoryIds =
     dataProduct?.categories?.map((category) => category._id) || [];
-  
-  console.log(categoryIds);
-  console.log(dataProduct);
 
   const {
     data: dataDoctors,
@@ -83,6 +84,8 @@ const Detail = () => {
 
   useEffect(() => {
     if (dataProduct) {
+      const defaultVariant = dataProduct.variants?.[0] || null;
+      setSelectedVariant(defaultVariant);
       setProduct((prev) => ({
         ...prev,
         productId: dataProduct._id,
@@ -92,14 +95,13 @@ const Detail = () => {
           ? dataProduct.finalPrice
           : dataProduct.price,
         brand: dataProduct.brand.name,
-        color:
-          dataProduct.variants.length > 0
-            ? {
-                name: dataProduct.variants[0].color.name,
-                code: dataProduct.variants[0].color.code,
-                image: dataProduct.variants[0].color.image.url,
-              }
-            : {},
+        color: defaultVariant
+          ? {
+              name: defaultVariant.color.name,
+              code: defaultVariant.color.code,
+              image: defaultVariant.color.image.url,
+            }
+          : {},
       }));
     }
   }, [dataProduct]);
@@ -109,6 +111,39 @@ const Detail = () => {
   if (loadingProduct) return <Loading />;
 
   if (!dataProduct) return <Empty className="mt-24" />;
+
+  const getAvailableQuantity = () => {
+    if (!dataProduct) return 0;
+
+    if (selectedVariant) {
+      return selectedVariant.quantity;
+    }
+
+    return dataProduct.totalQuantity;
+  };
+
+  const handleQuantityChange = (value) => {
+    const availableQty = getAvailableQuantity();
+    const newQty = Math.min(value, availableQty);
+    setQuantity(newQty);
+    handleProduct("quantity", newQty);
+  };
+
+  const handleColorSelect = (variant) => {
+    setSelectedVariant(variant);
+    setQuantity(1);
+    setProduct((prev) => ({
+      ...prev,
+      quantity: 1,
+      color: {
+        name: variant.color.name,
+        code: variant.color.code,
+        image: variant.color.image.url,
+      },
+    }));
+  };
+
+  const isOutOfStock = getAvailableQuantity() <= 0;
 
   const discountPercentage = dataProduct.promotion
     ? dataProduct.promotion.discountPercentage
@@ -171,14 +206,16 @@ const Detail = () => {
               </div>
             </div>
           </div>
-          <button
+          <CustomButton
             onClick={() => {
               navigate("/cart");
             }}
-            className="mt-4 w-full bg-gradient-to-r from-yellow-300 via-orange-600 to-purple-800 text-white px-4 py-2 rounded-full text-sm font-medium flex items-center justify-center transition-all duration-300 transform hover:scale-105 shadow-md"
+            icon={<LiaShoppingBasketSolid className="mr-2 text-xl" />}
+            variant="primary"
+            className="w-full mt-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white !rounded-full hover:from-pink-600 hover:to-purple-600"
           >
-            <LiaShoppingBasketSolid className="mr-2 text-xl" /> Xem giỏ hàng
-          </button>
+            Xem giỏ hàng
+          </CustomButton>
         </>
       ),
       icon: <IoNotifications className="animate-pulse text-[#f59c23]" />,
@@ -208,6 +245,32 @@ const Detail = () => {
     ...dataProduct.images,
     ...(dataProduct.variants || []).map((variant) => variant.color.image),
   ].filter(Boolean);
+
+  const renderQuantityStatus = () => {
+    const availableQty = getAvailableQuantity();
+
+    if (isOutOfStock) {
+      return (
+        <Tag color="red" className="mb-2 text-sm">
+          Hết hàng
+        </Tag>
+      );
+    }
+
+    if (availableQty <= 5) {
+      return (
+        <Tag color="orange" className="mb-2 text-sm">
+          Chỉ còn {availableQty} sản phẩm
+        </Tag>
+      );
+    }
+
+    return (
+      <Tag color="success" className="mb-2 text-sm">
+        Còn hàng
+      </Tag>
+    );
+  };
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -252,21 +315,24 @@ const Detail = () => {
             <h1 className="text-base md:text-xl font-bold mb-4">
               {dataProduct.name}
             </h1>
-            <div className="flex items-center mb-4">
-              <Rate
-                disabled
-                character={({ index }) =>
-                  createAverageRate({
-                    index: index + 1,
-                    rate: parseFloat(dataProduct.averageRating),
-                    width: "24px",
-                    height: "24px",
-                  })
-                }
-              />
-              <span className="ml-2 text-gray-500">
-                ({dataProduct.totalReviews} đánh giá)
-              </span>
+            <div className="flex items-center mb-4 justify-between">
+              <div className="flex items-center">
+                <Rate
+                  disabled
+                  character={({ index }) =>
+                    createAverageRate({
+                      index: index + 1,
+                      rate: parseFloat(dataProduct.averageRating),
+                      width: "24px",
+                      height: "24px",
+                    })
+                  }
+                />
+                <span className="ml-2 text-gray-500">
+                  ({dataProduct.totalReviews} đánh giá)
+                </span>
+              </div>
+              {renderQuantityStatus()}
             </div>
             <div className="relative overflow-hidden bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 p-1 rounded-lg shadow-lg mb-6">
               <div className="bg-white p-4 rounded-md">
@@ -327,23 +393,22 @@ const Detail = () => {
                   Màu sắc: {product.color.name}
                 </h3>
                 <div className="flex space-x-2">
-                  {dataProduct.variants.map((item, index) => (
-                    <Tooltip key={index} title={item.color.name}>
+                  {dataProduct.variants.map((variant, index) => (
+                    <Tooltip
+                      key={index}
+                      title={`${variant.color.name}${
+                        variant.quantity <= 0 ? " (Hết hàng)" : ""
+                      }`}
+                    >
                       <div
                         className={`w-8 h-8 rounded-full cursor-pointer border-2 ${
-                          product.color.name === item.color.name
+                          product.color.name === variant.color.name
                             ? "border-blue-500"
                             : "border-gray-300"
-                        }`}
-                        style={{ backgroundColor: item.color.code }}
+                        } ${variant.quantity <= 0 ? "opacity-50" : ""}`}
+                        style={{ backgroundColor: variant.color.code }}
                         onClick={() =>
-                          setProduct((prev) => ({
-                            ...prev,
-                            color: {
-                              ...item.color,
-                              image: item.color.image.url,
-                            },
-                          }))
+                          variant.quantity > 0 && handleColorSelect(variant)
                         }
                       />
                     </Tooltip>
@@ -352,6 +417,17 @@ const Detail = () => {
               </div>
             )}
             <div>
+              <h3 className="font-semibold mb-2">Số lượng: {quantity}</h3>
+              <InputNumber
+                min={1}
+                max={getAvailableQuantity()}
+                value={quantity}
+                onChange={handleQuantityChange}
+                className="w-40 h-10 text-base"
+                disabled={isOutOfStock}
+              />
+            </div>
+            {/* <div>
               <h3 className="font-semibold mb-2">
                 Số lượng: {product.quantity}
               </h3>
@@ -362,16 +438,20 @@ const Detail = () => {
                 onChange={(value) => handleProduct("quantity", value)}
                 className="w-40 h-10 text-base"
               />
-            </div>
+            </div> */}
           </Card>
           <div className="flex space-x-4 mb-6 items-center">
-            <button
+            <CustomButton
+              icon={
+                <LiaShoppingBasketSolid className="text-3xl cursor-pointer" />
+              }
+              disabled={isOutOfStock}
               onClick={handleAddCart}
-              className="flex-1 bg-gradient-to-r from-yellow-300 via-orange-600 to-purple-800 text-white py-3 rounded-md font-bold flex items-center justify-center gap-2 px-2"
+              variant="primary"
+              className="flex-1 py-4 bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600"
             >
-              <LiaShoppingBasketSolid className="text-3xl cursor-pointer" />
-              <span className="text-xs lg:text-lg">Thêm vào giỏ hàng</span>
-            </button>
+              {isOutOfStock ? "Hết hàng" : "Thêm vào giỏ hàng"}
+            </CustomButton>
             <button className="w-12 h-12 flex items-center justify-center border border-gray-300 rounded-md">
               <HeartOutlined className="text-xl text-gray-500" />
             </button>
@@ -416,7 +496,7 @@ const Detail = () => {
 
       <div className="mt-12">
         <h2 className="text-2xl font-bold mb-4">Đánh giá sản phẩm</h2>
-        <RateList {...{ product: dataProduct }} />
+        <RateList {...{ product: dataProduct, refetchProduct: refetch }} />
       </div>
     </div>
   );
