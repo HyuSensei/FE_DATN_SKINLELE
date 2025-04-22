@@ -13,8 +13,8 @@ RUN npm install
 # Sao chép toàn bộ mã nguồn vào container
 COPY . .
 
-# Tăng bộ nhớ heap cho Node.js và chạy build
-RUN export NODE_OPTIONS="--max-old-space-size=4096" && npm run build
+# Build ứng dụng React với Vite
+RUN npm run build
 
 # Mở cổng 3000 để phục vụ ứng dụng
 EXPOSE 8000
